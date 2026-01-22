@@ -1,0 +1,158 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-22",
+    "description": "Test version data for all IWSVA components",
+    "environment": "test",
+    "note": "These versions are for testing purposes. Update these values to match your test environment."
+  },
+  "patterns": {
+    "PTN": {
+      "componentId": "PTN",
+      "componentName": "Virus Pattern",
+      "oldVersion": "18.500.00",
+      "newVersion": "18.501.00",
+      "rollbackVersion": "18.499.00",
+      "currentTestVersion": "18.500.00",
+      "notes": "Main virus pattern - most critical component"
+    },
+    "SPYWARE": {
+      "componentId": "SPYWARE",
+      "componentName": "Spyware Pattern",
+      "oldVersion": "2.5.100",
+      "newVersion": "2.5.101",
+      "rollbackVersion": "2.5.99",
+      "currentTestVersion": "2.5.100",
+      "notes": "Spyware detection patterns"
+    },
+    "BOT": {
+      "componentId": "BOT",
+      "componentName": "Bot Pattern",
+      "oldVersion": "1.2.300",
+      "newVersion": "1.2.301",
+      "rollbackVersion": "1.2.299",
+      "currentTestVersion": "1.2.300",
+      "notes": "Botnet detection patterns"
+    },
+    "ITP": {
+      "componentId": "ITP",
+      "componentName": "IntelliTrap Pattern",
+      "oldVersion": "3.1.200",
+      "newVersion": "3.1.201",
+      "rollbackVersion": "3.1.199",
+      "currentTestVersion": "3.1.200",
+      "notes": "IntelliTrap detection patterns"
+    },
+    "ITE": {
+      "componentId": "ITE",
+      "componentName": "IntelliTrap Exception",
+      "oldVersion": "1.0.50",
+      "newVersion": "1.0.51",
+      "rollbackVersion": "1.0.49",
+      "currentTestVersion": "1.0.50",
+      "notes": "IntelliTrap exception whitelist"
+    },
+    "SPAM": {
+      "componentId": "SPAM",
+      "componentName": "Spam Pattern",
+      "oldVersion": "4.1.100",
+      "newVersion": "4.1.101",
+      "rollbackVersion": "4.1.99",
+      "currentTestVersion": "4.1.100",
+      "notes": "Anti-spam filter patterns"
+    },
+    "ICRCAGENT": {
+      "componentId": "ICRCAGENT",
+      "componentName": "Smart Scan Agent",
+      "oldVersion": "2.0.100",
+      "newVersion": "2.0.101",
+      "rollbackVersion": "2.0.99",
+      "currentTestVersion": "2.0.100",
+      "notes": "Cloud-assisted scanning patterns"
+    },
+    "TMSA": {
+      "componentId": "TMSA",
+      "componentName": "Smart Analysis",
+      "oldVersion": "1.5.200",
+      "newVersion": "1.5.201",
+      "rollbackVersion": "1.5.199",
+      "currentTestVersion": "1.5.200",
+      "notes": "Behavioral analysis patterns"
+    },
+    "DPIPTN": {
+      "componentId": "DPIPTN",
+      "componentName": "DPI Pattern",
+      "oldVersion": "3.2.100",
+      "newVersion": "3.2.101",
+      "rollbackVersion": "3.2.99",
+      "currentTestVersion": "3.2.100",
+      "notes": "Deep Packet Inspection patterns"
+    }
+  },
+  "engines": {
+    "ENG": {
+      "componentId": "ENG",
+      "componentName": "Virus Scan Engine",
+      "oldVersion": "21.0.1234",
+      "newVersion": "21.0.1235",
+      "rollbackVersion": "21.0.1233",
+      "currentTestVersion": "21.0.1234",
+      "requiresRestart": true,
+      "notes": "Main virus scanning engine - restart required after update"
+    },
+    "ATSEENG": {
+      "componentId": "ATSEENG",
+      "componentName": "ATSE Scan Engine",
+      "oldVersion": "4.5.600",
+      "newVersion": "4.5.601",
+      "rollbackVersion": "4.5.599",
+      "currentTestVersion": "4.5.600",
+      "requiresRestart": true,
+      "notes": "Advanced Threat Scan Engine - restart required"
+    },
+    "TMUFEENG": {
+      "componentId": "TMUFEENG",
+      "componentName": "URL Filtering Engine",
+      "oldVersion": "2.8.100",
+      "newVersion": "2.8.101",
+      "rollbackVersion": null,
+      "currentTestVersion": "2.8.100",
+      "requiresRestart": true,
+      "canRollback": false,
+      "notes": "IMPORTANT: URL Filtering Engine CANNOT rollback - update is permanent"
+    }
+  },
+  "versionFormats": {
+    "pattern": {
+      "format": "X.Y.ZZ",
+      "example": "18.501.00",
+      "description": "Pattern version format: Major.Minor.Build"
+    },
+    "engine": {
+      "format": "XX.Y.ZZZZ",
+      "example": "21.0.1235",
+      "description": "Engine version format: Major.Minor.Build"
+    }
+  },
+  "setupInstructions": {
+    "description": "How to prepare test environment with these versions",
+    "steps": [
+      "1. Ensure IWSVA test environment is accessible",
+      "2. Downgrade components to 'oldVersion' if needed",
+      "3. Verify 'newVersion' is available on update server",
+      "4. Backup current versions for rollback tests",
+      "5. Update cypress.env.json with correct environment URL"
+    ]
+  },
+  "updateSequence": {
+    "recommended": [
+      "Update patterns first (PTN, SPYWARE, BOT, etc.)",
+      "Then update engines (ENG, ATSEENG, TMUFEENG)",
+      "TMUFEENG should be updated last (cannot rollback)"
+    ],
+    "critical": [
+      "PTN (Virus Pattern) - Most critical, test first",
+      "ENG (Virus Scan Engine) - Critical engine"
+    ]
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-22",
+    "description": "Test user accounts for IWSVA testing",
+    "security": "IMPORTANT: This is an EXAMPLE file. DO NOT commit actual credentials to version control. Use cypress.env.json for real credentials (which is gitignored)."
+  },
+  "users": {
+    "admin": {
+      "username": "admin",
+      "password": "PLACEHOLDER - Set in cypress.env.json",
+      "role": "administrator",
+      "permissions": [
+        "view_updates",
+        "perform_update",
+        "perform_rollback",
+        "configure_schedule",
+        "configure_proxy",
+        "view_logs"
+      ],
+      "description": "Full administrator with all permissions",
+      "testCases": [
+        "All update operations",
+        "Forced update",
+        "Rollback",
+        "Update All",
+        "Configuration changes"
+      ]
+    },
+    "readonly": {
+      "username": "viewer",
+      "password": "PLACEHOLDER - Set in cypress.env.json",
+      "role": "read-only",
+      "permissions": [
+        "view_updates",
+        "view_logs"
+      ],
+      "restrictedActions": [
+        "perform_update",
+        "perform_rollback",
+        "configure_schedule",
+        "configure_proxy"
+      ],
+      "description": "Read-only user for viewing status only",
+      "testCases": [
+        "Negative tests - verify cannot update",
+        "UI display tests",
+        "Permission validation"
+      ]
+    },
+    "invalid": {
+      "username": "invaliduser",
+      "password": "wrongpassword",
+      "role": "none",
+      "permissions": [],
+      "description": "Invalid user for authentication failure tests",
+      "testCases": [
+        "Login failure",
+        "Session timeout",
+        "Authentication error handling"
+      ]
+    }
+  },
+  "envConfiguration": {
+    "description": "How to configure actual credentials in cypress.env.json",
+    "example": {
+      "baseUrl": "https://10.206.201.9:8443",
+      "username": "actual_admin_username",
+      "password": "actual_admin_password",
+      "readonly_username": "actual_viewer_username",
+      "readonly_password": "actual_viewer_password"
+    },
+    "instructions": [
+      "1. Copy cypress.env.example.json to cypress.env.json",
+      "2. Replace placeholder values with actual credentials",
+      "3. cypress.env.json is gitignored - safe for real credentials",
+      "4. Never commit cypress.env.json to version control"
+    ]
+  },
+  "testScenarios": {
+    "validAuthentication": {
+      "user": "admin",
+      "expectedResult": "success",
+      "redirectTo": "/jsp/manual_update.jsp",
+      "testCases": ["TC-AUTH-001", "All functional tests"]
+    },
+    "invalidAuthentication": {
+      "user": "invalid",
+      "expectedResult": "failure",
+      "expectedError": "Authentication failed",
+      "testCases": ["TC-AUTH-002"]
+    },
+    "insufficientPermissions": {
+      "user": "readonly",
+      "action": "perform_update",
+      "expectedResult": "permission_denied",
+      "expectedError": "You do not have permission to perform this action",
+      "testCases": ["TC-PERM-001", "TC-PERM-002"]
+    },
+    "sessionTimeout": {
+      "user": "admin",
+      "scenario": "session_expired",
+      "expectedResult": "redirect_to_login",
+      "testCases": ["TC-SESSION-001"]
+    }
+  },
+  "securityNotes": {
+    "bestPractices": [
+      "Use strong, unique passwords for test accounts",
+      "Rotate test account passwords regularly",
+      "Use separate test accounts from production",
+      "Monitor test account usage",
+      "Disable test accounts when not in use"
+    ],
+    "cypressEnvJson": {
+      "location": "cypress.env.json (project root)",
+      "gitignored": true,
+      "purpose": "Store actual credentials securely",
+      "format": {
+        "baseUrl": "IWSVA admin interface URL",
+        "username": "Admin username",
+        "password": "Admin password (encrypted in CI/CD)",
+        "readonly_username": "Read-only username",
+        "readonly_password": "Read-only password"
+      }
+    }
+  }
+}
