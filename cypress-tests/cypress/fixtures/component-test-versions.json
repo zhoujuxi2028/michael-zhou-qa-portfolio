@@ -52,15 +52,6 @@
       "currentTestVersion": "1.0.50",
       "notes": "IntelliTrap exception whitelist"
     },
-    "SPAM": {
-      "componentId": "SPAM",
-      "componentName": "Spam Pattern",
-      "oldVersion": "4.1.100",
-      "newVersion": "4.1.101",
-      "rollbackVersion": "4.1.99",
-      "currentTestVersion": "4.1.100",
-      "notes": "Anti-spam filter patterns"
-    },
     "ICRCAGENT": {
       "componentId": "ICRCAGENT",
       "componentName": "Smart Scan Agent",
@@ -69,24 +60,6 @@
       "rollbackVersion": "2.0.99",
       "currentTestVersion": "2.0.100",
       "notes": "Cloud-assisted scanning patterns"
-    },
-    "TMSA": {
-      "componentId": "TMSA",
-      "componentName": "Smart Analysis",
-      "oldVersion": "1.5.200",
-      "newVersion": "1.5.201",
-      "rollbackVersion": "1.5.199",
-      "currentTestVersion": "1.5.200",
-      "notes": "Behavioral analysis patterns"
-    },
-    "DPIPTN": {
-      "componentId": "DPIPTN",
-      "componentName": "DPI Pattern",
-      "oldVersion": "3.2.100",
-      "newVersion": "3.2.101",
-      "rollbackVersion": "3.2.99",
-      "currentTestVersion": "3.2.100",
-      "notes": "Deep Packet Inspection patterns"
     }
   },
   "engines": {

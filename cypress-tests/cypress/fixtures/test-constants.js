@@ -250,10 +250,7 @@ const TestConstants = {
       BOT: { version: 'botver', time: 'bot_utime' },
       ITP: { version: 'intellitrapver', time: 'intellitrap_utime' },
       ITE: { version: 'intellitrapexpver', time: 'intellitrapexp_utime' },
-      SPAM: { version: 'spam', time: 'spam_utime' },
       ICRCAGENT: { version: 'icrcagent_ver', time: 'icrcagent_utime' },
-      TMSA: { version: 'tmsa_ver', time: 'tmsa_utime' },
-      DPIPTN: { version: 'dpi_ptn_ver', time: 'dpi_ptn_utime' },
     },
     engines: {
       ENG: { version: 'EngineVersion', time: 'Engine_utime' },
@@ -275,9 +272,9 @@ const TestConstants = {
   // ==================== COMPONENT IDS ====================
 
   COMPONENT_IDS: {
-    PATTERNS: ['PTN', 'SPYWARE', 'BOT', 'ITP', 'ITE', 'SPAM', 'ICRCAGENT', 'TMSA', 'DPIPTN'],
+    PATTERNS: ['PTN', 'SPYWARE', 'BOT', 'ITP', 'ITE', 'ICRCAGENT'],
     ENGINES: ['ENG', 'ATSEENG', 'TMUFEENG'],
-    ALL: ['PTN', 'SPYWARE', 'BOT', 'ITP', 'ITE', 'SPAM', 'ICRCAGENT', 'TMSA', 'DPIPTN', 'ENG', 'ATSEENG', 'TMUFEENG'],
+    ALL: ['PTN', 'SPYWARE', 'BOT', 'ITP', 'ITE', 'ICRCAGENT', 'ENG', 'ATSEENG', 'TMUFEENG'],
     CRITICAL: ['PTN', 'ENG'], // P0 components
     ROLLBACK_RESTRICTED: ['TMUFEENG'], // Cannot rollback
     REQUIRES_RESTART: ['ENG', 'ATSEENG', 'TMUFEENG'], // Service restart needed

@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "lastUpdated": "2025-01-22",
     "description": "Test scenario definitions for IWSVA Update module data-driven testing",
-    "totalScenarios": 36
+    "totalScenarios": 33
   },
   "normalUpdate": {
     "description": "Standard update scenarios for all components",
@@ -69,48 +69,12 @@
         "priority": "P2"
       },
       {
-        "id": "NORMAL-SPAM",
-        "componentId": "SPAM",
-        "componentName": "Spam Pattern",
-        "mode": "normal",
-        "currentVersion": "4.1.100",
-        "availableVersion": "4.1.101",
-        "expectedResult": "success",
-        "shouldUpdate": true,
-        "estimatedDuration": 480000,
-        "priority": "P2"
-      },
-      {
         "id": "NORMAL-ICRCAGENT",
         "componentId": "ICRCAGENT",
         "componentName": "Smart Scan Agent",
         "mode": "normal",
         "currentVersion": "2.0.100",
         "availableVersion": "2.0.101",
-        "expectedResult": "success",
-        "shouldUpdate": true,
-        "estimatedDuration": 420000,
-        "priority": "P2"
-      },
-      {
-        "id": "NORMAL-TMSA",
-        "componentId": "TMSA",
-        "componentName": "Smart Analysis",
-        "mode": "normal",
-        "currentVersion": "1.5.200",
-        "availableVersion": "1.5.201",
-        "expectedResult": "success",
-        "shouldUpdate": true,
-        "estimatedDuration": 420000,
-        "priority": "P2"
-      },
-      {
-        "id": "NORMAL-DPIPTN",
-        "componentId": "DPIPTN",
-        "componentName": "DPI Pattern",
-        "mode": "normal",
-        "currentVersion": "3.2.100",
-        "availableVersion": "3.2.101",
         "expectedResult": "success",
         "shouldUpdate": true,
         "estimatedDuration": 420000,
@@ -344,7 +308,7 @@
     "scenarios": [
       {
         "id": "UPDATEALL-ALL",
-        "components": ["PTN", "SPYWARE", "BOT", "ITP", "ITE", "SPAM", "ICRCAGENT", "TMSA", "DPIPTN", "ENG", "ATSEENG", "TMUFEENG"],
+        "components": ["PTN", "SPYWARE", "BOT", "ITP", "ITE", "ICRCAGENT", "ENG", "ATSEENG", "TMUFEENG"],
         "mode": "updateAll",
         "expectedResult": "success",
         "shouldUpdate": true,
