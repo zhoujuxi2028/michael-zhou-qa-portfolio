@@ -1,0 +1,409 @@
+{
+  "metadata": {
+    "project": "GUI-mz/cypress-tests",
+    "module": "IWSVA Update",
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-22T10:00:00Z",
+    "totalTestCases": 77,
+    "automationCoverage": "100%",
+    "documentationPath": "docs/test-cases/UPDATE_TEST_CASES.md"
+  },
+  "testCases": [
+    {
+      "id": "TC-UPDATE-001",
+      "title": "Virus Pattern Normal Update",
+      "priority": "P0",
+      "category": "Normal Update",
+      "type": "Functional",
+      "status": "Active",
+      "automation": {
+        "automated": true,
+        "specFile": "cypress/e2e/iwsva-update/01-normal-update/TC-UPDATE-001-virus-pattern.cy.js",
+        "lastRun": "2025-01-22T10:30:00Z",
+        "result": "PASS",
+        "duration": 510000
+      },
+      "documentation": {
+        "path": "docs/test-cases/UPDATE_TEST_CASES.md#tc-update-001",
+        "sections": [
+          "Description",
+          "Prerequisites",
+          "Test Steps",
+          "Verification Points",
+          "Related Test Cases"
+        ]
+      },
+      "testData": {
+        "component": "PTN",
+        "componentName": "Virus Pattern",
+        "currentVersion": "18.500.00",
+        "targetVersion": "18.501.00",
+        "estimatedDuration": 600000
+      },
+      "tags": [
+        "update",
+        "virus-pattern",
+        "normal-flow",
+        "P0",
+        "critical",
+        "smoke-test"
+      ],
+      "relatedCases": [
+        "TC-UPDATE-002",
+        "TC-FORCED-001",
+        "TC-ROLLBACK-001",
+        "TC-UPDATEALL-001"
+      ],
+      "requirements": [
+        "REQ-UPDATE-001"
+      ],
+      "verificationPoints": [
+        "UI version display",
+        "INI file update",
+        "Log file entry",
+        "Pattern files exist",
+        "Business function works"
+      ]
+    },
+    {
+      "id": "TC-UPDATE-002",
+      "title": "Already Up-to-date Scenario",
+      "priority": "P1",
+      "category": "Normal Update",
+      "type": "Functional",
+      "status": "Active",
+      "automation": {
+        "automated": true,
+        "specFile": "cypress/e2e/iwsva-update/01-normal-update/TC-UPDATE-002-already-updated.cy.js"
+      },
+      "documentation": {
+        "path": "docs/test-cases/UPDATE_TEST_CASES.md#tc-update-002"
+      },
+      "testData": {
+        "component": "PTN",
+        "currentVersion": "18.501.00",
+        "serverVersion": "18.501.00"
+      },
+      "tags": [
+        "update",
+        "virus-pattern",
+        "up-to-date",
+        "P1"
+      ],
+      "relatedCases": [
+        "TC-UPDATE-001",
+        "TC-FORCED-001"
+      ]
+    },
+    {
+      "id": "TC-UPDATE-010",
+      "title": "Spyware Pattern Update",
+      "priority": "P1",
+      "category": "Normal Update",
+      "type": "Functional",
+      "status": "Active",
+      "automation": {
+        "automated": true,
+        "specFile": "cypress/e2e/iwsva-update/01-normal-update/TC-UPDATE-010-spyware-pattern.cy.js"
+      },
+      "testData": {
+        "component": "SPYWARE",
+        "currentVersion": "2.5.100",
+        "targetVersion": "2.5.101"
+      },
+      "tags": [
+        "update",
+        "spyware-pattern",
+        "normal-flow",
+        "P1"
+      ]
+    },
+    {
+      "id": "TC-UPDATE-020",
+      "title": "Bot Pattern Update",
+      "priority": "P1",
+      "category": "Normal Update",
+      "type": "Functional",
+      "status": "Active",
+      "automation": {
+        "automated": true,
+        "specFile": "cypress/e2e/iwsva-update/01-normal-update/TC-UPDATE-020-bot-pattern.cy.js"
+      },
+      "testData": {
+        "component": "BOT",
+        "currentVersion": "1.2.300",
+        "targetVersion": "1.2.301"
+      },
+      "tags": [
+        "update",
+        "bot-pattern",
+        "normal-flow",
+        "P1"
+      ]
+    },
+    {
+      "id": "TC-UPDATE-100",
+      "title": "Scan Engine Update",
+      "priority": "P0",
+      "category": "Normal Update",
+      "type": "Functional",
+      "status": "Active",
+      "automation": {
+        "automated": true,
+        "specFile": "cypress/e2e/iwsva-update/01-normal-update/TC-UPDATE-100-scan-engine.cy.js"
+      },
+      "testData": {
+        "component": "ENG",
+        "componentName": "Virus Scan Engine",
+        "currentVersion": "21.0.1234",
+        "targetVersion": "21.0.1235",
+        "requiresRestart": true
+      },
+      "tags": [
+        "update",
+        "scan-engine",
+        "normal-flow",
+        "P0",
+        "critical"
+      ]
+    },
+    {
+      "id": "TC-FORCED-001",
+      "title": "Forced Update - Virus Pattern",
+      "priority": "P1",
+      "category": "Forced Update",
+      "type": "Functional",
+      "status": "Active",
+      "automation": {
+        "automated": true,
+        "specFile": "cypress/e2e/iwsva-update/02-forced-update/TC-FORCED-001-virus-pattern.cy.js"
+      },
+      "documentation": {
+        "path": "docs/test-cases/UPDATE_TEST_CASES.md#tc-forced-001"
+      },
+      "testData": {
+        "component": "PTN",
+        "version": "18.501.00",
+        "mode": "FORCED"
+      },
+      "tags": [
+        "update",
+        "forced-update",
+        "virus-pattern",
+        "P1"
+      ],
+      "relatedCases": [
+        "TC-UPDATE-001",
+        "TC-UPDATE-002"
+      ]
+    },
+    {
+      "id": "TC-FORCED-002",
+      "title": "Cancel Forced Update",
+      "priority": "P2",
+      "category": "Forced Update",
+      "type": "Functional",
+      "status": "Active",
+      "automation": {
+        "automated": true,
+        "specFile": "cypress/e2e/iwsva-update/02-forced-update/TC-FORCED-002-cancel-forced.cy.js"
+      },
+      "tags": [
+        "update",
+        "forced-update",
+        "cancel",
+        "P2"
+      ]
+    },
+    {
+      "id": "TC-ROLLBACK-001",
+      "title": "Rollback Virus Pattern",
+      "priority": "P0",
+      "category": "Rollback",
+      "type": "Functional",
+      "status": "Active",
+      "automation": {
+        "automated": true,
+        "specFile": "cypress/e2e/iwsva-update/03-rollback/TC-ROLLBACK-001-virus-pattern.cy.js"
+      },
+      "documentation": {
+        "path": "docs/test-cases/UPDATE_TEST_CASES.md#tc-rollback-001"
+      },
+      "testData": {
+        "component": "PTN",
+        "currentVersion": "18.501.00",
+        "rollbackVersion": "18.500.00",
+        "mode": "ROLLBACK"
+      },
+      "tags": [
+        "rollback",
+        "virus-pattern",
+        "P0",
+        "critical"
+      ],
+      "relatedCases": [
+        "TC-UPDATE-001"
+      ]
+    },
+    {
+      "id": "TC-ROLLBACK-004",
+      "title": "URL Filtering Rollback Restriction",
+      "priority": "P1",
+      "category": "Rollback",
+      "type": "Negative",
+      "status": "Active",
+      "automation": {
+        "automated": true,
+        "specFile": "cypress/e2e/iwsva-update/03-rollback/TC-ROLLBACK-004-urlf-restriction.cy.js"
+      },
+      "testData": {
+        "component": "TMUFEENG",
+        "rollbackSupported": false
+      },
+      "tags": [
+        "rollback",
+        "urlf-engine",
+        "restriction",
+        "negative",
+        "P1"
+      ]
+    },
+    {
+      "id": "TC-UPDATEALL-001",
+      "title": "Update All Components",
+      "priority": "P0",
+      "category": "Update All",
+      "type": "Integration",
+      "status": "Active",
+      "automation": {
+        "automated": true,
+        "specFile": "cypress/e2e/iwsva-update/04-update-all/TC-UPDATEALL-001-all-components.cy.js"
+      },
+      "documentation": {
+        "path": "docs/test-cases/UPDATE_TEST_CASES.md#tc-updateall-001"
+      },
+      "testData": {
+        "components": [
+          "PTN",
+          "SPYWARE",
+          "BOT",
+          "ITP",
+          "ITE",
+          "ENG",
+          "ATSEENG"
+        ],
+        "estimatedDuration": 1800000
+      },
+      "tags": [
+        "update-all",
+        "batch-update",
+        "integration",
+        "P0",
+        "critical"
+      ]
+    },
+    {
+      "id": "TC-UI-001",
+      "title": "Page Display Verification",
+      "priority": "P0",
+      "category": "UI Interaction",
+      "type": "UI",
+      "status": "Active",
+      "automation": {
+        "automated": true,
+        "specFile": "cypress/e2e/iwsva-update/05-ui-interaction/TC-UI-001-page-display.cy.js"
+      },
+      "documentation": {
+        "path": "docs/test-cases/UPDATE_TEST_CASES.md#tc-ui-001"
+      },
+      "tags": [
+        "ui",
+        "page-display",
+        "smoke-test",
+        "P0"
+      ],
+      "verificationPoints": [
+        "All components visible",
+        "Version numbers displayed",
+        "Buttons enabled",
+        "Radio buttons functional"
+      ]
+    },
+    {
+      "id": "TC-ERROR-001",
+      "title": "Network Error Handling",
+      "priority": "P0",
+      "category": "Error Handling",
+      "type": "Negative",
+      "status": "Active",
+      "automation": {
+        "automated": true,
+        "specFile": "cypress/e2e/iwsva-update/06-error-handling/TC-ERROR-001-network-error.cy.js"
+      },
+      "documentation": {
+        "path": "docs/test-cases/UPDATE_TEST_CASES.md#tc-error-001"
+      },
+      "tags": [
+        "error-handling",
+        "network-error",
+        "negative",
+        "P0"
+      ]
+    }
+  ],
+  "componentMapping": {
+    "PTN": "Virus Pattern",
+    "SPYWARE": "Spyware Pattern",
+    "BOT": "Bot Pattern",
+    "ITP": "IntelliTrap Pattern",
+    "ITE": "IntelliTrap Exception Pattern",
+    "SPAM": "Spam Pattern",
+    "ICRCAGENT": "Smart Scan Agent Pattern",
+    "TMSA": "Smart Analysis Pattern",
+    "DPIPTN": "DPI Pattern",
+    "ENG": "Virus Scan Engine",
+    "ATSEENG": "ATSE Scan Engine",
+    "TMUFEENG": "URL Filtering Engine",
+    "SPAMENG": "Spam Engine"
+  },
+  "priorityDefinitions": {
+    "P0": "Critical - Core functionality, blocking issues",
+    "P1": "High - Important features, major flows",
+    "P2": "Medium - Secondary features, edge cases",
+    "P3": "Low - Nice-to-have, rare scenarios"
+  },
+  "categories": [
+    "Normal Update",
+    "Forced Update",
+    "Rollback",
+    "Update All",
+    "UI Interaction",
+    "Error Handling",
+    "Schedule",
+    "Proxy",
+    "Logging",
+    "Performance",
+    "Business Continuity"
+  ],
+  "tags": [
+    "update",
+    "rollback",
+    "forced-update",
+    "update-all",
+    "virus-pattern",
+    "spyware-pattern",
+    "bot-pattern",
+    "scan-engine",
+    "urlf-engine",
+    "ui",
+    "error-handling",
+    "negative",
+    "integration",
+    "smoke-test",
+    "critical",
+    "P0",
+    "P1",
+    "P2",
+    "P3"
+  ]
+}

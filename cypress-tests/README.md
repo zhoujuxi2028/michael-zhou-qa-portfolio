@@ -264,9 +264,9 @@ Credentials and configuration are stored in `cypress.env.json` (gitignored for s
 ## 📖 Documentation
 
 - **CSRF_TOKEN_EXPLAINED.md** - ⭐ Detailed CSRF token handling
-- **SELF_CHECK_REPORT.md** - Complete test verification report
-- **docs/QUICK_REFERENCE.md** - Quick reference guide
-- **docs/RESEARCH_SUMMARY.md** - Research findings
+- **IWSVA_TEST_GUIDE.md** - Complete Cypress learning guide with test patterns
+- **TEST_REPORT.md** - Test execution results and verification report
+- **docs/REFERENCE.md** - Quick reference guide with commands and research findings
 
 ---
 
