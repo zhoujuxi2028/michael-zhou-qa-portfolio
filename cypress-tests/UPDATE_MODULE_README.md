@@ -17,7 +17,7 @@ This document provides a comprehensive overview of the IWSVA Update module testi
 |--------|-------|
 | **Total Test Cases** | 77 |
 | **Automation Coverage** | 100% |
-| **Components Covered** | 13 (9 patterns + 4 engines) |
+| **Components Covered** | 12 (9 patterns + 3 engines) |
 | **Test Categories** | 11 |
 | **Priority Levels** | P0: 10, P1: 40, P2: 25, P3: 2 |
 | **Framework** | Cypress v15.9.0 |
@@ -39,11 +39,10 @@ The IWSVA (InterScan Web Security Virtual Appliance) Update module manages secur
 - TMSA (Smart Analysis)
 - DPIPTN (DPI Pattern)
 
-**Engines (4 components):**
+**Engines (3 components):**
 - ENG (Virus Scan Engine)
 - ATSEENG (ATSE Scan Engine)
 - TMUFEENG (URL Filtering Engine)
-- SPAMENG (Spam Engine)
 
 **Key Operations:**
 - **Normal Update**: Download and install latest version

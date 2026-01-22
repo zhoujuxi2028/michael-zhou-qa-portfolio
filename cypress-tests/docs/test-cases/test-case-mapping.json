@@ -363,8 +363,7 @@
     "DPIPTN": "DPI Pattern",
     "ENG": "Virus Scan Engine",
     "ATSEENG": "ATSE Scan Engine",
-    "TMUFEENG": "URL Filtering Engine",
-    "SPAMENG": "Spam Engine"
+    "TMUFEENG": "URL Filtering Engine"
   },
   "priorityDefinitions": {
     "P0": "Critical - Core functionality, blocking issues",

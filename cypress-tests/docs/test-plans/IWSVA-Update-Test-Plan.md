@@ -10,10 +10,10 @@
 
 ## 1. Executive Summary
 
-This test plan defines the comprehensive testing approach for the IWSVA Update module, covering pattern updates, engine updates, forced updates, rollback functionality, and error handling scenarios. The plan encompasses 77 test cases with 100% automation coverage using Cypress E2E testing framework.
+This test plan defines the comprehensive testing approach for the IWSVA Update module, covering pattern updates, engine updates, forced updates, rollback functionality, and error handling scenarios. The plan encompasses 77 test cases with 100% automation coverage using Cypress E2E testing framework for 12 components (9 patterns + 3 engines).
 
 **Key Objectives:**
-- Verify all update operations work correctly across 13 components
+- Verify all update operations work correctly across 12 components (9 patterns + 3 engines)
 - Ensure system reliability during update processes
 - Validate rollback capabilities
 - Confirm business continuity during updates
@@ -134,7 +134,7 @@ This test plan defines the comprehensive testing approach for the IWSVA Update m
 
 **Test Components:**
 - 9 Patterns (PTN, SPYWARE, BOT, ITP, ITE, SPAM, ICRCAGENT, TMSA, DPIPTN)
-- 4 Engines (ENG, ATSEENG, TMUFEENG, SPAMENG)
+- 3 Engines (ENG, ATSEENG, TMUFEENG)
 
 **Test Versions:**
 - Defined in `cypress/fixtures/component-test-versions.json`

@@ -65,7 +65,6 @@ This document provides traceability between requirements, features, and test cas
 | ENG (Scan Engine) | Engine | TC-UPDATE-100, TC-FORCED-003, TC-ROLLBACK-003 | ✅ Full |
 | ATSEENG | Engine | Data-driven tests | ✅ Full |
 | TMUFEENG (URL Filtering) | Engine | TC-UPDATE-110, TC-ROLLBACK-004 | ✅ Full |
-| SPAMENG | Engine | Data-driven tests | ✅ Full |
 
 ---
 
