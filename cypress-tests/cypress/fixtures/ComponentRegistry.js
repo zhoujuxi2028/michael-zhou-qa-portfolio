@@ -2,7 +2,7 @@
  * Component Registry
  *
  * Centralized configuration for all IWSVA update components.
- * This registry contains metadata for 12 components (9 patterns + 3 engines).
+ * This registry contains metadata for 9 components (6 patterns + 3 engines).
  *
  * Usage:
  *   import ComponentRegistry from '../fixtures/ComponentRegistry'
@@ -171,34 +171,6 @@ class ComponentRegistry {
       notes: 'Whitelist for IntelliTrap detections'
     },
 
-    SPAM: {
-      id: 'SPAM',
-      name: 'Spam Pattern',
-      displayName: 'Spam Pattern',
-      category: 'pattern',
-      type: 'pattern',
-      iniSection: 'Pattern-Update',
-      iniKey: 'spam',
-      iniTimeKey: 'spam_utime',
-      lockFile: '.spamupdate',
-      lockPath: '/opt/trend/iwsva/.spamupdate',
-      patternPath: '/opt/trend/iwsva/pattern/spam/',
-      backupPath: '/opt/trend/iwsva/backup/patterns/spam/',
-      updateTimeout: 480000, // 8 minutes
-      downloadTimeout: 360000, // 6 minutes
-      canRollback: true,
-      requiresRestart: false,
-      requiresConfirmation: false,
-      priority: 'P2',
-      testVersions: {
-        old: '4.1.100',
-        new: '4.1.101',
-        rollback: '4.1.99'
-      },
-      description: 'Spam detection pattern',
-      notes: 'Anti-spam filter patterns'
-    },
-
     ICRCAGENT: {
       id: 'ICRCAGENT',
       name: 'Smart Scan Agent',
@@ -225,62 +197,6 @@ class ComponentRegistry {
       },
       description: 'Smart Scan Agent pattern',
       notes: 'Cloud-assisted scanning patterns'
-    },
-
-    TMSA: {
-      id: 'TMSA',
-      name: 'Smart Analysis',
-      displayName: 'Smart Analysis Pattern',
-      category: 'pattern',
-      type: 'pattern',
-      iniSection: 'Pattern-Update',
-      iniKey: 'tmsa_ver',
-      iniTimeKey: 'tmsa_utime',
-      lockFile: '.tmsaupdate',
-      lockPath: '/opt/trend/iwsva/.tmsaupdate',
-      patternPath: '/opt/trend/iwsva/pattern/tmsa/',
-      backupPath: '/opt/trend/iwsva/backup/patterns/tmsa/',
-      updateTimeout: 420000, // 7 minutes
-      downloadTimeout: 300000, // 5 minutes
-      canRollback: true,
-      requiresRestart: false,
-      requiresConfirmation: false,
-      priority: 'P2',
-      testVersions: {
-        old: '1.5.200',
-        new: '1.5.201',
-        rollback: '1.5.199'
-      },
-      description: 'Trend Micro Smart Analysis pattern',
-      notes: 'Behavioral analysis patterns'
-    },
-
-    DPIPTN: {
-      id: 'DPIPTN',
-      name: 'DPI Pattern',
-      displayName: 'DPI Pattern',
-      category: 'pattern',
-      type: 'pattern',
-      iniSection: 'Pattern-Update',
-      iniKey: 'dpi_ptn_ver',
-      iniTimeKey: 'dpi_ptn_utime',
-      lockFile: '.dpiptnupdate',
-      lockPath: '/opt/trend/iwsva/.dpiptnupdate',
-      patternPath: '/opt/trend/iwsva/pattern/dpi/',
-      backupPath: '/opt/trend/iwsva/backup/patterns/dpi/',
-      updateTimeout: 420000, // 7 minutes
-      downloadTimeout: 300000, // 5 minutes
-      canRollback: true,
-      requiresRestart: false,
-      requiresConfirmation: false,
-      priority: 'P2',
-      testVersions: {
-        old: '3.2.100',
-        new: '3.2.101',
-        rollback: '3.2.99'
-      },
-      description: 'Deep Packet Inspection pattern',
-      notes: 'DPI engine patterns'
     },
 
     // ==================== ENGINES ====================
