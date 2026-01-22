@@ -88,7 +88,7 @@ npx cypress open
 - **TC-UPDATE-010** (P1): Spyware Pattern Update
 - **TC-UPDATE-100** (P0): Scan Engine Update
 
-**Coverage**: All 13 components (9 patterns + 4 engines)
+**Coverage**: All 12 components (9 patterns + 3 engines)
 
 **Execution Time**: ~10 minutes per component
 
@@ -326,7 +326,6 @@ TC-{CATEGORY}-{ID}-{description}.cy.js
 | ENG | Virus Scan Engine | Engine |
 | ATSEENG | ATSE Scan Engine | Engine |
 | TMUFEENG | URL Filtering Engine | Engine |
-| SPAMENG | Spam Engine | Engine |
 
 ### Test Versions
 

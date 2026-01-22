@@ -436,7 +436,7 @@ Verify all UI elements display correctly on Manual Update page.
 | Step | Action | Expected Result |
 |------|--------|-----------------|
 | 1 | Navigate to Manual Update | Page loads |
-| 2 | Verify all components listed | All 13 components visible |
+| 2 | Verify all components listed | All 12 components visible |
 | 3 | Check version numbers | All show valid versions |
 | 4 | Check buttons | Update, Rollback, Update All present |
 | 5 | Check radio buttons | All selectable |
@@ -533,7 +533,6 @@ Verify system behavior when update server is unreachable.
 | ENG | Virus Scan Engine | Engine |
 | ATSEENG | ATSE Scan Engine | Engine |
 | TMUFEENG | URL Filtering Engine | Engine |
-| SPAMENG | Spam Engine | Engine |
 
 ### Test Data Versions
 | Component | Old Version | New Version |

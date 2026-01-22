@@ -24,7 +24,6 @@ This document defines all test data used in IWSVA Update module testing.
 | ENG | Virus Scan Engine | Engine | Pattern-Update | EngineVersion | .engupdate |
 | ATSEENG | ATSE Scan Engine | Engine | Pattern-Update | ATSEEngineVersion | .atseupdate |
 | TMUFEENG | URL Filtering Engine | Engine | Pattern-Update | url_eng_ver | .tmufeengineupdate |
-| SPAMENG | Spam Engine | Engine | Pattern-Update | spam_eng_ver | .spamengineupdate |
 
 ---
 
@@ -49,7 +48,6 @@ This document defines all test data used in IWSVA Update module testing.
 | ENG | 21.0.1234 | 21.0.1235 | 21.0.1233 |
 | ATSEENG | 4.5.600 | 4.5.601 | 4.5.599 |
 | TMUFEENG | 2.8.100 | 2.8.101 | N/A (Cannot rollback) |
-| SPAMENG | 5.1.200 | 5.1.201 | 5.1.199 |
 
 ---
 

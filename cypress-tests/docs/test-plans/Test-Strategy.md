@@ -18,7 +18,7 @@ This document defines the high-level test strategy for the IWSVA Update module. 
 
 This strategy applies to all testing activities related to:
 - Pattern updates (9 components)
-- Engine updates (4 components)
+- Engine updates (3 components)
 - Update operations (normal, forced, rollback)
 - UI interactions
 - Error handling scenarios
@@ -68,7 +68,7 @@ This strategy applies to all testing activities related to:
 **Objective**: Verify individual component update operations
 
 **Approach:**
-- Test each of the 13 components independently
+- Test each of the 12 components independently (9 patterns + 3 engines)
 - Verify update, rollback, forced update for each component
 - Validate component-specific behaviors
 
