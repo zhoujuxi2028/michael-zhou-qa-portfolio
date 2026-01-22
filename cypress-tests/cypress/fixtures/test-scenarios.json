@@ -1,0 +1,436 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-22",
+    "description": "Test scenario definitions for IWSVA Update module data-driven testing",
+    "totalScenarios": 36
+  },
+  "normalUpdate": {
+    "description": "Standard update scenarios for all components",
+    "scenarios": [
+      {
+        "id": "NORMAL-PTN",
+        "componentId": "PTN",
+        "componentName": "Virus Pattern",
+        "mode": "normal",
+        "currentVersion": "18.500.00",
+        "availableVersion": "18.501.00",
+        "expectedResult": "success",
+        "shouldUpdate": true,
+        "estimatedDuration": 600000,
+        "priority": "P0"
+      },
+      {
+        "id": "NORMAL-SPYWARE",
+        "componentId": "SPYWARE",
+        "componentName": "Spyware Pattern",
+        "mode": "normal",
+        "currentVersion": "2.5.100",
+        "availableVersion": "2.5.101",
+        "expectedResult": "success",
+        "shouldUpdate": true,
+        "estimatedDuration": 480000,
+        "priority": "P1"
+      },
+      {
+        "id": "NORMAL-BOT",
+        "componentId": "BOT",
+        "componentName": "Bot Pattern",
+        "mode": "normal",
+        "currentVersion": "1.2.300",
+        "availableVersion": "1.2.301",
+        "expectedResult": "success",
+        "shouldUpdate": true,
+        "estimatedDuration": 420000,
+        "priority": "P1"
+      },
+      {
+        "id": "NORMAL-ITP",
+        "componentId": "ITP",
+        "componentName": "IntelliTrap Pattern",
+        "mode": "normal",
+        "currentVersion": "3.1.200",
+        "availableVersion": "3.1.201",
+        "expectedResult": "success",
+        "shouldUpdate": true,
+        "estimatedDuration": 420000,
+        "priority": "P2"
+      },
+      {
+        "id": "NORMAL-ITE",
+        "componentId": "ITE",
+        "componentName": "IntelliTrap Exception",
+        "mode": "normal",
+        "currentVersion": "1.0.50",
+        "availableVersion": "1.0.51",
+        "expectedResult": "success",
+        "shouldUpdate": true,
+        "estimatedDuration": 360000,
+        "priority": "P2"
+      },
+      {
+        "id": "NORMAL-SPAM",
+        "componentId": "SPAM",
+        "componentName": "Spam Pattern",
+        "mode": "normal",
+        "currentVersion": "4.1.100",
+        "availableVersion": "4.1.101",
+        "expectedResult": "success",
+        "shouldUpdate": true,
+        "estimatedDuration": 480000,
+        "priority": "P2"
+      },
+      {
+        "id": "NORMAL-ICRCAGENT",
+        "componentId": "ICRCAGENT",
+        "componentName": "Smart Scan Agent",
+        "mode": "normal",
+        "currentVersion": "2.0.100",
+        "availableVersion": "2.0.101",
+        "expectedResult": "success",
+        "shouldUpdate": true,
+        "estimatedDuration": 420000,
+        "priority": "P2"
+      },
+      {
+        "id": "NORMAL-TMSA",
+        "componentId": "TMSA",
+        "componentName": "Smart Analysis",
+        "mode": "normal",
+        "currentVersion": "1.5.200",
+        "availableVersion": "1.5.201",
+        "expectedResult": "success",
+        "shouldUpdate": true,
+        "estimatedDuration": 420000,
+        "priority": "P2"
+      },
+      {
+        "id": "NORMAL-DPIPTN",
+        "componentId": "DPIPTN",
+        "componentName": "DPI Pattern",
+        "mode": "normal",
+        "currentVersion": "3.2.100",
+        "availableVersion": "3.2.101",
+        "expectedResult": "success",
+        "shouldUpdate": true,
+        "estimatedDuration": 420000,
+        "priority": "P2"
+      },
+      {
+        "id": "NORMAL-ENG",
+        "componentId": "ENG",
+        "componentName": "Virus Scan Engine",
+        "mode": "normal",
+        "currentVersion": "21.0.1234",
+        "availableVersion": "21.0.1235",
+        "expectedResult": "success",
+        "shouldUpdate": true,
+        "estimatedDuration": 720000,
+        "requiresRestart": true,
+        "priority": "P0"
+      },
+      {
+        "id": "NORMAL-ATSEENG",
+        "componentId": "ATSEENG",
+        "componentName": "ATSE Scan Engine",
+        "mode": "normal",
+        "currentVersion": "4.5.600",
+        "availableVersion": "4.5.601",
+        "expectedResult": "success",
+        "shouldUpdate": true,
+        "estimatedDuration": 600000,
+        "requiresRestart": true,
+        "priority": "P1"
+      },
+      {
+        "id": "NORMAL-TMUFEENG",
+        "componentId": "TMUFEENG",
+        "componentName": "URL Filtering Engine",
+        "mode": "normal",
+        "currentVersion": "2.8.100",
+        "availableVersion": "2.8.101",
+        "expectedResult": "success",
+        "shouldUpdate": true,
+        "estimatedDuration": 600000,
+        "requiresRestart": true,
+        "cannotRollback": true,
+        "priority": "P1"
+      }
+    ]
+  },
+  "alreadyUpdated": {
+    "description": "Scenarios where component is already up-to-date",
+    "scenarios": [
+      {
+        "id": "UPTODATE-PTN",
+        "componentId": "PTN",
+        "mode": "normal",
+        "currentVersion": "18.501.00",
+        "availableVersion": "18.501.00",
+        "expectedResult": "no_update_needed",
+        "shouldUpdate": false,
+        "expectedMessage": "already up-to-date",
+        "priority": "P1"
+      },
+      {
+        "id": "UPTODATE-ENG",
+        "componentId": "ENG",
+        "mode": "normal",
+        "currentVersion": "21.0.1235",
+        "availableVersion": "21.0.1235",
+        "expectedResult": "no_update_needed",
+        "shouldUpdate": false,
+        "expectedMessage": "already up-to-date",
+        "priority": "P1"
+      }
+    ]
+  },
+  "forcedUpdate": {
+    "description": "Forced update scenarios (re-download even if up-to-date)",
+    "scenarios": [
+      {
+        "id": "FORCED-PTN",
+        "componentId": "PTN",
+        "componentName": "Virus Pattern",
+        "mode": "forced",
+        "currentVersion": "18.501.00",
+        "availableVersion": "18.501.00",
+        "expectedResult": "success",
+        "shouldUpdate": true,
+        "requiresConfirmation": true,
+        "confirmationMessage": "Force update even though already up-to-date?",
+        "estimatedDuration": 600000,
+        "priority": "P1"
+      },
+      {
+        "id": "FORCED-SPYWARE",
+        "componentId": "SPYWARE",
+        "mode": "forced",
+        "currentVersion": "2.5.101",
+        "availableVersion": "2.5.101",
+        "expectedResult": "success",
+        "shouldUpdate": true,
+        "requiresConfirmation": true,
+        "estimatedDuration": 480000,
+        "priority": "P2"
+      },
+      {
+        "id": "FORCED-ENG",
+        "componentId": "ENG",
+        "componentName": "Virus Scan Engine",
+        "mode": "forced",
+        "currentVersion": "21.0.1235",
+        "availableVersion": "21.0.1235",
+        "expectedResult": "success",
+        "shouldUpdate": true,
+        "requiresConfirmation": true,
+        "requiresRestart": true,
+        "estimatedDuration": 720000,
+        "priority": "P1"
+      },
+      {
+        "id": "FORCED-CANCEL",
+        "componentId": "PTN",
+        "mode": "forced",
+        "currentVersion": "18.501.00",
+        "availableVersion": "18.501.00",
+        "expectedResult": "cancelled",
+        "shouldUpdate": false,
+        "userAction": "cancel",
+        "requiresConfirmation": true,
+        "priority": "P2"
+      }
+    ]
+  },
+  "rollback": {
+    "description": "Rollback scenarios (restore previous version)",
+    "scenarios": [
+      {
+        "id": "ROLLBACK-PTN",
+        "componentId": "PTN",
+        "componentName": "Virus Pattern",
+        "mode": "rollback",
+        "currentVersion": "18.501.00",
+        "rollbackVersion": "18.500.00",
+        "expectedResult": "success",
+        "shouldRollback": true,
+        "requiresConfirmation": true,
+        "requiresBackup": true,
+        "estimatedDuration": 300000,
+        "priority": "P0"
+      },
+      {
+        "id": "ROLLBACK-SPYWARE",
+        "componentId": "SPYWARE",
+        "mode": "rollback",
+        "currentVersion": "2.5.101",
+        "rollbackVersion": "2.5.100",
+        "expectedResult": "success",
+        "shouldRollback": true,
+        "requiresConfirmation": true,
+        "requiresBackup": true,
+        "estimatedDuration": 240000,
+        "priority": "P2"
+      },
+      {
+        "id": "ROLLBACK-BOT",
+        "componentId": "BOT",
+        "mode": "rollback",
+        "currentVersion": "1.2.301",
+        "rollbackVersion": "1.2.300",
+        "expectedResult": "success",
+        "shouldRollback": true,
+        "requiresConfirmation": true,
+        "requiresBackup": true,
+        "estimatedDuration": 240000,
+        "priority": "P2"
+      },
+      {
+        "id": "ROLLBACK-ENG",
+        "componentId": "ENG",
+        "componentName": "Virus Scan Engine",
+        "mode": "rollback",
+        "currentVersion": "21.0.1235",
+        "rollbackVersion": "21.0.1234",
+        "expectedResult": "success",
+        "shouldRollback": true,
+        "requiresConfirmation": true,
+        "requiresBackup": true,
+        "requiresRestart": true,
+        "estimatedDuration": 360000,
+        "priority": "P1"
+      },
+      {
+        "id": "ROLLBACK-TMUFEENG-RESTRICTED",
+        "componentId": "TMUFEENG",
+        "componentName": "URL Filtering Engine",
+        "mode": "rollback",
+        "currentVersion": "2.8.101",
+        "rollbackVersion": "2.8.100",
+        "expectedResult": "error",
+        "shouldRollback": false,
+        "canRollback": false,
+        "expectedError": "URL Filtering Engine cannot be rolled back",
+        "priority": "P1"
+      },
+      {
+        "id": "ROLLBACK-CANCEL",
+        "componentId": "PTN",
+        "mode": "rollback",
+        "currentVersion": "18.501.00",
+        "rollbackVersion": "18.500.00",
+        "expectedResult": "cancelled",
+        "shouldRollback": false,
+        "userAction": "cancel",
+        "requiresConfirmation": true,
+        "priority": "P2"
+      },
+      {
+        "id": "ROLLBACK-NO-BACKUP",
+        "componentId": "PTN",
+        "mode": "rollback",
+        "currentVersion": "18.501.00",
+        "rollbackVersion": null,
+        "expectedResult": "error",
+        "shouldRollback": false,
+        "backupAvailable": false,
+        "expectedError": "No backup version available for rollback",
+        "priority": "P2"
+      }
+    ]
+  },
+  "updateAll": {
+    "description": "Batch update all components scenarios",
+    "scenarios": [
+      {
+        "id": "UPDATEALL-ALL",
+        "components": ["PTN", "SPYWARE", "BOT", "ITP", "ITE", "SPAM", "ICRCAGENT", "TMSA", "DPIPTN", "ENG", "ATSEENG", "TMUFEENG"],
+        "mode": "updateAll",
+        "expectedResult": "success",
+        "shouldUpdate": true,
+        "estimatedDuration": 1800000,
+        "priority": "P0"
+      },
+      {
+        "id": "UPDATEALL-SOME-UPDATED",
+        "components": ["PTN", "SPYWARE", "BOT"],
+        "mode": "updateAll",
+        "someAlreadyUpdated": true,
+        "expectedResult": "partial_success",
+        "shouldUpdate": true,
+        "estimatedDuration": 900000,
+        "priority": "P1"
+      },
+      {
+        "id": "UPDATEALL-CANCEL",
+        "components": ["PTN", "SPYWARE", "ENG"],
+        "mode": "updateAll",
+        "expectedResult": "cancelled",
+        "shouldUpdate": false,
+        "userAction": "cancel",
+        "priority": "P1"
+      }
+    ]
+  },
+  "errorScenarios": {
+    "description": "Error handling test scenarios",
+    "scenarios": [
+      {
+        "id": "ERROR-NETWORK",
+        "componentId": "PTN",
+        "mode": "normal",
+        "expectedResult": "error",
+        "errorType": "network",
+        "errorCondition": "server_unreachable",
+        "expectedError": "Unable to connect to update server",
+        "versionUnchanged": true,
+        "priority": "P0"
+      },
+      {
+        "id": "ERROR-TIMEOUT",
+        "componentId": "PTN",
+        "mode": "normal",
+        "expectedResult": "error",
+        "errorType": "network",
+        "errorCondition": "timeout",
+        "expectedError": "Update operation timed out",
+        "versionUnchanged": true,
+        "priority": "P1"
+      },
+      {
+        "id": "ERROR-DISK-SPACE",
+        "componentId": "PTN",
+        "mode": "normal",
+        "expectedResult": "error",
+        "errorType": "resource",
+        "errorCondition": "insufficient_disk_space",
+        "expectedError": "Insufficient disk space",
+        "versionUnchanged": true,
+        "priority": "P1"
+      },
+      {
+        "id": "ERROR-CONCURRENT",
+        "componentId": "PTN",
+        "mode": "normal",
+        "expectedResult": "error",
+        "errorType": "state",
+        "errorCondition": "concurrent_update",
+        "expectedError": "Component is currently updating",
+        "lockFileExists": true,
+        "versionUnchanged": true,
+        "priority": "P1"
+      },
+      {
+        "id": "ERROR-PERMISSION",
+        "componentId": "PTN",
+        "mode": "normal",
+        "expectedResult": "error",
+        "errorType": "permission",
+        "errorCondition": "permission_denied",
+        "expectedError": "Permission denied",
+        "versionUnchanged": true,
+        "priority": "P2"
+      }
+    ]
+  }
+}
