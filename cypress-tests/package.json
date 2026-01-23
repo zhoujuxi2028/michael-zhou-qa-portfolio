@@ -23,5 +23,9 @@
   "type": "commonjs",
   "devDependencies": {
     "cypress": "^15.9.0"
+  },
+  "dependencies": {
+    "ini": "^6.0.0",
+    "ssh2": "^1.17.0"
   }
 }
