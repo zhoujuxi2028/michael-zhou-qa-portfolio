@@ -1,6 +1,5 @@
 const { defineConfig } = require('cypress')
-const fs = require('fs')
-const path = require('path')
+const registerTasks = require('./cypress/tasks')
 
 module.exports = defineConfig({
   e2e: {
@@ -19,18 +18,8 @@ module.exports = defineConfig({
       // 设置环境变量以处理自签名证书
       process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
-      // 添加自定义任务
-      on('task', {
-        writeToFile({ filename, content }) {
-          const filePath = path.join(__dirname, filename)
-          fs.writeFileSync(filePath, content, 'utf8')
-          return null
-        },
-        log(message) {
-          console.log(message)
-          return null
-        }
-      })
+      // 注册所有自定义任务（包括 SSH 和降级相关任务）
+      registerTasks(on, config)
 
       on('before:browser:launch', (browser, launchOptions) => {
         if (browser.family === 'chromium' && browser.name !== 'electron') {
