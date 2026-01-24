@@ -16,6 +16,38 @@ import ComponentDowngrade from './ComponentDowngrade'
 
 class TestDataSetup {
   /**
+   * Get version data for a component from the nested JSON structure
+   * @param {string} componentId - Component ID (e.g., 'PTN', 'BOT', 'ENG')
+   * @returns {object} Version data with standardized field names
+   */
+  static getVersionData(componentId) {
+    const component = ComponentRegistry.getComponent(componentId)
+    const category = component.category.toLowerCase() + 's' // 'pattern' -> 'patterns', 'engine' -> 'engines'
+
+    const versionData = ComponentVersions[category]?.[componentId]
+
+    if (!versionData) {
+      throw new Error(`Version data not found for component ${componentId}`)
+    }
+
+    // Transform to standardized field names
+    return {
+      componentId: versionData.componentId,
+      componentName: versionData.componentName,
+      previous: versionData.oldVersion,
+      current: versionData.newVersion,
+      rollback: versionData.rollbackVersion,
+      oldVersion: versionData.oldVersion,
+      newVersion: versionData.newVersion,
+      rollbackVersion: versionData.rollbackVersion,
+      currentTestVersion: versionData.currentTestVersion,
+      requiresRestart: versionData.requiresRestart,
+      canRollback: versionData.canRollback !== false,
+      notes: versionData.notes
+    }
+  }
+
+  /**
    * Setup test data for specific scenario
    * @param {object} scenario - Test scenario
    * @param {object} options - Setup options
@@ -70,7 +102,7 @@ class TestDataSetup {
       cy.log(`Preparing ${scenario.components.length} components for Update All`)
 
       scenario.components.forEach(componentId => {
-        const versionData = ComponentVersions[componentId]
+        const versionData = TestDataSetup.getVersionData(componentId)
 
         if (versionData && versionData.previous) {
           ComponentDowngrade.downgradeToVersion(
@@ -197,7 +229,7 @@ class TestDataSetup {
    * @returns {Cypress.Chainable<object>} Setup result
    */
   static setupNormalUpdate(componentId) {
-    const versionData = ComponentVersions[componentId]
+    const versionData = this.getVersionData(componentId)
 
     cy.log(`=== Setup Normal Update: ${componentId} ===`)
 
@@ -228,7 +260,7 @@ class TestDataSetup {
    * @returns {Cypress.Chainable<object>} Setup result
    */
   static setupForcedUpdate(componentId) {
-    const versionData = ComponentVersions[componentId]
+    const versionData = this.getVersionData(componentId)
 
     cy.log(`=== Setup Forced Update: ${componentId} ===`)
 
@@ -259,7 +291,7 @@ class TestDataSetup {
    */
   static setupRollback(componentId) {
     const component = ComponentRegistry.getComponent(componentId)
-    const versionData = ComponentVersions[componentId]
+    const versionData = this.getVersionData(componentId)
 
     if (!component.canRollback) {
       throw new Error(`Component ${componentId} does not support rollback`)
@@ -306,7 +338,7 @@ class TestDataSetup {
 
     // Downgrade all components to previous versions
     components.forEach(componentId => {
-      const versionData = ComponentVersions[componentId]
+      const versionData = this.getVersionData(componentId)
 
       if (versionData && versionData.previous) {
         versionMap[componentId] = versionData.previous

@@ -4,7 +4,12 @@
       "Bash(mkdir:*)",
       "Bash(mv:*)",
       "Bash(tree:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(test:*)",
+      "Bash(node:*)",
+      "Bash(npx cypress run:*)"
     ],
     "deny": [],
     "ask": []

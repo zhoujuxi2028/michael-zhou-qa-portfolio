@@ -1,21 +1,32 @@
 /**
- * IWSVA Kernel Version Verification Tests
+ * IWSVA System Updates Page Verification
  *
- * Enterprise-grade test suite for verifying IWSVA kernel version display.
- * Uses Page Object Model and follows framework's 3-step test structure.
- * Implements multi-level verification (UI + Backend) following Phase 4 patterns.
+ * Optimized enterprise-grade test suite for verifying IWSVA kernel version display.
+ * Uses Page Object Model and follows framework's best practices.
  *
  * Test Coverage:
  * - System Updates page accessibility
  * - Kernel version display verification (UI)
  * - Kernel version verification via SSH (Backend)
  * - Frameset structure validation
- * - OS release information retrieval
- * - System uptime verification
+ * - Complete system information retrieval
  *
  * Verification Levels:
  * - UI Level: Page content verification
  * - Backend Level: SSH command execution (uname -r, cat /etc/os-release, uptime -p)
+ *
+ * Test Structure:
+ * - TC-SYS-001: Page Display and Navigation (2 tests)
+ * - TC-SYS-002: Kernel Version Verification (3 tests)
+ * - TC-SYS-003: Frameset Architecture Validation (3 tests)
+ *
+ * Optimization Highlights:
+ * - Single login per suite (before hook)
+ * - Shared navigation (beforeEach hook)
+ * - Consolidated SSH calls (4 → 2)
+ * - Removed redundant tests
+ * - Fixed testIsolation:false usage
+ * - Proper cleanup (after hook)
  *
  * Dependencies:
  * - BasePage: Base functionality (login, navigation)
@@ -38,7 +49,7 @@ import BackendVerification from '../support/verification/BackendVerification'
 import TestConfig from '../fixtures/test-config'
 import TestConstants from '../fixtures/test-constants'
 
-describe('IWSVA Kernel Version Verification', () => {
+describe('IWSVA System Updates Page Verification', { testIsolation: false }, () => {
   // ==================== PAGE OBJECTS ====================
 
   let basePage
@@ -49,10 +60,13 @@ describe('IWSVA Kernel Version Verification', () => {
 
   const TARGET_KERNEL_VERSION = Cypress.env('targetKernelVersion') || '5.14.0-427.24.1.el9_4.x86_64'
 
-  // ==================== HOOKS ====================
+  // ==================== SUITE SETUP ====================
 
-  before(() => {
-    cy.log('=== Test Suite: IWSVA Kernel Version Verification ===')
+  /**
+   * Suite setup: Validate credentials and login once for all tests
+   */
+  before('Suite setup: Validate and login', () => {
+    cy.log('=== IWSVA System Updates Verification ===')
     cy.log(`Target Kernel Version: ${TARGET_KERNEL_VERSION}`)
 
     // Validate credentials are configured
@@ -65,216 +79,96 @@ describe('IWSVA Kernel Version Verification', () => {
         'Copy cypress.env.json.example and configure with actual credentials.'
       )
     }
-  })
 
-  beforeEach(() => {
     // Initialize Page Objects and Workflows
     basePage = new BasePage()
     systemUpdatePage = new SystemUpdatePage()
     setupWorkflow = new SetupWorkflow()
+
+    // Login once, all tests share the session
+    setupWorkflow.login()
+
+    // Verify login successful
+    basePage.getCurrentUrl().then((url) => {
+      expect(url, 'Should be logged in (not on login page)')
+        .to.not.include('/login.jsp')
+    })
+
+    cy.log('✓ Suite setup complete')
+    cy.log('✓ Login successful')
+  })
+
+  /**
+   * Suite cleanup: Logout and clear session
+   */
+  after('Suite cleanup', () => {
+    cy.log('=== Suite Cleanup ===')
+
+    if (setupWorkflow) {
+      setupWorkflow.logout()
+    }
+
+    cy.clearCookies()
+    cy.clearLocalStorage()
+
+    cy.log('=== Test Suite Complete ===')
+    cy.log('All kernel version verification tests passed')
+  })
+
+
+  /**
+   * Capture failure state after each test
+   */
+  afterEach('Capture failure state', function() {
+    if (this.currentTest.state === 'failed') {
+      const testTitle = this.currentTest.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()
+      cy.screenshot(`failure-${testTitle}`)
+    }
   })
 
   // ==================== TEST CASES ====================
 
   /**
    * Test Case: TC-SYS-001
-   * Verify IWSVA kernel version is displayed on System Updates page
+   * Page Display and Navigation
    *
-   * Test Steps:
-   * 1. Initialize test environment and login
-   * 2. Navigate to System Updates page via menu
-   * 3. Verify kernel version displayed (UI + Backend verification)
-   *
-   * Note: testIsolation disabled to preserve login state across steps
+   * Verifies System Updates page loads correctly and displays kernel information.
+   * Consolidates page title verification and UI display checks.
    */
-  describe('TC-SYS-001: Kernel Version Display', { testIsolation: false }, () => {
-    // Step 1: Initialize test environment
-    it('Step 1: Initialize test environment and login', () => {
-      cy.log('=== Step 1: Environment Setup ===')
+  describe('TC-SYS-001: Page Display and Navigation', () => {
 
-      // Login using SetupWorkflow
-      setupWorkflow.login()
-
-      // Verify login successful
-      basePage.getCurrentUrl().then((url) => {
-        expect(url, 'Should be logged in (not on login page)')
-          .to.not.include('/login.jsp')
-      })
-
-      cy.log('✓ Test environment initialized')
-      cy.log('✓ Login successful')
+    beforeEach('Navigate to System Updates', () => {
+      systemUpdatePage.navigateToSystemUpdates()
+      cy.wait(TestConfig.timeouts.elementInteraction)
     })
 
-    // Step 2: Navigate to System Updates page
-    it('Step 2: Navigate to System Updates page', () => {
-      cy.log('=== Step 2: Navigation ===')
+    it('Should load System Updates page with correct title', () => {
+      cy.log('=== TC-SYS-001 Test 1: Page Load and Title ===')
 
-      // Navigate using SystemUpdatePage
-      systemUpdatePage.navigateToSystemUpdates()
-
-      // Verify content loaded in right frame
+      // Verify page loaded
       systemUpdatePage.verifyContentLoaded()
 
-      // Take screenshot of page
-      systemUpdatePage.capturePageState('kernel-version-page')
+      // Verify page title (consolidated from TC-SYS-005)
+      systemUpdatePage.verifyPageTitle('System Update')
 
-      cy.log('✓ Navigation complete')
-      cy.log('✓ System Updates page loaded')
+      // Verify kernel info section exists
+      systemUpdatePage.verifyKernelInfoDisplayed()
+
+      // Take screenshot
+      systemUpdatePage.capturePageState('page-loaded')
+
+      cy.log('✓ Page loaded with correct title')
+      cy.log('✓ Kernel info section displayed')
     })
 
-    // Step 3: Verify kernel version (multi-level verification)
-    it('Step 3: Verify kernel version displayed (UI + Backend)', () => {
-      cy.log('=== Step 3: Multi-Level Verification ===')
+    it('Should display kernel version on page', () => {
+      cy.log('=== TC-SYS-001 Test 2: Kernel Version Display ===')
       cy.log(`Expected kernel version: ${TARGET_KERNEL_VERSION}`)
 
       // UI Level: Verify kernel version in page content
-      cy.log('--- UI Verification ---')
       systemUpdatePage.verifyKernelVersion(TARGET_KERNEL_VERSION)
 
-      // UI Level: Verify kernel information section displayed
-      systemUpdatePage.verifyKernelInfoDisplayed()
-
-      cy.log('✓ UI Verification complete')
-
-      // Backend Level: Verify kernel version via SSH
-      cy.log('--- Backend Verification ---')
-      BackendVerification.verifyKernelVersion(TARGET_KERNEL_VERSION).then(check => {
-        expect(check.passed, 'Backend kernel version should match').to.be.true
-        cy.log(`✓ Backend: Kernel version = ${check.actual}`)
-      })
-
-      cy.log('✓ Backend Verification complete')
-
-      // Take verification screenshot
-      systemUpdatePage.capturePageState('kernel-version-verified')
-
-      cy.log('========================================')
-      cy.log('=== All Verifications PASSED ===')
-      cy.log('========================================')
-    })
-  })
-
-  /**
-   * Test Case: TC-SYS-002
-   * Verify IWSVA frameset architecture is correctly structured
-   *
-   * Test Steps:
-   * 1. Initialize test environment and login
-   * 2. Load main page with frameset
-   * 3. Verify 3-frame structure (tophead, left, right)
-   *
-   * Note: testIsolation disabled to preserve login state across steps
-   */
-  describe('TC-SYS-002: Frameset Structure Validation', { testIsolation: false }, () => {
-    // Step 1: Initialize test environment
-    it('Step 1: Initialize test environment and login', () => {
-      cy.log('=== Step 1: Environment Setup ===')
-
-      // Logout first (in case already logged in from previous tests)
-      setupWorkflow.logout()
-
-      // Login
-      setupWorkflow.login()
-
-      // Verify login successful
-      cy.url({ timeout: TestConfig.timeouts.pageLoad })
-        .should('not.include', '/login.jsp')
-
-      cy.log('✓ Test environment initialized')
-    })
-
-    // Step 2: Load main page (no specific navigation needed - frames exist after login)
-    it('Step 2: Wait for frameset to load', () => {
-      cy.log('=== Step 2: Frame Loading ===')
-
-      // Wait for page to stabilize
-      cy.wait(TestConfig.timeouts.elementInteraction)
-
-      // Wait for frames to be ready
-      const requiredFrames = TestConstants.SELECTORS.systemUpdate.requiredFrames
-
-      requiredFrames.forEach((frameName) => {
-        systemUpdatePage.waitForFrame(frameName)
-      })
-
-      cy.log('✓ All frames loaded')
-    })
-
-    // Step 3: Verify frameset structure
-    it('Step 3: Verify 3-frame structure', () => {
-      cy.log('=== Step 3: Structure Verification ===')
-
-      // Verify frameset architecture
-      systemUpdatePage.verifyFrameStructure()
-
-      // Verify each frame is accessible
-      const frames = ['tophead', 'left', 'right']
-
-      frames.forEach((frameName) => {
-        systemUpdatePage.getFrameDoc(frameName).then((frameDoc) => {
-          expect(frameDoc, `${frameName} frame should be accessible`).to.exist
-          cy.log(`✓ ${frameName} frame accessible`)
-        })
-      })
-
-      // Take structure verification screenshot
-      systemUpdatePage.capturePageState('frameset-structure-verified')
-
-      cy.log('✓ Frameset structure verified')
-      cy.log('✓ All 3 frames present and accessible')
-    })
-  })
-
-  /**
-   * Test Case: TC-SYS-003
-   * Verify complete System Updates page workflow
-   *
-   * Combined test demonstrating full workflow with navigation and verification.
-   * This is the consolidated enterprise-grade version of the original test.
-   */
-  describe('TC-SYS-003: Complete System Updates Page Workflow', () => {
-    it('Complete workflow: Login → Navigate → Verify', () => {
-      cy.log('=== Complete System Updates Workflow ===')
-
-      // Step 1: Login
-      cy.log('--- Step 1: Login ---')
-      setupWorkflow.login()
-
-      // Step 2: Navigate and verify page
-      cy.log('--- Step 2: Navigate to System Updates ---')
-      systemUpdatePage.navigateAndVerify()
-
-      // Step 3: Verify kernel version
-      cy.log('--- Step 3: Verify Kernel Version ---')
-      systemUpdatePage.verifyKernelVersion(TARGET_KERNEL_VERSION)
-
-      // Step 4: Verify frameset structure
-      cy.log('--- Step 4: Verify Frameset Structure ---')
-      systemUpdatePage.verifyFrameStructure()
-
-      // Final screenshot
-      systemUpdatePage.capturePageState('workflow-complete')
-
-      cy.log('✓ Complete workflow verified successfully')
-    })
-  })
-
-  /**
-   * Test Case: TC-SYS-004
-   * Verify kernel version extraction from page content
-   *
-   * Tests the kernel version extraction logic to ensure it correctly
-   * parses the version string from page content.
-   */
-  describe('TC-SYS-004: Kernel Version Extraction', () => {
-    it('Should extract kernel version from System Updates page', () => {
-      cy.log('=== Kernel Version Extraction Test ===')
-
-      // Login and navigate
-      setupWorkflow.login()
-      systemUpdatePage.navigateToSystemUpdates()
-
-      // Extract kernel version using page object method
+      // Extract and validate kernel version (consolidated from TC-SYS-004)
       systemUpdatePage.getKernelVersion().then((extractedVersion) => {
         // Should successfully extract a version
         expect(extractedVersion, 'Should extract a kernel version')
@@ -284,113 +178,185 @@ describe('IWSVA Kernel Version Verification', () => {
         expect(extractedVersion, 'Should match kernel version format')
           .to.match(/\d+\.\d+\.\d+-\d+\.\d+\.\d+\.el\d+[._]\d+\.x86_64/)
 
-        // Should match target version (if configured)
-        if (TARGET_KERNEL_VERSION) {
-          expect(extractedVersion, `Should match target version: ${TARGET_KERNEL_VERSION}`)
-            .to.equal(TARGET_KERNEL_VERSION)
-        }
+        // Should match target version
+        expect(extractedVersion, `Should match target version: ${TARGET_KERNEL_VERSION}`)
+          .to.equal(TARGET_KERNEL_VERSION)
 
         cy.log(`✓ Kernel version extracted: ${extractedVersion}`)
+        cy.log(`✓ UI verification complete`)
       })
     })
   })
 
   /**
-   * Test Case: TC-SYS-005
-   * Verify System Updates page title/heading
-   */
-  describe('TC-SYS-005: Page Title Verification', () => {
-    it('Should display System Updates page title', () => {
-      cy.log('=== Page Title Verification ===')
-
-      // Login and navigate
-      setupWorkflow.login()
-      systemUpdatePage.navigateToSystemUpdates()
-
-      // Verify page title/heading
-      systemUpdatePage.verifyPageTitle('System Update')
-
-      cy.log('✓ Page title verified')
-    })
-  })
-
-  /**
-   * Test Case: TC-SYS-006
-   * Backend System Information Verification
+   * Test Case: TC-SYS-002
+   * Kernel Version Verification
    *
-   * Demonstrates complete backend verification including:
-   * - Kernel version via SSH (uname -r)
-   * - OS release information (/etc/os-release)
-   * - System uptime
+   * Verifies kernel version extraction logic and backend verification via SSH.
+   * Consolidates multiple SSH calls into efficient tests.
    */
-  describe('TC-SYS-006: Backend System Information Verification', () => {
-    it('Should verify complete system information via SSH', () => {
-      cy.log('=== Backend System Information Verification ===')
+  describe('TC-SYS-002: Kernel Version Verification', () => {
 
-      // Complete system info verification
-      BackendVerification.verifySystemInfo(TARGET_KERNEL_VERSION).then(result => {
-        // Verify all checks passed
-        expect(result.passed, 'All system info checks should pass').to.be.true
+    // Navigate only for UI tests (Test 1 & 2)
+    // Test 3 is backend-only (SSH) and doesn't need page navigation
+    beforeEach('Navigate for UI tests', function() {
+      const isBackendOnly = this.currentTest.title.includes('complete system information')
 
-        // Log system information
-        cy.log('=== System Information Retrieved ===')
-        cy.log(`Kernel Version: ${result.kernelVersion}`)
-        cy.log(`OS Name: ${result.osName}`)
-        cy.log(`OS Version: ${result.osVersion}`)
+      if (!isBackendOnly) {
+        systemUpdatePage.navigateToSystemUpdates()
+        cy.wait(TestConfig.timeouts.elementInteraction)
+      }
+    })
 
-        // Verify individual checks
-        result.checks.forEach(check => {
-          cy.log(`✓ ${check.check}: ${check.passed ? 'PASSED' : 'FAILED'}`)
-        })
+    it('Should extract kernel version using regex', () => {
+      cy.log('=== TC-SYS-002 Test 1: Regex Extraction ===')
 
-        cy.log('✓ Complete system information verified')
+      systemUpdatePage.getRightFrameContent().then((content) => {
+        const kernelPattern = /(\d+\.\d+\.\d+-\d+\.\d+\.\d+\.el\d+[._]\d+\.x86_64)/
+        const match = content.match(kernelPattern)
+
+        expect(match, 'Should match kernel version pattern').to.not.be.null
+        expect(match[1], 'Should extract correct version').to.equal(TARGET_KERNEL_VERSION)
+
+        cy.log(`✓ Kernel version extracted via regex: ${match[1]}`)
       })
     })
 
-    it('Should verify kernel version independently via SSH', () => {
-      cy.log('=== Independent Kernel Version Verification ===')
+    it('Should verify kernel version matches backend (SSH)', () => {
+      cy.log('=== TC-SYS-002 Test 2: Backend Verification ===')
+      cy.log(`Expected: ${TARGET_KERNEL_VERSION}`)
 
-      // Just kernel version check
+      // Backend verification via SSH (uname -r)
       BackendVerification.verifyKernelVersion(TARGET_KERNEL_VERSION, {
         strict: true
       }).then(check => {
-        expect(check.passed, 'Kernel version should match exactly').to.be.true
+        expect(check.passed, 'Backend kernel version should match').to.be.true
         expect(check.actual, 'Actual version should match expected').to.equal(TARGET_KERNEL_VERSION)
 
-        cy.log(`✓ Kernel: ${check.actual}`)
+        cy.log(`✓ Backend: Kernel version = ${check.actual}`)
         cy.log(`✓ Command: ${check.command}`)
         cy.log(`✓ Source: ${check.source}`)
       })
     })
 
-    it('Should retrieve OS release information', () => {
-      cy.log('=== OS Release Information ===')
+    it('Should retrieve complete system information (SSH)', () => {
+      cy.log('=== TC-SYS-002 Test 3: Complete System Info ===')
+      cy.log('Consolidated verification: kernel + OS + uptime')
 
-      BackendVerification.verifyOSRelease().then(check => {
-        expect(check.passed).to.be.true
+      // Complete system info verification (consolidated from TC-SYS-006)
+      // This replaces 4 separate tests with a single SSH session
+      BackendVerification.verifySystemInfo(TARGET_KERNEL_VERSION).then(result => {
+        // Verify all checks passed
+        expect(result.passed, 'All system info checks should pass').to.be.true
 
-        cy.log(`✓ OS Name: ${check.name}`)
-        cy.log(`✓ OS Version: ${check.version}`)
-        cy.log(`✓ Pretty Name: ${check.prettyName}`)
-      })
-    })
+        // Verify kernel version
+        expect(result.kernelVersion, 'Kernel version should match')
+          .to.equal(TARGET_KERNEL_VERSION)
 
-    it('Should get system uptime', () => {
-      cy.log('=== System Uptime ===')
+        // Verify OS information exists
+        expect(result.osName, 'OS name should exist').to.exist
+        expect(result.osVersion, 'OS version should exist').to.exist
 
-      BackendVerification.verifySystemUptime().then(check => {
-        expect(check.passed).to.be.true
-        expect(check.uptime).to.exist
+        // Verify system uptime check
+        const uptimeCheck = result.checks.find(c => c.check === 'systemUptime')
+        expect(uptimeCheck.passed, 'System uptime check should pass').to.be.true
 
-        cy.log(`✓ Uptime: ${check.uptime}`)
+        // Log all system information
+        cy.log('=== System Information Retrieved ===')
+        cy.log(`Kernel Version: ${result.kernelVersion}`)
+        cy.log(`OS Name: ${result.osName}`)
+        cy.log(`OS Version: ${result.osVersion}`)
+
+        // Log individual check results
+        result.checks.forEach(check => {
+          cy.log(`✓ ${check.check}: ${check.passed ? 'PASSED' : 'FAILED'}`)
+        })
+
+        cy.log('✓ Complete system information verified')
+        cy.log('✓ SSH calls optimized (4 tests → 1 test)')
       })
     })
   })
 
-  // ==================== CLEANUP ====================
+  /**
+   * Test Case: TC-SYS-003
+   * Frameset Architecture Validation
+   *
+   * Verifies IWSVA's legacy 3-frame structure and frame accessibility.
+   * Uses TestConstants for frame names (fixes hardcoded values).
+   */
+  describe('TC-SYS-003: Frameset Architecture Validation', () => {
 
-  after(() => {
-    cy.log('=== Test Suite Complete ===')
-    cy.log('All kernel version verification tests passed')
+    beforeEach('Wait for frames to be ready', () => {
+      // Wait for frames to stabilize after login
+      cy.wait(TestConfig.timeouts.elementInteraction)
+    })
+
+    it('Should validate 3-frame structure', () => {
+      cy.log('=== TC-SYS-003 Test 1: Frame Structure ===')
+
+      // Verify frameset architecture
+      systemUpdatePage.verifyFrameStructure()
+
+      // Use TestConstants (fixes line 211 hardcoded values)
+      const requiredFrames = TestConstants.SELECTORS.systemUpdate.requiredFrames
+
+      cy.window().then((win) => {
+        const frames = win.document.querySelectorAll('frame, iframe')
+        expect(frames.length, '3-frame structure should exist').to.equal(3)
+
+        const frameNames = Array.from(frames).map(f => f.getAttribute('name'))
+        requiredFrames.forEach(frameName => {
+          expect(frameNames, `${frameName} frame should exist`).to.include(frameName)
+          cy.log(`✓ ${frameName} frame exists`)
+        })
+      })
+
+      cy.log('✓ 3-frame structure validated')
+    })
+
+    it('Should access each frame and verify content', () => {
+      cy.log('=== TC-SYS-003 Test 2: Frame Accessibility ===')
+
+      const requiredFrames = TestConstants.SELECTORS.systemUpdate.requiredFrames
+
+      requiredFrames.forEach((frameName) => {
+        systemUpdatePage.getFrameDoc(frameName).then((frameDoc) => {
+          expect(frameDoc, `${frameName} frame should be accessible`).to.exist
+          expect(frameDoc.body, `${frameName} frame should have body`).to.exist
+
+          cy.log(`✓ ${frameName} frame accessible`)
+        })
+      })
+
+      cy.log('✓ All frames accessible')
+    })
+
+    it('Should verify frame navigation works correctly', () => {
+      cy.log('=== TC-SYS-003 Test 3: Frame Navigation ===')
+
+      // Verify left frame has navigation links
+      systemUpdatePage.getFrameDoc('left').then((frameDoc) => {
+        const links = frameDoc.getElementsByTagName('a')
+        expect(links.length, 'Left frame should have navigation links')
+          .to.be.greaterThan(0)
+
+        cy.log(`✓ Left frame has ${links.length} navigation links`)
+      })
+
+      // Verify right frame has content
+      systemUpdatePage.getRightFrameContent().then((content) => {
+        expect(content.length, 'Right frame should have content')
+          .to.be.greaterThan(100)
+
+        cy.log(`✓ Right frame has content (${content.length} characters)`)
+      })
+
+      // Take final screenshot
+      systemUpdatePage.capturePageState('frameset-verified')
+
+      cy.log('✓ Frame navigation verified')
+      cy.log('✓ Frameset architecture validation complete')
+    })
   })
 })
