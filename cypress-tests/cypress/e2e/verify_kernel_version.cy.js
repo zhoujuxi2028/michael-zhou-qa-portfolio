@@ -3,27 +3,38 @@
  *
  * Enterprise-grade test suite for verifying IWSVA kernel version display.
  * Uses Page Object Model and follows framework's 3-step test structure.
+ * Implements multi-level verification (UI + Backend) following Phase 4 patterns.
  *
  * Test Coverage:
  * - System Updates page accessibility
- * - Kernel version display verification
+ * - Kernel version display verification (UI)
+ * - Kernel version verification via SSH (Backend)
  * - Frameset structure validation
+ * - OS release information retrieval
+ * - System uptime verification
+ *
+ * Verification Levels:
+ * - UI Level: Page content verification
+ * - Backend Level: SSH command execution (uname -r, cat /etc/os-release, uptime -p)
  *
  * Dependencies:
  * - BasePage: Base functionality (login, navigation)
  * - SystemUpdatePage: System Updates page interactions
  * - SetupWorkflow: Test environment preparation
+ * - BackendVerification: SSH-based backend verification
  * - TestConfig: Configuration and timeouts
  * - TestConstants: Selectors and constants
  *
  * @category System
  * @priority P0
  * @requires IWSVA 5.0+
+ * @requires SSH access to IWSVA server (for backend verification)
  */
 
 import BasePage from '../support/pages/BasePage'
 import SystemUpdatePage from '../support/pages/SystemUpdatePage'
 import SetupWorkflow from '../support/workflows/SetupWorkflow'
+import BackendVerification from '../support/verification/BackendVerification'
 import TestConfig from '../fixtures/test-config'
 import TestConstants from '../fixtures/test-constants'
 
@@ -112,21 +123,34 @@ describe('IWSVA Kernel Version Verification', () => {
     })
 
     // Step 3: Verify kernel version (multi-level verification)
-    it('Step 3: Verify kernel version displayed', () => {
-      cy.log('=== Step 3: Verification ===')
+    it('Step 3: Verify kernel version displayed (UI + Backend)', () => {
+      cy.log('=== Step 3: Multi-Level Verification ===')
       cy.log(`Expected kernel version: ${TARGET_KERNEL_VERSION}`)
 
       // UI Level: Verify kernel version in page content
+      cy.log('--- UI Verification ---')
       systemUpdatePage.verifyKernelVersion(TARGET_KERNEL_VERSION)
 
       // UI Level: Verify kernel information section displayed
       systemUpdatePage.verifyKernelInfoDisplayed()
 
+      cy.log('✓ UI Verification complete')
+
+      // Backend Level: Verify kernel version via SSH
+      cy.log('--- Backend Verification ---')
+      BackendVerification.verifyKernelVersion(TARGET_KERNEL_VERSION).then(check => {
+        expect(check.passed, 'Backend kernel version should match').to.be.true
+        cy.log(`✓ Backend: Kernel version = ${check.actual}`)
+      })
+
+      cy.log('✓ Backend Verification complete')
+
       // Take verification screenshot
       systemUpdatePage.capturePageState('kernel-version-verified')
 
-      cy.log('✓ UI Verification complete')
-      cy.log(`✓ Kernel version verified: ${TARGET_KERNEL_VERSION}`)
+      cy.log('========================================')
+      cy.log('=== All Verifications PASSED ===')
+      cy.log('========================================')
     })
   })
 
@@ -287,6 +311,79 @@ describe('IWSVA Kernel Version Verification', () => {
       systemUpdatePage.verifyPageTitle('System Update')
 
       cy.log('✓ Page title verified')
+    })
+  })
+
+  /**
+   * Test Case: TC-SYS-006
+   * Backend System Information Verification
+   *
+   * Demonstrates complete backend verification including:
+   * - Kernel version via SSH (uname -r)
+   * - OS release information (/etc/os-release)
+   * - System uptime
+   */
+  describe('TC-SYS-006: Backend System Information Verification', () => {
+    it('Should verify complete system information via SSH', () => {
+      cy.log('=== Backend System Information Verification ===')
+
+      // Complete system info verification
+      BackendVerification.verifySystemInfo(TARGET_KERNEL_VERSION).then(result => {
+        // Verify all checks passed
+        expect(result.passed, 'All system info checks should pass').to.be.true
+
+        // Log system information
+        cy.log('=== System Information Retrieved ===')
+        cy.log(`Kernel Version: ${result.kernelVersion}`)
+        cy.log(`OS Name: ${result.osName}`)
+        cy.log(`OS Version: ${result.osVersion}`)
+
+        // Verify individual checks
+        result.checks.forEach(check => {
+          cy.log(`✓ ${check.check}: ${check.passed ? 'PASSED' : 'FAILED'}`)
+        })
+
+        cy.log('✓ Complete system information verified')
+      })
+    })
+
+    it('Should verify kernel version independently via SSH', () => {
+      cy.log('=== Independent Kernel Version Verification ===')
+
+      // Just kernel version check
+      BackendVerification.verifyKernelVersion(TARGET_KERNEL_VERSION, {
+        strict: true
+      }).then(check => {
+        expect(check.passed, 'Kernel version should match exactly').to.be.true
+        expect(check.actual, 'Actual version should match expected').to.equal(TARGET_KERNEL_VERSION)
+
+        cy.log(`✓ Kernel: ${check.actual}`)
+        cy.log(`✓ Command: ${check.command}`)
+        cy.log(`✓ Source: ${check.source}`)
+      })
+    })
+
+    it('Should retrieve OS release information', () => {
+      cy.log('=== OS Release Information ===')
+
+      BackendVerification.verifyOSRelease().then(check => {
+        expect(check.passed).to.be.true
+
+        cy.log(`✓ OS Name: ${check.name}`)
+        cy.log(`✓ OS Version: ${check.version}`)
+        cy.log(`✓ Pretty Name: ${check.prettyName}`)
+      })
+    })
+
+    it('Should get system uptime', () => {
+      cy.log('=== System Uptime ===')
+
+      BackendVerification.verifySystemUptime().then(check => {
+        expect(check.passed).to.be.true
+        expect(check.uptime).to.exist
+
+        cy.log(`✓ Uptime: ${check.uptime}`)
+      })
     })
   })
 
