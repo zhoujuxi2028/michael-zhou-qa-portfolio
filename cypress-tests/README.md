@@ -1,8 +1,23 @@
 # Cypress Tests - IWSVA Kernel Version Verification
 
-E2E testing project for verifying Trend Micro IWSVA system kernel version.
+**Enterprise-grade E2E testing** for Trend Micro IWSVA system kernel version verification.
 
+**Architecture**: Page Object Model + Framework Integration
 **Target**: Verify kernel version `5.14.0-427.24.1.el9_4.x86_64`
+**Status**: ✅ Refactored to Enterprise Framework Standards
+
+---
+
+## 📋 What's New
+
+**Latest Update (2026-01-24)**: Complete enterprise framework refactoring
+
+- ✅ **New Page Object**: `SystemUpdatePage.js` - Reusable page object for System Updates
+- ✅ **Enhanced Test Suite**: Expanded from 2 to 5 comprehensive test cases (+150%)
+- ✅ **Framework Integration**: Full integration with Page Object Model and Workflows
+- ✅ **Comprehensive Documentation**: API docs, usage guides, refactoring summary
+
+**See**: `REFACTORING_SUMMARY.md` for complete details
 
 ---
 
@@ -40,6 +55,56 @@ npm run cypress:open
 # Run with Firefox
 npm run test:firefox
 ```
+
+---
+
+## 🏗️ Architecture
+
+This test suite demonstrates **enterprise-grade test automation** architecture:
+
+### Framework Structure
+
+```
+Test Layer (verify_kernel_version.cy.js)
+    ↓ imports
+Workflow Layer (SetupWorkflow)
+    ↓ orchestrates
+Page Object Layer (SystemUpdatePage, BasePage)
+    ↓ uses
+Data Layer (TestConfig, TestConstants)
+```
+
+### Key Components
+
+- **SystemUpdatePage.js** - Page Object for System Updates page
+  - Frame handling (tophead, left, right)
+  - Navigation via menu
+  - Kernel version extraction and verification
+  - Frameset structure validation
+
+- **SetupWorkflow.js** - Test environment setup
+  - Standardized login process
+  - Test preparation
+  - Environment verification
+
+- **TestConfig.js** - Centralized configuration
+  - Timeouts and URLs
+  - No hardcoded values
+
+- **TestConstants.js** - Selector definitions
+  - Frame selectors
+  - Menu navigation selectors
+  - Consistent selector management
+
+### Test Cases (5)
+
+1. **TC-SYS-001**: Kernel Version Display (3-step test)
+2. **TC-SYS-002**: Frameset Structure Validation (3-step test)
+3. **TC-SYS-003**: Complete System Updates Workflow
+4. **TC-SYS-004**: Kernel Version Extraction
+5. **TC-SYS-005**: Page Title Verification
+
+**See**: `SYSTEM_UPDATE_PAGE_GUIDE.md` for complete API documentation
 
 ---
 
