@@ -1,0 +1,31 @@
+{
+  "name": "cypress-tests",
+  "version": "1.0.0",
+  "description": "Cypress E2E tests for IWSVA kernel version verification",
+  "main": "index.js",
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "test": "cypress run --spec 'cypress/e2e/verify_kernel_version.cy.js'",
+    "test:headed": "cypress run --spec 'cypress/e2e/verify_kernel_version.cy.js' --headed --browser firefox",
+    "test:firefox": "cypress run --browser firefox",
+    "test:all": "cypress run"
+  },
+  "keywords": [
+    "cypress",
+    "e2e",
+    "testing",
+    "iwsva",
+    "kernel-verification"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "cypress": "^15.9.0"
+  },
+  "dependencies": {
+    "ini": "^6.0.0",
+    "ssh2": "^1.17.0"
+  }
+}
