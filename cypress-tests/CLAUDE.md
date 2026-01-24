@@ -188,7 +188,7 @@ const frameDoc = doc.querySelector('frame[name="left"]').contentDocument
   - Bypassing menu navigation with `cy.visit()`
   - Submitting forms programmatically
 
-See `CSRF_TOKEN_EXPLAINED.md` for detailed explanation.
+See `docs/guides/CSRF_TOKEN_EXPLAINED.md` for detailed explanation.
 
 ### SSH Backend Operations
 
@@ -386,16 +386,37 @@ Phase N of 11 complete"
 
 ## Documentation
 
-### Key Documentation Files
+**Complete Documentation Index**: See `docs/README.md` for navigation guide and file placement rules.
 
-**Root Level:**
-- `README.md` - Original kernel verification test docs
+### Documentation Structure
+
+The project uses an organized documentation structure to keep the root directory clean:
+
+**Root Level (Core Only):**
+- `README.md` - Main project README
+- `CLAUDE.md` - This file (Claude Code instructions)
+
+**Quick Start Guides (`docs/quickstart/`):**
+- `DOWNGRADE_QUICKSTART.md` - Quick component downgrade guide
+- `CONSOLIDATED_TESTS_QUICKSTART.md` - Running consolidated tests
+- `MIGRATION_GUIDE.md` - Test migration guide
+
+**Developer Guides (`docs/guides/`):**
+- `IWSVA_TEST_GUIDE.md` - Comprehensive Cypress testing guide
+- `TEST_GENERATOR_GUIDE.md` - Test generator usage
+- `SYSTEM_UPDATE_PAGE_GUIDE.md` - SystemUpdatePage API reference
+- `CSRF_TOKEN_EXPLAINED.md` - CSRF token handling details
+- `TEST_CASES_README.md` - Quick test case reference
 - `UPDATE_MODULE_README.md` - Update module overview
-- `TEST_CASES_README.md` - Quick test case guide
-- `CSRF_TOKEN_EXPLAINED.md` - CSRF token details
-- `IWSVA_TEST_GUIDE.md` - Comprehensive Cypress learning guide
-- `DOWNGRADE_QUICKSTART.md` - Quick start for component downgrade
-- `docs/DOWNGRADE_GUIDE.md` - Complete downgrade documentation
+- `DOWNGRADE_GUIDE.md` - Complete downgrade documentation
+
+**Reports & Summaries (`docs/reports/`):**
+- `TEST_REPORT.md` - Test execution results
+- `TEST_EXECUTION_REPORT.md` - Detailed execution report
+- `CONSOLIDATION_SUMMARY.md` - Test consolidation summary
+- `REFACTORING_SUMMARY.md` - Code refactoring summary
+- `REFACTORING_COMPLETE.md` - Refactoring completion report
+- `PHASE4_OPTIMIZATION_SUMMARY.md` - Phase 4 optimization details
 
 **Test Cases (`docs/test-cases/`):**
 - `UPDATE_TEST_CASES.md` - All 77 test cases documented
@@ -410,6 +431,23 @@ Phase N of 11 complete"
 
 **Project Planning (`docs/project-planning/`):**
 - `WBS.md` - Work Breakdown Structure with 11 phases
+
+**Chinese Documentation (`docs/zh-CN/`):**
+- `会话恢复指南.md` - Session recovery guide
+
+### Where to Place New Documentation
+
+When creating new documentation files, follow these placement rules:
+
+1. **Guides** (`docs/guides/`) - Technical how-to, API references, configuration docs
+2. **Quick Start** (`docs/quickstart/`) - Getting started, setup tutorials, migration guides
+3. **Reports** (`docs/reports/`) - Test reports, summaries, retrospectives, phase completions
+4. **Test Cases** (`docs/test-cases/`) - Test specifications, scenarios, verification checklists
+5. **Test Plans** (`docs/test-plans/`) - Test plans, strategies, QA approach
+6. **Project Planning** (`docs/project-planning/`) - Roadmaps, WBS, architecture decisions
+7. **Chinese Docs** (`docs/zh-CN/`) - All Chinese language documentation
+
+See `docs/README.md` for detailed placement guidelines.
 
 ## Important Notes
 
