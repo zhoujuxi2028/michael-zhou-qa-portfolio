@@ -66,6 +66,7 @@ const TestConfig = {
     updateAllPage: '/jsp/AU_Update_All.jsp',
     schedulePage: '/jsp/update.jsp',
     proxyPage: '/jsp/update_proxy.jsp',
+    systemUpdatePage: '/jsp/system_update.jsp',
 
     // Frame URLs
     mainFrame: 'main',

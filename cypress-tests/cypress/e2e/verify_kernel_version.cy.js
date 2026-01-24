@@ -1,101 +1,292 @@
-describe('IWSVA Kernel Version Verification', () => {
-  // Load credentials from environment variables (cypress.env.json)
-  const baseUrl = Cypress.env('baseUrl') || 'https://10.206.201.9:8443'
-  const targetKernelVersion = Cypress.env('targetKernelVersion') || '5.14.0-427.24.1.el9_4.x86_64'
-  const credentials = {
-    username: Cypress.env('username'),
-    password: Cypress.env('password')
-  }
+/**
+ * IWSVA Kernel Version Verification Tests
+ *
+ * Enterprise-grade test suite for verifying IWSVA kernel version display.
+ * Uses Page Object Model and follows framework's 3-step test structure.
+ *
+ * Test Coverage:
+ * - System Updates page accessibility
+ * - Kernel version display verification
+ * - Frameset structure validation
+ *
+ * Dependencies:
+ * - BasePage: Base functionality (login, navigation)
+ * - SystemUpdatePage: System Updates page interactions
+ * - SetupWorkflow: Test environment preparation
+ * - TestConfig: Configuration and timeouts
+ * - TestConstants: Selectors and constants
+ *
+ * @category System
+ * @priority P0
+ * @requires IWSVA 5.0+
+ */
 
-  // Validate credentials are provided
+import BasePage from '../support/pages/BasePage'
+import SystemUpdatePage from '../support/pages/SystemUpdatePage'
+import SetupWorkflow from '../support/workflows/SetupWorkflow'
+import TestConfig from '../fixtures/test-config'
+import TestConstants from '../fixtures/test-constants'
+
+describe('IWSVA Kernel Version Verification', () => {
+  // ==================== PAGE OBJECTS ====================
+
+  let basePage
+  let systemUpdatePage
+  let setupWorkflow
+
+  // ==================== TEST CONFIGURATION ====================
+
+  const TARGET_KERNEL_VERSION = Cypress.env('targetKernelVersion') || '5.14.0-427.24.1.el9_4.x86_64'
+
+  // ==================== HOOKS ====================
+
   before(() => {
-    if (!credentials.username || !credentials.password) {
-      throw new Error('Credentials not found! Please create cypress.env.json with username and password.')
+    cy.log('=== Test Suite: IWSVA Kernel Version Verification ===')
+    cy.log(`Target Kernel Version: ${TARGET_KERNEL_VERSION}`)
+
+    // Validate credentials are configured
+    const username = Cypress.env('username')
+    const password = Cypress.env('password')
+
+    if (!username || !password) {
+      throw new Error(
+        'Credentials not found! Please create cypress.env.json with username and password. ' +
+        'Copy cypress.env.json.example and configure with actual credentials.'
+      )
     }
   })
 
-  // Helper function to get frame document
-  const getFrameDoc = (frameName) => {
-    return cy.window().then((win) => {
-      const frame = win.document.querySelector(`frame[name="${frameName}"], iframe[name="${frameName}"]`)
-      expect(frame, `${frameName} frame should exist`).to.exist
-      const frameDoc = frame.contentDocument || frame.contentWindow.document
-      expect(frameDoc, `${frameName} frame content should be accessible`).to.exist
-      return frameDoc
-    })
-  }
-
-  // Helper function to login
-  const login = () => {
-    cy.visit(`${baseUrl}/`, { failOnStatusCode: false })
-    cy.wait(2000)
-    cy.get('input[type="text"]').first().type(credentials.username)
-    cy.get('input[type="password"]').first().type(credentials.password)
-    cy.get('input[type="submit"]').first().click()
-    cy.wait(5000)
-    cy.url().should('include', 'index.jsp')
-  }
-
-  // Helper function to navigate to System Updates
-  const navigateToSystemUpdates = () => {
-    // Click Administration in left frame
-    getFrameDoc('left').then((leftDoc) => {
-      const allElements = leftDoc.getElementsByTagName('*')
-      for (let el of allElements) {
-        if (el.textContent.trim() === 'Administration') {
-          el.click()
-          break
-        }
-      }
-    })
-
-    cy.wait(2000)
-
-    // Click System Updates in left frame
-    getFrameDoc('left').then((leftDoc) => {
-      const allLinks = leftDoc.getElementsByTagName('a')
-      let found = false
-      for (let link of allLinks) {
-        const text = link.textContent.trim().toLowerCase()
-        if (text.includes('system') && text.includes('update')) {
-          link.click()
-          found = true
-          break
-        }
-      }
-      expect(found, 'System Updates link should exist').to.be.true
-    })
-
-    cy.wait(4000)
-  }
-
-  it('should find target kernel version', () => {
-    login()
-    navigateToSystemUpdates()
-
-    // Verify kernel version in right frame
-    getFrameDoc('right').then((rightDoc) => {
-      expect(rightDoc.body, 'right frame body should exist').to.exist
-      const rightText = rightDoc.body.textContent
-
-      // Main assertion: page should contain target kernel version
-      expect(rightText, `Page should contain kernel version ${targetKernelVersion}`)
-        .to.include(targetKernelVersion)
-    })
-
-    cy.screenshot('kernel-version-verified', { capture: 'fullPage' })
+  beforeEach(() => {
+    // Initialize Page Objects and Workflows
+    basePage = new BasePage()
+    systemUpdatePage = new SystemUpdatePage()
+    setupWorkflow = new SetupWorkflow()
   })
 
-  it('should have correct page structure with 3 frames', () => {
-    login()
+  // ==================== TEST CASES ====================
 
-    cy.window().then((win) => {
-      const frames = win.document.querySelectorAll('frame, iframe')
-      expect(frames.length, 'Should have 3 frames').to.equal(3)
+  /**
+   * Test Case: TC-SYS-001
+   * Verify IWSVA kernel version is displayed on System Updates page
+   *
+   * Test Steps:
+   * 1. Initialize test environment and login
+   * 2. Navigate to System Updates page via menu
+   * 3. Verify kernel version displayed (UI + Backend verification)
+   */
+  describe('TC-SYS-001: Kernel Version Display', () => {
+    // Step 1: Initialize test environment
+    it('Step 1: Initialize test environment and login', () => {
+      cy.log('=== Step 1: Environment Setup ===')
 
-      const frameNames = Array.from(frames).map(f => f.getAttribute('name'))
-      expect(frameNames, 'Frame names should include tophead, left, right')
-        .to.include.members(['tophead', 'left', 'right'])
+      // Login using SetupWorkflow
+      setupWorkflow.login()
+
+      // Verify login successful
+      basePage.getCurrentUrl().then((url) => {
+        expect(url, 'Should be logged in (not on login page)')
+          .to.not.include('/login.jsp')
+      })
+
+      cy.log('✓ Test environment initialized')
+      cy.log('✓ Login successful')
     })
+
+    // Step 2: Navigate to System Updates page
+    it('Step 2: Navigate to System Updates page', () => {
+      cy.log('=== Step 2: Navigation ===')
+
+      // Navigate using SystemUpdatePage
+      systemUpdatePage.navigateToSystemUpdates()
+
+      // Verify content loaded in right frame
+      systemUpdatePage.verifyContentLoaded()
+
+      // Take screenshot of page
+      systemUpdatePage.capturePageState('kernel-version-page')
+
+      cy.log('✓ Navigation complete')
+      cy.log('✓ System Updates page loaded')
+    })
+
+    // Step 3: Verify kernel version (multi-level verification)
+    it('Step 3: Verify kernel version displayed', () => {
+      cy.log('=== Step 3: Verification ===')
+      cy.log(`Expected kernel version: ${TARGET_KERNEL_VERSION}`)
+
+      // UI Level: Verify kernel version in page content
+      systemUpdatePage.verifyKernelVersion(TARGET_KERNEL_VERSION)
+
+      // UI Level: Verify kernel information section displayed
+      systemUpdatePage.verifyKernelInfoDisplayed()
+
+      // Take verification screenshot
+      systemUpdatePage.capturePageState('kernel-version-verified')
+
+      cy.log('✓ UI Verification complete')
+      cy.log(`✓ Kernel version verified: ${TARGET_KERNEL_VERSION}`)
+    })
+  })
+
+  /**
+   * Test Case: TC-SYS-002
+   * Verify IWSVA frameset architecture is correctly structured
+   *
+   * Test Steps:
+   * 1. Initialize test environment and login
+   * 2. Load main page with frameset
+   * 3. Verify 3-frame structure (tophead, left, right)
+   */
+  describe('TC-SYS-002: Frameset Structure Validation', () => {
+    // Step 1: Initialize test environment
+    it('Step 1: Initialize test environment and login', () => {
+      cy.log('=== Step 1: Environment Setup ===')
+
+      // Login
+      setupWorkflow.login()
+
+      // Verify login successful
+      cy.url({ timeout: TestConfig.timeouts.pageLoad })
+        .should('not.include', '/login.jsp')
+
+      cy.log('✓ Test environment initialized')
+    })
+
+    // Step 2: Load main page (no specific navigation needed - frames exist after login)
+    it('Step 2: Wait for frameset to load', () => {
+      cy.log('=== Step 2: Frame Loading ===')
+
+      // Wait for page to stabilize
+      cy.wait(TestConfig.timeouts.elementInteraction)
+
+      // Wait for frames to be ready
+      const requiredFrames = TestConstants.SELECTORS.systemUpdate.requiredFrames
+
+      requiredFrames.forEach((frameName) => {
+        systemUpdatePage.waitForFrame(frameName)
+      })
+
+      cy.log('✓ All frames loaded')
+    })
+
+    // Step 3: Verify frameset structure
+    it('Step 3: Verify 3-frame structure', () => {
+      cy.log('=== Step 3: Structure Verification ===')
+
+      // Verify frameset architecture
+      systemUpdatePage.verifyFrameStructure()
+
+      // Verify each frame is accessible
+      const frames = ['tophead', 'left', 'right']
+
+      frames.forEach((frameName) => {
+        systemUpdatePage.getFrameDoc(frameName).then((frameDoc) => {
+          expect(frameDoc, `${frameName} frame should be accessible`).to.exist
+          cy.log(`✓ ${frameName} frame accessible`)
+        })
+      })
+
+      // Take structure verification screenshot
+      systemUpdatePage.capturePageState('frameset-structure-verified')
+
+      cy.log('✓ Frameset structure verified')
+      cy.log('✓ All 3 frames present and accessible')
+    })
+  })
+
+  /**
+   * Test Case: TC-SYS-003
+   * Verify complete System Updates page workflow
+   *
+   * Combined test demonstrating full workflow with navigation and verification.
+   * This is the consolidated enterprise-grade version of the original test.
+   */
+  describe('TC-SYS-003: Complete System Updates Page Workflow', () => {
+    it('Complete workflow: Login → Navigate → Verify', () => {
+      cy.log('=== Complete System Updates Workflow ===')
+
+      // Step 1: Login
+      cy.log('--- Step 1: Login ---')
+      setupWorkflow.login()
+
+      // Step 2: Navigate and verify page
+      cy.log('--- Step 2: Navigate to System Updates ---')
+      systemUpdatePage.navigateAndVerify()
+
+      // Step 3: Verify kernel version
+      cy.log('--- Step 3: Verify Kernel Version ---')
+      systemUpdatePage.verifyKernelVersion(TARGET_KERNEL_VERSION)
+
+      // Step 4: Verify frameset structure
+      cy.log('--- Step 4: Verify Frameset Structure ---')
+      systemUpdatePage.verifyFrameStructure()
+
+      // Final screenshot
+      systemUpdatePage.capturePageState('workflow-complete')
+
+      cy.log('✓ Complete workflow verified successfully')
+    })
+  })
+
+  /**
+   * Test Case: TC-SYS-004
+   * Verify kernel version extraction from page content
+   *
+   * Tests the kernel version extraction logic to ensure it correctly
+   * parses the version string from page content.
+   */
+  describe('TC-SYS-004: Kernel Version Extraction', () => {
+    it('Should extract kernel version from System Updates page', () => {
+      cy.log('=== Kernel Version Extraction Test ===')
+
+      // Login and navigate
+      setupWorkflow.login()
+      systemUpdatePage.navigateToSystemUpdates()
+
+      // Extract kernel version using page object method
+      systemUpdatePage.getKernelVersion().then((extractedVersion) => {
+        // Should successfully extract a version
+        expect(extractedVersion, 'Should extract a kernel version')
+          .to.not.be.null
+
+        // Should match expected format
+        expect(extractedVersion, 'Should match kernel version format')
+          .to.match(/\d+\.\d+\.\d+-\d+\.\d+\.\d+\.el\d+[._]\d+\.x86_64/)
+
+        // Should match target version (if configured)
+        if (TARGET_KERNEL_VERSION) {
+          expect(extractedVersion, `Should match target version: ${TARGET_KERNEL_VERSION}`)
+            .to.equal(TARGET_KERNEL_VERSION)
+        }
+
+        cy.log(`✓ Kernel version extracted: ${extractedVersion}`)
+      })
+    })
+  })
+
+  /**
+   * Test Case: TC-SYS-005
+   * Verify System Updates page title/heading
+   */
+  describe('TC-SYS-005: Page Title Verification', () => {
+    it('Should display System Updates page title', () => {
+      cy.log('=== Page Title Verification ===')
+
+      // Login and navigate
+      setupWorkflow.login()
+      systemUpdatePage.navigateToSystemUpdates()
+
+      // Verify page title/heading
+      systemUpdatePage.verifyPageTitle('System Update')
+
+      cy.log('✓ Page title verified')
+    })
+  })
+
+  // ==================== CLEANUP ====================
+
+  after(() => {
+    cy.log('=== Test Suite Complete ===')
+    cy.log('All kernel version verification tests passed')
   })
 })

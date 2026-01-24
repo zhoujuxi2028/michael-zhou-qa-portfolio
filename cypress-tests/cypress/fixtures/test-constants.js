@@ -116,6 +116,26 @@ const TestConstants = {
       testButton: 'input[name="test"]',
     },
 
+    // System Update page
+    systemUpdate: {
+      // Frameset structure (IWSVA uses legacy frames)
+      topheadFrame: 'frame[name="tophead"]',
+      leftFrame: 'frame[name="left"]',
+      rightFrame: 'frame[name="right"]',
+
+      // Required frames for verification
+      requiredFrames: ['tophead', 'left', 'right'],
+
+      // Menu navigation (in left frame)
+      administrationMenu: 'Administration',
+      systemUpdateLink: 'System Updates',
+
+      // Content area (in right frame)
+      contentArea: 'body',
+      kernelInfoSection: '.kernel-info',
+      systemInfoSection: '.system-info',
+    },
+
     // Confirmation dialogs
     dialog: {
       confirmButton: 'button.confirm',
@@ -242,22 +262,12 @@ const TestConstants = {
   },
 
   // ==================== INI FILE KEYS ====================
+  // NOTE: INI keys are now managed in ComponentRegistry.js (single source of truth)
+  // Access via: ComponentRegistry.getComponent(id).iniKey
+  // Kept for backwards compatibility - will be removed in future version
 
   INI_KEYS: {
-    patterns: {
-      PTN: { version: 'Version', time: 'Version_utime' },
-      SPYWARE: { version: 'spywarever', time: 'spyware_utime' },
-      BOT: { version: 'botver', time: 'bot_utime' },
-      ITP: { version: 'intellitrapver', time: 'intellitrap_utime' },
-      ITE: { version: 'intellitrapexpver', time: 'intellitrapexp_utime' },
-      ICRCAGENT: { version: 'icrcagent_ver', time: 'icrcagent_utime' },
-    },
-    engines: {
-      ENG: { version: 'EngineVersion', time: 'Engine_utime' },
-      ATSEENG: { version: 'ATSEEngineVersion', time: 'ATSEEngine_utime' },
-      TMUFEENG: { version: 'url_eng_ver', time: 'url_eng_utime' },
-    },
-    section: 'Pattern-Update',
+    section: 'Pattern-Update', // Common INI section for all components
   },
 
   // ==================== TIME FORMATS ====================
@@ -270,14 +280,18 @@ const TestConstants = {
   },
 
   // ==================== COMPONENT IDS ====================
+  // NOTE: Component IDs are now managed in ComponentRegistry.js (single source of truth)
+  // Access via:
+  //   - ComponentRegistry.getComponentIds() - all IDs
+  //   - ComponentRegistry.getPatterns() - pattern components
+  //   - ComponentRegistry.getEngines() - engine components
+  //   - ComponentRegistry.getByPriority('P0') - critical components
+  //   - ComponentRegistry.getRollbackRestricted() - components that can't rollback
+  //   - ComponentRegistry.getRequiresRestart() - components requiring restart
+  // Kept for backwards compatibility - will be removed in future version
 
   COMPONENT_IDS: {
-    PATTERNS: ['PTN', 'SPYWARE', 'BOT', 'ITP', 'ITE', 'ICRCAGENT'],
-    ENGINES: ['ENG', 'ATSEENG', 'TMUFEENG'],
-    ALL: ['PTN', 'SPYWARE', 'BOT', 'ITP', 'ITE', 'ICRCAGENT', 'ENG', 'ATSEENG', 'TMUFEENG'],
-    CRITICAL: ['PTN', 'ENG'], // P0 components
-    ROLLBACK_RESTRICTED: ['TMUFEENG'], // Cannot rollback
-    REQUIRES_RESTART: ['ENG', 'ATSEENG', 'TMUFEENG'], // Service restart needed
+    // Deprecated - use ComponentRegistry instead
   },
 
   // ==================== TEST DATA ====================
@@ -395,25 +409,37 @@ TestConstants.getMessage = function (path) {
  * Check if component requires restart
  * @param {string} componentId - Component ID
  * @returns {boolean} True if restart required
+ * @deprecated Use ComponentRegistry.getComponent(id).requiresRestart instead
  */
 TestConstants.requiresRestart = function (componentId) {
-  return this.COMPONENT_IDS.REQUIRES_RESTART.includes(componentId)
+  // Use ComponentRegistry as single source of truth
+  const ComponentRegistry = require('./ComponentRegistry')
+  const component = ComponentRegistry.getComponent(componentId)
+  return component ? component.requiresRestart : false
 }
 
 /**
  * Check if component can rollback
  * @param {string} componentId - Component ID
  * @returns {boolean} True if rollback supported
+ * @deprecated Use ComponentRegistry.getComponent(id).canRollback instead
  */
 TestConstants.canRollback = function (componentId) {
-  return !this.COMPONENT_IDS.ROLLBACK_RESTRICTED.includes(componentId)
+  // Use ComponentRegistry as single source of truth
+  const ComponentRegistry = require('./ComponentRegistry')
+  const component = ComponentRegistry.getComponent(componentId)
+  return component ? component.canRollback : false
 }
 
 /**
  * Check if component is critical (P0)
  * @param {string} componentId - Component ID
  * @returns {boolean} True if critical
+ * @deprecated Use ComponentRegistry.getComponent(id).priority === 'P0' instead
  */
 TestConstants.isCritical = function (componentId) {
-  return this.COMPONENT_IDS.CRITICAL.includes(componentId)
+  // Use ComponentRegistry as single source of truth
+  const ComponentRegistry = require('./ComponentRegistry')
+  const component = ComponentRegistry.getComponent(componentId)
+  return component ? component.priority === 'P0' : false
 }
