@@ -328,10 +328,30 @@ Credentials and configuration are stored in `cypress.env.json` (gitignored for s
 
 ## 📖 Documentation
 
-- **CSRF_TOKEN_EXPLAINED.md** - ⭐ Detailed CSRF token handling
-- **IWSVA_TEST_GUIDE.md** - Complete Cypress learning guide with test patterns
-- **TEST_REPORT.md** - Test execution results and verification report
-- **docs/REFERENCE.md** - Quick reference guide with commands and research findings
+**Complete Documentation Index**: [docs/README.md](docs/README.md)
+
+### Quick Links
+
+#### 🚀 Quick Start Guides
+- [Downgrade Quickstart](docs/quickstart/DOWNGRADE_QUICKSTART.md) - Downgrade components for testing
+- [Consolidated Tests Quickstart](docs/quickstart/CONSOLIDATED_TESTS_QUICKSTART.md) - Run consolidated test suites
+- [Migration Guide](docs/quickstart/MIGRATION_GUIDE.md) - Migrate to new test structure
+
+#### 📖 Developer Guides
+- [IWSVA Test Guide](docs/guides/IWSVA_TEST_GUIDE.md) - ⭐ Comprehensive Cypress testing guide
+- [Test Generator Guide](docs/guides/TEST_GENERATOR_GUIDE.md) - Data-driven test generation
+- [System Update Page Guide](docs/guides/SYSTEM_UPDATE_PAGE_GUIDE.md) - SystemUpdatePage API reference
+- [CSRF Token Explained](docs/guides/CSRF_TOKEN_EXPLAINED.md) - ⭐ CSRF token handling details
+- [Update Module README](docs/guides/UPDATE_MODULE_README.md) - Update module testing overview
+- [Test Cases README](docs/guides/TEST_CASES_README.md) - Quick test case reference
+
+#### 📊 Reports & Test Plans
+- [Test Execution Report](docs/reports/TEST_EXECUTION_REPORT.md) - Latest test results
+- [Test Cases](docs/test-cases/UPDATE_TEST_CASES.md) - All 77 test cases documented
+- [Test Plan](docs/test-plans/IWSVA-Update-Test-Plan.md) - Complete test plan
+- [Work Breakdown Structure](docs/project-planning/WBS.md) - 11-phase project plan
+
+**Browse all documentation**: [docs/](docs/)
 
 ---
 

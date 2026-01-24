@@ -59,35 +59,65 @@ class UpdateProgressPage extends BasePage {
   }
 
   /**
-   * Wait for update to complete
+   * Wait for update to complete with enhanced error handling
    * @param {string} componentId - Component ID being updated
    * @param {number} timeout - Custom timeout (default from component config)
    */
   waitForUpdateComplete(componentId, timeout = null) {
     const component = ComponentRegistry.getComponent(componentId)
-
     const updateTimeout = timeout || component.updateTimeout || TestConfig.timeouts.patternUpdate
 
     cy.log(`Waiting for ${component.name} update to complete (max ${updateTimeout}ms)`)
 
-    // Poll progress until complete
+    // Phase 1: Wait for update to start (30s timeout)
+    this.waitForUpdateToStart(componentId, 30000)
+
+    // Phase 2: Monitor progress with stall detection
+    const pollInterval = 2000
     const startTime = Date.now()
+    let lastProgress = 0
+    let stallCount = 0
+    const maxStallChecks = 5 // 10 seconds without progress = stalled
+    const timeoutWarningThreshold = 0.75 // Warn at 75% of timeout
 
     const checkProgress = () => {
       const elapsed = Date.now() - startTime
 
+      // Timeout check
       if (elapsed > updateTimeout) {
-        throw new Error(`Update timeout exceeded: ${updateTimeout}ms`)
+        this.captureFailureState('timeout')
+        throw new Error(
+          `Update timeout exceeded: ${updateTimeout}ms (${Math.floor(updateTimeout / 1000)}s). ` +
+          `Component: ${component.name}, Last progress: ${lastProgress}%`
+        )
+      }
+
+      // Timeout warning at 75%
+      if (elapsed > updateTimeout * timeoutWarningThreshold && elapsed < updateTimeout * timeoutWarningThreshold + pollInterval) {
+        cy.log(`⚠ WARNING: ${Math.floor(timeoutWarningThreshold * 100)}% of timeout reached (${Math.floor(elapsed / 1000)}s / ${Math.floor(updateTimeout / 1000)}s)`)
       }
 
       this.getProgressPercentage().then(percent => {
-        cy.log(`Progress: ${percent}%`)
+        // Progress stall detection
+        if (percent === lastProgress && percent < 100) {
+          stallCount++
+          if (stallCount >= maxStallChecks) {
+            cy.log(`⚠ WARNING: Progress stalled at ${percent}% for ${stallCount * pollInterval / 1000} seconds`)
+          }
+        } else if (percent > lastProgress) {
+          // Progress increased, reset stall counter
+          stallCount = 0
+          cy.log(`Progress: ${percent}% (${Math.floor(elapsed / 1000)}s elapsed)`)
+        }
+
+        lastProgress = percent
 
         if (percent < 100) {
-          cy.wait(2000) // Wait 2 seconds before next check
+          cy.wait(pollInterval)
           checkProgress()
         } else {
-          cy.log('✓ Update progress reached 100%')
+          const totalTime = Math.floor(elapsed / 1000)
+          cy.log(`✓ Update progress reached 100% in ${totalTime} seconds`)
         }
       })
     }
@@ -96,6 +126,75 @@ class UpdateProgressPage extends BasePage {
 
     // Verify completion message
     this.verifyUpdateComplete()
+  }
+
+  /**
+   * Wait for update to start (progress > 0%)
+   * @param {string} componentId - Component ID
+   * @param {number} timeout - Timeout in ms (default 30s)
+   */
+  waitForUpdateToStart(componentId, timeout = 30000) {
+    const component = ComponentRegistry.getComponent(componentId)
+    const startTime = Date.now()
+
+    cy.log(`Waiting for ${component.name} update to start...`)
+
+    const checkStarted = () => {
+      const elapsed = Date.now() - startTime
+
+      if (elapsed > timeout) {
+        this.captureFailureState('start-timeout')
+        throw new Error(
+          `Update did not start within ${timeout}ms. ` +
+          `Component: ${component.name}. Check if update was triggered correctly.`
+        )
+      }
+
+      this.getProgressPercentage().then(percent => {
+        if (percent > 0) {
+          cy.log(`✓ Update started (progress: ${percent}%)`)
+        } else {
+          cy.wait(1000)
+          checkStarted()
+        }
+      })
+    }
+
+    checkStarted()
+  }
+
+  /**
+   * Capture failure state for debugging
+   * @param {string} reason - Failure reason
+   */
+  captureFailureState(reason) {
+    cy.log(`⚠ Capturing failure state: ${reason}`)
+
+    // Take screenshot
+    cy.screenshot(`update-progress-failure-${reason}`)
+
+    // Log current state
+    this.getProgressPercentage().then(percent => {
+      cy.log(`Current progress: ${percent}%`)
+    }).catch(() => {
+      cy.log('Could not get progress percentage')
+    })
+
+    this.getStatusText().then(status => {
+      cy.log(`Current status: ${status}`)
+    }).catch(() => {
+      cy.log('Could not get status text')
+    })
+
+    // Check for error messages
+    cy.get(TestConstants.SELECTORS.updateProgress.errorMessage).then($el => {
+      if ($el.length > 0 && $el.is(':visible')) {
+        const errorText = $el.text().trim()
+        cy.log(`Error message: ${errorText}`)
+      }
+    }).catch(() => {
+      // No error message element
+    })
   }
 
   /**
