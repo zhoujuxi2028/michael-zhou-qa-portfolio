@@ -49,11 +49,13 @@ class BasePage {
 
     // Enter credentials
     cy.get(TestConstants.SELECTORS.login.usernameInput, { timeout: TestConfig.timeouts.elementVisible })
+      .first()  // Handle multiple matches
       .should('be.visible')
       .clear()
       .type(user)
 
     cy.get(TestConstants.SELECTORS.login.passwordInput)
+      .first()  // Handle multiple matches
       .should('be.visible')
       .clear()
       .type(pass, { log: false }) // Don't log password
