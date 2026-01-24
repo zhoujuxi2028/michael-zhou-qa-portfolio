@@ -36,28 +36,37 @@ class ComponentDowngrade {
 
     // Get current version for backup reference
     let currentVersion
-    cy.task('readINI', {
+
+    // ✅ Stage 1: Read current version
+    return cy.task('readINI', {
       componentId: componentId,
       key: component.iniKey
     }).then(version => {
       currentVersion = version
       cy.log(`Current version: ${currentVersion}`)
       cy.log(`Target version: ${targetVersion}`)
-    })
 
-    // Create backup if requested
-    if (opts.createBackup) {
-      ComponentDowngrade.backupComponent(componentId).then(backupPath => {
-        cy.log(`✓ Backup created: ${backupPath}`)
-      })
-    }
-
-    // Perform downgrade
-    cy.task('downgradeComponent', {
-      componentId: componentId,
-      targetVersion: targetVersion,
-      componentCategory: component.category
+      // ✅ Stage 2: Create backup (conditional) → Perform downgrade
+      if (opts.createBackup) {
+        return ComponentDowngrade.backupComponent(componentId).then(backupPath => {
+          cy.log(`✓ Backup created: ${backupPath}`)
+          // Continue to downgrade
+          return cy.task('downgradeComponent', {
+            componentId: componentId,
+            targetVersion: targetVersion,
+            componentCategory: component.category
+          })
+        })
+      } else {
+        // No backup, go straight to downgrade
+        return cy.task('downgradeComponent', {
+          componentId: componentId,
+          targetVersion: targetVersion,
+          componentCategory: component.category
+        })
+      }
     }).then(result => {
+      // ✅ Stage 3: Validate result → Update INI files
       if (!result.success) {
         cy.log(`✗ Downgrade failed: ${result.error}`)
         throw new Error(`Downgrade failed for ${componentId}`)
@@ -67,7 +76,7 @@ class ComponentDowngrade {
 
       // Update INI file
       if (opts.updateINI) {
-        cy.task('writeINI', {
+        return cy.task('writeINI', {
           componentId: componentId,
           key: component.iniKey,
           value: targetVersion
@@ -77,50 +86,68 @@ class ComponentDowngrade {
           } else {
             cy.log(`✗ INI update failed`)
           }
-        })
 
-        // Update timestamp
-        const timestamp = new Date().toISOString()
-        cy.task('writeINI', {
-          componentId: componentId,
-          key: component.iniTimeKey,
-          value: timestamp
+          // Update timestamp
+          const timestamp = new Date().toISOString()
+          return cy.task('writeINI', {
+            componentId: componentId,
+            key: component.iniTimeKey,
+            value: timestamp
+          })
         })
+      } else {
+        // No INI update, continue chain
+        return cy.wrap(null)
       }
-
-      // Restart service if required
+    }).then(() => {
+      // ✅ Stage 4: Restart service (conditional)
       if (opts.restartService && component.requiresRestart) {
-        cy.task('restartService', { componentId }).then(restartResult => {
+        return cy.task('restartService', { componentId }).then(restartResult => {
           if (restartResult.success) {
             cy.log(`✓ Service restarted`)
           } else {
             cy.log(`! Service restart failed`)
           }
+          return undefined // Continue to next stage
         })
       }
-
-      // Verify downgrade
+    }).then(() => {
+      // ✅ Stage 5: Verify version (conditional) → Return final result
       if (opts.verifyAfter) {
-        ComponentDowngrade.verifyVersion(componentId, targetVersion).then(verified => {
+        return ComponentDowngrade.verifyVersion(componentId, targetVersion).then(verified => {
           if (verified) {
             cy.log(`✓ Version verified: ${targetVersion}`)
           } else {
             cy.log(`✗ Version verification failed`)
           }
+
+          cy.log(`========================================`)
+          cy.log(`=== Downgrade Complete: ${component.name} ===`)
+          cy.log(`========================================`)
+
+          // Return final result
+          return cy.wrap({
+            success: true,
+            componentId: componentId,
+            componentName: component.name,
+            fromVersion: currentVersion,
+            toVersion: targetVersion
+          })
+        })
+      } else {
+        cy.log(`========================================`)
+        cy.log(`=== Downgrade Complete: ${component.name} ===`)
+        cy.log(`========================================`)
+
+        // Return final result without verification
+        return cy.wrap({
+          success: true,
+          componentId: componentId,
+          componentName: component.name,
+          fromVersion: currentVersion,
+          toVersion: targetVersion
         })
       }
-
-      cy.log(`========================================`)
-      cy.log(`=== Downgrade Complete: ${component.name} ===`)
-      cy.log(`========================================`)
-
-      return cy.wrap({
-        success: true,
-        componentId: componentId,
-        componentName: component.name,
-        fromVersion: currentVersion,
-        toVersion: targetVersion
-      })
     })
   }
 
@@ -132,26 +159,34 @@ class ComponentDowngrade {
    * @returns {Cypress.Chainable<object>} Downgrade result
    */
   static downgradeToPrevious(componentId, options = {}) {
-    const versionData = ComponentVersions[componentId]
+    // Access version data properly from nested structure
+    const component = ComponentRegistry.getComponent(componentId)
+    const category = component.category.toLowerCase() + 's' // 'pattern' -> 'patterns', 'engine' -> 'engines'
+    const versionData = ComponentVersions[category]?.[componentId]
 
-    if (!versionData || !versionData.previous) {
+    if (!versionData || !versionData.oldVersion) {
       throw new Error(`No previous version defined for ${componentId}`)
     }
 
-    cy.log(`Downgrading ${componentId} to previous version: ${versionData.previous}`)
+    const targetVersion = versionData.oldVersion
 
-    return ComponentDowngrade.downgradeToVersion(componentId, versionData.previous, options)
+    cy.log(`Downgrading ${componentId} to previous version: ${targetVersion}`)
+
+    return ComponentDowngrade.downgradeToVersion(componentId, targetVersion, options)
   }
 
   /**
    * Downgrade to specific test version
    * @param {string} componentId - Component ID
-   * @param {string} versionKey - Version key ('current', 'available', 'previous', 'oldest')
+   * @param {string} versionKey - Version key ('oldVersion', 'newVersion', 'rollbackVersion')
    * @param {object} options - Downgrade options
    * @returns {Cypress.Chainable<object>} Downgrade result
    */
   static downgradeToTestVersion(componentId, versionKey, options = {}) {
-    const versionData = ComponentVersions[componentId]
+    // Access version data properly from nested structure
+    const component = ComponentRegistry.getComponent(componentId)
+    const category = component.category.toLowerCase() + 's' // 'pattern' -> 'patterns', 'engine' -> 'engines'
+    const versionData = ComponentVersions[category]?.[componentId]
 
     if (!versionData || !versionData[versionKey]) {
       throw new Error(`Version key "${versionKey}" not found for ${componentId}`)
@@ -282,47 +317,63 @@ class ComponentDowngrade {
     cy.log(`=== Batch Downgrade: ${Object.keys(versionMap).length} components ===`)
 
     const results = []
+    const componentIds = Object.keys(versionMap)
 
-    Object.keys(versionMap).forEach(componentId => {
+    // Build sequential chain for all components
+    let chain = cy.wrap(null)
+
+    componentIds.forEach(componentId => {
       const targetVersion = versionMap[componentId]
 
-      ComponentDowngrade.downgradeToVersion(componentId, targetVersion, options).then(result => {
-        results.push(result)
+      chain = chain.then(() => {
+        return ComponentDowngrade.downgradeToVersion(componentId, targetVersion, options).then(result => {
+          results.push(result)
+          cy.log(`✓ ${componentId} downgraded to ${targetVersion}`)
+        })
       })
     })
 
-    cy.log(`✓ Batch downgrade complete`)
+    // Return the final chain with results
+    return chain.then(() => {
+      cy.log(`✓ Batch downgrade complete: ${results.length} components`)
 
-    return cy.wrap(results)
+      return cy.wrap({
+        success: true,
+        componentsDowngraded: results.length,
+        results: results
+      })
+    })
   }
 
   /**
-   * Downgrade all components to specific versions
-   * Uses 'previous' version from test data
+   * Downgrade all components to previous versions
+   * Uses 'oldVersion' from test data
    * @param {string[]} componentIds - Component IDs (optional, defaults to all)
    * @param {object} options - Downgrade options
-   * @returns {Cypress.Chainable<object[]>} Downgrade results
+   * @returns {Cypress.Chainable<object>} Downgrade results
    */
   static downgradeAllToPrevious(componentIds = null, options = {}) {
     const components = componentIds || ComponentRegistry.getComponentIds()
 
     cy.log(`=== Downgrading All Components to Previous Versions ===`)
 
-    const results = []
+    // Build version map for batch downgrade
+    const versionMap = {}
 
     components.forEach(componentId => {
-      const versionData = ComponentVersions[componentId]
+      const component = ComponentRegistry.getComponent(componentId)
+      const category = component.category.toLowerCase() + 's'
+      const versionData = ComponentVersions[category]?.[componentId]
 
-      if (versionData && versionData.previous) {
-        ComponentDowngrade.downgradeToVersion(componentId, versionData.previous, options).then(result => {
-          results.push(result)
-        })
+      if (versionData && versionData.oldVersion) {
+        versionMap[componentId] = versionData.oldVersion
       } else {
         cy.log(`! No previous version for ${componentId}`)
       }
     })
 
-    return cy.wrap(results)
+    // Use downgradeBatch which properly chains operations
+    return ComponentDowngrade.downgradeBatch(versionMap, options)
   }
 
   /**
@@ -342,14 +393,16 @@ class ComponentDowngrade {
       ...options
     }
 
-    const versionKey = opts.useOldestVersions ? 'oldest' : 'previous'
+    const versionKey = opts.useOldestVersions ? 'rollbackVersion' : 'oldVersion'
 
     const componentIds = ComponentRegistry.getComponentIds()
     const baseline = {}
 
     // Build version map
     componentIds.forEach(componentId => {
-      const versionData = ComponentVersions[componentId]
+      const component = ComponentRegistry.getComponent(componentId)
+      const category = component.category.toLowerCase() + 's'
+      const versionData = ComponentVersions[category]?.[componentId]
 
       if (versionData && versionData[versionKey]) {
         baseline[componentId] = versionData[versionKey]
@@ -363,13 +416,15 @@ class ComponentDowngrade {
       createBackup: opts.createBackups,
       verifyAfter: true,
       updateINI: true
-    }).then(results => {
+    }).then(batchResult => {
       cy.log(`✓ Baseline environment created`)
-      cy.log(`Components configured: ${results.length}`)
+      cy.log(`Components configured: ${batchResult.componentsDowngraded}`)
 
       return cy.wrap({
+        success: true,
         baseline: baseline,
-        results: results
+        componentsDowngraded: batchResult.componentsDowngraded,
+        results: batchResult.results
       })
     })
   }
@@ -380,7 +435,9 @@ class ComponentDowngrade {
    * @returns {Cypress.Chainable<object>} Available versions
    */
   static getAvailableVersions(componentId) {
-    const versionData = ComponentVersions[componentId]
+    const component = ComponentRegistry.getComponent(componentId)
+    const category = component.category.toLowerCase() + 's'
+    const versionData = ComponentVersions[category]?.[componentId]
 
     if (!versionData) {
       cy.log(`! No version data for ${componentId}`)
