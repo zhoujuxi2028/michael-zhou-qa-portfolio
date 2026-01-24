@@ -66,14 +66,14 @@ npm run cypress:open
 ### Development Workflow
 
 ```bash
-# Run single test file during development
-npx cypress run --spec "cypress/e2e/01-normal-update/normal-update-ptn.cy.js"
+# Run normal update tests (all 9 components)
+npx cypress run --spec "cypress/e2e/01-normal-update/all-components-normal-update.cy.js"
 
 # Run with browser visible (headed mode)
-npx cypress run --spec "cypress/e2e/01-normal-update/*.cy.js" --headed --browser firefox
+npx cypress run --spec "cypress/e2e/01-normal-update/all-components-normal-update.cy.js" --headed --browser firefox
 
-# Run tests matching pattern
-npx cypress run --spec "cypress/e2e/01-normal-update/normal-update-*.cy.js"
+# Run all tests in 01-normal-update directory
+npx cypress run --spec "cypress/e2e/01-normal-update/*.cy.js"
 ```
 
 ## Architecture Overview
@@ -135,40 +135,39 @@ const p0 = ComponentRegistry.getByPriority('P0') // Get P0 components
 
 ### Test Structure Pattern
 
-All update tests follow this 3-step pattern:
+**Normal update tests use a consolidated approach:**
 
 ```javascript
-describe('Normal Update - PTN', () => {
-  // Step 1: Initialize test environment
-  it('Step 1: Initialize test environment', () => {
-    setupWorkflow.setupForUpdateTests()
-    TestDataSetup.createSnapshot()  // For restoration
-    TestDataSetup.setupNormalUpdate(COMPONENT_ID)
-  })
+// all-components-normal-update.cy.js
+// Dynamically generates test suites for all 9 components
+import ComponentRegistry from '../../fixtures/ComponentRegistry'
+import NormalUpdateTestGenerator from '../../support/factories/NormalUpdateTestGenerator'
 
-  // Step 2: Trigger update operation
-  it('Step 2: Trigger update on page', () => {
-    manualUpdatePage.navigate()
-    manualUpdatePage.selectComponent(COMPONENT_ID)
-    updateWorkflow.executeNormalUpdate(COMPONENT_ID, options)
-  })
+describe('Normal Update Tests - All Components', function() {
+  const componentIds = ComponentRegistry.getComponentIds()
 
-  // Step 3: Verify multi-level checks
-  it('Step 3: Verify update completion (UI + Backend/Logs)', () => {
-    // UI verification
-    manualUpdatePage.verifyComponentVersion(COMPONENT_ID, version)
-
-    // Backend verification
-    BackendVerification.verifyINIVersion(COMPONENT_ID, version)
-    BackendVerification.verifyComponentFiles(COMPONENT_ID)
-    BackendVerification.verifyLockFile(COMPONENT_ID, false)
-
-    // Log verification
-    LogVerification.verifyLogEntryExists(COMPONENT_ID, 'update')
-    LogVerification.verifyNoErrors(COMPONENT_ID)
+  componentIds.forEach(componentId => {
+    const component = ComponentRegistry.getComponent(componentId)
+    describe(`${componentId} - ${component.name}`,
+      NormalUpdateTestGenerator.generateTestSuite(componentId, {
+        captureScreenshots: true,
+        verboseLogging: false
+      })
+    )
   })
 })
 ```
+
+**Generated tests follow this 3-step pattern per component:**
+1. Initialize test environment (setup, snapshot creation)
+2. Trigger update operation (select component, execute update)
+3. Verify multi-level checks (UI, Backend, Logs, Business)
+
+**Coverage:**
+- 9 components tested (6 patterns + 3 engines)
+- 11-14 test cases per component
+- Engine-specific tests automatically included
+- Component-specific attributes from ComponentRegistry
 
 ## IWSVA-Specific Considerations
 
@@ -245,7 +244,7 @@ The project follows an **11-phase Work Breakdown Structure** (see `docs/project-
 - ✅ **Phase 1**: Documentation Layer (12 files) - Test cases, plans, strategy
 - ✅ **Phase 2**: Test Data Configuration (6 files) - ComponentRegistry, test scenarios
 - ✅ **Phase 3**: Test Framework Core (16 files) - Pages, workflows, factories
-- ✅ **Phase 4**: Normal Update Tests (8 files) - In progress
+- ✅ **Phase 4**: Normal Update Tests (1 file) - Consolidated all-components test
 
 **Pending Phases (Phase 5-11):**
 - Phase 5: Forced Update & Rollback Tests (15 files)
@@ -382,8 +381,8 @@ Phase N of 11 complete"
 ### Current Status
 
 - Main branch: `main`
-- Latest commit: Phase 4 work in progress
-- Modified file: `cypress-tests/cypress/e2e/01-normal-update/normal-update-ptn.cy.js`
+- Latest commit: Phase 4 complete - Test file consolidation
+- Phase 4 refactored: 9 individual component test files consolidated into 1 all-components file
 
 ## Test Execution Notes
 
