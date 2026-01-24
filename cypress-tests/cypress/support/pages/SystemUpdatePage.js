@@ -111,26 +111,61 @@ class SystemUpdatePage extends BasePage {
   /**
    * Navigate to System Updates page via menu
    * Uses IWSVA's frameset navigation structure
+   * Optimized with smart waits instead of fixed waits
    */
   navigateToSystemUpdates() {
     cy.log('=== Navigating to System Updates ===')
 
-    // Wait for frames to load
-    cy.wait(TestConfig.timeouts.elementInteraction)
+    // Wait for left frame to be ready (smart wait)
+    this.waitForFrameContent('left', 'Administration', 5000)
 
     // Click "Administration" in left frame
     this.clickInFrameByText('left', 'Administration')
 
-    // Wait for menu expansion
-    cy.wait(TestConfig.timeouts.elementInteraction)
+    // Wait for menu to expand (smart wait)
+    this.waitForFrameContent('left', 'System Update', 5000)
 
     // Click "System Updates" link in left frame
     this.clickLinkInFrame('left', 'system update')
 
-    // Wait for content to load in right frame
-    cy.wait(TestConfig.timeouts.elementVisible)
+    // Wait for right frame content to load (smart wait)
+    this.waitForFrameContent('right', 'System', 10000)
 
     cy.log('✓ Navigated to System Updates page')
+  }
+
+  /**
+   * Wait for frame content to contain expected text
+   * Uses smart wait instead of fixed cy.wait()
+   * This is much faster than fixed waits as it returns as soon as the condition is met
+   * @param {string} frameName - Frame name ('left', 'right', 'tophead')
+   * @param {string} expectedText - Text to wait for (optional)
+   * @param {number} timeout - Maximum wait time in ms (default: 10000)
+   * @returns {Cypress.Chainable} Frame body element
+   */
+  waitForFrameContent(frameName, expectedText = '', timeout = 10000) {
+    cy.log(`Waiting for ${frameName} frame${expectedText ? `: "${expectedText}"` : ''}`)
+
+    // Use cy.window() with should() callback for retry-ability
+    // This re-queries the frame on each retry, handling frame reloads
+    return cy.window({ timeout }).should((win) => {
+      const frame = win.document.querySelector(`frame[name="${frameName}"], iframe[name="${frameName}"]`)
+      expect(frame, `Frame '${frameName}' should exist`).to.exist
+
+      const frameDoc = frame.contentDocument || frame.contentWindow.document
+      expect(frameDoc, `Frame '${frameName}' document should be accessible`).to.exist
+      expect(frameDoc.body, `Frame '${frameName}' body should exist`).to.exist
+
+      const bodyText = frameDoc.body.textContent || ''
+      expect(bodyText.trim().length, `Frame '${frameName}' should have content`).to.be.greaterThan(0)
+
+      if (expectedText) {
+        expect(bodyText, `Frame '${frameName}' should contain "${expectedText}"`)
+          .to.include(expectedText)
+      }
+    }).then(() => {
+      cy.log(`✓ ${frameName} frame ready`)
+    })
   }
 
   /**
