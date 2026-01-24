@@ -524,6 +524,205 @@ class BackendVerification {
       })
     })
   }
+
+  // ==================== SYSTEM INFORMATION VERIFICATION ====================
+
+  /**
+   * Verify kernel version via SSH
+   * Executes 'uname -r' command on IWSVA server and validates against expected version.
+   *
+   * @param {string} expectedVersion - Expected kernel version (e.g., '5.14.0-427.24.1.el9_4.x86_64')
+   * @param {object} options - Verification options
+   * @param {boolean} options.strict - Strict version matching (default: true)
+   * @returns {Cypress.Chainable<object>} Verification result
+   *
+   * @example
+   * BackendVerification.verifyKernelVersion('5.14.0-427.24.1.el9_4.x86_64')
+   *   .then(check => {
+   *     expect(check.passed).to.be.true
+   *     cy.log(`✓ Backend: Kernel version = ${check.actual}`)
+   *   })
+   */
+  static verifyKernelVersion(expectedVersion, options = {}) {
+    const opts = {
+      strict: true, // Strict version matching by default
+      ...options
+    }
+
+    cy.log(`=== Backend Verification: Kernel Version ===`)
+    cy.log(`Expected: ${expectedVersion}`)
+
+    return cy.task('executeSSHCommand', {
+      command: 'uname -r'
+    }).then(result => {
+      const actualVersion = result.stdout.trim()
+
+      // Determine if versions match
+      let passed
+      if (opts.strict) {
+        // Exact match
+        passed = actualVersion === expectedVersion
+      } else {
+        // Partial match (contains expected version)
+        passed = actualVersion.includes(expectedVersion) || expectedVersion.includes(actualVersion)
+      }
+
+      // Logging
+      if (passed) {
+        cy.log(`✓ Kernel version match: ${actualVersion}`)
+      } else {
+        cy.log(`✗ Kernel version mismatch`)
+        cy.log(`  Expected: ${expectedVersion}`)
+        cy.log(`  Actual:   ${actualVersion}`)
+      }
+
+      return cy.wrap({
+        check: 'kernelVersion',
+        expected: expectedVersion,
+        actual: actualVersion,
+        passed: passed,
+        source: 'backend',
+        command: 'uname -r',
+        details: `SSH command executed: ${result.command}`
+      })
+    })
+  }
+
+  /**
+   * Verify OS release information via SSH
+   * Reads /etc/os-release file to get OS details.
+   *
+   * @returns {Cypress.Chainable<object>} Verification result with OS info
+   *
+   * @example
+   * BackendVerification.verifyOSRelease().then(check => {
+   *   cy.log(`OS: ${check.name} ${check.version}`)
+   * })
+   */
+  static verifyOSRelease() {
+    cy.log(`=== Backend Verification: OS Release Info ===`)
+
+    return cy.task('executeSSHCommand', {
+      command: 'cat /etc/os-release'
+    }).then(result => {
+      const output = result.stdout
+      const osInfo = {}
+
+      // Parse os-release file
+      output.split('\n').forEach(line => {
+        const match = line.match(/^([A-Z_]+)=(.+)$/)
+        if (match) {
+          const key = match[1]
+          let value = match[2]
+          // Remove quotes
+          value = value.replace(/^["']|["']$/g, '')
+          osInfo[key] = value
+        }
+      })
+
+      cy.log(`✓ OS: ${osInfo.NAME || 'Unknown'}`)
+      cy.log(`✓ Version: ${osInfo.VERSION || 'Unknown'}`)
+
+      return cy.wrap({
+        check: 'osRelease',
+        passed: true,
+        name: osInfo.NAME,
+        version: osInfo.VERSION,
+        versionId: osInfo.VERSION_ID,
+        prettyName: osInfo.PRETTY_NAME,
+        raw: osInfo
+      })
+    })
+  }
+
+  /**
+   * Verify system uptime via SSH
+   * Gets system uptime information.
+   *
+   * @returns {Cypress.Chainable<object>} Verification result with uptime
+   */
+  static verifySystemUptime() {
+    cy.log(`=== Backend Verification: System Uptime ===`)
+
+    return cy.task('executeSSHCommand', {
+      command: 'uptime -p'
+    }).then(result => {
+      const uptime = result.stdout.trim()
+
+      cy.log(`✓ System uptime: ${uptime}`)
+
+      return cy.wrap({
+        check: 'systemUptime',
+        passed: true,
+        uptime: uptime
+      })
+    })
+  }
+
+  /**
+   * Complete system information verification
+   * Verifies kernel version, OS release, and system uptime.
+   *
+   * @param {string} expectedKernelVersion - Expected kernel version (optional)
+   * @param {object} options - Verification options
+   * @returns {Cypress.Chainable<object>} Complete verification result
+   *
+   * @example
+   * BackendVerification.verifySystemInfo('5.14.0-427.24.1.el9_4.x86_64')
+   *   .then(result => {
+   *     expect(result.passed).to.be.true
+   *   })
+   */
+  static verifySystemInfo(expectedKernelVersion = null, options = {}) {
+    cy.log(`========================================`)
+    cy.log(`=== Backend: System Information ===`)
+    cy.log(`========================================`)
+
+    let kernelCheck, osCheck, uptimeCheck
+
+    // Chain all verification steps properly
+    const verifyChain = expectedKernelVersion
+      ? this.verifyKernelVersion(expectedKernelVersion, options)
+      : cy.task('executeSSHCommand', { command: 'uname -r' }).then(result => {
+          const kernelVersion = result.stdout.trim()
+          cy.log(`Kernel version: ${kernelVersion}`)
+          return cy.wrap({
+            check: 'kernelVersion',
+            actual: kernelVersion,
+            passed: true
+          })
+        })
+
+    return verifyChain.then(check => {
+      kernelCheck = check
+
+      // Verify OS release
+      return this.verifyOSRelease()
+    }).then(check => {
+      osCheck = check
+
+      // Verify system uptime
+      return this.verifySystemUptime()
+    }).then(check => {
+      uptimeCheck = check
+
+      // Combine all checks
+      const checks = [kernelCheck, osCheck, uptimeCheck]
+      const allPassed = checks.every(c => c.passed)
+
+      cy.log(`========================================`)
+      cy.log(`=== System Info: ${allPassed ? 'PASSED' : 'FAILED'} ===`)
+      cy.log(`========================================`)
+
+      return cy.wrap({
+        checks,
+        passed: allPassed,
+        kernelVersion: kernelCheck.actual,
+        osName: osCheck.name,
+        osVersion: osCheck.version
+      })
+    })
+  }
 }
 
 export default BackendVerification
