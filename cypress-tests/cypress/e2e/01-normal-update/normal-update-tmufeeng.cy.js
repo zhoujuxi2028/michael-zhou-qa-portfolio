@@ -1,20 +1,20 @@
 /**
- * Normal Update Tests - ATSEENG (ATSE Scan Engine)
+ * Normal Update Tests - TMUFEENG (URL Filtering Engine)
  *
- * Test ID: TC-UPDATE-008
+ * Test ID: TC-UPDATE-009
  * Priority: P1
- * Component: ATSEENG (ATSE Scan Engine)
+ * Component: TMUFEENG (URL Filtering Engine)
  *
  * Test Coverage:
  * - Normal update from previous version to current version
  * - Service restart verification
- * - Engine-specific validations
+ * - IMPORTANT: Cannot rollback - update is permanent
  */
 
 import NormalUpdateTestGenerator from '../../support/test-generators/NormalUpdateTestGenerator'
 
-describe('Normal Update - ATSEENG (ATSE Scan Engine)',
-  NormalUpdateTestGenerator.generateTestSuite('ATSEENG', {
+describe('Normal Update - TMUFEENG (URL Filtering Engine)',
+  NormalUpdateTestGenerator.generateTestSuite('TMUFEENG', {
     captureScreenshots: true,
     verboseLogging: false
   })
