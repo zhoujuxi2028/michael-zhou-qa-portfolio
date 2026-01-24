@@ -73,8 +73,10 @@ describe('IWSVA Kernel Version Verification', () => {
    * 1. Initialize test environment and login
    * 2. Navigate to System Updates page via menu
    * 3. Verify kernel version displayed (UI + Backend verification)
+   *
+   * Note: testIsolation disabled to preserve login state across steps
    */
-  describe('TC-SYS-001: Kernel Version Display', () => {
+  describe('TC-SYS-001: Kernel Version Display', { testIsolation: false }, () => {
     // Step 1: Initialize test environment
     it('Step 1: Initialize test environment and login', () => {
       cy.log('=== Step 1: Environment Setup ===')
@@ -136,11 +138,16 @@ describe('IWSVA Kernel Version Verification', () => {
    * 1. Initialize test environment and login
    * 2. Load main page with frameset
    * 3. Verify 3-frame structure (tophead, left, right)
+   *
+   * Note: testIsolation disabled to preserve login state across steps
    */
-  describe('TC-SYS-002: Frameset Structure Validation', () => {
+  describe('TC-SYS-002: Frameset Structure Validation', { testIsolation: false }, () => {
     // Step 1: Initialize test environment
     it('Step 1: Initialize test environment and login', () => {
       cy.log('=== Step 1: Environment Setup ===')
+
+      // Logout first (in case already logged in from previous tests)
+      setupWorkflow.logout()
 
       // Login
       setupWorkflow.login()
