@@ -51,8 +51,8 @@ const TestConstants = {
   SELECTORS: {
     // Login page
     login: {
-      usernameInput: 'input[name="username"]',
-      passwordInput: 'input[name="password"]',
+      usernameInput: 'input[type="text"]',
+      passwordInput: 'input[type="password"]',
       loginButton: 'input[type="submit"]',
       errorMessage: '.error-message',
     },
