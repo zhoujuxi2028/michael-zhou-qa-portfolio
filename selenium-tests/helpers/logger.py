@@ -27,6 +27,22 @@ from logging.handlers import RotatingFileHandler
 from config.test_config import TestConfig, LOGS_DIR
 
 
+class ContextFormatter(logging.Formatter):
+    """
+    Custom formatter that provides default values for missing context fields.
+
+    This prevents KeyError when logging without test context set.
+    """
+
+    def format(self, record):
+        # Provide default values for test context fields if not present
+        if not hasattr(record, 'test_name'):
+            record.test_name = 'N/A'
+        if not hasattr(record, 'step_number'):
+            record.step_number = 0
+        return super().format(record)
+
+
 class TestLogger:
     """
     Enterprise-grade logger with enhanced debugging capabilities.
@@ -97,7 +113,7 @@ class TestLogger:
             )
             file_handler.setLevel(logging.DEBUG)
 
-            file_format = logging.Formatter(
+            file_format = ContextFormatter(
                 '%(asctime)s [%(levelname)8s] [%(name)s:%(lineno)d] '
                 '[Test: %(test_name)s] [Step: %(step_number)s] %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S'
