@@ -1,0 +1,77 @@
+# ==================== Environment Configuration ====================
+.env
+*.env
+!.env.example
+
+# ==================== Python ====================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ==================== Virtual Environment ====================
+venv/
+ENV/
+env/
+.venv
+
+# ==================== Test Artifacts ====================
+# Screenshots
+screenshots/*.png
+screenshots/*.html
+screenshots/*.json
+!screenshots/.gitkeep
+
+# Logs
+logs/*.log
+logs/*.txt
+!logs/.gitkeep
+
+# Videos
+videos/*.mp4
+videos/*.avi
+!videos/.gitkeep
+
+# Reports
+reports/
+allure-results/
+allure-report/
+htmlcov/
+.pytest_cache/
+.coverage
+coverage.xml
+*.cover
+.hypothesis/
+
+# ==================== IDE ====================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ==================== Jupyter Notebook ====================
+.ipynb_checkpoints
+
+# ==================== Other ====================
+.mypy_cache/
+.dmypy.json
+dmypy.json
