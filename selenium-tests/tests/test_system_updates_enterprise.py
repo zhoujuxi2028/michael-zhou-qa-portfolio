@@ -121,7 +121,7 @@ class TestSystemUpdatesEnterprise:
     # ==================== Test-Level Fixtures ====================
 
     @pytest.fixture(autouse=True)
-    def test_setup_teardown(self, driver):
+    def test_setup_teardown(self, request, driver):
         """
         Test-level setup and teardown.
 
@@ -129,10 +129,11 @@ class TestSystemUpdatesEnterprise:
         Handles test context tracking and failure artifact capture.
 
         Args:
+            request: pytest request fixture
             driver: WebDriver instance (from conftest.py)
         """
         # Setup: Set test context
-        test_name = self.__class__.__name__ + "." + self._testMethodName
+        test_name = request.node.name
         TestLogger.set_test_context(test_name)
 
         start_time = time.time()
@@ -459,7 +460,7 @@ class TestSystemUpdatesEnterprise:
     @allure.testcase("TC-SYS-003-01", "Frame Structure Validation")
     @pytest.mark.ui
     @pytest.mark.P1
-    def test_validate_frame_structure(self, driver):
+    def test_validate_frame_structure(self, driver, login_page):
         """
         TC-SYS-003 Test 1: Validate IWSVA 3-frame structure.
 
@@ -470,6 +471,7 @@ class TestSystemUpdatesEnterprise:
 
         Args:
             driver: WebDriver instance
+            login_page: LoginPage fixture (ensures user is logged in)
         """
         TestLogger.log_test_start(
             "test_validate_frame_structure",
