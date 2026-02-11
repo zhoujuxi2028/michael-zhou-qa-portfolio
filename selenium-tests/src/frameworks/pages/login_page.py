@@ -38,14 +38,15 @@ class LoginPage(BasePage):
 
     # ==================== Locators ====================
 
-    # Login form elements
-    USERNAME_INPUT = (By.NAME, 'userid')
-    PASSWORD_INPUT = (By.NAME, 'password')
-    LOGIN_BUTTON = (By.NAME, 'submit')
+    # Login form elements (Updated: 2026-02-11 - Fix ISSUE-001)
+    # Actual HTML: <input name=uid>, <input name=passwd>, <input name=pwd>
+    USERNAME_INPUT = (By.NAME, 'uid')           # Fixed: userid → uid
+    PASSWORD_INPUT = (By.NAME, 'passwd')        # Fixed: password → passwd
+    LOGIN_BUTTON = (By.NAME, 'pwd')             # Fixed: submit → pwd
 
-    # Alternative locators (backup)
-    USERNAME_INPUT_ALT = (By.ID, 'userid')
-    PASSWORD_INPUT_ALT = (By.ID, 'password')
+    # Alternative locators (fallback to legacy names if needed)
+    USERNAME_INPUT_ALT = (By.NAME, 'userid')    # Legacy fallback
+    PASSWORD_INPUT_ALT = (By.NAME, 'password')  # Legacy fallback
 
     # Error messages
     ERROR_MESSAGE = (By.CLASS_NAME, 'error')
