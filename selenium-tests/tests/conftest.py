@@ -30,7 +30,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 # Add parent directory to path to import from pages and helpers
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from config.test_config import TestConfig
+from core.config.test_config import TestConfig
 from helpers.logger import TestLogger, get_logger
 from helpers.debug_helper import DebugHelper
 from pages.login_page import LoginPage
