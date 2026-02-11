@@ -1,0 +1,6 @@
+include README.md
+include requirements.txt
+include pytest.ini
+include .env.example
+recursive-include fixtures *
+recursive-include docs *
