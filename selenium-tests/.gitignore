@@ -32,27 +32,23 @@ ENV/
 env/
 .venv
 
-# ==================== Test Artifacts ====================
-# Screenshots
-screenshots/*.png
-screenshots/*.html
-screenshots/*.json
-!screenshots/.gitkeep
+# ==================== Test Artifacts (NEW unified location) ====================
+outputs/
+!outputs/.gitkeep
+!outputs/logs/.gitkeep
+!outputs/reports/.gitkeep
+!outputs/screenshots/.gitkeep
+!outputs/videos/.gitkeep
 
-# Logs
-logs/*.log
-logs/*.txt
-!logs/.gitkeep
-
-# Videos
-videos/*.mp4
-videos/*.avi
-!videos/.gitkeep
-
-# Reports
+# Old artifact directories (deprecated, will be removed)
+screenshots/
+logs/
+videos/
 reports/
 allure-results/
 allure-report/
+
+# Pytest
 htmlcov/
 .pytest_cache/
 .coverage
