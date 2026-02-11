@@ -1,0 +1,301 @@
+============================= test session starts ==============================
+platform linux -- Python 3.9.25, pytest-7.4.3, pluggy-0.13.1 -- /usr/bin/python3
+cachedir: .pytest_cache
+metadata: {'Python': '3.9.25', 'Platform': 'Linux-5.14.0-611.16.1.el9_7.x86_64-x86_64-with-glibc2.34', 'Packages': {'pytest': '7.4.3', 'pluggy': '0.13.1'}, 'Plugins': {'metadata': '3.1.1', 'xdist': '3.5.0', 'timeout': '2.2.0', 'rerunfailures': '13.0', 'json-report': '1.5.0', 'html': '4.1.1', 'cov': '4.1.0', 'allure-pytest': '2.13.2'}}
+rootdir: /home/michael/repos/michael-zhou-qa-portfolio/selenium-tests
+configfile: pytest.ini
+plugins: metadata-3.1.1, xdist-3.5.0, timeout-2.2.0, rerunfailures-13.0, json-report-1.5.0, html-4.1.1, cov-4.1.0, allure-pytest-2.13.2
+timeout: 300.0s
+timeout method: thread
+timeout func_only: False
+collecting ... collected 3 items
+
+src/tests/ui_tests/test_system_updates.py::TestSystemUpdatesEnterprise::test_page_load_and_title 
+-------------------------------- live log setup --------------------------------
+2026-02-11 09:26:24 [    INFO] [WDM] ====== WebDriver manager ======
+2026-02-11 09:26:24 [    INFO] [WDM] Get LATEST chromedriver version for google-chrome
+RERUN                                                                    [ 33%]
+src/tests/ui_tests/test_system_updates.py::TestSystemUpdatesEnterprise::test_page_load_and_title 
+-------------------------------- live log setup --------------------------------
+2026-02-11 09:26:25 [    INFO] [WDM] ====== WebDriver manager ======
+2026-02-11 09:26:25 [    INFO] [WDM] Get LATEST chromedriver version for google-chrome
+RERUN                                                                    [ 33%]
+src/tests/ui_tests/test_system_updates.py::TestSystemUpdatesEnterprise::test_page_load_and_title 
+-------------------------------- live log setup --------------------------------
+2026-02-11 09:26:26 [    INFO] [WDM] ====== WebDriver manager ======
+2026-02-11 09:26:26 [    INFO] [WDM] Get LATEST chromedriver version for google-chrome
+ERROR                                                                    [ 33%]
+src/tests/ui_tests/test_system_updates.py::TestSystemUpdatesEnterprise::test_kernel_version_display 
+-------------------------------- live log setup --------------------------------
+2026-02-11 09:26:26 [    INFO] [WDM] ====== WebDriver manager ======
+2026-02-11 09:26:26 [    INFO] [WDM] Get LATEST chromedriver version for google-chrome
+RERUN                                                                    [ 66%]
+src/tests/ui_tests/test_system_updates.py::TestSystemUpdatesEnterprise::test_kernel_version_display 
+-------------------------------- live log setup --------------------------------
+2026-02-11 09:26:27 [    INFO] [WDM] ====== WebDriver manager ======
+2026-02-11 09:26:27 [    INFO] [WDM] Get LATEST chromedriver version for google-chrome
+RERUN                                                                    [ 66%]
+src/tests/ui_tests/test_system_updates.py::TestSystemUpdatesEnterprise::test_kernel_version_display 
+-------------------------------- live log setup --------------------------------
+2026-02-11 09:26:28 [    INFO] [WDM] ====== WebDriver manager ======
+2026-02-11 09:26:28 [    INFO] [WDM] Get LATEST chromedriver version for google-chrome
+ERROR                                                                    [ 66%]
+src/tests/ui_tests/test_system_updates.py::TestSystemUpdatesEnterprise::test_validate_frame_structure 
+-------------------------------- live log setup --------------------------------
+2026-02-11 09:26:28 [    INFO] [WDM] ====== WebDriver manager ======
+2026-02-11 09:26:28 [    INFO] [WDM] Get LATEST chromedriver version for google-chrome
+RERUN                                                                    [100%]
+src/tests/ui_tests/test_system_updates.py::TestSystemUpdatesEnterprise::test_validate_frame_structure 
+-------------------------------- live log setup --------------------------------
+2026-02-11 09:26:29 [    INFO] [WDM] ====== WebDriver manager ======
+2026-02-11 09:26:29 [    INFO] [WDM] Get LATEST chromedriver version for google-chrome
+RERUN                                                                    [100%]
+src/tests/ui_tests/test_system_updates.py::TestSystemUpdatesEnterprise::test_validate_frame_structure 
+-------------------------------- live log setup --------------------------------
+2026-02-11 09:26:30 [    INFO] [WDM] ====== WebDriver manager ======
+2026-02-11 09:26:30 [    INFO] [WDM] Get LATEST chromedriver version for google-chrome
+ERROR                                                                    [100%]
+
+==================================== ERRORS ====================================
+____ ERROR at setup of TestSystemUpdatesEnterprise.test_page_load_and_title ____
+src/tests/conftest.py:112: in driver
+    driver_instance = _create_chrome_driver()
+src/tests/conftest.py:174: in _create_chrome_driver
+    service = ChromeService(ChromeDriverManager().install())
+../../../.local/lib/python3.9/site-packages/webdriver_manager/chrome.py:40: in install
+    driver_path = self._get_driver_binary_path(self.driver)
+../../../.local/lib/python3.9/site-packages/webdriver_manager/core/manager.py:40: in _get_driver_binary_path
+    file = self._download_manager.download_file(driver.get_driver_download_url(os_type))
+../../../.local/lib/python3.9/site-packages/webdriver_manager/drivers/chrome.py:32: in get_driver_download_url
+    driver_version_to_download = self.get_driver_version_to_download()
+../../../.local/lib/python3.9/site-packages/webdriver_manager/core/driver.py:48: in get_driver_version_to_download
+    return self.get_latest_release_version()
+../../../.local/lib/python3.9/site-packages/webdriver_manager/drivers/chrome.py:64: in get_latest_release_version
+    determined_browser_version = ".".join(determined_browser_version.split(".")[:3])
+E   AttributeError: 'NoneType' object has no attribute 'split'
+---------------------------- Captured stdout setup -----------------------------
+[32m09:26:24 [    INFO] [src.tests.conftest] ================================================================================[0m
+[32m09:26:24 [    INFO] [src.tests.conftest] TEST SESSION STARTED[0m
+[32m09:26:24 [    INFO] [src.tests.conftest] ================================================================================[0m
+[32m09:26:24 [    INFO] [src.tests.conftest] ✓ Configuration validated[0m
+[32m09:26:24 [    INFO] [src.tests.conftest] Test Environment Configuration:[0m
+[32m09:26:24 [    INFO] [src.tests.conftest]   environment: qa[0m
+[32m09:26:24 [    INFO] [src.tests.conftest]   base_url: https://10.206.201.9:8443[0m
+[32m09:26:24 [    INFO] [src.tests.conftest]   username: admin[0m
+[32m09:26:24 [    INFO] [src.tests.conftest]   browser: chrome[0m
+[32m09:26:24 [    INFO] [src.tests.conftest]   headless: False[0m
+[32m09:26:24 [    INFO] [src.tests.conftest]   resolution: 1920x1080[0m
+[32m09:26:24 [    INFO] [src.tests.conftest]   target_kernel_version: 5.14.0-427.24.1.el9_4.x86_64[0m
+[32m09:26:24 [    INFO] [src.tests.conftest]   ssh_host: 10.206.201.9[0m
+[32m09:26:24 [    INFO] [src.tests.conftest]   max_retries: 2[0m
+[32m09:26:24 [    INFO] [src.tests.conftest]   log_level: INFO[0m
+[32m09:26:24 [    INFO] [src.tests.conftest]   video_recording: False[0m
+[32m09:26:24 [    INFO] [src.tests.conftest] ================================================================================[0m
+[32m09:26:24 [    INFO] [src.tests.ui_tests.test_system_updates] ================================================================================[0m
+[32m09:26:24 [    INFO] [src.tests.ui_tests.test_system_updates] SUITE SETUP: System Updates Verification[0m
+[32m09:26:24 [    INFO] [src.tests.ui_tests.test_system_updates] ================================================================================[0m
+[32m09:26:24 [    INFO] [src.tests.ui_tests.test_system_updates] ✓ Configuration validated[0m
+[32m09:26:24 [    INFO] [src.tests.ui_tests.test_system_updates] Test Environment:[0m
+[32m09:26:24 [    INFO] [src.tests.ui_tests.test_system_updates]   environment: qa[0m
+[32m09:26:24 [    INFO] [src.tests.ui_tests.test_system_updates]   base_url: https://10.206.201.9:8443[0m
+[32m09:26:24 [    INFO] [src.tests.ui_tests.test_system_updates]   username: admin[0m
+[32m09:26:24 [    INFO] [src.tests.ui_tests.test_system_updates]   browser: chrome[0m
+[32m09:26:24 [    INFO] [src.tests.ui_tests.test_system_updates]   headless: False[0m
+[32m09:26:24 [    INFO] [src.tests.ui_tests.test_system_updates]   resolution: 1920x1080[0m
+[32m09:26:24 [    INFO] [src.tests.ui_tests.test_system_updates]   target_kernel_version: 5.14.0-427.24.1.el9_4.x86_64[0m
+[32m09:26:24 [    INFO] [src.tests.ui_tests.test_system_updates]   ssh_host: 10.206.201.9[0m
+[32m09:26:24 [    INFO] [src.tests.ui_tests.test_system_updates]   max_retries: 2[0m
+[32m09:26:24 [    INFO] [src.tests.ui_tests.test_system_updates]   log_level: INFO[0m
+[32m09:26:24 [    INFO] [src.tests.ui_tests.test_system_updates]   video_recording: False[0m
+[32m09:26:24 [    INFO] [src.tests.conftest] ============================================================[0m
+[32m09:26:24 [    INFO] [src.tests.conftest] INITIALIZING WEBDRIVER: CHROME[0m
+[32m09:26:24 [    INFO] [src.tests.conftest] ============================================================[0m
+[31m09:26:24 [   ERROR] [src.tests.conftest] ✗ Failed to initialize WebDriver: 'NoneType' object has no attribute 'split'[0m
+---------------------------- Captured stderr setup -----------------------------
+/bin/sh: line 1: google-chrome: command not found
+/bin/sh: line 1: google-chrome-stable: command not found
+/bin/sh: line 1: google-chrome-beta: command not found
+/bin/sh: line 1: google-chrome-dev: command not found
+/bin/sh: line 1: google-chrome: command not found
+/bin/sh: line 1: google-chrome-stable: command not found
+/bin/sh: line 1: google-chrome-beta: command not found
+/bin/sh: line 1: google-chrome-dev: command not found
+------------------------------ Captured log setup ------------------------------
+INFO     WDM:logger.py:11 ====== WebDriver manager ======
+INFO     WDM:logger.py:11 Get LATEST chromedriver version for google-chrome
+---------------------------- Captured stdout setup -----------------------------
+[32m09:26:25 [    INFO] [src.tests.conftest] ============================================================[0m
+[32m09:26:25 [    INFO] [src.tests.conftest] INITIALIZING WEBDRIVER: CHROME[0m
+[32m09:26:25 [    INFO] [src.tests.conftest] ============================================================[0m
+[31m09:26:25 [   ERROR] [src.tests.conftest] ✗ Failed to initialize WebDriver: 'NoneType' object has no attribute 'split'[0m
+---------------------------- Captured stderr setup -----------------------------
+/bin/sh: line 1: google-chrome: command not found
+/bin/sh: line 1: google-chrome-stable: command not found
+/bin/sh: line 1: google-chrome-beta: command not found
+/bin/sh: line 1: google-chrome-dev: command not found
+/bin/sh: line 1: google-chrome: command not found
+/bin/sh: line 1: google-chrome-stable: command not found
+/bin/sh: line 1: google-chrome-beta: command not found
+/bin/sh: line 1: google-chrome-dev: command not found
+------------------------------ Captured log setup ------------------------------
+INFO     WDM:logger.py:11 ====== WebDriver manager ======
+INFO     WDM:logger.py:11 Get LATEST chromedriver version for google-chrome
+---------------------------- Captured stdout setup -----------------------------
+[32m09:26:26 [    INFO] [src.tests.conftest] ============================================================[0m
+[32m09:26:26 [    INFO] [src.tests.conftest] INITIALIZING WEBDRIVER: CHROME[0m
+[32m09:26:26 [    INFO] [src.tests.conftest] ============================================================[0m
+[31m09:26:26 [   ERROR] [src.tests.conftest] ✗ Failed to initialize WebDriver: 'NoneType' object has no attribute 'split'[0m
+---------------------------- Captured stderr setup -----------------------------
+/bin/sh: line 1: google-chrome: command not found
+/bin/sh: line 1: google-chrome-stable: command not found
+/bin/sh: line 1: google-chrome-beta: command not found
+/bin/sh: line 1: google-chrome-dev: command not found
+/bin/sh: line 1: google-chrome: command not found
+/bin/sh: line 1: google-chrome-stable: command not found
+/bin/sh: line 1: google-chrome-beta: command not found
+/bin/sh: line 1: google-chrome-dev: command not found
+------------------------------ Captured log setup ------------------------------
+INFO     WDM:logger.py:11 ====== WebDriver manager ======
+INFO     WDM:logger.py:11 Get LATEST chromedriver version for google-chrome
+__ ERROR at setup of TestSystemUpdatesEnterprise.test_kernel_version_display ___
+src/tests/conftest.py:112: in driver
+    driver_instance = _create_chrome_driver()
+src/tests/conftest.py:174: in _create_chrome_driver
+    service = ChromeService(ChromeDriverManager().install())
+../../../.local/lib/python3.9/site-packages/webdriver_manager/chrome.py:40: in install
+    driver_path = self._get_driver_binary_path(self.driver)
+../../../.local/lib/python3.9/site-packages/webdriver_manager/core/manager.py:40: in _get_driver_binary_path
+    file = self._download_manager.download_file(driver.get_driver_download_url(os_type))
+../../../.local/lib/python3.9/site-packages/webdriver_manager/drivers/chrome.py:32: in get_driver_download_url
+    driver_version_to_download = self.get_driver_version_to_download()
+../../../.local/lib/python3.9/site-packages/webdriver_manager/core/driver.py:48: in get_driver_version_to_download
+    return self.get_latest_release_version()
+../../../.local/lib/python3.9/site-packages/webdriver_manager/drivers/chrome.py:64: in get_latest_release_version
+    determined_browser_version = ".".join(determined_browser_version.split(".")[:3])
+E   AttributeError: 'NoneType' object has no attribute 'split'
+---------------------------- Captured stdout setup -----------------------------
+[32m09:26:26 [    INFO] [src.tests.conftest] ============================================================[0m
+[32m09:26:26 [    INFO] [src.tests.conftest] INITIALIZING WEBDRIVER: CHROME[0m
+[32m09:26:26 [    INFO] [src.tests.conftest] ============================================================[0m
+[31m09:26:26 [   ERROR] [src.tests.conftest] ✗ Failed to initialize WebDriver: 'NoneType' object has no attribute 'split'[0m
+---------------------------- Captured stderr setup -----------------------------
+/bin/sh: line 1: google-chrome: command not found
+/bin/sh: line 1: google-chrome-stable: command not found
+/bin/sh: line 1: google-chrome-beta: command not found
+/bin/sh: line 1: google-chrome-dev: command not found
+/bin/sh: line 1: google-chrome: command not found
+/bin/sh: line 1: google-chrome-stable: command not found
+/bin/sh: line 1: google-chrome-beta: command not found
+/bin/sh: line 1: google-chrome-dev: command not found
+------------------------------ Captured log setup ------------------------------
+INFO     WDM:logger.py:11 ====== WebDriver manager ======
+INFO     WDM:logger.py:11 Get LATEST chromedriver version for google-chrome
+---------------------------- Captured stdout setup -----------------------------
+[32m09:26:27 [    INFO] [src.tests.conftest] ============================================================[0m
+[32m09:26:27 [    INFO] [src.tests.conftest] INITIALIZING WEBDRIVER: CHROME[0m
+[32m09:26:27 [    INFO] [src.tests.conftest] ============================================================[0m
+[31m09:26:27 [   ERROR] [src.tests.conftest] ✗ Failed to initialize WebDriver: 'NoneType' object has no attribute 'split'[0m
+---------------------------- Captured stderr setup -----------------------------
+/bin/sh: line 1: google-chrome: command not found
+/bin/sh: line 1: google-chrome-stable: command not found
+/bin/sh: line 1: google-chrome-beta: command not found
+/bin/sh: line 1: google-chrome-dev: command not found
+/bin/sh: line 1: google-chrome: command not found
+/bin/sh: line 1: google-chrome-stable: command not found
+/bin/sh: line 1: google-chrome-beta: command not found
+/bin/sh: line 1: google-chrome-dev: command not found
+------------------------------ Captured log setup ------------------------------
+INFO     WDM:logger.py:11 ====== WebDriver manager ======
+INFO     WDM:logger.py:11 Get LATEST chromedriver version for google-chrome
+---------------------------- Captured stdout setup -----------------------------
+[32m09:26:28 [    INFO] [src.tests.conftest] ============================================================[0m
+[32m09:26:28 [    INFO] [src.tests.conftest] INITIALIZING WEBDRIVER: CHROME[0m
+[32m09:26:28 [    INFO] [src.tests.conftest] ============================================================[0m
+[31m09:26:28 [   ERROR] [src.tests.conftest] ✗ Failed to initialize WebDriver: 'NoneType' object has no attribute 'split'[0m
+---------------------------- Captured stderr setup -----------------------------
+/bin/sh: line 1: google-chrome: command not found
+/bin/sh: line 1: google-chrome-stable: command not found
+/bin/sh: line 1: google-chrome-beta: command not found
+/bin/sh: line 1: google-chrome-dev: command not found
+/bin/sh: line 1: google-chrome: command not found
+/bin/sh: line 1: google-chrome-stable: command not found
+/bin/sh: line 1: google-chrome-beta: command not found
+/bin/sh: line 1: google-chrome-dev: command not found
+------------------------------ Captured log setup ------------------------------
+INFO     WDM:logger.py:11 ====== WebDriver manager ======
+INFO     WDM:logger.py:11 Get LATEST chromedriver version for google-chrome
+_ ERROR at setup of TestSystemUpdatesEnterprise.test_validate_frame_structure __
+src/tests/conftest.py:112: in driver
+    driver_instance = _create_chrome_driver()
+src/tests/conftest.py:174: in _create_chrome_driver
+    service = ChromeService(ChromeDriverManager().install())
+../../../.local/lib/python3.9/site-packages/webdriver_manager/chrome.py:40: in install
+    driver_path = self._get_driver_binary_path(self.driver)
+../../../.local/lib/python3.9/site-packages/webdriver_manager/core/manager.py:40: in _get_driver_binary_path
+    file = self._download_manager.download_file(driver.get_driver_download_url(os_type))
+../../../.local/lib/python3.9/site-packages/webdriver_manager/drivers/chrome.py:32: in get_driver_download_url
+    driver_version_to_download = self.get_driver_version_to_download()
+../../../.local/lib/python3.9/site-packages/webdriver_manager/core/driver.py:48: in get_driver_version_to_download
+    return self.get_latest_release_version()
+../../../.local/lib/python3.9/site-packages/webdriver_manager/drivers/chrome.py:64: in get_latest_release_version
+    determined_browser_version = ".".join(determined_browser_version.split(".")[:3])
+E   AttributeError: 'NoneType' object has no attribute 'split'
+---------------------------- Captured stdout setup -----------------------------
+[32m09:26:28 [    INFO] [src.tests.conftest] ============================================================[0m
+[32m09:26:28 [    INFO] [src.tests.conftest] INITIALIZING WEBDRIVER: CHROME[0m
+[32m09:26:28 [    INFO] [src.tests.conftest] ============================================================[0m
+[31m09:26:28 [   ERROR] [src.tests.conftest] ✗ Failed to initialize WebDriver: 'NoneType' object has no attribute 'split'[0m
+---------------------------- Captured stderr setup -----------------------------
+/bin/sh: line 1: google-chrome: command not found
+/bin/sh: line 1: google-chrome-stable: command not found
+/bin/sh: line 1: google-chrome-beta: command not found
+/bin/sh: line 1: google-chrome-dev: command not found
+/bin/sh: line 1: google-chrome: command not found
+/bin/sh: line 1: google-chrome-stable: command not found
+/bin/sh: line 1: google-chrome-beta: command not found
+/bin/sh: line 1: google-chrome-dev: command not found
+------------------------------ Captured log setup ------------------------------
+INFO     WDM:logger.py:11 ====== WebDriver manager ======
+INFO     WDM:logger.py:11 Get LATEST chromedriver version for google-chrome
+---------------------------- Captured stdout setup -----------------------------
+[32m09:26:29 [    INFO] [src.tests.conftest] ============================================================[0m
+[32m09:26:29 [    INFO] [src.tests.conftest] INITIALIZING WEBDRIVER: CHROME[0m
+[32m09:26:29 [    INFO] [src.tests.conftest] ============================================================[0m
+[31m09:26:29 [   ERROR] [src.tests.conftest] ✗ Failed to initialize WebDriver: 'NoneType' object has no attribute 'split'[0m
+---------------------------- Captured stderr setup -----------------------------
+/bin/sh: line 1: google-chrome: command not found
+/bin/sh: line 1: google-chrome-stable: command not found
+/bin/sh: line 1: google-chrome-beta: command not found
+/bin/sh: line 1: google-chrome-dev: command not found
+/bin/sh: line 1: google-chrome: command not found
+/bin/sh: line 1: google-chrome-stable: command not found
+/bin/sh: line 1: google-chrome-beta: command not found
+/bin/sh: line 1: google-chrome-dev: command not found
+------------------------------ Captured log setup ------------------------------
+INFO     WDM:logger.py:11 ====== WebDriver manager ======
+INFO     WDM:logger.py:11 Get LATEST chromedriver version for google-chrome
+---------------------------- Captured stdout setup -----------------------------
+[32m09:26:30 [    INFO] [src.tests.conftest] ============================================================[0m
+[32m09:26:30 [    INFO] [src.tests.conftest] INITIALIZING WEBDRIVER: CHROME[0m
+[32m09:26:30 [    INFO] [src.tests.conftest] ============================================================[0m
+[31m09:26:30 [   ERROR] [src.tests.conftest] ✗ Failed to initialize WebDriver: 'NoneType' object has no attribute 'split'[0m
+---------------------------- Captured stderr setup -----------------------------
+/bin/sh: line 1: google-chrome: command not found
+/bin/sh: line 1: google-chrome-stable: command not found
+/bin/sh: line 1: google-chrome-beta: command not found
+/bin/sh: line 1: google-chrome-dev: command not found
+/bin/sh: line 1: google-chrome: command not found
+/bin/sh: line 1: google-chrome-stable: command not found
+/bin/sh: line 1: google-chrome-beta: command not found
+/bin/sh: line 1: google-chrome-dev: command not found
+------------------------------ Captured log setup ------------------------------
+INFO     WDM:logger.py:11 ====== WebDriver manager ======
+INFO     WDM:logger.py:11 Get LATEST chromedriver version for google-chrome
+--------------------------------- JSON report ----------------------------------
+report saved to: outputs/reports/report.json
+- Generated html report: file:///home/michael/repos/michael-zhou-qa-portfolio/selenium-tests/outputs/reports/report.html -
+=========================== short test summary info ============================
+ERROR src/tests/ui_tests/test_system_updates.py::TestSystemUpdatesEnterprise::test_page_load_and_title
+ERROR src/tests/ui_tests/test_system_updates.py::TestSystemUpdatesEnterprise::test_kernel_version_display
+ERROR src/tests/ui_tests/test_system_updates.py::TestSystemUpdatesEnterprise::test_validate_frame_structure
+========================== 3 errors, 6 rerun in 6.81s ==========================
