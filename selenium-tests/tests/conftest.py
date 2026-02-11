@@ -33,8 +33,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.config.test_config import TestConfig
 from core.logging.test_logger import TestLogger, get_logger
 from core.debugging.debug_helper import DebugHelper
-from pages.login_page import LoginPage
-from pages.system_update_page import SystemUpdatePage
+from frameworks.pages.login_page import LoginPage
+from frameworks.pages.system_update_page import SystemUpdatePage
 
 
 logger = get_logger(__name__)
