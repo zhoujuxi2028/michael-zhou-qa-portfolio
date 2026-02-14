@@ -638,3 +638,26 @@ def log_verifier(ssh_helper):
     logger.info("✓ LogVerification fixture ready")
 
     return verifier
+
+# ==================== Workflow Fixtures ====================
+
+@pytest.fixture(scope='function')
+def update_workflow(driver, backend_verifier, ui_verifier, log_verifier):
+    from frameworks.workflows.update_workflow import UpdateWorkflow
+    return UpdateWorkflow(driver, backend_verifier, ui_verifier, log_verifier)
+
+@pytest.fixture(scope='function')
+def rollback_workflow(driver, backend_verifier, ui_verifier, log_verifier):
+    from frameworks.workflows.rollback_workflow import RollbackWorkflow
+    return RollbackWorkflow(driver, backend_verifier, ui_verifier, log_verifier)
+
+@pytest.fixture(scope='function')
+def verification_workflow(driver, backend_verifier, ui_verifier, log_verifier):
+    from frameworks.workflows.verification_workflow import VerificationWorkflow
+    return VerificationWorkflow(driver, backend_verifier, ui_verifier, log_verifier)
+
+@pytest.fixture(scope='function')
+def setup_workflow(driver, backend_verifier, ui_verifier):
+    from frameworks.workflows.setup_workflow import SetupWorkflow
+    return SetupWorkflow(driver, backend_verifier, ui_verifier)
+
