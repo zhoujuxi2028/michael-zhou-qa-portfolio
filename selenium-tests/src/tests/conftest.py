@@ -30,8 +30,12 @@ from webdriver_manager.firefox import GeckoDriverManager
 from core.config.test_config import TestConfig
 from core.logging.test_logger import TestLogger, get_logger
 from core.debugging.debug_helper import DebugHelper
+from core.helpers.ssh_helper import SSHHelper, create_ssh_helper
 from frameworks.pages.login_page import LoginPage
 from frameworks.pages.system_update_page import SystemUpdatePage
+from frameworks.verification.backend_verification import BackendVerification
+from frameworks.verification.ui_verification import UIVerification
+from frameworks.verification.log_verification import LogVerification
 
 
 logger = get_logger(__name__)
@@ -481,3 +485,156 @@ def debug_helper(driver):
         ...     debug_helper.capture_screenshot(driver, "checkpoint1")
     """
     return DebugHelper
+
+
+# ==================== Verification Fixtures ====================
+
+@pytest.fixture(scope='session')
+def ssh_helper():
+    """
+    SSH Helper fixture for backend operations.
+
+    Scope: session (reuses connection across tests)
+
+    Provides:
+    - SSH connection to IWSVA server
+    - Automatic connection management
+    - Automatic cleanup after session
+
+    Returns:
+        SSHHelper: Connected SSH helper instance
+
+    Example:
+        >>> def test_backend(ssh_helper):
+        ...     output = ssh_helper.execute_command('uname -r')
+    """
+    logger.info("=" * 60)
+    logger.info("INITIALIZING SSH CONNECTION")
+    logger.info("=" * 60)
+
+    # Create SSH helper
+    ssh = create_ssh_helper(TestConfig.SSH_CONFIG)
+
+    try:
+        # Connect to server
+        ssh.connect()
+        logger.info("✓ SSH connection established")
+
+        yield ssh
+
+    except Exception as e:
+        logger.error(f"✗ SSH connection failed: {e}")
+        logger.warning("Backend verification tests will be skipped")
+        yield None
+
+    finally:
+        # Cleanup
+        if ssh and ssh.connected:
+            ssh.disconnect()
+            logger.info("✓ SSH connection closed")
+
+
+@pytest.fixture(scope='function')
+def backend_verifier(ssh_helper):
+    """
+    Backend Verification fixture.
+
+    Provides:
+    - Backend verification via SSH
+    - Component version verification
+    - INI file parsing
+    - Lock file status checking
+    - Service status verification
+
+    Args:
+        ssh_helper: SSH helper fixture
+
+    Returns:
+        BackendVerification: Backend verifier instance or None if SSH unavailable
+
+    Example:
+        >>> def test_kernel(backend_verifier):
+        ...     is_match, version = backend_verifier.verify_kernel_version('5.14.0')
+        ...     assert is_match
+    """
+    if ssh_helper is None:
+        logger.warning("SSH not available - backend verifier disabled")
+        pytest.skip("Backend verification requires SSH connection")
+
+    logger.debug("Creating BackendVerification fixture")
+
+    # Create backend verifier with existing SSH connection
+    verifier = BackendVerification(TestConfig.SSH_CONFIG)
+    verifier.ssh = ssh_helper  # Reuse session SSH connection
+    verifier.connected = ssh_helper.connected
+
+    logger.info("✓ BackendVerification fixture ready")
+
+    return verifier
+
+
+@pytest.fixture(scope='function')
+def ui_verifier(driver):
+    """
+    UI Verification fixture.
+
+    Provides:
+    - UI-level verification helpers
+    - Element visibility verification
+    - Text content validation
+    - Attribute verification
+    - Page state checks
+
+    Args:
+        driver: WebDriver fixture
+
+    Returns:
+        UIVerification: UI verifier instance
+
+    Example:
+        >>> def test_ui(ui_verifier):
+        ...     ui_verifier.verify_element_visible((By.ID, 'submit'))
+        ...     ui_verifier.verify_text_present('Welcome')
+    """
+    logger.debug("Creating UIVerification fixture")
+
+    verifier = UIVerification(driver, default_timeout=TestConfig.EXPLICIT_WAIT)
+
+    logger.info("✓ UIVerification fixture ready")
+
+    return verifier
+
+
+@pytest.fixture(scope='function')
+def log_verifier(ssh_helper):
+    """
+    Log Verification fixture.
+
+    Provides:
+    - Log file parsing and verification
+    - Update success/failure detection
+    - Error pattern matching
+    - Component update tracking
+
+    Args:
+        ssh_helper: SSH helper fixture
+
+    Returns:
+        LogVerification: Log verifier instance or None if SSH unavailable
+
+    Example:
+        >>> def test_logs(log_verifier):
+        ...     success, lines = log_verifier.verify_update_success('PTN')
+        ...     assert success
+    """
+    if ssh_helper is None:
+        logger.warning("SSH not available - log verifier disabled")
+        pytest.skip("Log verification requires SSH connection")
+
+    logger.debug("Creating LogVerification fixture")
+
+    verifier = LogVerification(ssh_helper)
+
+    logger.info("✓ LogVerification fixture ready")
+
+    return verifier
