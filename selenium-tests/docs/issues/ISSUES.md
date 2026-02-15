@@ -1,7 +1,7 @@
 # 🐛 Known Issues & Bug Tracking
 
 **Project**: IWSVA Selenium Test Automation Framework
-**Last Updated**: 2026-02-11
+**Last Updated**: 2026-02-15
 **Maintainer**: Michael Zhou
 
 ---
@@ -10,16 +10,137 @@
 
 | Status | Count |
 |--------|-------|
-| 🔴 **Open** | 0 |
+| 🔴 **Open** | 1 |
 | 🟡 **In Progress** | 0 |
 | 🟢 **Resolved** | 3 |
-| **Total** | 3 |
-
-**🎉 ALL ISSUES RESOLVED! Project is fully functional!**
+| **Total** | 4 |
 
 ---
 
 ## 🔴 Active Issues
+
+### ISSUE-004: System Update Page Requires Menu Navigation (404 Error) 🔴 OPEN
+
+**Status**: 🔴 Open
+**Severity**: Critical
+**Priority**: P0
+**Reported**: 2026-02-15
+**Assigned**: TBD
+**Category**: Page Navigation / Test Framework
+**Test Case**: `test_kernel_version_multi_level`
+
+#### Description
+The Selenium test `test_kernel_version_multi_level` fails with a 404 error when attempting to navigate to the System Updates page. The test tries to access `/jsp/system_update.jsp` directly, but IWSVA requires navigation through the menu system rather than direct URL access.
+
+#### Test Failure Details
+```
+Test: src/tests/ui_tests/test_multi_level_verification_demo.py::TestMultiLevelVerification::test_kernel_version_multi_level
+Result: FAILED (after 3 retries)
+Error: AssertionError: Page title mismatch: expected 'System Update', got 'HTTP Status 404 – Not Found'
+```
+
+#### Root Cause
+**Problem**: Direct URL access to `/jsp/system_update.jsp` returns HTTP 404
+
+**Why**:
+- IWSVA implements access control requiring menu-based navigation
+- The page likely checks session state/permissions set during menu navigation
+- Cypress tests work because they navigate via menu clicks
+
+**Evidence**:
+1. ✅ Login succeeds
+2. ✅ SSH connection works
+3. ✅ WebDriver initializes correctly
+4. ❌ Direct URL access: `https://10.206.201.9:8443/jsp/system_update.jsp` → 404
+
+#### Comparison: Cypress vs Selenium
+
+**Cypress (Working)**:
+```javascript
+navigateToSystemUpdates() {
+  // 1. Click "Administration" in left frame
+  this.clickInFrameByText('left', 'Administration')
+
+  // 2. Wait for submenu
+  this.waitForFrameContent('left', 'System Update', 5000)
+
+  // 3. Click "System Updates" link
+  this.clickLinkInFrame('left', 'system update')
+
+  // 4. Wait for content
+  this.waitForFrameContent('right', 'System', 10000)
+}
+```
+
+**Selenium (Not Working)**:
+```python
+def navigate(self):
+    # ❌ Direct URL access
+    driver.get(TestConfig.URLS['system_update'])
+```
+
+#### Affected Components
+- `src/frameworks/pages/system_update_page.py` - `navigate()` method (line 73-83)
+- `src/frameworks/pages/base_page.py` - Missing menu navigation helpers
+- Test: `test_kernel_version_multi_level`
+- Test: `test_page_load_and_title`
+- Test: `test_kernel_version_display`
+
+#### Impact
+- ❌ **3 out of 6 test cases** fail (50% failure rate)
+- ❌ Cannot verify kernel version via UI
+- ❌ Cannot test System Updates page functionality
+- ✅ Backend tests (SSH-based) still work
+- ✅ Frame structure tests still work
+
+#### Required Fix
+**Implement menu navigation in Selenium framework**
+
+**Phase 1: Add Base Page Helpers**
+Add to `src/frameworks/pages/base_page.py`:
+- `wait_for_frame_content(frame_name, expected_text, timeout)`
+- `click_in_frame_by_text(frame_name, text_content)`
+- `click_link_in_frame(frame_name, search_text)`
+
+**Phase 2: Update SystemUpdatePage**
+Replace direct URL navigation with menu-based navigation:
+```python
+def navigate(self):
+    # 1. Wait for left frame
+    self.wait_for_frame_content('left', 'Administration', timeout=5)
+
+    # 2. Click Administration menu
+    self.click_in_frame_by_text('left', 'Administration')
+
+    # 3. Wait for submenu
+    self.wait_for_frame_content('left', 'System Update', timeout=5)
+
+    # 4. Click System Updates link
+    self.click_link_in_frame('left', 'system update')
+
+    # 5. Wait for content
+    self.wait_for_frame_content('right', 'System', timeout=10)
+```
+
+#### Verification Steps
+After fix:
+1. Run `test_kernel_version_multi_level`
+2. Verify navigation via menu succeeds
+3. Verify page content loads correctly
+4. Verify all 6 tests pass
+
+#### Related Issues
+- Similar to: Cypress implementation in `cypress/support/pages/SystemUpdatePage.js` (lines 116-135)
+- Blocks: All System Updates page UI tests
+
+#### Additional Notes
+- This is a **critical blocker** for UI verification tests
+- Backend verification tests are **not affected** (they use SSH directly)
+- Consider implementing as reusable menu navigation utility
+
+---
+
+## 🟢 Resolved Issues
 
 ### ISSUE-001: Login Page Element Locators Mismatch 🟢 RESOLVED
 
@@ -235,21 +356,33 @@ BROWSER=chrome  ✅
 
 | Priority | Severity | Status | Issues |
 |----------|----------|--------|--------|
-| P0 | Critical | 🟢 Resolved | ~~ISSUE-001~~ |
-| P1 | Medium | 🟢 Resolved | ~~ISSUE-003~~ |
-| P2 | Low | 🟢 Resolved | ~~ISSUE-002~~ |
+| P0 | Critical | 🔴 Open | **ISSUE-004** (Menu Navigation) |
+| P0 | Critical | 🟢 Resolved | ~~ISSUE-001~~ (Login Locators) |
+| P1 | Medium | 🟢 Resolved | ~~ISSUE-003~~ (Chrome Browser) |
+| P2 | Low | 🟢 Resolved | ~~ISSUE-002~~ (URL Redirect) |
 
 ---
 
-## 🎉 All Issues Resolved!
+## 📊 Issue Status Summary
 
+**Resolved Issues**:
 1. ~~**ISSUE-001**~~ ✅ **RESOLVED** - Login page locators fixed (15 minutes)
 2. ~~**ISSUE-003**~~ ✅ **RESOLVED** - Chrome is already installed and working
 3. ~~**ISSUE-002**~~ ✅ **RESOLVED** - Documented, no action needed (auto-redirect works)
 
-**Total fix time**: ~15 minutes (actual fixing) + ~6 hours (investigation & documentation)
-**Success Rate**: 100% - All issues resolved
-**Project Status**: ✅ **Fully Functional**
+**Active Issues**:
+1. **ISSUE-004** 🔴 **OPEN** - System Update page requires menu navigation (404 error)
+   - **Impact**: 3 out of 6 tests fail (50% failure rate)
+   - **Priority**: P0 (Critical)
+   - **Status**: Reported 2026-02-15, awaiting fix
+
+**Resolution Statistics**:
+- **Total Issues**: 4
+- **Resolved**: 3 (75%)
+- **Open**: 1 (25%)
+- **Average Resolution Time**: ~2 hours (for resolved issues)
+
+**Project Status**: ⚠️ **Partially Functional** - Backend tests work, UI tests blocked by ISSUE-004
 
 ---
 
