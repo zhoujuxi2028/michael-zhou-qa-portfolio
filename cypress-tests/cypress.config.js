@@ -1,7 +1,10 @@
 const { defineConfig } = require('cypress')
 const registerTasks = require('./cypress/tasks')
 
+
+
 module.exports = defineConfig({
+  projectId: "xky4rn",
   e2e: {
     baseUrl: 'https://10.206.201.9:8443',
     viewportWidth: 1280,
