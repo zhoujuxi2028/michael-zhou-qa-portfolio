@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=45", "wheel"]
+requires = ["setuptools>=65.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,13 +8,150 @@ version = "1.0.0"
 description = "Enterprise Selenium test automation framework for IWSVA"
 readme = "README.md"
 requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "QA Automation Team"}
+]
+dependencies = [
+    "selenium>=4.16.0",
+    "pytest>=7.4.3",
+    "pytest-html>=4.1.1",
+    "pytest-json-report>=1.5.0",
+    "pytest-rerunfailures>=13.0",
+    "pytest-timeout>=2.2.0",
+    "allure-pytest>=2.13.2",
+    "paramiko>=3.4.0",
+    "python-dotenv>=1.0.0",
+]
 
+[project.optional-dependencies]
+dev = [
+    "pytest-cov>=4.1.0",
+    "pylint>=3.0.3",
+    "black>=23.12.1",
+    "ruff>=0.1.0",
+]
+
+[project.urls]
+Repository = "https://github.com/your-org/iwsva-selenium-tests"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# ==================== Pytest Configuration ====================
 [tool.pytest.ini_options]
+# Test Discovery
 testpaths = ["src/tests"]
 python_files = "test_*.py"
 python_classes = "Test*"
 python_functions = "test_*"
 
+# Test Markers
+markers = [
+    "smoke: Smoke tests for critical functionality",
+    "regression: Regression tests for all features",
+    "ui: UI-level tests",
+    "backend: Backend verification tests via SSH",
+    "integration: Integration tests",
+    "P0: Priority 0 - Critical tests",
+    "P1: Priority 1 - High priority tests",
+    "P2: Priority 2 - Medium priority tests",
+    "P3: Priority 3 - Low priority tests",
+]
+
+# Logging Configuration
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s [%(levelname)8s] [%(name)s] %(message)s"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+
+log_file = "outputs/logs/pytest.log"
+log_file_level = "DEBUG"
+log_file_format = "%(asctime)s [%(levelname)8s] [%(filename)s:%(lineno)d] %(message)s"
+log_file_date_format = "%Y-%m-%d %H:%M:%S"
+
+# Output Options
+console_output_style = "progress"
+addopts = [
+    "--strict-markers",
+    "--verbose",
+    "--tb=short",
+    "--maxfail=5",
+    "--html=outputs/reports/report.html",
+    "--self-contained-html",
+    "--json-report",
+    "--json-report-file=outputs/reports/report.json",
+    "--alluredir=outputs/allure-results",
+    "--reruns=2",
+    "--reruns-delay=1",
+]
+
+# Timeout
+timeout = 300
+timeout_method = "thread"
+
+# Warnings
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
+
+# ==================== Black Configuration ====================
 [tool.black]
 line-length = 100
 target-version = ["py39", "py310", "py311"]
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+    \.git
+  | \.pytest_cache
+  | __pycache__
+  | outputs
+  | logs
+)/
+'''
+
+# ==================== Ruff Configuration ====================
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+exclude = [
+    ".git",
+    "__pycache__",
+    ".pytest_cache",
+    "outputs",
+    "logs",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+]
+ignore = [
+    "E501",  # line too long (handled by black)
+]
+
+# ==================== Coverage Configuration ====================
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+    "*/site-packages/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]

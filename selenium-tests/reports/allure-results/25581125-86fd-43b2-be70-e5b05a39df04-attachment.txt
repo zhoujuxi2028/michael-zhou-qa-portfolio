@@ -1,0 +1,75 @@
+[32m21:57:48 [    INFO] [tests.conftest] ================================================================================[0m
+[32m21:57:48 [    INFO] [tests.conftest] TEST SESSION STARTED[0m
+[32m21:57:48 [    INFO] [tests.conftest] ================================================================================[0m
+[32m21:57:48 [    INFO] [tests.conftest] ✓ Configuration validated[0m
+[32m21:57:48 [    INFO] [tests.conftest] Test Environment Configuration:[0m
+[32m21:57:48 [    INFO] [tests.conftest]   environment: qa[0m
+[32m21:57:48 [    INFO] [tests.conftest]   base_url: https://10.206.201.9:8443[0m
+[32m21:57:48 [    INFO] [tests.conftest]   username: admin[0m
+[32m21:57:48 [    INFO] [tests.conftest]   browser: firefox[0m
+[32m21:57:48 [    INFO] [tests.conftest]   headless: True[0m
+[32m21:57:48 [    INFO] [tests.conftest]   resolution: 1920x1080[0m
+[32m21:57:48 [    INFO] [tests.conftest]   target_kernel_version: 5.14.0-427.24.1.el9_4.x86_64[0m
+[32m21:57:48 [    INFO] [tests.conftest]   ssh_host: 10.206.201.9[0m
+[32m21:57:48 [    INFO] [tests.conftest]   max_retries: 2[0m
+[32m21:57:48 [    INFO] [tests.conftest]   log_level: INFO[0m
+[32m21:57:48 [    INFO] [tests.conftest]   video_recording: False[0m
+[32m21:57:48 [    INFO] [tests.conftest] ================================================================================[0m
+[32m21:57:48 [    INFO] [tests.test_system_updates_enterprise] ================================================================================[0m
+[32m21:57:48 [    INFO] [tests.test_system_updates_enterprise] SUITE SETUP: System Updates Verification[0m
+[32m21:57:48 [    INFO] [tests.test_system_updates_enterprise] ================================================================================[0m
+[32m21:57:48 [    INFO] [tests.test_system_updates_enterprise] ✓ Configuration validated[0m
+[32m21:57:48 [    INFO] [tests.test_system_updates_enterprise] Test Environment:[0m
+[32m21:57:48 [    INFO] [tests.test_system_updates_enterprise]   environment: qa[0m
+[32m21:57:48 [    INFO] [tests.test_system_updates_enterprise]   base_url: https://10.206.201.9:8443[0m
+[32m21:57:48 [    INFO] [tests.test_system_updates_enterprise]   username: admin[0m
+[32m21:57:48 [    INFO] [tests.test_system_updates_enterprise]   browser: firefox[0m
+[32m21:57:48 [    INFO] [tests.test_system_updates_enterprise]   headless: True[0m
+[32m21:57:48 [    INFO] [tests.test_system_updates_enterprise]   resolution: 1920x1080[0m
+[32m21:57:48 [    INFO] [tests.test_system_updates_enterprise]   target_kernel_version: 5.14.0-427.24.1.el9_4.x86_64[0m
+[32m21:57:48 [    INFO] [tests.test_system_updates_enterprise]   ssh_host: 10.206.201.9[0m
+[32m21:57:48 [    INFO] [tests.test_system_updates_enterprise]   max_retries: 2[0m
+[32m21:57:48 [    INFO] [tests.test_system_updates_enterprise]   log_level: INFO[0m
+[32m21:57:48 [    INFO] [tests.test_system_updates_enterprise]   video_recording: False[0m
+[32m21:57:48 [    INFO] [tests.conftest] ============================================================[0m
+[32m21:57:48 [    INFO] [tests.conftest] INITIALIZING WEBDRIVER: FIREFOX[0m
+[32m21:57:48 [    INFO] [tests.conftest] ============================================================[0m
+[32m21:57:52 [    INFO] [tests.conftest] ✓ WebDriver initialized successfully[0m
+[32m21:57:52 [    INFO] [tests.conftest]   Browser: firefox[0m
+[32m21:57:52 [    INFO] [tests.conftest]   Headless: True[0m
+[32m21:57:52 [    INFO] [tests.conftest]   Window size: 1920x1080[0m
+[32m21:57:52 [    INFO] [TestAutomation] Step 1: Navigate to login page[0m
+[32m21:57:52 [    INFO] [pages.base_page] Navigating to: https://10.206.201.9:8443/login.jsp[0m
+[32m21:57:53 [    INFO] [pages.base_page] ✓ Navigated to login page: https://10.206.201.9:8443/login.jsp[0m
+[32m21:57:53 [    INFO] [TestAutomation] Step 2: Perform login as user: admin[0m
+[32m21:57:53 [    INFO] [pages.base_page] ============================================================[0m
+[32m21:57:53 [    INFO] [pages.base_page] LOGIN OPERATION STARTED[0m
+[32m21:57:53 [    INFO] [pages.base_page] ============================================================[0m
+[32m21:57:53 [    INFO] [TestAutomation] Step 3: Enter username: admin[0m
+[33m21:58:25 [ WARNING] [pages.base_page] ✗ Element not found: name=userid[0m
+[33m21:58:56 [ WARNING] [pages.base_page] ✗ Element not found: id=userid[0m
+[31m21:58:56 [   ERROR] [pages.base_page] ✗ Failed to enter username[0m
+[31m21:58:56 [   ERROR] [pages.base_page] ✗ Login failed: Could not enter username[0m
+[31m21:58:56 [   ERROR] [tests.conftest] ✗ Login failed during fixture setup[0m
+[32m21:58:57 [    INFO] [tests.conftest] ✓ WebDriver closed successfully[0m
+[32m21:58:58 [    INFO] [tests.conftest] ============================================================[0m
+[32m21:58:58 [    INFO] [tests.conftest] INITIALIZING WEBDRIVER: FIREFOX[0m
+[32m21:58:58 [    INFO] [tests.conftest] ============================================================[0m
+[32m21:59:03 [    INFO] [tests.conftest] ✓ WebDriver initialized successfully[0m
+[32m21:59:03 [    INFO] [tests.conftest]   Browser: firefox[0m
+[32m21:59:03 [    INFO] [tests.conftest]   Headless: True[0m
+[32m21:59:03 [    INFO] [tests.conftest]   Window size: 1920x1080[0m
+[32m21:59:03 [    INFO] [TestAutomation] Step 1: Navigate to login page[0m
+[32m21:59:03 [    INFO] [pages.base_page] Navigating to: https://10.206.201.9:8443/login.jsp[0m
+[32m21:59:04 [    INFO] [pages.base_page] ✓ Navigated to login page: https://10.206.201.9:8443/login.jsp[0m
+[32m21:59:04 [    INFO] [TestAutomation] Step 2: Perform login as user: admin[0m
+[32m21:59:04 [    INFO] [pages.base_page] ============================================================[0m
+[32m21:59:04 [    INFO] [pages.base_page] LOGIN OPERATION STARTED[0m
+[32m21:59:04 [    INFO] [pages.base_page] ============================================================[0m
+[32m21:59:04 [    INFO] [TestAutomation] Step 3: Enter username: admin[0m
+[33m21:59:35 [ WARNING] [pages.base_page] ✗ Element not found: name=userid[0m
+[33m22:00:07 [ WARNING] [pages.base_page] ✗ Element not found: id=userid[0m
+[31m22:00:07 [   ERROR] [pages.base_page] ✗ Failed to enter username[0m
+[31m22:00:07 [   ERROR] [pages.base_page] ✗ Login failed: Could not enter username[0m
+[31m22:00:07 [   ERROR] [tests.conftest] ✗ Login failed during fixture setup[0m
+[32m22:00:08 [    INFO] [tests.conftest] ✓ WebDriver closed successfully[0m

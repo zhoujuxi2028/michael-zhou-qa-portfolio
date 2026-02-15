@@ -1,0 +1,8 @@
+[32m08:44:35 [    INFO] [tests.conftest] ============================================================[0m
+[32m08:44:35 [    INFO] [tests.conftest] INITIALIZING WEBDRIVER: CHROME[0m
+[32m08:44:35 [    INFO] [tests.conftest] ============================================================[0m
+[31m08:44:35 [   ERROR] [tests.conftest] ✗ Failed to initialize WebDriver: 'NoneType' object has no attribute 'split'[0m
+[32m08:44:36 [    INFO] [tests.conftest] ============================================================[0m
+[32m08:44:36 [    INFO] [tests.conftest] INITIALIZING WEBDRIVER: CHROME[0m
+[32m08:44:36 [    INFO] [tests.conftest] ============================================================[0m
+[31m08:44:36 [   ERROR] [tests.conftest] ✗ Failed to initialize WebDriver: 'NoneType' object has no attribute 'split'[0m
