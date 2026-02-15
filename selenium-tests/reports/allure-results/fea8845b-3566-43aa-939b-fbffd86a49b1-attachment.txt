@@ -1,0 +1,50 @@
+INFO     WDM:logger.py:11 ====== WebDriver manager ======
+INFO     WDM:logger.py:11 Get LATEST geckodriver version for 140.6 firefox
+DEBUG    urllib3.connectionpool:connectionpool.py:976 Starting new HTTPS connection (1): api.github.com:443
+DEBUG    urllib3.connectionpool:connectionpool.py:453 https://api.github.com:443 "GET /repos/mozilla/geckodriver/releases/latest HTTP/1.1" 200 None
+INFO     WDM:logger.py:11 Get LATEST geckodriver version for 140.6 firefox
+DEBUG    urllib3.connectionpool:connectionpool.py:976 Starting new HTTPS connection (1): api.github.com:443
+DEBUG    urllib3.connectionpool:connectionpool.py:453 https://api.github.com:443 "GET /repos/mozilla/geckodriver/releases/latest HTTP/1.1" 200 3216
+INFO     WDM:logger.py:11 There is no [linux64] geckodriver "v0.36.0" for browser firefox "140.6" in cache
+INFO     WDM:logger.py:11 Get LATEST geckodriver version for 140.6 firefox
+DEBUG    urllib3.connectionpool:connectionpool.py:976 Starting new HTTPS connection (1): api.github.com:443
+DEBUG    urllib3.connectionpool:connectionpool.py:453 https://api.github.com:443 "GET /repos/mozilla/geckodriver/releases/latest HTTP/1.1" 200 3216
+INFO     WDM:logger.py:11 Getting latest mozilla release info for v0.36.0
+DEBUG    urllib3.connectionpool:connectionpool.py:976 Starting new HTTPS connection (1): api.github.com:443
+DEBUG    urllib3.connectionpool:connectionpool.py:453 https://api.github.com:443 "GET /repos/mozilla/geckodriver/releases/tags/v0.36.0 HTTP/1.1" 200 None
+INFO     WDM:logger.py:11 About to download new driver from https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz
+DEBUG    urllib3.connectionpool:connectionpool.py:976 Starting new HTTPS connection (1): github.com:443
+DEBUG    urllib3.connectionpool:connectionpool.py:453 https://github.com:443 "GET /mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz HTTP/1.1" 302 0
+DEBUG    urllib3.connectionpool:connectionpool.py:976 Starting new HTTPS connection (1): release-assets.githubusercontent.com:443
+DEBUG    urllib3.connectionpool:connectionpool.py:453 https://release-assets.githubusercontent.com:443 "GET /github-production-release-asset/25354393/73faebef-d9f0-4bca-a87c-a8332a5f9deb?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-02-10T14%3A23%3A37Z&rscd=attachment%3B+filename%3Dgeckodriver-v0.36.0-linux64.tar.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-02-10T13%3A22%3A41Z&ske=2026-02-10T14%3A23%3A37Z&sks=b&skv=2018-11-09&sig=wOniGPSCVcLMwk5CQd9fO7bS1mCcgIiEm8TpTOaStwA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc3MDczMTcxNiwibmJmIjoxNzcwNzMxNDE2LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.NnYW1rNfP0IWvONuoNa04vOmTCOQRbRq9BiEaCEl-_U&response-content-disposition=attachment%3B%20filename%3Dgeckodriver-v0.36.0-linux64.tar.gz&response-content-type=application%2Foctet-stream HTTP/1.1" 200 2306404
+INFO     WDM:logger.py:11 Driver downloading response is 200
+INFO     WDM:logger.py:11 Get LATEST geckodriver version for 140.6 firefox
+DEBUG    urllib3.connectionpool:connectionpool.py:976 Starting new HTTPS connection (1): api.github.com:443
+DEBUG    urllib3.connectionpool:connectionpool.py:453 https://api.github.com:443 "GET /repos/mozilla/geckodriver/releases/latest HTTP/1.1" 200 3216
+INFO     WDM:logger.py:11 Driver has been saved in cache [/home/michael/.wdm/drivers/geckodriver/linux64/v0.36.0]
+DEBUG    selenium.webdriver.common.service:service.py:219 Started executable: `/home/michael/.wdm/drivers/geckodriver/linux64/v0.36.0/geckodriver` in a child process with pid: 2450669 using 0 to output -3
+DEBUG    selenium.webdriver.remote.remote_connection:remote_connection.py:313 POST http://localhost:38537/session {"capabilities": {"firstMatch": [{}], "alwaysMatch": {"browserName": "firefox", "acceptInsecureCerts": true, "moz:debuggerAddress": true, "pageLoadStrategy": "normal", "moz:firefoxOptions": {"prefs": {"browser.window.width": 1920, "browser.window.height": 1080}, "args": ["-private", "--headless", "--headless"]}}}}
+DEBUG    urllib3.connectionpool:connectionpool.py:228 Starting new HTTP connection (1): localhost:38537
+DEBUG    urllib3.connectionpool:connectionpool.py:453 http://localhost:38537 "POST /session HTTP/1.1" 200 779
+DEBUG    selenium.webdriver.remote.remote_connection:remote_connection.py:329 Remote response: status=200 | data={"value":{"sessionId":"9c22cb71-d39d-46e0-9de3-71616650330f","capabilities":{"acceptInsecureCerts":true,"browserName":"firefox","browserVersion":"140.6.0","moz:accessibilityChecks":false,"moz:buildID":"20251204222439","moz:geckodriverVersion":"0.36.0","moz:headless":true,"moz:platformVersion":"5.14.0-611.16.1.el9_7.x86_64","moz:processID":2450679,"moz:profile":"/tmp/rust_mozprofilemIMiRK","moz:shutdownTimeout":60000,"moz:webdriverClick":true,"moz:windowless":false,"pageLoadStrategy":"normal","platformName":"linux","proxy":{},"setWindowRect":true,"strictFileInteractability":false,"timeouts":{"implicit":0,"pageLoad":300000,"script":30000},"unhandledPromptBehavior":"dismiss and notify","userAgent":"Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0"}}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '779', 'date': 'Tue, 10 Feb 2026 13:50:17 GMT'})
+DEBUG    selenium.webdriver.remote.remote_connection:remote_connection.py:356 Finished Request
+DEBUG    selenium.webdriver.remote.remote_connection:remote_connection.py:313 POST http://localhost:38537/session/9c22cb71-d39d-46e0-9de3-71616650330f/window/maximize {}
+DEBUG    urllib3.connectionpool:connectionpool.py:453 http://localhost:38537 "POST /session/9c22cb71-d39d-46e0-9de3-71616650330f/window/maximize HTTP/1.1" 200 49
+DEBUG    selenium.webdriver.remote.remote_connection:remote_connection.py:329 Remote response: status=200 | data={"value":{"x":0,"y":0,"width":1366,"height":768}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '49', 'date': 'Tue, 10 Feb 2026 13:50:27 GMT'})
+DEBUG    selenium.webdriver.remote.remote_connection:remote_connection.py:356 Finished Request
+DEBUG    selenium.webdriver.remote.remote_connection:remote_connection.py:313 POST http://localhost:38537/session/9c22cb71-d39d-46e0-9de3-71616650330f/timeouts {"pageLoad": 60000}
+DEBUG    urllib3.connectionpool:connectionpool.py:453 http://localhost:38537 "POST /session/9c22cb71-d39d-46e0-9de3-71616650330f/timeouts HTTP/1.1" 200 14
+DEBUG    selenium.webdriver.remote.remote_connection:remote_connection.py:329 Remote response: status=200 | data={"value":null} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '14', 'date': 'Tue, 10 Feb 2026 13:50:27 GMT'})
+DEBUG    selenium.webdriver.remote.remote_connection:remote_connection.py:356 Finished Request
+DEBUG    selenium.webdriver.remote.remote_connection:remote_connection.py:313 POST http://localhost:38537/session/9c22cb71-d39d-46e0-9de3-71616650330f/timeouts {"script": 30000}
+DEBUG    urllib3.connectionpool:connectionpool.py:453 http://localhost:38537 "POST /session/9c22cb71-d39d-46e0-9de3-71616650330f/timeouts HTTP/1.1" 200 14
+DEBUG    selenium.webdriver.remote.remote_connection:remote_connection.py:329 Remote response: status=200 | data={"value":null} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '14', 'date': 'Tue, 10 Feb 2026 13:50:27 GMT'})
+DEBUG    selenium.webdriver.remote.remote_connection:remote_connection.py:356 Finished Request
+DEBUG    selenium.webdriver.remote.remote_connection:remote_connection.py:313 POST http://localhost:38537/session/9c22cb71-d39d-46e0-9de3-71616650330f/timeouts {"implicit": 10000}
+DEBUG    urllib3.connectionpool:connectionpool.py:453 http://localhost:38537 "POST /session/9c22cb71-d39d-46e0-9de3-71616650330f/timeouts HTTP/1.1" 200 14
+DEBUG    selenium.webdriver.remote.remote_connection:remote_connection.py:329 Remote response: status=200 | data={"value":null} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '14', 'date': 'Tue, 10 Feb 2026 13:50:27 GMT'})
+DEBUG    selenium.webdriver.remote.remote_connection:remote_connection.py:356 Finished Request
+DEBUG    selenium.webdriver.remote.remote_connection:remote_connection.py:313 DELETE http://localhost:38537/session/9c22cb71-d39d-46e0-9de3-71616650330f {}
+DEBUG    urllib3.connectionpool:connectionpool.py:453 http://localhost:38537 "DELETE /session/9c22cb71-d39d-46e0-9de3-71616650330f HTTP/1.1" 200 14
+DEBUG    selenium.webdriver.remote.remote_connection:remote_connection.py:329 Remote response: status=200 | data={"value":null} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '14', 'date': 'Tue, 10 Feb 2026 13:50:27 GMT'})
+DEBUG    selenium.webdriver.remote.remote_connection:remote_connection.py:356 Finished Request

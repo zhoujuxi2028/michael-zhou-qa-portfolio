@@ -1,4 +1,4 @@
-# ==================== Environment Configuration ====================
+# ==================== Environment & Credentials ====================
 .env
 *.env
 !.env.example
@@ -9,19 +9,19 @@ __pycache__/
 *$py.class
 *.so
 .Python
+*.egg-info/
+.eggs/
 build/
 develop-eggs/
 dist/
 downloads/
 eggs/
-.eggs/
 lib/
 lib64/
 parts/
 sdist/
 var/
 wheels/
-*.egg-info/
 .installed.cfg
 *.egg
 MANIFEST
@@ -32,31 +32,28 @@ ENV/
 env/
 .venv
 
-# ==================== Test Artifacts (NEW unified location) ====================
+# ==================== Test Runtime Outputs ====================
+# All test outputs unified under outputs/
 outputs/
 !outputs/.gitkeep
-!outputs/logs/.gitkeep
-!outputs/reports/.gitkeep
-!outputs/screenshots/.gitkeep
-!outputs/videos/.gitkeep
+!outputs/*/.gitkeep
 
-# Old artifact directories (deprecated, will be removed)
-screenshots/
-logs/
-videos/
-reports/
-allure-results/
-allure-report/
+# Logs (historical data preserved in archive/)
+logs/*.log
+logs/test_*.log
+!logs/.gitkeep
+!logs/archive/.gitkeep
 
-# Pytest
+# ==================== Test Coverage & Reports ====================
 htmlcov/
-.pytest_cache/
 .coverage
 coverage.xml
 *.cover
 .hypothesis/
+.pytest_cache/
+.tox/
 
-# ==================== IDE ====================
+# ==================== IDE & Editor ====================
 .vscode/
 .idea/
 *.swp
@@ -64,10 +61,11 @@ coverage.xml
 *~
 .DS_Store
 
-# ==================== Jupyter Notebook ====================
+# ==================== Jupyter ====================
 .ipynb_checkpoints
 
-# ==================== Other ====================
+# ==================== Type Checking & Linting ====================
 .mypy_cache/
 .dmypy.json
 dmypy.json
+.ruff_cache/
