@@ -72,15 +72,52 @@ class SystemUpdatePage(BasePage):
 
     def navigate(self):
         """
-        Navigate to System Updates page.
+        Navigate to System Updates page via menu navigation.
+
+        ISSUE-004 Fix: Must use menu navigation instead of direct URL access
+        to preserve the 3-frame structure (tophead, left, right).
+
+        Navigation steps:
+        1. Switch to left frame
+        2. Click "Administration" menu
+        3. Wait for submenu to expand
+        4. Click "System Updates" link
+        5. Wait for content to load in right frame
 
         Example:
             >>> system_update_page.navigate()
         """
-        TestLogger.log_step("Navigate to System Updates page")
-        self.navigate_to(TestConfig.URLS['system_update'])
-        self.wait_for_page_load()
-        self.logger.info(f"✓ Navigated to System Updates page: {TestConfig.URLS['system_update']}")
+        import time
+        TestLogger.log_step("Navigate to System Updates page via menu")
+
+        # Step 1: Switch to left frame
+        if not self.switch_to_frame(self.LEFT_FRAME):
+            self.logger.error("✗ Failed to switch to left frame")
+            return
+
+        # Step 2: Click Administration menu
+        self.logger.debug("Clicking Administration menu...")
+        if not self.click_in_frame_by_text(self.LEFT_FRAME, 'Administration'):
+            self.logger.error("✗ Failed to click Administration menu")
+            return
+
+        # Step 3: Wait for submenu to expand
+        time.sleep(1)  # Allow animation to complete
+        self.logger.debug("Waiting for System Updates submenu...")
+        if not self.wait_for_frame_content(self.LEFT_FRAME, 'System Update', timeout=5):
+            self.logger.warning("System Updates submenu may not be visible")
+
+        # Step 4: Click System Updates link
+        self.logger.debug("Clicking System Updates link...")
+        if not self.click_link_in_frame(self.LEFT_FRAME, 'System Update'):
+            self.logger.error("✗ Failed to click System Updates link")
+            return
+
+        # Step 5: Wait for content to load in right frame
+        time.sleep(2)  # Allow page to load in right frame
+        self.switch_to_default_content()
+
+        self.logger.info("✓ Navigated to System Updates page via menu navigation")
 
     # ==================== Information Retrieval ====================
 
