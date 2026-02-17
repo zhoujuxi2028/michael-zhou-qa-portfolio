@@ -125,6 +125,150 @@ class BasePage:
         finally:
             self.switch_to_default_content()
 
+    # ==================== Menu Navigation (ISSUE-004 Fix) ====================
+
+    def wait_for_frame_content(
+        self,
+        frame_name: str,
+        expected_text: str,
+        timeout: int = 10
+    ) -> bool:
+        """
+        Wait for frame to contain expected text.
+
+        This is used for menu navigation to ensure submenu items
+        have loaded before attempting to click them.
+
+        Args:
+            frame_name: Name of the frame to check
+            expected_text: Text to wait for in frame
+            timeout: Maximum wait time in seconds
+
+        Returns:
+            bool: True if text found within timeout, False otherwise
+
+        Example:
+            >>> page.wait_for_frame_content('left', 'System Update', 5)
+        """
+        import time
+        end_time = time.time() + timeout
+
+        while time.time() < end_time:
+            try:
+                if self.switch_to_frame(frame_name):
+                    body = self.driver.find_element(By.TAG_NAME, 'body')
+                    if expected_text in body.text:
+                        self.logger.debug(f"✓ Found '{expected_text}' in frame '{frame_name}'")
+                        self.switch_to_default_content()
+                        return True
+                    self.switch_to_default_content()
+            except Exception as e:
+                self.logger.debug(f"Waiting for '{expected_text}' in frame...")
+
+            time.sleep(0.5)
+
+        self.logger.warning(f"✗ Timeout waiting for '{expected_text}' in frame '{frame_name}'")
+        self.switch_to_default_content()
+        return False
+
+    def click_in_frame_by_text(
+        self,
+        frame_name: str,
+        text_content: str
+    ) -> bool:
+        """
+        Click element in frame by its text content.
+
+        This searches for an element (link or other clickable) that
+        contains the specified text and clicks it.
+
+        Args:
+            frame_name: Name of the frame
+            text_content: Text to search for (case-insensitive)
+
+        Returns:
+            bool: True if element found and clicked, False otherwise
+
+        Example:
+            >>> page.click_in_frame_by_text('left', 'Administration')
+        """
+        try:
+            if not self.switch_to_frame(frame_name):
+                return False
+
+            # Try to find link with text
+            links = self.driver.find_elements(By.TAG_NAME, 'a')
+            for link in links:
+                if text_content.lower() in link.text.lower():
+                    self.logger.debug(f"✓ Clicking '{link.text}' in frame '{frame_name}'")
+                    link.click()
+                    self.switch_to_default_content()
+                    return True
+
+            self.logger.error(f"✗ No element found with text '{text_content}' in frame '{frame_name}'")
+            self.switch_to_default_content()
+            return False
+
+        except Exception as e:
+            self.logger.error(f"✗ Failed to click element in frame: {e}")
+            self.switch_to_default_content()
+            return False
+
+    def click_link_in_frame(
+        self,
+        frame_name: str,
+        search_text: str
+    ) -> bool:
+        """
+        Click link in frame by partial text match.
+
+        This is specifically for clicking menu links, using a
+        case-insensitive partial text match.
+
+        Args:
+            frame_name: Name of the frame
+            search_text: Partial text to search for in links
+
+        Returns:
+            bool: True if link found and clicked, False otherwise
+
+        Example:
+            >>> page.click_link_in_frame('left', 'system update')
+        """
+        try:
+            if not self.switch_to_frame(frame_name):
+                return False
+
+            # Use PARTIAL_LINK_TEXT for more flexible matching
+            try:
+                link = self.driver.find_element(
+                    By.PARTIAL_LINK_TEXT,
+                    search_text
+                )
+                self.logger.debug(f"✓ Clicking link '{link.text}' in frame '{frame_name}'")
+                link.click()
+                self.switch_to_default_content()
+                return True
+            except:
+                # Fallback: search through all links
+                links = self.driver.find_elements(By.TAG_NAME, 'a')
+                for link in links:
+                    if search_text.lower() in link.text.lower():
+                        self.logger.debug(f"✓ Clicking link '{link.text}' in frame '{frame_name}'")
+                        link.click()
+                        self.switch_to_default_content()
+                        return True
+
+            self.logger.error(f"✗ No link found with text '{search_text}' in frame '{frame_name}'")
+            self.switch_to_default_content()
+            return False
+
+        except Exception as e:
+            self.logger.error(f"✗ Failed to click link in frame: {e}")
+            TestLogger.log_exception(e, f"Click link in frame failed: {frame_name}")
+            self.switch_to_default_content()
+            return False
+
     # ==================== Element Finding ====================
 
     def find_element(
