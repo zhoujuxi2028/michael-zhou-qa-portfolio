@@ -1,8 +1,0 @@
-/bin/sh: line 1: google-chrome: command not found
-/bin/sh: line 1: google-chrome-stable: command not found
-/bin/sh: line 1: google-chrome-beta: command not found
-/bin/sh: line 1: google-chrome-dev: command not found
-/bin/sh: line 1: google-chrome: command not found
-/bin/sh: line 1: google-chrome-stable: command not found
-/bin/sh: line 1: google-chrome-beta: command not found
-/bin/sh: line 1: google-chrome-dev: command not found
