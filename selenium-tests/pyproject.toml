@@ -41,7 +41,7 @@ where = ["src"]
 # ==================== Pytest Configuration ====================
 [tool.pytest.ini_options]
 # Test Discovery
-testpaths = ["src/tests"]
+testpaths = ["tests"]
 python_files = "test_*.py"
 python_classes = "Test*"
 python_functions = "test_*"

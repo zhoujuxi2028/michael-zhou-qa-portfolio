@@ -17,8 +17,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ==================== Project Paths ====================
-PROJECT_ROOT = Path(__file__).resolve().parents[3]  # src/core/config/test_config.py → 上3层到项目根
-TESTS_DIR = PROJECT_ROOT / "src" / "tests"
+# Robust project root detection - searches for pyproject.toml
+PROJECT_ROOT = Path(__file__).resolve().parent
+while not (PROJECT_ROOT / 'pyproject.toml').exists():
+    PROJECT_ROOT = PROJECT_ROOT.parent
+    if PROJECT_ROOT == PROJECT_ROOT.parent:
+        raise RuntimeError("Cannot find project root with pyproject.toml")
+
+# Support environment variable override
+PROJECT_ROOT = Path(os.getenv('PROJECT_ROOT', str(PROJECT_ROOT)))
+
+TESTS_DIR = PROJECT_ROOT / "tests"
 PAGES_DIR = PROJECT_ROOT / "src" / "frameworks" / "pages"
 REPORTS_DIR = PROJECT_ROOT / "outputs" / "reports"
 SCREENSHOTS_DIR = PROJECT_ROOT / "outputs" / "screenshots"
