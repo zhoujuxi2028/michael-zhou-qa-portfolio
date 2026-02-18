@@ -74,6 +74,24 @@ class TestConfig:
     BROWSER_WIDTH = int(os.getenv('BROWSER_WIDTH', '1920'))
     BROWSER_HEIGHT = int(os.getenv('BROWSER_HEIGHT', '1080'))
 
+    # ==================== WebDriver Version Management ====================
+    # ChromeDriver version management (3 modes):
+    # 1. CHROMEDRIVER_PATH: Explicit path (fastest, CI/CD)
+    # 2. CHROMEDRIVER_VERSION: Version lock (reproducible)
+    # 3. Auto-detect: Intelligent default with extended cache
+    CHROMEDRIVER_PATH = os.getenv('CHROMEDRIVER_PATH', None)
+    CHROMEDRIVER_VERSION = os.getenv('CHROMEDRIVER_VERSION', None)
+    CHROMEDRIVER_CACHE_VALID_DAYS = int(os.getenv('CHROMEDRIVER_CACHE_VALID_DAYS', '7'))
+
+    # GeckoDriver (Firefox) version management
+    GECKODRIVER_PATH = os.getenv('GECKODRIVER_PATH', None)
+    GECKODRIVER_VERSION = os.getenv('GECKODRIVER_VERSION', None)
+    GECKODRIVER_CACHE_VALID_DAYS = int(os.getenv('GECKODRIVER_CACHE_VALID_DAYS', '7'))
+
+    # EdgeDriver version management
+    EDGEDRIVER_PATH = os.getenv('EDGEDRIVER_PATH', None)
+    EDGEDRIVER_VERSION = os.getenv('EDGEDRIVER_VERSION', None)
+
     # ==================== Timeout Configuration ====================
     IMPLICIT_WAIT = 10  # seconds
     EXPLICIT_WAIT = 30  # seconds

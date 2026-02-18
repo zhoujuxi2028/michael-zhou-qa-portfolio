@@ -249,6 +249,12 @@ HEADLESS=false
 BROWSER_WIDTH=1920
 BROWSER_HEIGHT=1080
 
+# WebDriver Version Management (recommended for production)
+# Option 1: Pin specific ChromeDriver version
+CHROMEDRIVER_VERSION=145.0.7054.8
+# Option 2: Use pre-installed driver (CI/CD)
+# CHROMEDRIVER_PATH=/usr/local/bin/chromedriver
+
 # Test Configuration
 TARGET_KERNEL_VERSION=5.14.0-427.24.1.el9_4.x86_64
 MAX_RETRIES=2
@@ -611,6 +617,9 @@ For questions or issues:
 - Create an issue in the repository
 - Contact: QA Automation Team
 - Documentation: See `/docs` directory
+  - [WebDriver Version Management Guide](docs/guides/webdriver-version-management.md) - ChromeDriver/GeckoDriver configuration
+  - [Design Specification](docs/architecture/DESIGN_SPECIFICATION.md) - Framework architecture
+  - [Enterprise Standards Assessment](docs/architecture/ENTERPRISE_STANDARDS_ASSESSMENT.md) - Quality standards
 
 ---
 
