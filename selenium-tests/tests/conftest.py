@@ -149,13 +149,18 @@ def driver() -> Generator[webdriver.Remote, None, None]:
 
 def _create_chrome_driver() -> webdriver.Chrome:
     """
-    Create Chrome WebDriver with enterprise configuration.
+    Create Chrome WebDriver with intelligent version management.
+
+    Version Resolution Priority:
+    1. CHROMEDRIVER_PATH env var (explicit path, no download)
+    2. CHROMEDRIVER_VERSION env var (version lock)
+    3. Auto-detect system Chrome (extended cache: 7 days)
 
     Returns:
-        webdriver.Chrome: Configured Chrome driver
+        webdriver.Chrome: Configured Chrome driver instance
 
     Note:
-        Uses webdriver-manager for automatic ChromeDriver management
+        Uses 3-tier WebDriver version management for enterprise reliability
     """
     options = ChromeOptions()
 
@@ -174,8 +179,28 @@ def _create_chrome_driver() -> webdriver.Chrome:
     # Enable browser logging (for debug)
     options.set_capability('goog:loggingPrefs', {'browser': 'ALL'})
 
+    # WebDriver version management (3-tier)
+    if TestConfig.CHROMEDRIVER_PATH:
+        # Mode 1: Explicit path (CI/CD, fastest)
+        logger.info(f"Using explicit ChromeDriver path: {TestConfig.CHROMEDRIVER_PATH}")
+        service = ChromeService(executable_path=TestConfig.CHROMEDRIVER_PATH)
+    elif TestConfig.CHROMEDRIVER_VERSION:
+        # Mode 2: Version lock (Development, reproducible)
+        logger.info(f"Using ChromeDriver version: {TestConfig.CHROMEDRIVER_VERSION}")
+        driver_path = ChromeDriverManager(
+            version=TestConfig.CHROMEDRIVER_VERSION,
+            cache_valid_range=TestConfig.CHROMEDRIVER_CACHE_VALID_DAYS
+        ).install()
+        service = ChromeService(executable_path=driver_path)
+    else:
+        # Mode 3: Auto-detect with extended cache (Fallback)
+        logger.info(f"Auto-detecting ChromeDriver (cache: {TestConfig.CHROMEDRIVER_CACHE_VALID_DAYS} days)")
+        driver_path = ChromeDriverManager(
+            cache_valid_range=TestConfig.CHROMEDRIVER_CACHE_VALID_DAYS
+        ).install()
+        service = ChromeService(executable_path=driver_path)
+
     # Create driver
-    service = ChromeService(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
 
     logger.debug("✓ Chrome driver created")
@@ -184,13 +209,18 @@ def _create_chrome_driver() -> webdriver.Chrome:
 
 def _create_firefox_driver() -> webdriver.Firefox:
     """
-    Create Firefox WebDriver with enterprise configuration.
+    Create Firefox WebDriver with intelligent version management.
+
+    Version Resolution Priority:
+    1. GECKODRIVER_PATH env var (explicit path, no download)
+    2. GECKODRIVER_VERSION env var (version lock)
+    3. Auto-detect (extended cache: 7 days)
 
     Returns:
-        webdriver.Firefox: Configured Firefox driver
+        webdriver.Firefox: Configured Firefox driver instance
 
     Note:
-        Uses webdriver-manager for automatic GeckoDriver management
+        Uses 3-tier WebDriver version management for enterprise reliability
     """
     options = FirefoxOptions()
 
@@ -209,8 +239,28 @@ def _create_firefox_driver() -> webdriver.Firefox:
     options.set_preference("browser.window.width", TestConfig.BROWSER_WIDTH)
     options.set_preference("browser.window.height", TestConfig.BROWSER_HEIGHT)
 
+    # WebDriver version management (3-tier)
+    if TestConfig.GECKODRIVER_PATH:
+        # Mode 1: Explicit path (CI/CD, fastest)
+        logger.info(f"Using explicit GeckoDriver path: {TestConfig.GECKODRIVER_PATH}")
+        service = FirefoxService(executable_path=TestConfig.GECKODRIVER_PATH)
+    elif TestConfig.GECKODRIVER_VERSION:
+        # Mode 2: Version lock (Development, reproducible)
+        logger.info(f"Using GeckoDriver version: {TestConfig.GECKODRIVER_VERSION}")
+        driver_path = GeckoDriverManager(
+            version=TestConfig.GECKODRIVER_VERSION,
+            cache_valid_range=TestConfig.GECKODRIVER_CACHE_VALID_DAYS
+        ).install()
+        service = FirefoxService(executable_path=driver_path)
+    else:
+        # Mode 3: Auto-detect with extended cache (Fallback)
+        logger.info(f"Auto-detecting GeckoDriver (cache: {TestConfig.GECKODRIVER_CACHE_VALID_DAYS} days)")
+        driver_path = GeckoDriverManager(
+            cache_valid_range=TestConfig.GECKODRIVER_CACHE_VALID_DAYS
+        ).install()
+        service = FirefoxService(executable_path=driver_path)
+
     # Create driver
-    service = FirefoxService(GeckoDriverManager().install())
     driver = webdriver.Firefox(service=service, options=options)
 
     logger.debug("✓ Firefox driver created")
