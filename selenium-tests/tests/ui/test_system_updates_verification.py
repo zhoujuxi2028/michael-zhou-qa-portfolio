@@ -1,8 +1,8 @@
 """
-Multi-Level Verification Demo Tests
+System Updates Verification Tests
 
-Demonstrates Phase 2 capabilities: UI + Backend verification
-This test suite showcases enterprise-grade verification across all levels.
+Comprehensive verification tests for Administration > System Updates page.
+Demonstrates enterprise-grade multi-level verification (UI + Backend).
 
 Test Cases:
 - TC-VERIFY-001: Multi-level kernel version verification (UI + Backend)
@@ -13,8 +13,8 @@ Note: Log verification temporarily disabled due to incorrect log file path.
       The log file /var/log/iwss/update.log does not exist on the system.
 
 Author: QA Automation Team
-Version: 1.1.0
-Last Modified: 2026-02-16
+Version: 1.2.0
+Last Modified: 2026-02-18
 """
 
 import pytest
@@ -25,13 +25,13 @@ from core.config.test_config import TestConfig
 from core.logging.test_logger import TestLogger
 
 
-@allure.epic("Phase 2: Multi-Level Verification")
-@allure.feature("Verification Framework Demo")
+@allure.epic("System Administration")
+@allure.feature("System Updates")
 @pytest.mark.smoke
 @pytest.mark.P0
-class TestMultiLevelVerification:
+class TestSystemUpdatesVerification:
     """
-    Multi-level verification demonstration test suite.
+    System Updates verification test suite.
 
     Demonstrates:
     - UI verification using ui_verifier fixture
