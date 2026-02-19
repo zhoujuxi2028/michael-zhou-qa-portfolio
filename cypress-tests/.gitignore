@@ -1,7 +1,7 @@
 # Cypress
 cypress/downloads
 cypress/screenshots
-cypress/videos
+cypress/videos/**
 cypress.env.json
 
 # Dependencies
