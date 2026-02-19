@@ -188,16 +188,13 @@ def _create_chrome_driver() -> webdriver.Chrome:
         # Mode 2: Version lock (Development, reproducible)
         logger.info(f"Using ChromeDriver version: {TestConfig.CHROMEDRIVER_VERSION}")
         driver_path = ChromeDriverManager(
-            version=TestConfig.CHROMEDRIVER_VERSION,
-            cache_valid_range=TestConfig.CHROMEDRIVER_CACHE_VALID_DAYS
+            driver_version=TestConfig.CHROMEDRIVER_VERSION
         ).install()
         service = ChromeService(executable_path=driver_path)
     else:
-        # Mode 3: Auto-detect with extended cache (Fallback)
-        logger.info(f"Auto-detecting ChromeDriver (cache: {TestConfig.CHROMEDRIVER_CACHE_VALID_DAYS} days)")
-        driver_path = ChromeDriverManager(
-            cache_valid_range=TestConfig.CHROMEDRIVER_CACHE_VALID_DAYS
-        ).install()
+        # Mode 3: Auto-detect with cache (Fallback)
+        logger.info(f"Auto-detecting ChromeDriver")
+        driver_path = ChromeDriverManager().install()
         service = ChromeService(executable_path=driver_path)
 
     # Create driver
@@ -248,16 +245,13 @@ def _create_firefox_driver() -> webdriver.Firefox:
         # Mode 2: Version lock (Development, reproducible)
         logger.info(f"Using GeckoDriver version: {TestConfig.GECKODRIVER_VERSION}")
         driver_path = GeckoDriverManager(
-            version=TestConfig.GECKODRIVER_VERSION,
-            cache_valid_range=TestConfig.GECKODRIVER_CACHE_VALID_DAYS
+            driver_version=TestConfig.GECKODRIVER_VERSION
         ).install()
         service = FirefoxService(executable_path=driver_path)
     else:
-        # Mode 3: Auto-detect with extended cache (Fallback)
-        logger.info(f"Auto-detecting GeckoDriver (cache: {TestConfig.GECKODRIVER_CACHE_VALID_DAYS} days)")
-        driver_path = GeckoDriverManager(
-            cache_valid_range=TestConfig.GECKODRIVER_CACHE_VALID_DAYS
-        ).install()
+        # Mode 3: Auto-detect with cache (Fallback)
+        logger.info(f"Auto-detecting GeckoDriver")
+        driver_path = GeckoDriverManager().install()
         service = FirefoxService(executable_path=driver_path)
 
     # Create driver
