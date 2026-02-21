@@ -1,0 +1,36 @@
+# Newman reports
+reports/
+*.html
+*.json
+!collections/*.json
+!environments/*.json
+
+# Node modules (if using npm scripts)
+node_modules/
+
+# Environment files with sensitive data
+.env
+*.env.local
+
+# Test data with sensitive information
+*-sensitive.json
+*-credentials.json
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+tmp/
+temp/
+*.tmp
