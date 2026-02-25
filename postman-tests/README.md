@@ -1,9 +1,46 @@
-# 🚀 Postman API Test Automation
+# 🚀 Postman API Test Automation - Expert Level
 
 **Project**: API Test Automation using Postman & Newman
 **Version**: 1.0.0
 **Created**: 2026-02-21
+**Updated**: 2026-02-25
 **Author**: Michael Zhou
+
+---
+
+## ⭐ NEW: E-Commerce API Test Suite (Expert-Level Framework)
+
+**Latest Collection:** `E-Commerce-API-Test-Suite.postman_collection.json`
+
+This expert-level test suite demonstrates advanced API testing capabilities:
+
+### 🎯 Key Features
+
+- **Custom Validation Library** - 15+ validation functions (order totals, Luhn algorithm, email, business rules)
+- **Test Data Factory** - Dynamic test data generation (users, products, orders)
+- **Advanced Error Handling** - Exponential backoff retry, circuit breaker pattern, rate limiting
+- **Business Scenario** - Complete E-commerce order management system
+- **280+ Assertions** - Comprehensive validation at multiple levels
+- **Production-Ready** - Enterprise-grade test framework
+
+### 📚 Quick Start
+
+```bash
+# Navigate to project
+cd postman-tests
+
+# Run expert-level test suite
+newman run collections/E-Commerce-API-Test-Suite.postman_collection.json \
+  -e environments/dev.postman_environment.json \
+  -r html,cli \
+  --reporter-html-export reports/expert-test-report.html
+```
+
+### 📖 Expert Documentation
+
+- **[ADVANCED-FEATURES.md](docs/ADVANCED-FEATURES.md)** - Complete framework API reference
+- **[TEST-DATA-STRATEGY.md](docs/TEST-DATA-STRATEGY.md)** - Data management approach
+- **[API-TESTING-GUIDE.md](docs/API-TESTING-GUIDE.md)** - API testing fundamentals
 
 ---
 
