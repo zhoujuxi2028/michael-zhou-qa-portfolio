@@ -1,0 +1,23 @@
+{
+  "name": "Staging Environment",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "https://jsonplaceholder.typicode.com",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "userId",
+      "value": "1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "timeout",
+      "value": "5000",
+      "type": "default",
+      "enabled": true
+    }
+  ]
+}

@@ -1,0 +1,235 @@
+# Docker Compose Configuration for Test Project
+# Simplified version for running Cypress and Newman tests without application dependencies
+#
+# Interview Talking Point:
+# "This docker-compose file demonstrates containerized test execution. It runs E2E and
+# API tests in isolated Docker containers, ensuring consistent test environments across
+# local development and CI/CD pipelines."
+
+version: '3.8'
+
+# Define services
+services:
+  # Cypress E2E Tests
+  # Interview Talking Point:
+  # "The Cypress service runs E2E tests in a containerized browser environment. We use
+  # the official Cypress Docker image which includes Chrome, Firefox, and Edge pre-installed.
+  # This eliminates 'works on my machine' issues by providing identical test environments."
+  cypress:
+    image: cypress/included:13.6.0
+    container_name: qa-cypress-demo
+    working_dir: /e2e
+
+    # Environment configuration
+    environment:
+      - CYPRESS_baseUrl=https://jsonplaceholder.typicode.com
+      - CYPRESS_VIDEO=true
+      - CYPRESS_SCREENSHOT_ON_RUN_FAILURE=true
+
+    # Volume mounts
+    # Interview Talking Point:
+    # "We mount the project directory to allow the container to access test files. We also
+    # mount artifact directories (screenshots, videos) to preserve test results after the
+    # container exits. This is essential for debugging CI failures."
+    volumes:
+      # Mount entire project
+      - ./:/e2e
+
+      # Preserve test artifacts (these will be created if they don't exist)
+      - ./cypress/screenshots:/e2e/cypress/screenshots
+      - ./cypress/videos:/e2e/cypress/videos
+
+      # Cache Cypress binary for faster subsequent runs
+      - cypress-cache:/root/.cache/Cypress
+
+    # Command to run tests
+    # Interview Talking Point:
+    # "We run Cypress in headless mode with video recording enabled. The --browser chrome
+    # flag specifies Chrome (included in the image). Tests run against jsonplaceholder
+    # API which doesn't require any setup or authentication."
+    command: >
+      npx cypress run
+      --browser chrome
+      --headless
+      --config video=true
+
+    # Network configuration
+    networks:
+      - test-network
+
+  # Newman API Tests
+  # Interview Talking Point:
+  # "The Newman service runs Postman collections via the Newman CLI. It's much lighter
+  # than Cypress (~150MB vs ~1GB) since API tests don't need browsers. We generate
+  # multiple report formats for different audiences."
+  newman:
+    build:
+      context: .
+      dockerfile: Dockerfile.newman
+    container_name: qa-newman-demo
+    working_dir: /etc/newman
+
+    # Environment configuration
+    environment:
+      - ENVIRONMENT=staging
+
+    # Volume mounts
+    # Interview Talking Point:
+    # "We mount the postman directory containing collections and environments. The newman
+    # directory is mounted to extract HTML and JUnit reports. These reports can be viewed
+    # in a browser or integrated with CI/CD systems."
+    volumes:
+      # Mount Postman collections and environments
+      - ./postman:/etc/newman
+
+      # Mount reports directory to preserve artifacts
+      - ./newman:/etc/newman/newman-reports
+
+    # Command to run Newman tests
+    # Interview Talking Point:
+    # "Newman runs the collection with multiple reporters: CLI for console output,
+    # htmlextra for beautiful visual reports, and JUnit for CI integration. The
+    # --bail flag stops on first failure for fast feedback."
+    command: >
+      run api-collection.json
+      -e environment.json
+      --reporters cli,htmlextra,junit
+      --reporter-htmlextra-export newman-reports/api-report.html
+      --reporter-junit-export newman-reports/junit.xml
+      --delay-request 500
+      --timeout-request 10000
+
+    # Network configuration
+    networks:
+      - test-network
+
+# Define networks
+# Interview Talking Point:
+# "We use a custom bridge network for isolation. Although these services don't communicate
+# with each other (both hit external APIs), the network provides a clean, isolated
+# environment and follows Docker best practices."
+networks:
+  test-network:
+    driver: bridge
+    name: qa-demo-network
+
+# Define volumes
+# Interview Talking Point:
+# "Named volumes persist data across container runs. The Cypress cache volume stores
+# the Cypress binary, avoiding re-downloads on subsequent runs. This saves ~200MB of
+# bandwidth and 1-2 minutes per run."
+volumes:
+  cypress-cache:
+    name: qa-cypress-demo-cache
+
+# =============================================================================
+# Usage Instructions
+# =============================================================================
+
+# Run all tests (recommended - wait for all containers):
+#   docker compose up -d
+#   docker compose wait cypress newman
+#   docker compose down
+#
+# Run with npm script:
+#   npm run docker:test
+#
+# Run with detailed logs:
+#   npm run docker:test:logs
+#
+# Run in detached mode:
+#   docker compose up -d
+#
+# Run Cypress tests only:
+#   docker-compose up cypress
+#
+# Run Newman tests only:
+#   docker-compose up newman
+#
+# View logs:
+#   docker-compose logs
+#   docker-compose logs -f cypress    # Follow Cypress logs
+#   docker-compose logs newman        # View Newman logs
+#
+# Stop all services:
+#   docker-compose down
+#
+# Clean up (remove volumes):
+#   docker-compose down -v
+#
+# Rebuild if needed:
+#   docker-compose up --build
+#
+# Run with custom command:
+#   docker-compose run --rm cypress npx cypress run --spec cypress/e2e/01-api-tests.cy.js
+#
+# Check service status:
+#   docker-compose ps
+#
+# View test reports after running:
+#   open newman/api-report.html        # macOS
+#   xdg-open newman/api-report.html    # Linux
+#   start newman/api-report.html       # Windows
+
+# =============================================================================
+# Interview Discussion Points
+# =============================================================================
+#
+# 1. Simplified Architecture:
+#    "Unlike typical setups with application, database, and cache services, this
+#    compose file is simplified because our tests target public APIs. We only need
+#    the test runner containers. This demonstrates understanding of when to use
+#    complex vs simple architectures."
+#
+# 2. Container Images:
+#    "We use official images (cypress/included and postman/newman) rather than
+#    building custom Dockerfiles. Official images are maintained, tested, and
+#    regularly updated with security patches. This reduces maintenance burden."
+#
+# 3. Volume Strategy:
+#    "We mount the project directory for test files and separate volumes for
+#    artifacts. This pattern allows us to modify tests without rebuilding images
+#    while preserving test results after containers stop."
+#
+# 4. No Dependencies:
+#    "Since services don't depend on each other, they can run in parallel. Docker
+#    Compose starts both simultaneously, reducing total execution time. If we had
+#    an application service, we'd use depends_on with healthchecks."
+#
+# 5. Network Isolation:
+#    "The custom network isolates test containers from other Docker containers on
+#    the host. This prevents port conflicts and ensures clean test environments."
+#
+# 6. Artifact Preservation:
+#    "Volume mounts for screenshots, videos, and reports ensure artifacts survive
+#    container deletion. In CI, these artifacts are uploaded to the CI system for
+#    debugging and audit trails."
+#
+# 7. CI/CD Integration:
+#    "This compose file works identically on local machines and in CI. GitHub Actions,
+#    GitLab CI, and Jenkins can all run 'docker compose up --exit-code-from cypress'
+#    to execute tests. This ensures consistency across environments. Using
+#    --exit-code-from cypress ensures Newman can complete first without killing
+#    the still-running Cypress container."
+#
+# 8. Resource Efficiency:
+#    "No resource limits are set, allowing tests to use available resources. In
+#    production CI environments, we might add 'mem_limit' and 'cpus' to prevent
+#    one test container from starving others."
+#
+# 9. Debugging Support:
+#    "Individual services can be run with 'docker-compose up cypress' for focused
+#    debugging. The 'run' command allows overriding the default command to run
+#    specific tests or with different options."
+#
+# 10. Clean-up Strategy:
+#     "The --exit-code-from flag is perfect for CI: it waits for the specified
+#     service to complete and returns its exit code. The -v flag on 'down' removes
+#     volumes for a clean slate. Without -v, the Cypress cache persists, speeding
+#     up subsequent runs."
+#
+# 11. Custom Docker Images:
+#     "The Newman service uses a custom Dockerfile to add htmlextra reporter support.
+#     This demonstrates understanding of when to extend official images vs building
+#     from scratch. The build context allows us to version-control our image
+#     configuration alongside the application code."

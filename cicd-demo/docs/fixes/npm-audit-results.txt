@@ -1,0 +1,99 @@
+# npm audit report
+
+ajv  <8.18.0
+Severity: moderate
+ajv has ReDoS when using `$data` option - https://github.com/advisories/GHSA-2g4f-4pwh-qvx6
+fix available via `npm audit fix --force`
+Will install eslint@4.1.1, which is a breaking change
+node_modules/ajv
+  @eslint/eslintrc  *
+  Depends on vulnerable versions of ajv
+  node_modules/@eslint/eslintrc
+    eslint  >=4.2.0
+    Depends on vulnerable versions of @eslint-community/eslint-utils
+    Depends on vulnerable versions of @eslint/eslintrc
+    Depends on vulnerable versions of ajv
+    node_modules/eslint
+      @eslint-community/eslint-utils  *
+      Depends on vulnerable versions of eslint
+      node_modules/@eslint-community/eslint-utils
+  har-validator  >=3.3.0
+  Depends on vulnerable versions of ajv
+  node_modules/har-validator
+
+jose  3.0.0 - 4.15.4
+Severity: moderate
+jose vulnerable to resource exhaustion via specifically crafted JWE with compressed plaintext - https://github.com/advisories/GHSA-hhhv-q57g-882q
+fix available via `npm audit fix --force`
+Will install newman@2.1.2, which is a breaking change
+node_modules/jose
+  postman-runtime  >=2.4.3
+  Depends on vulnerable versions of jose
+  Depends on vulnerable versions of lodash
+  Depends on vulnerable versions of node-forge
+  Depends on vulnerable versions of postman-collection
+  Depends on vulnerable versions of postman-request
+  Depends on vulnerable versions of postman-sandbox
+  node_modules/postman-runtime
+    newman  >=3.0.0-beta.1
+    Depends on vulnerable versions of lodash
+    Depends on vulnerable versions of postman-collection
+    Depends on vulnerable versions of postman-collection-transformer
+    Depends on vulnerable versions of postman-request
+    Depends on vulnerable versions of postman-runtime
+    node_modules/newman
+      newman-reporter-htmlextra  >=1.0.1
+      Depends on vulnerable versions of lodash
+      Depends on vulnerable versions of newman
+      node_modules/newman-reporter-htmlextra
+
+lodash  4.0.0 - 4.17.21
+Severity: moderate
+Lodash has Prototype Pollution Vulnerability in `_.unset` and `_.omit` functions - https://github.com/advisories/GHSA-xxjr-mmjv-4gpg
+fix available via `npm audit fix --force`
+Will install newman@2.1.2, which is a breaking change
+node_modules/newman-reporter-htmlextra/node_modules/lodash
+node_modules/newman/node_modules/lodash
+node_modules/postman-collection-transformer/node_modules/lodash
+node_modules/postman-collection/node_modules/lodash
+node_modules/postman-runtime/node_modules/lodash
+node_modules/postman-sandbox/node_modules/lodash
+  postman-collection  0.5.1 - 5.2.0
+  Depends on vulnerable versions of lodash
+  node_modules/postman-collection
+    postman-sandbox  *
+    Depends on vulnerable versions of lodash
+    Depends on vulnerable versions of postman-collection
+    node_modules/postman-sandbox
+  postman-collection-transformer  >=2.2.0-beta.1
+  Depends on vulnerable versions of lodash
+  node_modules/postman-collection-transformer
+
+node-forge  <=1.3.1
+Severity: high
+node-forge has ASN.1 Unbounded Recursion - https://github.com/advisories/GHSA-554w-wpv2-vw27
+node-forge has an Interpretation Conflict vulnerability via its ASN.1 Validator Desynchronization - https://github.com/advisories/GHSA-5gfm-wpxj-wjgq
+node-forge is vulnerable to ASN.1 OID Integer Truncation - https://github.com/advisories/GHSA-65ch-62r8-g69g
+fix available via `npm audit fix --force`
+Will install newman@2.1.2, which is a breaking change
+node_modules/node-forge
+
+qs  <6.14.1
+Severity: high
+qs's arrayLimit bypass in its bracket notation allows DoS via memory exhaustion - https://github.com/advisories/GHSA-6rw7-vpxm-498p
+fix available via `npm audit fix --force`
+Will install newman@2.1.2, which is a breaking change
+node_modules/postman-runtime/node_modules/qs
+  postman-request  *
+  Depends on vulnerable versions of har-validator
+  Depends on vulnerable versions of qs
+  node_modules/postman-request
+  node_modules/postman-runtime/node_modules/postman-request
+
+16 vulnerabilities (11 moderate, 5 high)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force

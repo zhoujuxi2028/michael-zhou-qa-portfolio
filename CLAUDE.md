@@ -4,38 +4,47 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is a QA portfolio project containing Cypress E2E test automation for Trend Micro IWSVA (InterScan Web Security Virtual Appliance). The project demonstrates comprehensive test automation architecture and professional QA documentation practices.
+This is a **QA Automation Portfolio** showcasing comprehensive test automation and DevOps skills across multiple frameworks:
 
-**Primary focus**: IWSVA Update Module testing with 77 automated test cases covering 9 patterns and 3 engines.
+1. **Cypress Tests** - E2E test automation for Trend Micro IWSVA (77 test cases, 9 components)
+2. **Postman Tests** - API test automation for e-commerce APIs
+3. **Selenium Tests** - Python-based enterprise UI test framework
+4. **CI/CD Demo** - DevOps pipeline demonstration (GitHub Actions, Docker, dual-layer strategy)
+
+The portfolio demonstrates professional QA practices from test design to CI/CD integration.
 
 ## Project Structure
 
 ```
 michael-zhou-qa-portfolio/
-└── cypress-tests/               # Main Cypress test project
-    ├── cypress/
-    │   ├── e2e/                # Test specifications
-    │   │   ├── 01-normal-update/      # Normal update tests (Phase 4)
-    │   │   └── verify_kernel_version.cy.js  # Original kernel verification test
-    │   ├── support/            # Test framework
-    │   │   ├── pages/          # Page Object Models
-    │   │   ├── workflows/      # Test workflow orchestrators
-    │   │   ├── verification/   # Verification helpers
-    │   │   ├── factories/      # Factory pattern classes
-    │   │   ├── setup/          # Test setup utilities
-    │   │   └── commands.js     # Custom Cypress commands
-    │   └── fixtures/           # Test data and configuration
-    │       ├── ComponentRegistry.js       # Component metadata (9 components)
-    │       ├── component-test-versions.json
-    │       ├── test-scenarios.json
-    │       ├── test-config.js
-    │       └── test-constants.js
-    ├── docs/
-    │   ├── test-cases/         # Test case documentation
-    │   ├── test-plans/         # Test plans and strategy
-    │   └── project-planning/   # WBS and project docs
-    ├── archive/                # Old test files
-    └── cypress.config.js       # Cypress configuration
+├── cypress-tests/               # Cypress E2E (IWSVA testing)
+│   ├── cypress/e2e/            # 77 test cases for 9 components
+│   ├── cypress/support/        # Page Objects, Workflows, Factories
+│   ├── docs/                   # Test plans, cases, project docs
+│   └── CLAUDE.md               # Cypress project guidance
+│
+├── postman-tests/              # Postman/Newman API testing
+│   ├── collections/            # API test collections
+│   ├── environments/           # Environment configurations
+│   ├── docs/                   # API testing guides
+│   └── CLAUDE.md               # Postman project guidance
+│
+├── selenium-tests/             # Selenium Python framework
+│   ├── tests/                  # UI/integration/smoke tests
+│   ├── src/                    # Page objects, config, utils
+│   ├── docs/                   # Framework documentation
+│   └── CLAUDE.md               # Selenium project guidance
+│
+├── cicd-demo/                  # CI/CD & DevOps demonstration
+│   ├── .github/workflows/      # GitHub Actions (dual-layer)
+│   ├── cypress/                # E2E tests (16 passing)
+│   ├── postman/                # API tests (18 assertions)
+│   ├── docs/                   # CI/CD architecture guides
+│   ├── docker-compose.yml      # Container orchestration
+│   └── CLAUDE.md               # CI/CD project guidance
+│
+├── docs/                       # Portfolio-wide documentation
+└── CLAUDE.md                   # This file - portfolio overview
 ```
 
 ## Key Commands
@@ -420,3 +429,40 @@ Tests that can run in parallel:
 - **Timeouts**: Component updates can take 5-12 minutes; use appropriate timeouts
 - **Rollback Restriction**: TMUFEENG (URL Filtering Engine) cannot rollback
 - **Service Restarts**: Engine updates (ENG, ATSEENG, TMUFEENG) may require service restart
+
+---
+
+## 4. CI/CD Demo Project (cicd-demo/)
+
+**Purpose**: Demonstrate CI/CD pipeline integration, Docker containerization, and DevOps practices
+
+**Technology Stack**: Cypress, Newman/Postman, Docker, GitHub Actions
+
+**Key Features**:
+- Dual-layer CI/CD strategy (PR fast checks vs Main production tests)
+- Docker container orchestration (Cypress + Newman)
+- 100% test pass rate (16 Cypress E2E + 18 Newman API tests)
+- Parallel execution and intelligent caching
+- Multiple report formats (HTML, JUnit, videos)
+- Comprehensive architecture documentation with interview talking points
+
+**Documentation**: See `cicd-demo/README.md` and `cicd-demo/docs/guides/CI-CD-GUIDE.md`
+
+**Common Commands**:
+```bash
+cd cicd-demo
+npm install
+npm test                     # Run all tests locally
+npm run docker:test          # Run in Docker containers
+npm run test:cypress:headed  # Interactive Cypress
+```
+
+**GitHub Actions Workflows**:
+- `pr-checks.yml`: Fast validation for PRs (2-3 min, Node.js native)
+- `docker-tests.yml`: Production tests on main (5-8 min, Docker containers)
+
+For CI/CD-specific guidance, see `cicd-demo/CLAUDE.md`.
+
+---
+
+**Portfolio Note**: This QA Portfolio demonstrates comprehensive test automation skills across Cypress, Postman, Selenium, and modern CI/CD practices. Each project includes detailed documentation and CLAUDE.md guidance for AI-assisted development.
