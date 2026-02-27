@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+# package-lock.json  # REMOVED: Lock file needed for reproducible builds
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+cypress/results/
+
+# Newman
+newman/
+
+# Test Reports
+*.html
+*.xml
+*.json.log
+
+# Environment files
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

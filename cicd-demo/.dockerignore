@@ -1,0 +1,28 @@
+# Docker build context ignore file
+
+# Test artifacts
+cypress/videos
+cypress/screenshots
+newman/*.html
+newman/*.xml
+
+# Logs
+test-logs
+
+# Dependencies
+node_modules
+package-lock.json
+
+# Git
+.git
+.gitignore
+
+# Documentation
+*.md
+!README.md
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo

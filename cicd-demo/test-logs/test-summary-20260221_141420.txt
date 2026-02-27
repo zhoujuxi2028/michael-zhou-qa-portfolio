@@ -1,0 +1,42 @@
+==========================================
+Docker Compose Bug 回归测试总结
+==========================================
+
+测试时间: Sat Feb 21 02:15:25 PM HKT 2026
+测试日志: test-logs/regression-test-20260221_141420.log
+
+环境信息:
+  - Docker: Docker version 29.2.1, build a5c7197
+  - Docker Compose: Docker Compose version v5.0.2
+
+Bug 修复状态:
+
+Bug #1: Newman HTMLExtra Reporter
+  状态: ✅ 已修复
+  报告: newman/api-report.html (241.1 KB)
+
+Bug #2: Cypress 测试完整性
+  状态: ❌ 未修复
+  视频数量: 2/2
+  测试数量: 39/16
+  退出码: 0
+
+测试执行结果:
+  - Newman: 0 (0=成功)
+  - Cypress: 0 (0=成功)
+  - Newman 断言: assertions
+  - Cypress 测试: 39
+
+生成的文件:
+  - newman/api-report.html
+  - cypress/videos/01-api-tests.cy.js.mp4
+  - cypress/videos/02-ui-tests.cy.js.mp4
+
+日志文件:
+  - 主日志: test-logs/regression-test-20260221_141420.log
+  - Newman日志: test-logs/newman-20260221_141420.log
+  - Cypress日志: test-logs/cypress-20260221_141420.log
+
+==========================================
+⚠️  仍有问题需要解决
+==========================================
