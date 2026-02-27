@@ -1,0 +1,31 @@
+echo "🔍 Running pre-commit checks..."
+
+# Change to project directory
+cd "$(dirname "$0")/.."
+
+# Check Node.js version (ENV-001 prevention)
+if [ -f ".nvmrc" ]; then
+  required_version=$(cat .nvmrc)
+  current_version=$(node --version | sed 's/v//')
+
+  if [ "$current_version" != "$required_version" ]; then
+    echo "❌ Pre-commit check failed: Node.js version mismatch!"
+    echo "   Required: v$required_version"
+    echo "   Current:  v$current_version"
+    echo "   Fix: nvm use $required_version"
+    exit 1
+  fi
+  echo "✅ Node.js version: v$current_version"
+fi
+
+# Check package-lock.json exists and is staged (DEP-001 prevention)
+if [ ! -f "package-lock.json" ]; then
+  echo "❌ Pre-commit check failed: package-lock.json is missing!"
+  exit 1
+fi
+echo "✅ package-lock.json exists"
+
+# Run lint-staged
+npx lint-staged
+
+echo "✅ All pre-commit checks passed!"
