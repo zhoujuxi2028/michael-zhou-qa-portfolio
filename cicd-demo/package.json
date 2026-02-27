@@ -16,8 +16,13 @@
     "validate": "./scripts/validate-environment.sh",
     "pretest": "./scripts/validate-environment.sh || true",
     "lint": "eslint cypress/**/*.js",
+    "lint:fix": "eslint cypress/**/*.js --fix",
+    "test:tracked": "./scripts/track-test-execution-simple.sh",
+    "dashboard": "./scripts/generate-dashboard.sh && xdg-open test-metrics/dashboard.html",
+    "dashboard:generate": "./scripts/generate-dashboard.sh",
     "ci:install": "npm ci",
-    "ci:verify": "cypress verify"
+    "ci:verify": "cypress verify",
+    "prepare": "husky install || true"
   },
   "keywords": [
     "cypress",
@@ -31,10 +36,19 @@
   "license": "MIT",
   "devDependencies": {
     "cypress": "^13.6.0",
-    "newman": "^6.1.0",
-    "newman-reporter-htmlextra": "^1.23.0",
     "eslint": "^8.55.0",
-    "eslint-plugin-cypress": "^2.15.1"
+    "eslint-plugin-cypress": "^2.15.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "newman": "^6.1.0",
+    "newman-reporter-htmlextra": "^1.23.0"
   },
-  "dependencies": {}
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "echo 'Formatting not available without prettier'"
+    ]
+  }
 }
