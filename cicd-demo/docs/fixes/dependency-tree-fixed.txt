@@ -1,0 +1,7 @@
+basf-cicd-test-project@1.0.0 /home/michael/repos/2026-restart/jobs/BASF/interview-prep/day-04-cicd-devops/test-project
+├── cypress@13.17.0
+├── eslint-plugin-cypress@2.15.2
+├── eslint@8.57.1
+├── newman-reporter-htmlextra@1.23.1
+└── newman@6.2.2
+
