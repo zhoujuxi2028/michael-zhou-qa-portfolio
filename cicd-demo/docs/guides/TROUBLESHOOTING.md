@@ -272,3 +272,129 @@ After applying the fix:
 - [npm lock file best practices](https://docs.npmjs.com/cli/v10/configuring-npm/package-lock-json#lock-file-best-practices)
 - [Dependency management in CI/CD](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs)
 - [Node.js LTS schedule](https://github.com/nodejs/release#release-schedule)
+
+---
+
+## Issue: Permission Denied After Docker Tests (Resolved 2026-02-27)
+
+### Symptoms
+- Local Cypress tests fail with `EACCES: permission denied` when writing screenshots
+- Error occurs in "after each" hook, causing remaining tests to be skipped
+- Tests pass in Docker but fail when run locally with `npm test`
+- Screenshots/videos directories contain files owned by `root`
+
+### Root Cause
+Docker containers run as `root` by default. When running Docker Compose tests (`docker compose up`), the Cypress container creates screenshot and video files owned by `root:root`. When you later run local tests with `npm test`, the current user (e.g., `michael`) cannot write to these directories.
+
+**File ownership after Docker tests:**
+```bash
+$ ls -la cypress/screenshots/
+drwxr-xr-x. 2 root    root    76 Feb 27 15:00 02-ui-tests.cy.js
+```
+
+### Resolution
+Clean up root-owned files and restore proper ownership:
+
+```bash
+# Remove root-owned files (requires sudo)
+sudo rm -rf cypress/screenshots/* cypress/videos/*
+
+# Fix directory ownership
+sudo chown -R $USER:$USER cypress/screenshots cypress/videos
+
+# Verify ownership
+ls -la cypress/screenshots cypress/videos
+# Should show: drwxr-xr-x. 2 michael michael ...
+```
+
+### Prevention Strategies
+
+**Option 1: Clean after Docker tests (Recommended for development)**
+Add cleanup to package.json scripts:
+```json
+{
+  "scripts": {
+    "docker:test": "docker compose up --abort-on-container-exit && npm run docker:cleanup",
+    "docker:cleanup": "sudo rm -rf cypress/screenshots/* cypress/videos/*"
+  }
+}
+```
+
+**Option 2: Run containers with current user (Better for CI/CD)**
+Modify docker-compose.yml to run as current user:
+```yaml
+services:
+  cypress:
+    user: "${UID}:${GID}"  # Set via .env file or export before running
+```
+
+**Option 3: Post-test ownership fix (Automated)**
+Create a cleanup script:
+```bash
+#!/bin/bash
+# scripts/fix-docker-permissions.sh
+sudo chown -R $(whoami):$(whoami) cypress/screenshots cypress/videos
+```
+
+### Interview Discussion Points
+
+**Situation**: After running Docker-based integration tests, local test execution began failing with permission errors when attempting to write test artifacts.
+
+**Task**: Diagnose why tests pass in Docker but fail locally, and implement a solution that works for both environments.
+
+**Action**:
+- Investigated error logs showing `EACCES: permission denied` for screenshot writing
+- Examined directory permissions: `ls -la cypress/screenshots/` revealed files owned by `root`
+- Identified root cause: Docker containers run as root by default
+- Evaluated three solutions (cleanup scripts, user mapping, automated fixes)
+- Implemented immediate fix (sudo cleanup) and documented prevention strategies
+
+**Result**:
+- Tests now pass 100% both locally and in Docker (16 Cypress + 18 Newman)
+- Added troubleshooting documentation for team members
+- Demonstrated understanding of Docker security and Linux file permissions
+- **Key insight**: This is a common issue when mixing containerized and local testing
+
+### Technical Deep Dive
+
+**Why Docker runs as root:**
+- Default behavior for historical compatibility
+- Simplified permissions inside containers
+- Security trade-off: convenience vs least-privilege principle
+
+**Modern best practices (Rootless Docker):**
+```dockerfile
+# In Dockerfile
+USER node:node  # Run as non-root user
+
+# Or in docker-compose.yml
+user: "1000:1000"  # Use host UID/GID
+```
+
+**CI/CD environments:**
+- GitHub Actions: Runs as `runner` user (UID 1001)
+- GitLab CI: Runs as `gitlab-runner` user
+- Jenkins: Runs as `jenkins` user
+- **Best practice**: Match container user to CI/CD user
+
+### Commands Reference
+
+```bash
+# Check file ownership
+ls -la cypress/screenshots cypress/videos
+
+# Fix ownership (requires sudo)
+sudo chown -R $USER:$USER cypress/screenshots cypress/videos
+
+# Remove all test artifacts
+sudo rm -rf cypress/screenshots/* cypress/videos/* newman/*
+
+# Run tests after Docker cleanup
+npm test  # Should now work without permission errors
+```
+
+### Related Issues
+- Docker volume permissions
+- CI/CD artifact collection
+- Cross-platform compatibility (Windows vs Linux file permissions)
+- Rootless Docker configuration
