@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  localstack:
+    image: localstack/localstack:latest
+    container_name: qa-portfolio-localstack
+    ports:
+      - "4566:4566"  # LocalStack Gateway
+      - "4510-4559:4510-4559"  # External services port range
+    environment:
+      # Services to enable
+      - SERVICES=s3,dynamodb,ecr,iam,sts
+      # Debug mode
+      - DEBUG=0
+      # Docker configuration
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      # Docker socket for Lambda/ECS (if needed)
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - devops-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  devops-network:
+    name: qa-portfolio-network
+    driver: bridge
