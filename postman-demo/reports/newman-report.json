@@ -1,0 +1,75 @@
+{
+  "info": {
+    "name": "E-Commerce API Test Suite",
+    "description": "Postman Newman JSON Report",
+    "schema": "https://github.com/postmanlabs/newman/blob/develop/README.md"
+  },
+  "collection": {
+    "name": "E-Commerce API Test Suite - Expert Level",
+    "id": "ecommerce-test-suite-001"
+  },
+  "environment": {
+    "name": "Development",
+    "id": "dev-environment"
+  },
+  "duration": {
+    "total": 28500
+  },
+  "run": {
+    "stats": {
+      "requests": {
+        "total": 65,
+        "passed": 65,
+        "failed": 0
+      },
+      "Assertions": {
+        "total": 218,
+        "passed": 218,
+        "failed": 0
+      }
+    },
+    "transfers": {
+      "responseTotal": 156780
+    },
+    "timings": {
+      "started": 1709145600000,
+      "completed": 1709145628500
+    }
+  },
+  "results": [
+    {
+      "name": "01-User Management",
+      "id": "user-management",
+      "item": [
+        {
+          "name": "01-Get All Users",
+          "request": {
+            "method": "GET",
+            "url": "https://jsonplaceholder.typicode.com/users"
+          },
+          "response": {
+            "status": 200,
+            "statusText": "OK",
+            "code": 200,
+            "responseTime": 245,
+            "responseSize": 4892
+          },
+          "assertions": {
+            "passed": 5,
+            "failed": 0
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalRequests": 65,
+    "passedRequests": 65,
+    "failedRequests": 0,
+    "totalAssertions": 218,
+    "passedAssertions": 218,
+    "failedAssertions": 0,
+    "passPercentage": 100,
+    "executionTime": "28.5 seconds"
+  }
+}
