@@ -1,0 +1,20 @@
+# Trivy Ignore File
+# This file suppresses specific vulnerabilities from Trivy scans
+#
+# Format: CVE-ID or GHSA-ID (one per line)
+# Best Practice: Always document WHY and set review dates
+#
+# Example:
+# CVE-2024-12345
+# Reason: False positive - not exploitable in our context
+# Expires: 2024-12-31
+# Reviewed by: Security Team
+
+# =============================================================================
+# Currently no ignored vulnerabilities
+# =============================================================================
+# When adding entries:
+# 1. Document the reason for ignoring
+# 2. Set an expiration/review date
+# 3. Get security team approval for HIGH/CRITICAL
+# 4. Link to tracking ticket (Jira, GitHub issue)
