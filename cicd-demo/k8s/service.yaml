@@ -1,0 +1,55 @@
+# Service for Test Results HTTP Server
+# Exposes the nginx deployment within the cluster
+#
+# Interview Talking Point:
+# "Kubernetes Services provide stable networking for pods. Even if the nginx pod
+# restarts and gets a new IP, the Service IP remains constant. This abstraction
+# allows other components to reliably connect to our results server."
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-results-service
+  namespace: qa-portfolio
+  labels:
+    app: cicd-demo
+    component: results-server
+
+spec:
+  type: ClusterIP  # Internal cluster access only (use Ingress for external access)
+
+  selector:
+    app: cicd-demo
+    component: results-server
+
+  ports:
+    - name: http
+      port: 80  # Service port
+      targetPort: 80  # Container port
+      protocol: TCP
+
+  sessionAffinity: None
+
+---
+# Headless Service for Job Pods (optional)
+# Used for service discovery between test jobs if needed
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-jobs-headless
+  namespace: qa-portfolio
+  labels:
+    app: cicd-demo
+    component: test-jobs
+
+spec:
+  type: ClusterIP
+  clusterIP: None  # Headless service for DNS-based discovery
+
+  selector:
+    app: cicd-demo
+
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP

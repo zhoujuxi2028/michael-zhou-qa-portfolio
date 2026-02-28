@@ -1,0 +1,136 @@
+# Kubernetes Job for Newman API Tests
+# Runs Postman collections via Newman CLI as a Kubernetes job
+#
+# Interview Talking Point:
+# "Newman jobs are much lighter than Cypress (~150MB vs ~1GB) since API tests
+# don't require browsers. We can run multiple Newman jobs in parallel on the
+# same node, maximizing cluster resource utilization. This is a key advantage
+# of container orchestration - right-sizing workloads for efficiency."
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: newman-test
+  namespace: qa-portfolio
+  labels:
+    app: cicd-demo
+    component: newman
+    test-type: api
+
+spec:
+  # Job configuration
+  backoffLimit: 2  # Retry up to 2 times on failure
+  ttlSecondsAfterFinished: 3600  # Clean up job 1 hour after completion
+  activeDeadlineSeconds: 300  # Job timeout: 5 minutes (faster than Cypress)
+
+  template:
+    metadata:
+      labels:
+        app: cicd-demo
+        component: newman
+        test-type: api
+
+    spec:
+      restartPolicy: Never
+
+      # Init container to prepare report directory
+      initContainers:
+        - name: prepare-reports-dir
+          image: busybox:1.36
+          command: ['sh', '-c']
+          args:
+            - |
+              mkdir -p /test-results/newman
+              chmod -R 777 /test-results/newman
+              echo "Newman reports directory prepared"
+          volumeMounts:
+            - name: test-results
+              mountPath: /test-results
+
+      # Main Newman container
+      containers:
+        - name: newman
+          # Using custom image with htmlextra reporter (built from Dockerfile.newman)
+          # In production, push this to a container registry (DockerHub, ECR, GCR, etc.)
+          image: qa-newman-demo:latest
+          imagePullPolicy: Never  # Use locally built image (for demo)
+
+          workingDir: /etc/newman
+
+          # Environment variables
+          envFrom:
+            - configMapRef:
+                name: test-config
+
+          env:
+            - name: ENVIRONMENT
+              value: "staging"
+
+          # Command to run Newman
+          command: ['newman']
+          args:
+            - run
+            - api-collection.json
+            - -e
+            - environment.json
+            - --reporters
+            - cli,htmlextra,junit
+            - --reporter-htmlextra-export
+            - /test-results/newman/api-report.html
+            - --reporter-junit-export
+            - /test-results/newman/junit.xml
+            - --delay-request
+            - "500"
+            - --timeout-request
+            - "10000"
+            - --bail
+
+          # Resource limits (much smaller than Cypress)
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+
+          # Volume mounts
+          volumeMounts:
+            # Mount Postman collection and environment
+            - name: postman-config
+              mountPath: /etc/newman/api-collection.json
+              subPath: api-collection.json
+              readOnly: true
+
+            - name: newman-env
+              mountPath: /etc/newman/environment.json
+              subPath: environment.json
+              readOnly: true
+
+            # Mount test results directory
+            - name: test-results
+              mountPath: /test-results/newman
+              subPath: newman
+
+      # Volumes
+      volumes:
+        # Postman collection (from ConfigMap or mounted from host)
+        # Interview Talking Point:
+        # "In production, collections would be stored in ConfigMaps or fetched from
+        # version control. This keeps test definitions in Git for versioning and
+        # auditability, following GitOps principles."
+        - name: postman-config
+          emptyDir: {}  # Placeholder - would mount actual collection
+
+        # Newman environment from ConfigMap
+        - name: newman-env
+          configMap:
+            name: newman-environment
+            items:
+              - key: environment.json
+                path: environment.json
+
+        # Test results persistent volume
+        - name: test-results
+          persistentVolumeClaim:
+            claimName: test-results-pvc

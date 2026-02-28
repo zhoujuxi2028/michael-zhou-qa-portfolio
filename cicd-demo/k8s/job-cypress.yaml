@@ -1,0 +1,122 @@
+# Kubernetes Job for Cypress E2E Tests
+# Runs Cypress tests as a one-time job in Kubernetes
+#
+# Interview Talking Point:
+# "We use Jobs instead of Deployments because tests are one-time executions, not
+# long-running services. Jobs ensure the pod runs to completion, retries on failure,
+# and properly reports success/failure status to the cluster. This pattern is ideal
+# for CI/CD test execution in Kubernetes."
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cypress-test
+  namespace: qa-portfolio
+  labels:
+    app: cicd-demo
+    component: cypress
+    test-type: e2e
+
+spec:
+  # Job configuration
+  backoffLimit: 2  # Retry up to 2 times on failure
+  ttlSecondsAfterFinished: 3600  # Clean up job 1 hour after completion
+  activeDeadlineSeconds: 600  # Job timeout: 10 minutes
+
+  template:
+    metadata:
+      labels:
+        app: cicd-demo
+        component: cypress
+        test-type: e2e
+
+    spec:
+      restartPolicy: Never  # Don't restart pod automatically (Job handles retries)
+
+      # Init container to prepare test environment
+      initContainers:
+        - name: prepare-results-dir
+          image: busybox:1.36
+          command: ['sh', '-c']
+          args:
+            - |
+              mkdir -p /test-results/cypress/screenshots
+              mkdir -p /test-results/cypress/videos
+              chmod -R 777 /test-results
+              echo "Test results directory prepared"
+          volumeMounts:
+            - name: test-results
+              mountPath: /test-results
+
+      # Main Cypress container
+      containers:
+        - name: cypress
+          image: cypress/included:13.6.0
+          imagePullPolicy: IfNotPresent
+
+          workingDir: /e2e
+
+          # Environment variables from ConfigMap
+          envFrom:
+            - configMapRef:
+                name: test-config
+
+          # Command to run Cypress tests
+          command: ['npx']
+          args:
+            - cypress
+            - run
+            - --browser
+            - chrome
+            - --headless
+            - --config
+            - video=true
+
+          # Resource limits
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+
+          # Volume mounts
+          volumeMounts:
+            # Mount project files (in real scenario, would use Git clone or ConfigMap)
+            - name: cypress-project
+              mountPath: /e2e
+              readOnly: true
+
+            # Mount test results directory
+            - name: test-results
+              mountPath: /e2e/cypress/screenshots
+              subPath: cypress/screenshots
+
+            - name: test-results
+              mountPath: /e2e/cypress/videos
+              subPath: cypress/videos
+
+            # Mount Cypress cache
+            - name: cypress-cache
+              mountPath: /root/.cache/Cypress
+
+      # Volumes
+      volumes:
+        # Project files volume
+        # Interview Talking Point:
+        # "In production, we'd use an init container to git clone the repo, or mount
+        # from a ConfigMap/Secret. For this demo, we use an emptyDir as placeholder.
+        # The actual deployment script would populate this with project files."
+        - name: cypress-project
+          emptyDir: {}
+
+        # Test results persistent volume
+        - name: test-results
+          persistentVolumeClaim:
+            claimName: test-results-pvc
+
+        # Cypress cache persistent volume
+        - name: cypress-cache
+          persistentVolumeClaim:
+            claimName: cypress-cache-pvc
