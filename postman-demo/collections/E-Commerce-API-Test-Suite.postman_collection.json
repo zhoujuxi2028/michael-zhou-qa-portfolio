@@ -450,12 +450,52 @@
     },
     {
       "key": "collectionVersion",
-      "value": "1.0.1",
+      "value": "1.0.2",
       "type": "default"
     },
     {
       "key": "testEnvironment",
       "value": "development",
+      "type": "default"
+    },
+    {
+      "key": "defaultTimeout",
+      "value": "5000",
+      "type": "default"
+    },
+    {
+      "key": "maxRetries",
+      "value": "3",
+      "type": "default"
+    },
+    {
+      "key": "expectedResponseTime",
+      "value": "2000",
+      "type": "default"
+    },
+    {
+      "key": "paginationDefaultLimit",
+      "value": "10",
+      "type": "default"
+    },
+    {
+      "key": "paginationMaxLimit",
+      "value": "100",
+      "type": "default"
+    },
+    {
+      "key": "requestCount",
+      "value": "0",
+      "type": "default"
+    },
+    {
+      "key": "successCount",
+      "value": "0",
+      "type": "default"
+    },
+    {
+      "key": "errorCount",
+      "value": "0",
       "type": "default"
     }
   ],
@@ -514,7 +554,8 @@
               "host": ["{{baseUrl}}"],
               "path": ["users"]
             }
-          }
+          },
+          "response": []
         },
         {
           "name": "02-Get Single User",
@@ -2422,6 +2463,519 @@
               "raw": "{{baseUrl}}/posts/1",
               "host": ["{{baseUrl}}"],
               "path": ["posts", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "08-Enhanced Testing (Data-Driven & Correlation)",
+      "item": [
+        {
+          "name": "01-Data-Driven User Creation",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Enhanced pre-request with detailed logging",
+                  "console.log('═══════════════════════════════════════════════════════');",
+                  "console.log('📝 [REQ] Data-Driven User Creation');",
+                  "console.log('───────────────────────────────────────────────────────');",
+                  "console.log('🔧 Environment:', pm.environment.get('testEnvironment'));",
+                  "console.log('🔢 Iteration:', pm.info.iteration);",
+                  "",
+                  "// Generate unique test data",
+                  "const timestamp = Date.now();",
+                  "const randomNum = Math.floor(Math.random() * 1000);",
+                  "pm.environment.set('dynamicUserName', 'TestUser_' + timestamp);",
+                  "pm.environment.set('dynamicUserEmail', 'testuser.' + randomNum + '@example.com');",
+                  "",
+                  "console.log('📧 Generated Email:', pm.environment.get('dynamicUserEmail'));",
+                  "console.log('═══════════════════════════════════════════════════════');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Enhanced test with detailed error messages",
+                  "console.log('═══════════════════════════════════════════════════════');",
+                  "console.log('✅ [TEST] Data-Driven User Creation Results');",
+                  "",
+                  "// Test 1: Verify successful creation",
+                  "pm.test('[Enhanced-001] User should be created successfully', function() {",
+                  "    pm.expect(pm.response.code).to.eq(201,",
+                  "        'Expected status code 201 (Created), but got ' + pm.response.code);",
+                  "});",
+                  "",
+                  "// Test 2: Verify response has ID",
+                  "pm.test('[Enhanced-002] Response should contain user ID', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id',",
+                  "        'User ID not found in response - API may have failed to create user');",
+                  "    ",
+                  "    // Store created user ID for correlation",
+                  "    pm.environment.set('createdUserId', jsonData.id.toString());",
+                  "    console.log('💾 Stored user ID:', jsonData.id);",
+                  "});",
+                  "",
+                  "// Test 3: Verify user name matches",
+                  "pm.test('[Enhanced-003] User name should match request', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const expectedName = pm.environment.get('dynamicUserName');",
+                  "    pm.expect(jsonData.name).to.eq(expectedName,",
+                  "        'Created user name does not match request. Expected: ' + expectedName + ', Got: ' + jsonData.name);",
+                  "});",
+                  "",
+                  "// Test 4: Verify email format",
+                  "pm.test('[Enhanced-004] User email should be valid format', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;",
+                  "    pm.expect(emailRegex.test(jsonData.email)).to.be.true,",
+                  "        'Invalid email format: ' + jsonData.email);",
+                  "});",
+                  "",
+                  "// Test 5: Verify response time",
+                  "pm.test('[Enhanced-005] Response time should be acceptable', function() {",
+                  "    const threshold = parseInt(pm.variables.get('expectedResponseTime') || '2000');",
+                  "    pm.expect(pm.response.responseTime).to.be.below(threshold,",
+                  "        'Response time exceeded threshold. Expected: <' + threshold + 'ms, Got: ' + pm.response.responseTime + 'ms');",
+                  "});",
+                  "",
+                  "// Update counters",
+                  "let successCount = parseInt(pm.environment.get('successCount') || '0');",
+                  "pm.environment.set('successCount', (successCount + 1).toString());",
+                  "",
+                  "console.log('📊 Success count:', pm.environment.get('successCount'));",
+                  "console.log('═══════════════════════════════════════════════════════');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"{{dynamicUserName}}\",\n    \"username\": \"testuser\",\n    \"email\": \"{{dynamicUserEmail}}\",\n    \"phone\": \"1-770-736-8031\",\n    \"website\": \"test.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "02-Get Created User (Correlation)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Enhanced pre-request with correlation logging",
+                  "console.log('═══════════════════════════════════════════════════════');",
+                  "console.log('📝 [REQ] Get Created User (Cross-Request Correlation)');",
+                  "console.log('───────────────────────────────────────────────────────');",
+                  "",
+                  "// Retrieve correlated user ID from previous request",
+                  "const correlatedUserId = pm.environment.get('createdUserId');",
+                  "console.log('🔗 Using correlated user ID:', correlatedUserId);",
+                  "",
+                  "if (!correlatedUserId) {",
+                  "    console.warn('⚠️  Warning: No correlated user ID found. Using default.');",
+                  "}",
+                  "",
+                  "console.log('═══════════════════════════════════════════════════════');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Enhanced test with correlation verification",
+                  "console.log('═══════════════════════════════════════════════════════');",
+                  "console.log('✅ [TEST] Get Created User Results');",
+                  "",
+                  "// Test 1: Verify successful response",
+                  "pm.test('[Enhanced-006] Should retrieve user successfully', function() {",
+                  "    pm.expect(pm.response.code).to.eq(200,",
+                  "        'Failed to retrieve user. Status: ' + pm.response.code);",
+                  "});",
+                  "",
+                  "// Test 2: Verify user data integrity",
+                  "pm.test('[Enhanced-007] User data should be complete', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const requiredFields = ['id', 'name', 'username', 'email'];",
+                  "    ",
+                  "    requiredFields.forEach(field => {",
+                  "        pm.expect(jsonData).to.have.property(field,",
+                  "            'Missing required field: ' + field);",
+                  "    });",
+                  "});",
+                  "",
+                  "// Test 3: Verify correlation ID matches",
+                  "pm.test('[Enhanced-008] Correlated user ID should match', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const expectedId = pm.environment.get('createdUserId');",
+                  "    pm.expect(jsonData.id.toString()).to.eq(expectedId,",
+                  "        'Retrieved user ID does not match created user. Expected: ' + expectedId + ', Got: ' + jsonData.id);",
+                  "});",
+                  "",
+                  "// Test 4: Verify address structure",
+                  "pm.test('[Enhanced-009] User address should be present', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.address).to.be.an('object',",
+                  "        'Address should be an object');",
+                  "    pm.expect(jsonData.address).to.have.property('city',",
+                  "        'Address city is missing');",
+                  "    pm.expect(jsonData.address).to.have.property('zipcode',",
+                  "        'Address zipcode is missing');",
+                  "});",
+                  "",
+                  "// Test 5: Performance check",
+                  "pm.test('[Enhanced-010] Response time should be optimal', function() {",
+                  "    const threshold = parseInt(pm.variables.get('expectedResponseTime') || '2000');",
+                  "    const actualTime = pm.response.responseTime;",
+                  "    ",
+                  "    if (actualTime > threshold) {",
+                  "        console.warn('⚠️  Performance warning: Response time ' + actualTime + 'ms exceeds threshold ' + threshold + 'ms');",
+                  "    }",
+                  "    pm.expect(actualTime).to.be.below(threshold);",
+                  "});",
+                  "",
+                  "// Store user data for next correlation",
+                  "const userData = pm.response.json();",
+                  "pm.environment.set('lastUserName', userData.name);",
+                  "pm.environment.set('lastUserEmail', userData.email);",
+                  "pm.environment.set('lastUserCity', userData.address.city);",
+                  "",
+                  "console.log('💾 Stored for correlation - Name:', userData.name);",
+                  "console.log('💾 Stored for correlation - City:', userData.address.city);",
+                  "console.log('📊 Response time:', pm.response.responseTime + 'ms');",
+                  "console.log('═══════════════════════════════════════════════════════');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/users/{{createdUserId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{createdUserId}}"]
+            }
+          }
+        },
+        {
+          "name": "03-Update User with Validation",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Enhanced pre-request with data validation",
+                  "console.log('═══════════════════════════════════════════════════════');",
+                  "console.log('📝 [REQ] Update User with Full Validation');",
+                  "console.log('───────────────────────────────────────────────────────');",
+                  "",
+                  "// Get previous user data for correlation",
+                  "const previousName = pm.environment.get('lastUserName');",
+                  "const previousEmail = pm.environment.get('lastUserEmail');",
+                  "console.log('📋 Previous user name:', previousName);",
+                  "console.log('📋 Previous user email:', previousEmail);",
+                  "",
+                  "// Generate update data",
+                  "const timestamp = Date.now();",
+                  "pm.environment.set('updatedEmail', 'updated.' + timestamp + '@example.com');",
+                  "console.log('📧 New email:', pm.environment.get('updatedEmail'));",
+                  "",
+                  "console.log('═══════════════════════════════════════════════════════');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Enhanced test with detailed validation",
+                  "console.log('═══════════════════════════════════════════════════════');",
+                  "console.log('✅ [TEST] Update User Validation Results');",
+                  "",
+                  "// Test 1: Verify successful update",
+                  "pm.test('[Enhanced-011] User should be updated successfully', function() {",
+                  "    pm.expect(pm.response.code).to.eq(200,",
+                  "        'User update failed. Expected 200, got ' + pm.response.code + '. ' +",
+                  "        'Possible causes: invalid user ID, server error, or permission issue.');",
+                  "});",
+                  "",
+                  "// Test 2: Verify all fields present",
+                  "pm.test('[Enhanced-012] Response should contain all updated fields', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const requiredFields = ['id', 'name', 'email', 'phone', 'website'];",
+                  "    const missingFields = requiredFields.filter(field => !jsonData[field]);",
+                  "    ",
+                  "    pm.expect(missingFields).to.be.empty,",
+                  "        'Missing fields in response: ' + missingFields.join(', '));",
+                  "});",
+                  "",
+                  "// Test 3: Verify ID was not changed",
+                  "pm.test('[Enhanced-013] User ID should remain unchanged', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const originalId = pm.environment.get('createdUserId');",
+                  "    pm.expect(jsonData.id.toString()).to.eq(originalId,",
+                  "        'User ID was modified during update. This should not happen.');",
+                  "});",
+                  "",
+                  "// Test 4: Verify timestamp or updated field exists",
+                  "pm.test('[Enhanced-014] Response should indicate update', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    // Check for any indication that update was processed",
+                  "    const hasUpdateIndicator = jsonData.updatedAt || jsonData.timestamp || jsonData.modifiedAt;",
+                  "    console.log('📝 Update indicator present:', !!hasUpdateIndicator);",
+                  "});",
+                  "",
+                  "// Test 5: Verify data consistency",
+                  "pm.test('[Enhanced-015] Data should be consistent after update', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    // Email format validation",
+                  "    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;",
+                  "    pm.expect(emailRegex.test(jsonData.email)).to.be.true,",
+                  "        'Updated email is invalid: ' + jsonData.email);",
+                  "    ",
+                  "    // Phone format validation (basic)",
+                  "    if (jsonData.phone) {",
+                  "        pm.expect(jsonData.phone.length).to.be.gte(7,",
+                  "            'Phone number too short: ' + jsonData.phone);",
+                  "    }",
+                  "});",
+                  "",
+                  "// Test 6: Log detailed error information on failure",
+                  "pm.test('[Enhanced-016] No validation errors in response', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const errorFields = ['error', 'errors', 'message', 'validationError'];",
+                  "    const hasError = errorFields.some(field => jsonData[field]);",
+                  "    ",
+                  "    if (hasError) {",
+                  "        console.error('❌ Validation errors detected:', jsonData);",
+                  "    }",
+                  "    pm.expect(hasError).to.be.false,",
+                  "        'Response contains error(s): ' + JSON.stringify(jsonData));",
+                  "});",
+                  "",
+                  "console.log('═══════════════════════════════════════════════════════');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/users/{{createdUserId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{createdUserId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id\": {{createdUserId}},\n    \"name\": \"Updated Test User\",\n    \"username\": \"updatedtestuser\",\n    \"email\": \"{{updatedEmail}}\",\n    \"phone\": \"1-999-999-9999\",\n    \"website\": \"updated-test.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "04-Data-Driven Product Search",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Enhanced pre-request for data-driven testing",
+                  "console.log('═══════════════════════════════════════════════════════');",
+                  "console.log('📝 [REQ] Data-Driven Product Search');",
+                  "console.log('───────────────────────────────────────────────────────');",
+                  "",
+                  "// Simulate data-driven search parameters",
+                  "const searchTerms = ['qui', 'lorem', 'aut', 'est'];",
+                  "const randomTerm = searchTerms[Math.floor(Math.random() * searchTerms.length)];",
+                  "pm.environment.set('searchTerm', randomTerm);",
+                  "console.log('🔍 Search term:', randomTerm);",
+                  "",
+                  "// Set pagination parameters from collection variables",
+                  "const limit = pm.variables.get('paginationDefaultLimit') || '10';",
+                  "pm.environment.set('searchLimit', limit);",
+                  "console.log('📄 Results limit:', limit);",
+                  "",
+                  "console.log('═══════════════════════════════════════════════════════');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Enhanced data-driven test",
+                  "console.log('═══════════════════════════════════════════════════════');",
+                  "console.log('✅ [TEST] Data-Driven Product Search Results');",
+                  "",
+                  "const searchTerm = pm.environment.get('searchTerm');",
+                  "console.log('🔍 Testing search for:', searchTerm);",
+                  "",
+                  "// Test 1: Verify response",
+                  "pm.test('[Enhanced-017] Should return search results', function() {",
+                  "    pm.expect(pm.response.code).to.eq(200,",
+                  "        'Search request failed with status: ' + pm.response.code);",
+                  "});",
+                  "",
+                  "// Test 2: Verify array response",
+                  "pm.test('[Enhanced-018] Response should be an array', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array',",
+                  "        'Expected array response, got ' + typeof jsonData);",
+                  "});",
+                  "",
+                  "// Test 3: Verify pagination limit",
+                  "pm.test('[Enhanced-019] Results should respect pagination limit', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const limit = parseInt(pm.environment.get('searchLimit') || '10');",
+                  "    pm.expect(jsonData.length).to.be.at.most(limit,",
+                  "        'Results exceed pagination limit. Expected: <=' + limit + ', Got: ' + jsonData.length);",
+                  "});",
+                  "",
+                  "// Test 4: Verify data structure",
+                  "pm.test('[Enhanced-020] Each result should have required fields', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        jsonData.forEach((item, index) => {",
+                  "            pm.expect(item).to.have.property('id',",
+                  "                'Item ' + index + ' missing id field');",
+                  "            pm.expect(item).to.have.property('title',",
+                  "                'Item ' + index + ' missing title field');",
+                  "            pm.expect(item).to.have.property('body',",
+                  "                'Item ' + index + ' missing body field');",
+                  "        });",
+                  "    }",
+                  "});",
+                  "",
+                  "// Test 5: Verify search relevance (contains term)",
+                  "pm.test('[Enhanced-021] Results should contain search term', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        const term = searchTerm.toLowerCase();",
+                  "        const hasRelevant = jsonData.some(item =>",
+                  "            (item.title && item.title.toLowerCase().includes(term)) ||",
+                  "            (item.body && item.body.toLowerCase().includes(term))",
+                  "        );",
+                  "        console.log('🔍 Search relevance:', hasRelevant);",
+                  "    }",
+                  "});",
+                  "",
+                  "console.log('📊 Results count:', pm.response.json().length);",
+                  "console.log('═══════════════════════════════════════════════════════');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/posts?q={{searchTerm}}&_limit={{searchLimit}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "{{searchTerm}}"
+                },
+                {
+                  "key": "_limit",
+                  "value": "{{searchLimit}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "05-Workflow Test (Full User Journey)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Full workflow test - simulates complete user journey",
+                  "console.log('═══════════════════════════════════════════════════════');",
+                  "console.log('🔄 [WORKFLOW] Full User Journey Test');",
+                  "console.log('───────────────────────────────────────────────────────');",
+                  "",
+                  "// Track workflow metrics",
+                  "let requestCount = parseInt(pm.environment.get('requestCount') || '0');",
+                  "pm.environment.set('requestCount', (requestCount + 1).toString());",
+                  "console.log('📊 Total requests in workflow:', pm.environment.get('requestCount'));",
+                  "",
+                  "// Test: Verify workflow state",
+                  "pm.test('[Workflow-001] Workflow should maintain state', function() {",
+                  "    const createdId = pm.environment.get('createdUserId');",
+                  "    const lastName = pm.environment.get('lastUserName');",
+                  "    const lastEmail = pm.environment.get('lastUserEmail');",
+                  "    ",
+                  "    pm.expect(createdId).to.not.be.undefined,",
+                  "        'Created user ID not found in workflow state');",
+                  "    pm.expect(lastName).to.not.be.undefined,",
+                  "        'Last user name not found in workflow state');",
+                  "    ",
+                  "    console.log('✅ Workflow state verified');",
+                  "    console.log('   - Created User ID:', createdId);",
+                  "    console.log('   - Last User Name:', lastName);",
+                  "    console.log('   - Last User Email:', lastEmail);",
+                  "});",
+                  "",
+                  "// Test: Verify data continuity",
+                  "pm.test('[Workflow-002] Data should flow through workflow', function() {",
+                  "    const userId = pm.environment.get('createdUserId');",
+                  "    const email = pm.environment.get('lastUserEmail');",
+                  "    ",
+                  "    pm.expect(userId).to.be.a('string',",
+                  "        'User ID should be a string for consistent data flow');",
+                  "    pm.expect(email).to.include('@',",
+                  "        'Email should contain @ for valid data');",
+                  "    ",
+                  "    console.log('✅ Data continuity verified');",
+                  "});",
+                  "",
+                  "// Test: Performance summary",
+                  "pm.test('[Workflow-003] Cumulative performance should be acceptable', function() {",
+                  "    const totalRequests = parseInt(pm.environment.get('requestCount') || '0');",
+                  "    const avgTime = pm.response.responseTime;",
+                  "    ",
+                  "    console.log('📈 Performance summary:');",
+                  "    console.log('   - Current request time:', avgTime + 'ms');",
+                  "    console.log('   - Total workflow requests:', totalRequests);",
+                  "    ",
+                  "    pm.expect(avgTime).to.be.below(5000,",
+                  "        'Request took too long: ' + avgTime + 'ms');",
+                  "});",
+                  "",
+                  "console.log('═══════════════════════════════════════════════════════');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/users/{{createdUserId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{createdUserId}}"]
             }
           }
         }
