@@ -1,0 +1,81 @@
+# ConfigMap for CI/CD Test Configuration
+# Stores environment variables and configuration for Cypress and Newman tests
+#
+# Interview Talking Point:
+# "ConfigMaps externalize configuration from container images, following the
+# twelve-factor app methodology. This allows us to change test parameters
+# without rebuilding images, supporting multiple environments (dev/staging/prod)."
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-config
+  namespace: qa-portfolio
+  labels:
+    app: cicd-demo
+    component: test-runner
+    managed-by: kubectl
+
+data:
+  # Cypress Configuration
+  CYPRESS_baseUrl: "https://jsonplaceholder.typicode.com"
+  CYPRESS_VIDEO: "true"
+  CYPRESS_SCREENSHOT_ON_RUN_FAILURE: "true"
+  CYPRESS_VIDEO_COMPRESSION: "32"
+  CYPRESS_VIDEOS_FOLDER: "/e2e/cypress/videos"
+  CYPRESS_SCREENSHOTS_FOLDER: "/e2e/cypress/screenshots"
+
+  # Newman Configuration
+  NEWMAN_ENVIRONMENT: "staging"
+  NEWMAN_TIMEOUT: "10000"
+  NEWMAN_DELAY: "500"
+
+  # Test Execution Configuration
+  TEST_BROWSER: "chrome"
+  TEST_HEADLESS: "true"
+  TEST_PARALLEL: "false"
+  TEST_BAIL_ON_FAILURE: "true"
+
+  # Report Configuration
+  REPORT_DIR: "/test-results"
+  CYPRESS_REPORT_DIR: "/test-results/cypress"
+  NEWMAN_REPORT_DIR: "/test-results/newman"
+
+  # Logging Configuration
+  LOG_LEVEL: "info"
+  ENABLE_DEBUG: "false"
+
+---
+# ConfigMap for Postman Environment
+# Stores Newman environment variables as JSON
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: newman-environment
+  namespace: qa-portfolio
+  labels:
+    app: cicd-demo
+    component: newman
+
+data:
+  environment.json: |
+    {
+      "name": "JSONPlaceholder Staging",
+      "values": [
+        {
+          "key": "baseUrl",
+          "value": "https://jsonplaceholder.typicode.com",
+          "enabled": true
+        },
+        {
+          "key": "timeout",
+          "value": "10000",
+          "enabled": true
+        },
+        {
+          "key": "environment",
+          "value": "staging",
+          "enabled": true
+        }
+      ]
+    }

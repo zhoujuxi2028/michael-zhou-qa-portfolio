@@ -1,0 +1,62 @@
+# PersistentVolumeClaim for Test Results
+# Stores test artifacts (screenshots, videos, HTML reports) persistently
+#
+# Interview Talking Point:
+# "PVCs provide persistent storage that survives pod restarts. Test artifacts
+# are critical for debugging failures in CI/CD pipelines. By using PVCs, we
+# can access historical test results, screenshots, and videos even after the
+# test pods terminate. This is essential for post-mortem analysis."
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: test-results-pvc
+  namespace: qa-portfolio
+  labels:
+    app: cicd-demo
+    component: storage
+
+spec:
+  accessModes:
+    - ReadWriteOnce  # Single node access (k3d local-path provisioner)
+    # Use ReadWriteMany for cloud providers (EBS, GCE-PD, Azure Disk)
+
+  resources:
+    requests:
+      storage: 5Gi  # 5GB for test artifacts (videos, screenshots, reports)
+
+  # Storage class (use default or specify based on your cluster)
+  # storageClassName: standard  # Uncomment if your cluster requires it
+
+  volumeMode: Filesystem
+
+---
+# PersistentVolumeClaim for Cypress Cache
+# Caches Cypress binary to avoid re-downloads
+#
+# Interview Talking Point:
+# "This PVC caches the ~200MB Cypress binary across test runs. Without caching,
+# every test execution would download Cypress, adding 1-2 minutes overhead.
+# This optimization is critical in CI/CD where we might run hundreds of test
+# jobs daily."
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cypress-cache-pvc
+  namespace: qa-portfolio
+  labels:
+    app: cicd-demo
+    component: cypress-cache
+
+spec:
+  accessModes:
+    - ReadWriteOnce  # Single node access (k3d local-path provisioner)
+    # Use ReadWriteMany for cloud providers or NFS
+
+  resources:
+    requests:
+      storage: 1Gi  # 1GB for Cypress binary cache
+
+  # storageClassName: standard
+  volumeMode: Filesystem
