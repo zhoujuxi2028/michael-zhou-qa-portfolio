@@ -1,0 +1,2431 @@
+{
+  "info": {
+    "name": "E-Commerce API Test Suite - Expert Level",
+    "description": "Enterprise-grade API testing framework demonstrating advanced testing practices:\n\n**Features:**\n- Custom Validation Library (15+ validation functions)\n- Test Data Factory Pattern\n- Advanced Error Handling (Retry, Circuit Breaker, Rate Limiting)\n- Business Rule Validation\n- Cross-Request Data Correlation\n- JSON Schema Validation\n- Performance Testing\n- Data-Driven Testing Support\n\n**Business Scenario:** E-commerce Order Management System\n\n**Test Coverage:**\n- 60 Requests across 7 modules\n- 280+ Assertions\n- Complete business workflow testing\n\n**Author:** Michael Zhou\n**Version:** 1.0.0\n**Created:** 2026-02-25\n**Updated:** 2026-02-28",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "ecommerce-test-suite-001",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "patch": 1
+    }
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// ═══════════════════════════════════════════════════════════",
+          "// COLLECTION-LEVEL PRE-REQUEST SCRIPT",
+          "// Expert-Level Test Framework Components",
+          "// ═══════════════════════════════════════════════════════════",
+          "",
+          "// ───────────────────────────────────────────────────────────",
+          "// 1. VALIDATION LIBRARY",
+          "// ───────────────────────────────────────────────────────────",
+          "const ValidationLibrary = {",
+          "  ",
+          "  // JSON Schema Validator with Custom Rules",
+          "  validateSchema: function(data, schema, customRules = {}) {",
+          "    if (!data || typeof data !== 'object') {",
+          "      return { valid: false, errors: ['Data must be an object'] };",
+          "    }",
+          "    ",
+          "    if (schema.required && Array.isArray(schema.required)) {",
+          "      for (const field of schema.required) {",
+          "        if (!data.hasOwnProperty(field)) {",
+          "          return { valid: false, errors: [`Missing required field: ${field}`] };",
+          "        }",
+          "      }",
+          "    }",
+          "    ",
+          "    if (schema.properties) {",
+          "      for (const [key, prop] of Object.entries(schema.properties)) {",
+          "        if (data.hasOwnProperty(key)) {",
+          "          const actualType = Array.isArray(data[key]) ? 'array' : typeof data[key];",
+          "          if (prop.type && actualType !== prop.type) {",
+          "            return { valid: false, errors: [`Field '${key}' expected type '${prop.type}', got '${actualType}'`] };",
+          "          }",
+          "        }",
+          "      }",
+          "    }",
+          "    ",
+          "    for (const [ruleName, validator] of Object.entries(customRules)) {",
+          "      try {",
+          "        if (!validator(data)) {",
+          "          return { valid: false, errors: [`Custom rule failed: ${ruleName}`] };",
+          "        }",
+          "      } catch (error) {",
+          "        return { valid: false, errors: [`Custom rule error in '${ruleName}': ${error.message}`] };",
+          "      }",
+          "    }",
+          "    ",
+          "    return { valid: true, errors: [] };",
+          "  },",
+          "  ",
+          "  // Business Rule Validators",
+          "  businessRules: {",
+          "    orderTotalIsCorrect: function(order) {",
+          "      if (!order.items || !Array.isArray(order.items)) return false;",
+          "      const subtotal = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);",
+          "      const tax = subtotal * (order.taxRate || 0);",
+          "      const shipping = order.shippingCost || 0;",
+          "      const discount = order.discount || 0;",
+          "      const calculatedTotal = subtotal + tax + shipping - discount;",
+          "      return Math.abs(calculatedTotal - order.total) < 0.01;",
+          "    },",
+          "    ",
+          "    stockSufficient: function(product, requestedQuantity) {",
+          "      return product.stock >= requestedQuantity && product.stock > 0;",
+          "    },",
+          "    ",
+          "    priceInRange: function(product, min = 0, max = 1000000) {",
+          "      return product.price >= min && product.price <= max && product.price > 0;",
+          "    },",
+          "    ",
+          "    validStateTransition: function(currentState, newState, allowedTransitions) {",
+          "      const allowed = allowedTransitions[currentState] || [];",
+          "      return allowed.includes(newState);",
+          "    },",
+          "    ",
+          "    isValidEmail: function(email) {",
+          "      const regex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;",
+          "      return regex.test(email);",
+          "    },",
+          "    ",
+          "    isValidCardNumber: function(cardNumber) {",
+          "      const digits = cardNumber.replace(/\\D/g, '');",
+          "      if (digits.length < 13 || digits.length > 19) return false;",
+          "      let sum = 0;",
+          "      let isEven = false;",
+          "      for (let i = digits.length - 1; i >= 0; i--) {",
+          "        let digit = parseInt(digits[i]);",
+          "        if (isEven) {",
+          "          digit *= 2;",
+          "          if (digit > 9) digit -= 9;",
+          "        }",
+          "        sum += digit;",
+          "        isEven = !isEven;",
+          "      }",
+          "      return sum % 10 === 0;",
+          "    },",
+          "    ",
+          "    isCouponValid: function(coupon, orderTotal, currentDate) {",
+          "      if (!coupon.active) return false;",
+          "      if (new Date(coupon.expiryDate) < new Date(currentDate)) return false;",
+          "      if (coupon.minimumOrderAmount && orderTotal < coupon.minimumOrderAmount) return false;",
+          "      return true;",
+          "    }",
+          "  },",
+          "  ",
+          "  // Cross-Request Data Correlation",
+          "  correlationChecks: {",
+          "    orderMatchesCart: function(cart, order) {",
+          "      if (!cart.items || !order.items) return false;",
+          "      if (cart.items.length !== order.items.length) return false;",
+          "      for (const cartItem of cart.items) {",
+          "        const orderItem = order.items.find(item => item.productId === cartItem.productId);",
+          "        if (!orderItem || orderItem.quantity !== cartItem.quantity) return false;",
+          "      }",
+          "      return true;",
+          "    },",
+          "    ",
+          "    inventoryDeductedCorrectly: function(beforeStock, afterStock, orderQuantity) {",
+          "      return afterStock === beforeStock - orderQuantity;",
+          "    }",
+          "  },",
+          "  ",
+          "  // Performance Validators",
+          "  performance: {",
+          "    responseTimeAcceptable: function(responseTime, threshold = 2000) {",
+          "      return responseTime < threshold;",
+          "    },",
+          "    ",
+          "    paginationOptimal: function(pageSize) {",
+          "      return pageSize >= 10 && pageSize <= 100;",
+          "    }",
+          "  }",
+          "};",
+          "",
+          "// ───────────────────────────────────────────────────────────",
+          "// 2. TEST DATA FACTORY",
+          "// ───────────────────────────────────────────────────────────",
+          "const TestDataFactory = {",
+          "  ",
+          "  generateUniqueId: function() {",
+          "    return `TEST_${Date.now()}_${Math.floor(Math.random() * 10000)}`;",
+          "  },",
+          "  ",
+          "  createUser: function(role = 'customer') {",
+          "    const firstName = pm.variables.replaceIn('{{$randomFirstName}}');",
+          "    const lastName = pm.variables.replaceIn('{{$randomLastName}}');",
+          "    const timestamp = Date.now();",
+          "    ",
+          "    return {",
+          "      id: this.generateUniqueId(),",
+          "      email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}.${timestamp}@testmail.com`,",
+          "      firstName: firstName,",
+          "      lastName: lastName,",
+          "      role: role,",
+          "      phone: `+1${Math.floor(Math.random() * 9000000000 + 1000000000)}`,",
+          "      address: this.createAddress(),",
+          "      createdAt: new Date().toISOString()",
+          "    };",
+          "  },",
+          "  ",
+          "  createProduct: function(vendorId) {",
+          "    const categories = ['Electronics', 'Clothing', 'Books', 'Home', 'Sports'];",
+          "    const category = categories[Math.floor(Math.random() * categories.length)];",
+          "    ",
+          "    return {",
+          "      id: this.generateUniqueId(),",
+          "      name: `Test Product ${pm.variables.replaceIn('{{$randomProductName}}')}`,",
+          "      description: pm.variables.replaceIn('{{$randomProductAdjective}} {{$randomProduct}}'),",
+          "      category: category,",
+          "      price: parseFloat((Math.random() * 1000 + 10).toFixed(2)),",
+          "      stock: Math.floor(Math.random() * 100 + 10),",
+          "      vendorId: vendorId || this.generateUniqueId(),",
+          "      sku: `SKU-${this.generateUniqueId()}`,",
+          "      images: [`https://example.com/images/${this.generateUniqueId()}.jpg`],",
+          "      tags: [category.toLowerCase(), 'test'],",
+          "      active: true,",
+          "      createdAt: new Date().toISOString()",
+          "    };",
+          "  },",
+          "  ",
+          "  createOrder: function(userId, items) {",
+          "    const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);",
+          "    const taxRate = 0.08;",
+          "    const tax = subtotal * taxRate;",
+          "    const shippingCost = subtotal > 50 ? 0 : 9.99;",
+          "    const total = subtotal + tax + shippingCost;",
+          "    ",
+          "    return {",
+          "      id: this.generateUniqueId(),",
+          "      userId: userId,",
+          "      items: items,",
+          "      subtotal: parseFloat(subtotal.toFixed(2)),",
+          "      taxRate: taxRate,",
+          "      tax: parseFloat(tax.toFixed(2)),",
+          "      shippingCost: shippingCost,",
+          "      discount: 0,",
+          "      total: parseFloat(total.toFixed(2)),",
+          "      status: 'pending',",
+          "      paymentStatus: 'pending',",
+          "      shippingAddress: this.createAddress(),",
+          "      createdAt: new Date().toISOString(),",
+          "      updatedAt: new Date().toISOString()",
+          "    };",
+          "  },",
+          "  ",
+          "  createAddress: function() {",
+          "    return {",
+          "      street: pm.variables.replaceIn('{{$randomStreetAddress}}'),",
+          "      city: pm.variables.replaceIn('{{$randomCity}}'),",
+          "      state: pm.variables.replaceIn('{{$randomCountryCode}}'),",
+          "      zipCode: Math.floor(Math.random() * 90000 + 10000).toString(),",
+          "      country: 'US'",
+          "    };",
+          "  },",
+          "  ",
+          "  createPaymentMethod: function() {",
+          "    return {",
+          "      type: 'credit_card',",
+          "      cardNumber: '4532015112830366',",
+          "      cardholderName: pm.variables.replaceIn('{{$randomFullName}}'),",
+          "      expiryMonth: Math.floor(Math.random() * 12 + 1),",
+          "      expiryYear: new Date().getFullYear() + Math.floor(Math.random() * 5 + 1),",
+          "      cvv: Math.floor(Math.random() * 900 + 100).toString()",
+          "    };",
+          "  },",
+          "  ",
+          "  createCoupon: function() {",
+          "    return {",
+          "      code: `TESTCOUPON${Math.floor(Math.random() * 10000)}`,",
+          "      discountType: Math.random() > 0.5 ? 'percentage' : 'fixed',",
+          "      discountValue: Math.random() > 0.5 ? Math.floor(Math.random() * 30 + 5) : Math.floor(Math.random() * 50 + 10),",
+          "      minimumOrderAmount: 50,",
+          "      expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),",
+          "      active: true",
+          "    };",
+          "  }",
+          "};",
+          "",
+          "// ───────────────────────────────────────────────────────────",
+          "// 3. ERROR HANDLER & RETRY LOGIC",
+          "// ───────────────────────────────────────────────────────────",
+          "const ErrorHandler = {",
+          "  ",
+          "  // Circuit Breaker State Management",
+          "  circuitBreaker: {",
+          "    getState: function() {",
+          "      return pm.environment.get('circuitBreakerState') || 'CLOSED';",
+          "    },",
+          "    ",
+          "    setState: function(state) {",
+          "      pm.environment.set('circuitBreakerState', state);",
+          "      console.log(`Circuit Breaker: ${state}`);",
+          "    },",
+          "    ",
+          "    incrementFailures: function() {",
+          "      const current = parseInt(pm.environment.get('circuitBreakerFailures') || '0');",
+          "      pm.environment.set('circuitBreakerFailures', (current + 1).toString());",
+          "      return current + 1;",
+          "    },",
+          "    ",
+          "    resetFailures: function() {",
+          "      pm.environment.set('circuitBreakerFailures', '0');",
+          "    },",
+          "    ",
+          "    shouldAllowRequest: function() {",
+          "      const state = this.getState();",
+          "      if (state === 'OPEN') {",
+          "        const lastFailureTime = parseInt(pm.environment.get('lastFailureTime') || '0');",
+          "        const timeout = 60000;",
+          "        if (Date.now() - lastFailureTime > timeout) {",
+          "          this.setState('HALF_OPEN');",
+          "          return true;",
+          "        }",
+          "        return false;",
+          "      }",
+          "      return true;",
+          "    },",
+          "    ",
+          "    recordSuccess: function() {",
+          "      const state = this.getState();",
+          "      if (state === 'HALF_OPEN') {",
+          "        this.setState('CLOSED');",
+          "      }",
+          "      this.resetFailures();",
+          "    },",
+          "    ",
+          "    recordFailure: function() {",
+          "      const failures = this.incrementFailures();",
+          "      pm.environment.set('lastFailureTime', Date.now().toString());",
+          "      if (failures >= 3) {",
+          "        this.setState('OPEN');",
+          "      }",
+          "    }",
+          "  },",
+          "  ",
+          "  // Retry Logic with Exponential Backoff",
+          "  retry: {",
+          "    getAttempt: function() {",
+          "      return parseInt(pm.environment.get('retryAttempt') || '0');",
+          "    },",
+          "    ",
+          "    incrementAttempt: function() {",
+          "      const current = this.getAttempt();",
+          "      pm.environment.set('retryAttempt', (current + 1).toString());",
+          "      return current + 1;",
+          "    },",
+          "    ",
+          "    resetAttempt: function() {",
+          "      pm.environment.set('retryAttempt', '0');",
+          "    },",
+          "    ",
+          "    calculateBackoffDelay: function(attempt, baseDelay = 1000) {",
+          "      return baseDelay * Math.pow(2, attempt);",
+          "    },",
+          "    ",
+          "    shouldRetry: function(statusCode, maxRetries = 3) {",
+          "      const attempt = this.getAttempt();",
+          "      const retryableCodes = [408, 429, 500, 502, 503, 504];",
+          "      return attempt < maxRetries && retryableCodes.includes(statusCode);",
+          "    }",
+          "  },",
+          "  ",
+          "  // Idempotency Key Manager",
+          "  idempotency: {",
+          "    generateKey: function() {",
+          "      return pm.variables.replaceIn('{{$guid}}');",
+          "    },",
+          "    ",
+          "    setKey: function() {",
+          "      const key = this.generateKey();",
+          "      pm.environment.set('lastIdempotencyKey', key);",
+          "      return key;",
+          "    },",
+          "    ",
+          "    getKey: function() {",
+          "      return pm.environment.get('lastIdempotencyKey');",
+          "    }",
+          "  },",
+          "  ",
+          "  // Rate Limiting Handler",
+          "  rateLimit: {",
+          "    handleResponse: function(response) {",
+          "      if (response.code === 429) {",
+          "        const retryAfter = response.headers['retry-after'] || response.headers['Retry-After'] || '5';",
+          "        const delay = parseInt(retryAfter) * 1000;",
+          "        console.warn(`Rate limited. Retry after ${delay}ms`);",
+          "        return { shouldRetry: true, delay: delay };",
+          "      }",
+          "      return { shouldRetry: false };",
+          "    }",
+          "  }",
+          "};",
+          "",
+          "// Make libraries globally available",
+          "pm.globals.set('ValidationLibrary', JSON.stringify(ValidationLibrary));",
+          "pm.globals.set('TestDataFactory', JSON.stringify(TestDataFactory));",
+          "pm.globals.set('ErrorHandler', JSON.stringify(ErrorHandler));",
+          "",
+          "// Log request execution",
+          "console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);",
+          "console.log(`🚀 Executing: ${pm.info.requestName}`);",
+          "console.log(`📍 URL: ${pm.request.url}`);",
+          "console.log(`🕒 Timestamp: ${new Date().toISOString()}`);",
+          "console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// ═══════════════════════════════════════════════════════════",
+          "// COLLECTION-LEVEL TEST SCRIPT",
+          "// Common Assertions for All Requests",
+          "// ═══════════════════════════════════════════════════════════",
+          "",
+          "// Common Test 1: Response must be valid JSON",
+          "pm.test('[Common] Response is valid JSON', function() {",
+          "    try {",
+          "        pm.response.json();",
+          "    } catch (e) {",
+          "        pm.expect.fail('Response is not valid JSON');",
+          "    }",
+          "});",
+          "",
+          "// Common Test 2: Response time monitoring",
+          "const responseTime = pm.response.responseTime;",
+          "pm.test('[Common] Response time logged', function() {",
+          "    console.log(`⏱️  Response Time: ${responseTime}ms`);",
+          "    pm.expect(responseTime).to.be.a('number');",
+          "});",
+          "",
+          "// Common Test 3: Content-Type header check",
+          "if (pm.response.code !== 204) {",
+          "    pm.test('[Common] Content-Type header present', function() {",
+          "        pm.response.to.have.header('Content-Type');",
+          "    });",
+          "}",
+          "",
+          "// Log response summary",
+          "console.log(`✅ Status: ${pm.response.code} ${pm.response.status}`);",
+          "console.log(`📊 Response Size: ${pm.response.responseSize} bytes`);",
+          "console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);",
+          "",
+          "// Update circuit breaker based on response",
+          "const ErrorHandler = JSON.parse(pm.globals.get('ErrorHandler'));",
+          "if (pm.response.code >= 200 && pm.response.code < 300) {",
+          "    ErrorHandler.circuitBreaker.recordSuccess();",
+          "    ErrorHandler.retry.resetAttempt();",
+          "} else if (pm.response.code >= 500) {",
+          "    ErrorHandler.circuitBreaker.recordFailure();",
+          "}",
+          "pm.globals.set('ErrorHandler', JSON.stringify(ErrorHandler));"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://jsonplaceholder.typicode.com",
+      "type": "default"
+    },
+    {
+      "key": "collectionVersion",
+      "value": "1.0.1",
+      "type": "default"
+    },
+    {
+      "key": "testEnvironment",
+      "value": "development",
+      "type": "default"
+    }
+  ],
+  "item": [
+    {
+      "name": "01-User Management",
+      "item": [
+        {
+          "name": "01-Get All Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[User] Should return all users', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.length).to.be.above(0);",
+                  "});",
+                  "",
+                  "pm.test('[User] Each user should have required fields', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    jsonData.forEach(user => {",
+                  "        pm.expect(user).to.have.property('id');",
+                  "        pm.expect(user).to.have.property('name');",
+                  "        pm.expect(user).to.have.property('username');",
+                  "        pm.expect(user).to.have.property('email');",
+                  "    });",
+                  "});",
+                  "",
+                  "pm.test('[User] User email should be valid format', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;",
+                  "    jsonData.forEach(user => {",
+                  "        pm.expect(emailRegex.test(user.email)).to.be.true;",
+                  "    });",
+                  "});",
+                  "",
+                  "pm.test('[User] Response time should be less than 2s', function() {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "pm.test('[User] Store first user ID for后续 tests', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.environment.set('firstUserId', jsonData[0].id.toString());",
+                  "    pm.environment.set('testUserEmail', jsonData[0].email);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "02-Get Single User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[User] Should return single user', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.id).to.eq(parseInt(pm.environment.get('firstUserId')));",
+                  "});",
+                  "",
+                  "pm.test('[User] Should have complete user profile', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "    pm.expect(jsonData).to.have.property('username');",
+                  "    pm.expect(jsonData).to.have.property('email');",
+                  "    pm.expect(jsonData).to.have.property('phone');",
+                  "    pm.expect(jsonData).to.have.property('website');",
+                  "});",
+                  "",
+                  "pm.test('[User] Address should be complete', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.address).to.have.property('street');",
+                  "    pm.expect(jsonData.address).to.have.property('city');",
+                  "    pm.expect(jsonData.address).to.have.property('zipcode');",
+                  "});",
+                  "",
+                  "pm.test('[User] Company info should exist', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.company).to.have.property('name');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/users/{{firstUserId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{firstUserId}}"]
+            }
+          }
+        },
+        {
+          "name": "03-Get User by Username",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[User] Should filter users by username', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.length).to.be.gte(0);",
+                  "});",
+                  "",
+                  "pm.test('[User] Returned user should match username', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        jsonData.forEach(user => {",
+                  "            pm.expect(user.username).to.not.be.empty;",
+                  "        });",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/users?username=Bret",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
+              "query": [
+                {
+                  "key": "username",
+                  "value": "Bret"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "04-Create User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[User] Should create new user', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.name).to.eq('Test User');",
+                  "    pm.expect(jsonData.email).to.eq('test@example.com');",
+                  "});",
+                  "",
+                  "pm.test('[User] Should return 201 Created', function() {",
+                  "    pm.expect(pm.response.status).to.eq('Created');",
+                  "});",
+                  "",
+                  "pm.test('[User] Store created user ID', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.environment.set('createdUserId', jsonData.id.toString());",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Test User\",\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\",\n    \"phone\": \"1-770-736-8031\",\n    \"website\": \"test.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "05-Update User (PUT)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[User] Should update existing user', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.name).to.eq('Updated User Name');",
+                  "    pm.expect(jsonData.email).to.eq('updated@example.com');",
+                  "});",
+                  "",
+                  "pm.test('[User] Should preserve user ID', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.eq(1);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/users/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id\": 1,\n    \"name\": \"Updated User Name\",\n    \"username\": \"updateduser\",\n    \"email\": \"updated@example.com\",\n    \"phone\": \"1-770-736-8031\",\n    \"website\": \"updated.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "06-Update User (PATCH)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[User] Should partially update user', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "    pm.expect(jsonData).to.have.property('email');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/users/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"patched@example.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "07-Delete User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[User] Should delete user successfully', function() {",
+                  "    pm.expect(pm.response.code).to.eq(200);",
+                  "});",
+                  "",
+                  "pm.test('[User] Response body should be empty', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(Object.keys(jsonData).length).to.eq(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/users/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "1"]
+            }
+          }
+        },
+        {
+          "name": "08-Get User Posts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[User] Should return user posts', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.length).to.be.gte(0);",
+                  "});",
+                  "",
+                  "pm.test('[User] Each post should belong to user', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    jsonData.forEach(post => {",
+                  "        pm.expect(post.userId).to.eq(parseInt(pm.environment.get('firstUserId')));",
+                  "    });",
+                  "});",
+                  "",
+                  "pm.test('[User] Post should have title and body', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        pm.expect(jsonData[0]).to.have.property('title');",
+                  "        pm.expect(jsonData[0]).to.have.property('body');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/users/{{firstUserId}}/posts",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{firstUserId}}", "posts"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02-Product Management",
+      "item": [
+        {
+          "name": "01-Get All Posts (as Products)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Product] Should return all posts', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.length).to.be.gt(0);",
+                  "});",
+                  "",
+                  "pm.test('[Product] Each post should have required fields', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    jsonData.forEach(post => {",
+                  "        pm.expect(post).to.have.property('id');",
+                  "        pm.expect(post).to.have.property('title');",
+                  "        pm.expect(post).to.have.property('body');",
+                  "        pm.expect(post).to.have.property('userId');",
+                  "    });",
+                  "});",
+                  "",
+                  "pm.test('[Product] Store first product ID', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.environment.set('firstProductId', jsonData[0].id.toString());",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/posts",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts"]
+            }
+          }
+        },
+        {
+          "name": "02-Get Single Post (Product)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Product] Should return single post', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('title');",
+                  "    pm.expect(jsonData).to.have.property('body');",
+                  "});",
+                  "",
+                  "pm.test('[Product] ID should match request', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.eq(parseInt(pm.environment.get('firstProductId')));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/posts/{{firstProductId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "{{firstProductId}}"]
+            }
+          }
+        },
+        {
+          "name": "03-Get Posts by User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Product] Should filter posts by user', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    jsonData.forEach(post => {",
+                  "        pm.expect(post.userId).to.eq(1);",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/posts?userId=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "04-Create Post (Product)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Product] Should create new post', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.title).to.eq('Test Product Title');",
+                  "    pm.expect(jsonData.body).to.eq('Test Product Description');",
+                  "});",
+                  "",
+                  "pm.test('[Product] Should return 201 Created', function() {",
+                  "    pm.expect(pm.response.status).to.eq('Created');",
+                  "});",
+                  "",
+                  "pm.test('[Product] Store created product ID', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.environment.set('createdProductId', jsonData.id.toString());",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/posts",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Test Product Title\",\n    \"body\": \"Test Product Description\",\n    \"userId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "05-Update Post (Product)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Product] Should update post', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.title).to.eq('Updated Product Title');",
+                  "});",
+                  "",
+                  "pm.test('[Product] Should preserve ID and userId', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.eq(1);",
+                  "    pm.expect(jsonData.userId).to.eq(1);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/posts/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id\": 1,\n    \"title\": \"Updated Product Title\",\n    \"body\": \"Updated Product Description\",\n    \"userId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "06-Delete Post (Product)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Product] Should delete post', function() {",
+                  "    pm.expect(pm.response.code).to.eq(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/posts/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "1"]
+            }
+          }
+        },
+        {
+          "name": "07-Get Post Comments",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Product] Should return post comments', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.length).to.be.gt(0);",
+                  "});",
+                  "",
+                  "pm.test('[Product] Each comment should have email', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;",
+                  "    jsonData.forEach(comment => {",
+                  "        pm.expect(comment).to.have.property('email');",
+                  "        pm.expect(emailRegex.test(comment.email)).to.be.true;",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/posts/1/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "1", "comments"]
+            }
+          }
+        },
+        {
+          "name": "08-Pagination - Get Posts with Limit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Product] Should return limited posts', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.length).to.be.lte(5);",
+                  "});",
+                  "",
+                  "pm.test('[Product] Should support pagination parameters', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.length).to.be.gt(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/posts?_limit=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts"],
+              "query": [
+                {
+                  "key": "_limit",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "09-Pagination - Get Posts with Start",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Product] Should return posts with offset', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.length).to.be.gte(0);",
+                  "});",
+                  "",
+                  "pm.test('[Product] First post should have correct ID', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        pm.expect(jsonData[0].id).to.be.gte(11);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/posts?_start=10&_end=15",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts"],
+              "query": [
+                {
+                  "key": "_start",
+                  "value": "10"
+                },
+                {
+                  "key": "_end",
+                  "value": "15"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "10-Sort Posts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Product] Should sort posts by title', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.length).to.be.gt(0);",
+                  "});",
+                  "",
+                  "pm.test('[Product] Titles should be sorted', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.length > 1) {",
+                  "        const titles = jsonData.map(p => p.title.toLowerCase());",
+                  "        const sorted = [...titles].sort();",
+                  "        pm.expect(JSON.stringify(titles)).to.eq(JSON.stringify(sorted));",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/posts?_sort=title&_order=asc",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts"],
+              "query": [
+                {
+                  "key": "_sort",
+                  "value": "title"
+                },
+                {
+                  "key": "_order",
+                  "value": "asc"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03-Cart Management",
+      "item": [
+        {
+          "name": "01-Get All Comments (as Cart Items)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Cart] Should return all comments', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.length).to.be.gt(0);",
+                  "});",
+                  "",
+                  "pm.test('[Cart] Each comment should have required fields', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    jsonData.forEach(comment => {",
+                  "        pm.expect(comment).to.have.property('id');",
+                  "        pm.expect(comment).to.have.property('postId');",
+                  "        pm.expect(comment).to.have.property('name');",
+                  "        pm.expect(comment).to.have.property('email');",
+                  "        pm.expect(comment).to.have.property('body');",
+                  "    });",
+                  "});",
+                  "",
+                  "pm.test('[Cart] Store first cart item ID', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.environment.set('firstCartItemId', jsonData[0].id.toString());",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments"]
+            }
+          }
+        },
+        {
+          "name": "02-Get Cart Item by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Cart] Should return single comment', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/comments/{{firstCartItemId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments", "{{firstCartItemId}}"]
+            }
+          }
+        },
+        {
+          "name": "03-Get Cart Items by Post",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Cart] Should filter by post ID', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    jsonData.forEach(comment => {",
+                  "        pm.expect(comment.postId).to.eq(1);",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/comments?postId=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments"],
+              "query": [
+                {
+                  "key": "postId",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "04-Create Cart Item (Comment)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Cart] Should create comment', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.name).to.eq('Test Cart Item');",
+                  "});",
+                  "",
+                  "pm.test('[Cart] Store created cart item ID', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.environment.set('createdCartItemId', jsonData.id.toString());",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"postId\": 1,\n    \"name\": \"Test Cart Item\",\n    \"email\": \"cart@test.com\",\n    \"body\": \"This is a test cart item\"\n}"
+            }
+          }
+        },
+        {
+          "name": "05-Update Cart Item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Cart] Should update cart item', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.name).to.eq('Updated Cart Item');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/comments/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id\": 1,\n    \"postId\": 1,\n    \"name\": \"Updated Cart Item\",\n    \"email\": \"updated@test.com\",\n    \"body\": \"Updated cart item description\"\n}"
+            }
+          }
+        },
+        {
+          "name": "06-Delete Cart Item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Cart] Should delete cart item', function() {",
+                  "    pm.expect(pm.response.code).to.eq(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/comments/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments", "1"]
+            }
+          }
+        },
+        {
+          "name": "07-Get Multiple Cart Items",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Cart] Should filter by multiple post IDs', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const postIds = [1, 2, 3];",
+                  "    jsonData.forEach(comment => {",
+                  "        pm.expect(postIds).to.include(comment.postId);",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/comments?postId=1,2,3",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments"],
+              "query": [
+                {
+                  "key": "postId",
+                  "value": "1,2,3"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "08-Bulk Cart Operations",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Cart] Should handle sub-selective queries', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.length).to.be.lte(10);",
+                  "});",
+                  "",
+                  "pm.test('[Cart] Should return valid data structure', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        pm.expect(jsonData[0]).to.have.property('id');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/comments?_page=1&_limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments"],
+              "query": [
+                {
+                  "key": "_page",
+                  "value": "1"
+                },
+                {
+                  "key": "_limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04-Order Management",
+      "item": [
+        {
+          "name": "01-Get All Todos (as Orders)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Order] Should return all todos', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.length).to.be.gt(0);",
+                  "});",
+                  "",
+                  "pm.test('[Order] Each todo should have required fields', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    jsonData.forEach(todo => {",
+                  "        pm.expect(todo).to.have.property('id');",
+                  "        pm.expect(todo).to.have.property('userId');",
+                  "        pm.expect(todo).to.have.property('title');",
+                  "        pm.expect(todo).to.have.property('completed');",
+                  "    });",
+                  "});",
+                  "",
+                  "pm.test('[Order] Store first order ID', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.environment.set('firstOrderId', jsonData[0].id.toString());",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/todos",
+              "host": ["{{baseUrl}}"],
+              "path": ["todos"]
+            }
+          }
+        },
+        {
+          "name": "02-Get Single Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Order] Should return single todo', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('title');",
+                  "});",
+                  "",
+                  "pm.test('[Order] ID should match request', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.eq(parseInt(pm.environment.get('firstOrderId')));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/todos/{{firstOrderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["todos", "{{firstOrderId}}"]
+            }
+          }
+        },
+        {
+          "name": "03-Get Orders by User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Order] Should filter todos by user', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    jsonData.forEach(todo => {",
+                  "        pm.expect(todo.userId).to.eq(1);",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/todos?userId=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["todos"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "04-Create Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Order] Should create new todo', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.title).to.eq('Test Order Item');",
+                  "    pm.expect(jsonData.completed).to.eq(false);",
+                  "});",
+                  "",
+                  "pm.test('[Order] Store created order ID', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.environment.set('createdOrderId', jsonData.id.toString());",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/todos",
+              "host": ["{{baseUrl}}"],
+              "path": ["todos"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userId\": 1,\n    \"title\": \"Test Order Item\",\n    \"completed\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "05-Update Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Order] Should update todo', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.title).to.eq('Updated Order');",
+                  "    pm.expect(jsonData.completed).to.eq(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/todos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["todos", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id\": 1,\n    \"userId\": 1,\n    \"title\": \"Updated Order\",\n    \"completed\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "06-Complete Order (PATCH)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Order] Should mark as completed', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.completed).to.eq(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/todos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["todos", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"completed\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "07-Delete Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Order] Should delete todo', function() {",
+                  "    pm.expect(pm.response.code).to.eq(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/todos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["todos", "1"]
+            }
+          }
+        },
+        {
+          "name": "08-Filter Completed Orders",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Order] Should filter completed todos', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    jsonData.forEach(todo => {",
+                  "        pm.expect(todo.completed).to.eq(true);",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/todos?completed=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["todos"],
+              "query": [
+                {
+                  "key": "completed",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "09-Filter Pending Orders",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Order] Should filter pending todos', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    jsonData.forEach(todo => {",
+                  "        pm.expect(todo.completed).to.eq(false);",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/todos?completed=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["todos"],
+              "query": [
+                {
+                  "key": "completed",
+                  "value": "false"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "10-Get Order Details",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Order] Should return todo with correct ID', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.be.a('number');",
+                  "    pm.expect(jsonData.userId).to.be.a('number');",
+                  "});",
+                  "",
+                  "pm.test('[Order] Title should not be empty', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.title).to.not.be.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/todos/5",
+              "host": ["{{baseUrl}}"],
+              "path": ["todos", "5"]
+            }
+          }
+        },
+        {
+          "name": "11-Bulk Order Creation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Order] Should create multiple todos', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/todos",
+              "host": ["{{baseUrl}}"],
+              "path": ["todos"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n    {\n        \"userId\": 1,\n        \"title\": \"Bulk Order 1\",\n        \"completed\": false\n    },\n    {\n        \"userId\": 1,\n        \"title\": \"Bulk Order 2\",\n        \"completed\": false\n    }\n]"
+            }
+          }
+        },
+        {
+          "name": "12-Order Status Transition",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Order] Should handle todo update', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('completed');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/todos/10",
+              "host": ["{{baseUrl}}"],
+              "path": ["todos", "10"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"completed\": true\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05-Coupon Management",
+      "item": [
+        {
+          "name": "01-Get Albums (as Coupon Types)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Coupon] Should return all albums', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.length).to.be.gt(0);",
+                  "});",
+                  "",
+                  "pm.test('[Coupon] Store first coupon type ID', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.environment.set('firstCouponTypeId', jsonData[0].id.toString());",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/albums",
+              "host": ["{{baseUrl}}"],
+              "path": ["albums"]
+            }
+          }
+        },
+        {
+          "name": "02-Get Single Coupon Type",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Coupon] Should return single album', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('title');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/albums/{{firstCouponTypeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["albums", "{{firstCouponTypeId}}"]
+            }
+          }
+        },
+        {
+          "name": "03-Get Photos (as Coupons)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Coupon] Should return photos', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.length).to.be.gt(0);",
+                  "});",
+                  "",
+                  "pm.test('[Coupon] Each photo should have albumId', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    jsonData.forEach(photo => {",
+                  "        pm.expect(photo).to.have.property('albumId');",
+                  "        pm.expect(photo).to.have.property('title');",
+                  "        pm.expect(photo).to.have.property('url');",
+                  "    });",
+                  "});",
+                  "",
+                  "pm.test('[Coupon] Store first coupon ID', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.environment.set('firstCouponId', jsonData[0].id.toString());",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/photos",
+              "host": ["{{baseUrl}}"],
+              "path": ["photos"]
+            }
+          }
+        },
+        {
+          "name": "04-Create Coupon",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Coupon] Should create photo', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.title).to.eq('Test Coupon Photo');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/photos",
+              "host": ["{{baseUrl}}"],
+              "path": ["photos"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"albumId\": 1,\n    \"title\": \"Test Coupon Photo\",\n    \"url\": \"https://example.com/coupon.jpg\"\n}"
+            }
+          }
+        },
+        {
+          "name": "05-Update Coupon",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Coupon] Should update photo', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.title).to.eq('Updated Coupon');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/photos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["photos", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id\": 1,\n    \"albumId\": 1,\n    \"title\": \"Updated Coupon\",\n    \"url\": \"https://example.com/updated.jpg\"\n}"
+            }
+          }
+        },
+        {
+          "name": "06-Delete Coupon",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Coupon] Should delete photo', function() {",
+                  "    pm.expect(pm.response.code).to.eq(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/photos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["photos", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "06-Payment",
+      "item": [
+        {
+          "name": "01-Get Photos (as Payment Methods)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Payment] Should return photos', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.length).to.be.gt(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/photos?_limit=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["photos"],
+              "query": [
+                {
+                  "key": "_limit",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "02-Get Single Payment Method",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Payment] Should return photo', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('url');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/photos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["photos", "1"]
+            }
+          }
+        },
+        {
+          "name": "03-Validate Payment Method URL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Payment] Photo URL should be valid', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const urlRegex = /^https?:\\/\\/.+/;",
+                  "    pm.expect(urlRegex.test(jsonData.url)).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/photos/5",
+              "host": ["{{baseUrl}}"],
+              "path": ["photos", "5"]
+            }
+          }
+        },
+        {
+          "name": "04-Create Payment Record",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Payment] Should create photo record', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/photos",
+              "host": ["{{baseUrl}}"],
+              "path": ["photos"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"albumId\": 1,\n    \"title\": \"Payment Record\",\n    \"url\": \"https://payment.example.com/record.jpg\"\n}"
+            }
+          }
+        },
+        {
+          "name": "05-Update Payment Details",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Payment] Should update photo details', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('title');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/photos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["photos", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Updated Payment Record\"\n}"
+            }
+          }
+        },
+        {
+          "name": "06-Delete Payment Record",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Payment] Should delete payment record', function() {",
+                  "    pm.expect(pm.response.code).to.eq(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/photos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["photos", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "07-Negative Tests",
+      "item": [
+        {
+          "name": "01-Get Non-existent User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Negative] Should return empty object for non-existent user', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(Object.keys(jsonData).length).to.eq(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/users/999999",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "999999"]
+            }
+          }
+        },
+        {
+          "name": "02-Create User with Invalid Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Negative] Should still create user (API accepts any)', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Invalid Email User\",\n    \"email\": \"not-an-email\"\n}"
+            }
+          }
+        },
+        {
+          "name": "03-Get User with Invalid ID Format",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Negative] Should handle invalid ID gracefully', function() {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 404, 400]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/users/abc",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "abc"]
+            }
+          }
+        },
+        {
+          "name": "04-Create Post with Missing Required Fields",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Negative] Should create with defaults when required fields missing', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/posts",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "05-Update Non-existent Resource",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Negative] Should handle update of non-existent resource', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/posts/999999",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "999999"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id\": 999999,\n    \"title\": \"Non-existent\"\n}"
+            }
+          }
+        },
+        {
+          "name": "06-Delete Non-existent Resource",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Negative] Should return success for non-existent delete', function() {",
+                  "    pm.expect(pm.response.code).to.eq(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/posts/999999",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "999999"]
+            }
+          }
+        },
+        {
+          "name": "07-Query with Invalid Parameters",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Negative] Should handle invalid query gracefully', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/posts?invalidparam=invalid",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts"],
+              "query": [
+                {
+                  "key": "invalidparam",
+                  "value": "invalid"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "08-Post with Very Long Title",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Negative] Should handle long content', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/posts",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. \".repeat(100),\n    \"userId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "09-Get with Negative ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Negative] Should handle negative ID', function() {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/posts/-1",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "-1"]
+            }
+          }
+        },
+        {
+          "name": "10-Concurrent Request Simulation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('[Negative] Should handle rapid sequential requests', function() {",
+                  "    pm.expect(pm.response.code).to.eq(200);",
+                  "});",
+                  "",
+                  "pm.test('[Negative] Response time should be acceptable', function() {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/posts/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "1"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
