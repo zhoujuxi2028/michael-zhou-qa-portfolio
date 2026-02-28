@@ -1,0 +1,98 @@
+# Ingress for External Access to Test Results
+# Exposes test results HTTP server to external traffic
+#
+# Interview Talking Point:
+# "Ingress provides HTTP/HTTPS routing to services. Instead of exposing each
+# service via LoadBalancer (costly), we use a single Ingress Controller to route
+# traffic based on hostnames and paths. This is more cost-effective and follows
+# Kubernetes best practices for production deployments."
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: test-results-ingress
+  namespace: qa-portfolio
+  labels:
+    app: cicd-demo
+    component: ingress
+
+  annotations:
+    # Ingress controller annotations
+    kubernetes.io/ingress.class: "nginx"  # Use nginx ingress controller
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"  # Allow HTTP for demo
+
+    # CORS configuration for viewing assets
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+
+    # Custom error pages
+    nginx.ingress.kubernetes.io/custom-http-errors: "404,503"
+
+    # Additional annotations for production
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"  # For TLS
+    # nginx.ingress.kubernetes.io/rate-limit: "100"       # Rate limiting
+
+spec:
+  # TLS configuration (commented out for demo)
+  # tls:
+  #   - hosts:
+  #       - test-results.qa-portfolio.local
+  #     secretName: test-results-tls
+
+  rules:
+    # Rule 1: Access via test-results.qa-portfolio.local
+    - host: test-results.qa-portfolio.local
+      http:
+        paths:
+          # Serve all test results at root path
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: test-results-service
+                port:
+                  number: 80
+
+          # Direct path to Cypress results
+          - path: /cypress
+            pathType: Prefix
+            backend:
+              service:
+                name: test-results-service
+                port:
+                  number: 80
+
+          # Direct path to Newman results
+          - path: /newman
+            pathType: Prefix
+            backend:
+              service:
+                name: test-results-service
+                port:
+                  number: 80
+
+    # Rule 2: Access via localhost (for k3d local development)
+    - host: localhost
+      http:
+        paths:
+          - path: /test-results
+            pathType: Prefix
+            backend:
+              service:
+                name: test-results-service
+                port:
+                  number: 80
+
+---
+# IngressClass for nginx (if needed by your cluster)
+# Some Kubernetes versions require explicit IngressClass definition
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: nginx
+  labels:
+    app: cicd-demo
+
+spec:
+  controller: k8s.io/ingress-nginx

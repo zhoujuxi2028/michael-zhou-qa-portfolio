@@ -1,0 +1,17 @@
+# Namespace for QA Portfolio CI/CD Demo
+# Isolates resources from other applications in the cluster
+#
+# Interview Talking Point:
+# "Namespaces provide logical isolation and resource management in Kubernetes.
+# By using a dedicated namespace, we can apply resource quotas, network policies,
+# and RBAC rules specific to our test workloads without affecting other applications."
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: qa-portfolio
+  labels:
+    name: qa-portfolio
+    environment: demo
+    purpose: cicd-testing
+    managed-by: kubectl
