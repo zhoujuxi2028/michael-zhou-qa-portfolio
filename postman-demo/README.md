@@ -27,7 +27,7 @@ This expert-level test suite demonstrates advanced API testing capabilities:
 
 ```bash
 # Navigate to project
-cd postman-tests
+cd postman-demo
 
 # Run expert-level test suite
 newman run collections/E-Commerce-API-Test-Suite.postman_collection.json \
@@ -74,10 +74,9 @@ This project demonstrates professional API testing skills using Postman and Newm
 ## 📁 Project Structure
 
 ```
-postman-tests/
+postman-demo/
 ├── collections/              # Postman collection files (.json)
-│   ├── API-Test-Collection.postman_collection.json
-│   └── ...
+│   └── E-Commerce-API-Test-Suite.postman_collection.json
 ├── environments/            # Environment configuration files
 │   ├── dev.postman_environment.json
 │   ├── staging.postman_environment.json
@@ -121,7 +120,7 @@ postman-tests/
 1. Clone the repository:
    ```bash
    git clone https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio.git
-   cd michael-zhou-qa-portfolio/postman-tests
+   cd michael-zhou-qa-portfolio/postman-demo
    ```
 
 2. Verify Newman installation:
@@ -137,7 +136,7 @@ postman-tests/
 
 #### Run all tests (dev environment):
 ```bash
-newman run collections/API-Test-Collection.postman_collection.json \
+newman run collections/E-Commerce-API-Test-Suite.postman_collection.json \
   -e environments/dev.postman_environment.json \
   -r html,cli \
   --reporter-html-export reports/newman-report.html
@@ -145,7 +144,7 @@ newman run collections/API-Test-Collection.postman_collection.json \
 
 #### Run specific folder:
 ```bash
-newman run collections/API-Test-Collection.postman_collection.json \
+newman run collections/E-Commerce-API-Test-Suite.postman_collection.json \
   -e environments/dev.postman_environment.json \
   --folder "User Management"
 ```
@@ -153,21 +152,21 @@ newman run collections/API-Test-Collection.postman_collection.json \
 #### Run with different environments:
 ```bash
 # Development
-newman run collections/API-Test-Collection.postman_collection.json \
+newman run collections/E-Commerce-API-Test-Suite.postman_collection.json \
   -e environments/dev.postman_environment.json
 
 # Staging
-newman run collections/API-Test-Collection.postman_collection.json \
+newman run collections/E-Commerce-API-Test-Suite.postman_collection.json \
   -e environments/staging.postman_environment.json
 
 # Production (read-only tests)
-newman run collections/API-Test-Collection.postman_collection.json \
+newman run collections/E-Commerce-API-Test-Suite.postman_collection.json \
   -e environments/prod.postman_environment.json
 ```
 
 #### Run with iterations (data-driven testing):
 ```bash
-newman run collections/API-Test-Collection.postman_collection.json \
+newman run collections/E-Commerce-API-Test-Suite.postman_collection.json \
   -e environments/dev.postman_environment.json \
   -d test-data.json \
   -n 5
@@ -189,7 +188,7 @@ newman run collections/API-Test-Collection.postman_collection.json \
 ### Using Postman Desktop
 
 1. Open Postman
-2. Import collection: `File → Import → collections/API-Test-Collection.postman_collection.json`
+2. Import collection: `File → Import → collections/E-Commerce-API-Test-Suite.postman_collection.json`
 3. Import environment: `File → Import → environments/dev.postman_environment.json`
 4. Select environment in top-right dropdown
 5. Click "Run Collection" button
@@ -313,7 +312,7 @@ jobs:
 
       - name: Run API Tests
         run: |
-          newman run collections/API-Test-Collection.postman_collection.json \
+          newman run collections/E-Commerce-API-Test-Suite.postman_collection.json \
             -e environments/dev.postman_environment.json \
             -r html,cli \
             --reporter-html-export reports/newman-report.html

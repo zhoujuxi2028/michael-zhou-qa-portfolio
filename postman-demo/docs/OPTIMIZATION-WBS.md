@@ -1,0 +1,118 @@
+# Postman-Demo 企业级优化 WBS
+
+## 工作分解结构 (Work Breakdown Structure)
+
+**项目**: postman-demo 企业级目录结构优化
+**开始日期**: 2026-03-01
+**状态**: 进行中
+
+---
+
+## Phase 1: 修复关键不一致 ✅ 完成
+
+### 1.1 修复脚本集合引用
+| 任务 | 文件 | 状态 | 备注 |
+|------|------|------|------|
+| 1.1.1 | `scripts/run-tests.sh` | ✅ 完成 | API-Test-Collection → E-Commerce-API-Test-Suite |
+| 1.1.2 | `scripts/run-smoke-tests.sh` | ✅ 完成 | API-Test-Collection → E-Commerce-API-Test-Suite |
+
+### 1.2 修复 README 引用
+| 任务 | 修改内容 | 状态 | 备注 |
+|------|----------|------|------|
+| 1.2.1 | 目录名 postman-tests → postman-demo | ✅ 完成 | 第30行 |
+| 1.2.2 | 项目结构图目录名 | ✅ 完成 | 第77行 |
+| 1.2.3 | 克隆路径 | ✅ 完成 | 第124行 |
+| 1.2.4 | newman run 命令中的集合名 | ✅ 完成 | 全局替换 |
+| 1.2.5 | CI/CD 示例中的集合名 | ✅ 完成 | 全局替换 |
+| 1.2.6 | Postman Desktop 导入路径 | ✅ 完成 | 全局替换 |
+
+---
+
+## Phase 2: 添加 package.json ✅ 完成
+
+| 任务 | 内容 | 状态 |
+|------|------|------|
+| 2.1 | 创建 package.json | ✅ 完成 |
+| 2.2 | 配置 npm scripts (test, test:dev, test:staging, test:prod, test:smoke, test:ci) | ✅ 完成 |
+| 2.3 | 配置 devDependencies | ✅ 完成 |
+| 2.4 | 执行 npm install 生成 package-lock.json | ✅ 完成 |
+
+---
+
+## Phase 3: 同步环境变量 ⬜ 待开始
+
+| 任务 | 文件 | 状态 | 新增变量 |
+|------|------|------|----------|
+| 3.1 | `environments/dev.postman_environment.json` | ⬜ 待完成 | +8 变量 |
+| 3.2 | `environments/staging.postman_environment.json` | ⬜ 待完成 | +8 变量 |
+
+**需添加的变量:**
+- `userId`, `productId`, `orderId`, `cartId`
+- `retryAttempt`, `maxRetries`
+- `circuitBreakerState`, `circuitBreakerFailures`
+
+---
+
+## Phase 4: 添加 Pre-commit Hooks ⬜ 待开始
+
+| 任务 | 文件 | 状态 |
+|------|------|------|
+| 4.1 | 创建 `.husky/pre-commit` | ⬜ 待完成 |
+| 4.2 | 创建 `.husky/commit-msg` | ⬜ 待完成 |
+| 4.3 | 创建 `.lintstagedrc.json` | ⬜ 待完成 |
+| 4.4 | 创建 `commitlint.config.js` | ⬜ 待完成 |
+| 4.5 | 创建 `scripts/validate-collection.js` | ⬜ 待完成 |
+| 4.6 | 创建 `scripts/validate-environment.js` | ⬜ 待完成 |
+
+---
+
+## Phase 5: 修复 .gitignore 和报告处理 ⬜ 待开始
+
+| 任务 | 内容 | 状态 |
+|------|------|------|
+| 5.1 | 更新 `.gitignore` 正确处理 reports | ⬜ 待完成 |
+| 5.2 | 创建 `reports/.gitkeep` | ⬜ 待完成 |
+| 5.3 | 删除 `reports/newman-report.html` | ⬜ 待完成 |
+| 5.4 | 删除 `reports/newman-report.json` | ⬜ 待完成 |
+
+---
+
+## Phase 6: 添加 CHANGELOG.md ⬜ 待开始
+
+| 任务 | 内容 | 状态 |
+|------|------|------|
+| 6.1 | 创建 `CHANGELOG.md` | ⬜ 待完成 |
+
+---
+
+## 验证清单 ⬜ 待开始
+
+| 验证项 | 命令 | 状态 |
+|--------|------|------|
+| npm scripts | `npm run test:smoke` | ⬜ 待验证 |
+| Husky hooks | `git commit -m "test: verify"` | ⬜ 待验证 |
+| 环境校验 | `node scripts/validate-environment.js` | ⬜ 待验证 |
+| 集合校验 | `node scripts/validate-collection.js` | ⬜ 待验证 |
+
+---
+
+## 进度汇总
+
+| Phase | 描述 | 进度 | 状态 |
+|-------|------|------|------|
+| 1 | 修复关键不一致 | 8/8 | ✅ 完成 |
+| 2 | 添加 package.json | 4/4 | ✅ 完成 |
+| 3 | 同步环境变量 | 0/2 | ⬜ 待开始 |
+| 4 | 添加 Pre-commit Hooks | 0/6 | ⬜ 待开始 |
+| 5 | 修复 .gitignore | 0/4 | ⬜ 待开始 |
+| 6 | 添加 CHANGELOG | 0/1 | ⬜ 待开始 |
+
+**总体进度**: 12/25 (48%)
+
+---
+
+## 图例
+
+- ✅ 完成
+- ⏳ 进行中
+- ⬜ 待完成/待开始
