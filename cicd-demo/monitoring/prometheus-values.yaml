@@ -1,0 +1,163 @@
+# Prometheus + Grafana Stack Configuration
+# Using kube-prometheus-stack Helm chart v57.0.0+
+# For DevOps Platform monitoring and observability
+
+---
+# Prometheus Configuration
+prometheus:
+  enabled: true
+
+  prometheusSpec:
+    # Data retention policy
+    retention: 7d                           # Keep metrics for 7 days (demo optimized)
+    retentionSize: "5GB"                    # Max storage size
+
+    # Resource allocation
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "250m"
+      limits:
+        memory: "1Gi"
+        cpu: "500m"
+
+    # Persistent storage configuration
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: local-path      # k3d default storage class
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+
+    # Auto-discover all ServiceMonitors (not just release ones)
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+
+    # Scrape interval and timeout
+    scrapeInterval: 30s
+    evaluationInterval: 30s
+
+    # Service configuration
+    service:
+      type: ClusterIP
+      port: 9090
+
+    # Additional scrape configs (optional)
+    additionalScrapeConfigs: []
+
+---
+# Grafana Configuration (Embedded)
+grafana:
+  enabled: true
+
+  # Admin user credentials
+  adminUser: admin
+  adminPassword: "grafana-admin"           # Demo password (change in production)
+
+  # Persistence for dashboards and datasources
+  persistence:
+    enabled: true
+    storageClassName: local-path
+    size: 2Gi
+
+  # Data sources - Prometheus auto-configuration
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          url: http://prometheus-kube-prometheus-prometheus:9090
+          isDefault: true
+          access: proxy
+          editable: false
+
+  # Dashboard providers - import custom dashboards
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: 'default'
+          orgId: 1
+          folder: 'DevOps'
+          type: file
+          disableDeletion: false
+          updateIntervalSeconds: 10
+          allowUiUpdates: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+
+  # Import custom dashboards from ConfigMap
+  dashboardsConfigMaps:
+    default: grafana-dashboards          # ConfigMap name with dashboard JSONs
+
+  # Grafana plugins (optional)
+  plugins: []
+
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 80
+
+  # Ingress (optional - disabled for demo)
+  ingress:
+    enabled: false
+
+---
+# AlertManager Configuration
+alertmanager:
+  enabled: true
+
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      group_by: ['alertname', 'cluster']
+      group_wait: 10s
+      group_interval: 10s
+      repeat_interval: 12h
+      receiver: 'null'
+    receivers:
+      - name: 'null'
+
+---
+# Node Exporter - Per-node metrics
+nodeExporter:
+  enabled: true
+
+---
+# Kube State Metrics - Cluster-level metrics
+kubeStateMetrics:
+  enabled: true
+
+---
+# Prometheus Operator - CRD management
+prometheusOperator:
+  enabled: true
+
+  # Manage CRDs
+  manageCrds: true
+
+---
+# ServiceMonitor for Prometheus itself
+prometheus-node-exporter:
+  enabled: true
+
+---
+# Namespace configuration
+namespaceOverride: monitoring
+
+---
+# Global labels for all resources
+global:
+  rbac:
+    create: true
+    pspEnabled: false
+
+---
+# Common configuration
+commonLabels:
+  app: monitoring
+  environment: dev
