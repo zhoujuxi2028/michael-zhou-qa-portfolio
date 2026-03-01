@@ -16,7 +16,7 @@
     "test:dev": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json -r cli,htmlextra,json --reporter-htmlextra-export reports/newman-report-dev.html --reporter-json-export reports/newman-report-dev.json",
     "test:staging": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/staging.postman_environment.json -r cli,htmlextra,json --reporter-htmlextra-export reports/newman-report-staging.html --reporter-json-export reports/newman-report-staging.json",
     "test:prod": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/prod.postman_environment.json -r cli,htmlextra,json --reporter-htmlextra-export reports/newman-report-prod.html --reporter-json-export reports/newman-report-prod.json",
-    "test:smoke": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json --folder \"Smoke Tests\" -r cli",
+    "test:smoke": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json --folder \"01-User Management\" -r cli",
     "test:ci": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json -r cli,json --reporter-json-export reports/newman-report.json --bail",
     "test:data-driven": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json -d data/test-orders-data.csv -r cli,htmlextra --reporter-htmlextra-export reports/data-driven-report.html",
     "validate": "node scripts/validate-collection.js && node scripts/validate-environment.js",
