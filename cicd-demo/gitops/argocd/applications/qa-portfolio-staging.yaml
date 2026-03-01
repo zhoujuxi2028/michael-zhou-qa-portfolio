@@ -1,0 +1,68 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: qa-portfolio-staging
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    environment: staging
+    team: qa
+    project: qa-portfolio
+spec:
+  project: qa-portfolio
+
+  source:
+    repoURL: https://github.com/michael-zhou-qa/michael-zhou-qa-portfolio.git
+
+    # Staging tracks main branch (more stable than feature branches)
+    targetRevision: main
+
+    path: cicd-demo/k8s
+
+    # Optional: Use Kustomize overlays for staging-specific config
+    # kustomize:
+    #   namePrefix: staging-
+    #   commonLabels:
+    #     environment: staging
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: qa-portfolio
+
+  syncPolicy:
+    automated:
+      # Staging: Manual approval required for sync (more controlled)
+      # Set to false to require manual sync
+      selfHeal: false
+      prune: true
+      allowEmpty: false
+
+    syncOptions:
+      - CreateNamespace=true
+      - Validate=true
+      - ServerSideApply=false
+      - PruneLast=false
+
+    retry:
+      limit: 3  # Fewer retries in staging
+      backoff:
+        duration: 10s
+        maxDuration: 5m
+        factor: 2
+
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/template/metadata/annotations
+
+# Interview Talking Points:
+# - "Staging environment uses main branch, more stable than dev feature branches"
+# - "selfHeal is disabled for staging to prevent automatic changes"
+# - "This allows QA team to manually approve deployments to staging"
+# - "Production would have even stricter controls with manual sync only"
