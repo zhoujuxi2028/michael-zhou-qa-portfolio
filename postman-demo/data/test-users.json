@@ -1,0 +1,52 @@
+[
+  {
+    "id": "user_001",
+    "email": "admin@ecommerce.test",
+    "password": "Test@1234",
+    "firstName": "Admin",
+    "lastName": "User",
+    "role": "admin",
+    "phone": "+1234567890",
+    "active": true
+  },
+  {
+    "id": "user_002",
+    "email": "vendor1@ecommerce.test",
+    "password": "Vendor@1234",
+    "firstName": "Vendor",
+    "lastName": "One",
+    "role": "vendor",
+    "phone": "+1234567891",
+    "active": true
+  },
+  {
+    "id": "user_003",
+    "email": "customer1@ecommerce.test",
+    "password": "Customer@1234",
+    "firstName": "John",
+    "lastName": "Doe",
+    "role": "customer",
+    "phone": "+1234567892",
+    "active": true
+  },
+  {
+    "id": "user_004",
+    "email": "customer2@ecommerce.test",
+    "password": "Customer@1234",
+    "firstName": "Jane",
+    "lastName": "Smith",
+    "role": "customer",
+    "phone": "+1234567893",
+    "active": true
+  },
+  {
+    "id": "user_005",
+    "email": "customer3@ecommerce.test",
+    "password": "Customer@1234",
+    "firstName": "Bob",
+    "lastName": "Johnson",
+    "role": "customer",
+    "phone": "+1234567894",
+    "active": true
+  }
+]
