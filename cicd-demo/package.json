@@ -22,6 +22,10 @@
     "dashboard:generate": "./scripts/generate-dashboard.sh",
     "ci:install": "npm ci",
     "ci:verify": "cypress verify",
+    "security:audit": "npm audit --audit-level=moderate",
+    "security:audit:fix": "npm audit fix",
+    "security:scan": "docker run --rm -v $(pwd):/workspace aquasec/trivy fs --config /workspace/security/trivy-config.yaml /workspace",
+    "security:report": "./security/security-report.sh",
     "prepare": "husky install || true"
   },
   "keywords": [
