@@ -8,7 +8,7 @@
 
 ---
 
-## Phase 1: 修复关键不一致 ✅ 完成
+## Phase 1: 修复关键不一致 ✅ 完成 (2026-03-01)
 
 ### 1.1 修复脚本集合引用
 | 任务 | 文件 | 状态 | 备注 |
@@ -26,16 +26,23 @@
 | 1.2.5 | CI/CD 示例中的集合名 | ✅ 完成 | 全局替换 |
 | 1.2.6 | Postman Desktop 导入路径 | ✅ 完成 | 全局替换 |
 
+### 1.3 修复 .gitignore (额外发现)
+| 任务 | 修改内容 | 状态 | 备注 |
+|------|----------|------|------|
+| 1.3.1 | 修复 *.json 规则导致 package.json 被忽略 | ✅ 完成 | 改为 reports/*.json |
+
 ---
 
-## Phase 2: 添加 package.json ✅ 完成
+## Phase 2: 添加 package.json ✅ 完成 (2026-03-01)
 
 | 任务 | 内容 | 状态 |
 |------|------|------|
 | 2.1 | 创建 package.json | ✅ 完成 |
 | 2.2 | 配置 npm scripts (test, test:dev, test:staging, test:prod, test:smoke, test:ci) | ✅ 完成 |
-| 2.3 | 配置 devDependencies | ✅ 完成 |
+| 2.3 | 配置 devDependencies (newman, husky, lint-staged, commitlint) | ✅ 完成 |
 | 2.4 | 执行 npm install 生成 package-lock.json | ✅ 完成 |
+
+**提交记录**: `477ab40` - refactor: enterprise-level optimization phase 1 & 2
 
 ---
 
@@ -100,14 +107,14 @@
 
 | Phase | 描述 | 进度 | 状态 |
 |-------|------|------|------|
-| 1 | 修复关键不一致 | 8/8 | ✅ 完成 |
+| 1 | 修复关键不一致 | 9/9 | ✅ 完成 |
 | 2 | 添加 package.json | 4/4 | ✅ 完成 |
 | 3 | 同步环境变量 | 0/2 | ⬜ 待开始 |
 | 4 | 添加 Pre-commit Hooks | 0/6 | ⬜ 待开始 |
-| 5 | 修复 .gitignore | 0/4 | ⬜ 待开始 |
+| 5 | 修复 .gitignore | 1/4 | ⏳ 部分完成 |
 | 6 | 添加 CHANGELOG | 0/1 | ⬜ 待开始 |
 
-**总体进度**: 12/25 (48%)
+**总体进度**: 14/26 (54%)
 
 ---
 
