@@ -1,0 +1,2 @@
+# This file ensures the reports directory exists in git
+# Generated reports (*.html, *.json) are gitignored
