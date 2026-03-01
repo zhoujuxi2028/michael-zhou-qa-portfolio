@@ -1,0 +1,37 @@
+[
+  {
+    "scenario": "Low Stock Alert",
+    "productId": "prod_001",
+    "currentStock": 5,
+    "threshold": 10,
+    "expectedAlert": true
+  },
+  {
+    "scenario": "Out of Stock",
+    "productId": "prod_002",
+    "currentStock": 0,
+    "threshold": 10,
+    "expectedAlert": true
+  },
+  {
+    "scenario": "Sufficient Stock",
+    "productId": "prod_003",
+    "currentStock": 100,
+    "threshold": 10,
+    "expectedAlert": false
+  },
+  {
+    "scenario": "Stock Reservation",
+    "productId": "prod_004",
+    "currentStock": 200,
+    "reserveQuantity": 50,
+    "expectedAvailable": 150
+  },
+  {
+    "scenario": "Stock Release",
+    "productId": "prod_005",
+    "currentStock": 75,
+    "releaseQuantity": 25,
+    "expectedAvailable": 100
+  }
+]

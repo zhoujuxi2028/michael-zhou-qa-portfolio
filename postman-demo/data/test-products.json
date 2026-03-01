@@ -1,0 +1,52 @@
+[
+  {
+    "id": "prod_001",
+    "name": "Wireless Headphones",
+    "description": "Premium noise-cancelling wireless headphones",
+    "category": "Electronics",
+    "price": 199.99,
+    "stock": 50,
+    "sku": "SKU-HEADPHONE-001",
+    "active": true
+  },
+  {
+    "id": "prod_002",
+    "name": "Smart Watch",
+    "description": "Fitness tracking smart watch with GPS",
+    "category": "Electronics",
+    "price": 299.99,
+    "stock": 30,
+    "sku": "SKU-WATCH-001",
+    "active": true
+  },
+  {
+    "id": "prod_003",
+    "name": "Running Shoes",
+    "description": "Professional running shoes for athletes",
+    "category": "Sports",
+    "price": 129.99,
+    "stock": 100,
+    "sku": "SKU-SHOES-001",
+    "active": true
+  },
+  {
+    "id": "prod_004",
+    "name": "Cotton T-Shirt",
+    "description": "Comfortable 100% cotton t-shirt",
+    "category": "Clothing",
+    "price": 29.99,
+    "stock": 200,
+    "sku": "SKU-TSHIRT-001",
+    "active": true
+  },
+  {
+    "id": "prod_005",
+    "name": "JavaScript Programming Book",
+    "description": "Complete guide to modern JavaScript",
+    "category": "Books",
+    "price": 49.99,
+    "stock": 75,
+    "sku": "SKU-BOOK-001",
+    "active": true
+  }
+]

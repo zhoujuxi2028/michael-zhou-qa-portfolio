@@ -1,0 +1,43 @@
+# Newman reports
+reports/*.html
+reports/*.json
+
+# Keep package files
+!package.json
+!package-lock.json
+
+# Keep source JSON files
+!collections/*.json
+!environments/*.json
+!data/*.json
+!newman-config.json
+
+# Node modules (if using npm scripts)
+node_modules/
+
+# Environment files with sensitive data
+.env
+*.env.local
+
+# Test data with sensitive information
+*-sensitive.json
+*-credentials.json
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+tmp/
+temp/
+*.tmp
