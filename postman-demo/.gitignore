@@ -1,7 +1,12 @@
 # Newman reports
-reports/
-*.html
-*.json
+reports/*.html
+reports/*.json
+
+# Keep package files
+!package.json
+!package-lock.json
+
+# Keep source JSON files
 !collections/*.json
 !environments/*.json
 !data/*.json

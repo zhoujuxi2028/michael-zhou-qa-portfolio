@@ -9,7 +9,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-COLLECTION="collections/API-Test-Collection.postman_collection.json"
+COLLECTION="collections/E-Commerce-API-Test-Suite.postman_collection.json"
 ENVIRONMENT="${1:-dev}"
 ENV_FILE="environments/${ENVIRONMENT}.postman_environment.json"
 FOLDER="Smoke Tests"
