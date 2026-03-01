@@ -1,0 +1,77 @@
+# Trivy Configuration File
+# Documentation: https://aquasecurity.github.io/trivy/latest/docs/references/configuration/config-file/
+
+# Scan settings
+scan:
+  # Security checks to perform
+  # Options: vuln,config,secret,license
+  security-checks:
+    - vuln      # Vulnerability scanning
+    - config    # Misconfiguration scanning
+    - secret    # Secret detection
+    - license   # License scanning
+
+# Vulnerability settings
+vulnerability:
+  # Severity levels to scan for
+  # Options: CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN
+  severity:
+    - CRITICAL
+    - HIGH
+    - MEDIUM
+
+  # Vulnerability types to include
+  type:
+    - os        # OS package vulnerabilities
+    - library   # Application dependency vulnerabilities
+
+# Output settings
+format: table  # Options: table, json, sarif, template
+
+# Suppress false positives and accepted risks
+# (Use .trivyignore file for CVE-specific suppressions)
+
+# Timeout settings
+timeout: 10m0s  # Scan timeout (10 minutes)
+
+# Cache settings
+cache:
+  clear: false  # Set to true to clear cache before scanning
+  ttl: 6h0m0s   # Cache time-to-live (6 hours)
+
+# Exit code settings
+exit-code: 1  # Non-zero exit code if vulnerabilities found (fails CI)
+
+# Ignore unfixed vulnerabilities (optional - commented out by default)
+# ignore-unfixed: true
+
+# License settings
+license:
+  # License categories to flag as issues
+  # Options: forbidden, restricted, reciprocal, notice, permissive, unencumbered, unknown
+  forbidden:
+    - GPL-2.0
+    - GPL-3.0
+    - AGPL-1.0
+    - AGPL-3.0
+
+# Skip specific paths during scanning
+skip-dirs:
+  - node_modules/.cache
+  - .git
+  - .github
+  - cypress/videos
+  - cypress/screenshots
+  - test-logs
+
+# Skip specific files during scanning
+skip-files:
+  - "**/*.test.js"
+  - "**/*.spec.js"
+  - "**/*.md"
+
+# Interview Talking Point:
+# "This configuration standardizes our security scanning across environments.
+# We scan for vulnerabilities at MEDIUM+ severity, detect secrets and
+# misconfigurations, and flag problematic licenses like GPL. The config
+# excludes test files and build artifacts to reduce noise and scan time."

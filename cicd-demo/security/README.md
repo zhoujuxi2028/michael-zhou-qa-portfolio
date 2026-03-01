@@ -219,6 +219,80 @@ GHSA-xxxx-yyyy-zzzz
 - Set expiration dates (review periodically)
 - Get security team approval for CRITICAL/HIGH suppressions
 
+## Security Configuration Files
+
+This directory contains the following files:
+
+| File | Description | Purpose |
+|------|-------------|---------|
+| `README.md` | This file | Security scanning documentation |
+| `trivy-config.yaml` | Trivy configuration | Standardized Trivy scan settings |
+| `security-report.sh` | Security report generator | Comprehensive local security scanning |
+
+### trivy-config.yaml
+
+Centralized Trivy configuration that defines:
+- **Severity levels**: CRITICAL, HIGH, MEDIUM
+- **Security checks**: Vulnerabilities, misconfigurations, secrets, licenses
+- **Exclusions**: Skip test files, build artifacts, caches
+- **License restrictions**: Flag GPL and AGPL licenses
+- **Timeouts**: 10-minute scan timeout
+
+**Usage:**
+```bash
+# Use with Trivy CLI
+trivy fs --config security/trivy-config.yaml .
+trivy image --config security/trivy-config.yaml myimage:latest
+
+# Via npm script
+npm run security:scan
+```
+
+### security-report.sh
+
+Automated security report generator that runs:
+1. **npm audit** - Dependency vulnerability scanning
+2. **Trivy filesystem scan** - Source code and dependency analysis
+3. **Trivy image scan** - Docker image security assessment
+
+Generates a consolidated markdown report with all findings.
+
+**Usage:**
+```bash
+# Generate report in default directory (./security-reports)
+./security/security-report.sh
+
+# Generate report in custom directory
+./security/security-report.sh /path/to/output
+
+# Via npm script
+npm run security:report
+```
+
+**Output:**
+- `security-report-{timestamp}.md` - Comprehensive markdown report
+- `npm-audit.json` - Raw npm audit results
+- `trivy-fs.txt` - Trivy filesystem scan results
+- `trivy-image.txt` - Trivy image scan results
+
+## NPM Scripts for Security
+
+The following security commands are available in `package.json`:
+
+```bash
+# Run npm audit (fails on moderate+ vulnerabilities)
+npm run security:audit
+
+# Automatically fix vulnerabilities
+npm run security:audit:fix
+
+# Run Trivy filesystem scan in Docker
+npm run security:scan
+
+# Generate comprehensive security report
+npm run security:report
+```
+
 ## Local Security Scanning
 
 ### Prerequisites
