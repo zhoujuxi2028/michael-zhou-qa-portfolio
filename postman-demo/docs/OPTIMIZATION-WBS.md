@@ -62,27 +62,31 @@
 
 ---
 
-## Phase 4: 添加 Pre-commit Hooks ⬜ 待开始
+## Phase 4: 添加 Pre-commit Hooks ✅ 完成 (2026-03-01)
 
 | 任务 | 文件 | 状态 |
 |------|------|------|
-| 4.1 | 创建 `.husky/pre-commit` | ⬜ 待完成 |
-| 4.2 | 创建 `.husky/commit-msg` | ⬜ 待完成 |
-| 4.3 | 创建 `.lintstagedrc.json` | ⬜ 待完成 |
-| 4.4 | 创建 `commitlint.config.js` | ⬜ 待完成 |
-| 4.5 | 创建 `scripts/validate-collection.js` | ⬜ 待完成 |
-| 4.6 | 创建 `scripts/validate-environment.js` | ⬜ 待完成 |
+| 4.1 | 创建 `.husky/pre-commit` | ✅ 完成 |
+| 4.2 | 创建 `.husky/commit-msg` | ✅ 完成 |
+| 4.3 | 创建 `.lintstagedrc.json` | ✅ 完成 |
+| 4.4 | 创建 `commitlint.config.js` | ✅ 完成 |
+| 4.5 | 创建 `scripts/validate-collection.js` | ✅ 完成 |
+| 4.6 | 创建 `scripts/validate-environment.js` | ✅ 完成 |
+
+**自测结果:**
+- `validate-collection.js`: ✓ 检测到 8 folders, 65 requests
+- `validate-environment.js`: ✓ 所有环境 13 变量一致
 
 ---
 
-## Phase 5: 修复 .gitignore 和报告处理 ⬜ 待开始
+## Phase 5: 修复 .gitignore 和报告处理 ✅ 完成 (2026-03-01)
 
 | 任务 | 内容 | 状态 |
 |------|------|------|
-| 5.1 | 更新 `.gitignore` 正确处理 reports | ⬜ 待完成 |
-| 5.2 | 创建 `reports/.gitkeep` | ⬜ 待完成 |
-| 5.3 | 删除 `reports/newman-report.html` | ⬜ 待完成 |
-| 5.4 | 删除 `reports/newman-report.json` | ⬜ 待完成 |
+| 5.1 | 更新 `.gitignore` 正确处理 reports | ✅ 完成 (Phase 1) |
+| 5.2 | 创建 `reports/.gitkeep` | ✅ 完成 |
+| 5.3 | 删除 `reports/newman-report.html` | ✅ 完成 |
+| 5.4 | 删除 `reports/newman-report.json` | ✅ 完成 |
 
 ---
 
@@ -94,14 +98,14 @@
 
 ---
 
-## 验证清单 ⬜ 待开始
+## 验证清单 ⏳ 部分完成
 
 | 验证项 | 命令 | 状态 |
 |--------|------|------|
 | npm scripts | `npm run test:smoke` | ⬜ 待验证 |
 | Husky hooks | `git commit -m "test: verify"` | ⬜ 待验证 |
-| 环境校验 | `node scripts/validate-environment.js` | ⬜ 待验证 |
-| 集合校验 | `node scripts/validate-collection.js` | ⬜ 待验证 |
+| 环境校验 | `node scripts/validate-environment.js` | ✅ 通过 |
+| 集合校验 | `node scripts/validate-collection.js` | ✅ 通过 |
 
 ---
 
@@ -112,11 +116,11 @@
 | 1 | 修复关键不一致 | 9/9 | ✅ 完成 |
 | 2 | 添加 package.json | 4/4 | ✅ 完成 |
 | 3 | 同步环境变量 | 2/2 | ✅ 完成 |
-| 4 | 添加 Pre-commit Hooks | 0/6 | ⬜ 待开始 |
-| 5 | 修复 .gitignore | 1/4 | ⏳ 部分完成 |
+| 4 | 添加 Pre-commit Hooks | 6/6 | ✅ 完成 |
+| 5 | 修复 .gitignore | 4/4 | ✅ 完成 |
 | 6 | 添加 CHANGELOG | 0/1 | ⬜ 待开始 |
 
-**总体进度**: 16/26 (62%)
+**总体进度**: 25/26 (96%)
 
 ---
 
