@@ -1,0 +1,90 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: qa-portfolio
+  namespace: argocd
+  # Finalizer ensures project is not deleted if it has applications
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  # Description of the project
+  description: QA Portfolio CI/CD Demo Project
+
+  # Source repositories that applications in this project can pull from
+  sourceRepos:
+    - 'https://github.com/*'  # Allow any GitHub repo
+    - '*'  # Allow any Git repository
+
+  # Destination clusters and namespaces that applications can deploy to
+  destinations:
+    - namespace: 'qa-portfolio'
+      server: 'https://kubernetes.default.svc'
+    - namespace: 'qa-portfolio-dev'
+      server: 'https://kubernetes.default.svc'
+    - namespace: 'qa-portfolio-staging'
+      server: 'https://kubernetes.default.svc'
+    - namespace: 'qa-portfolio-prod'
+      server: 'https://kubernetes.default.svc'
+
+  # Cluster resource whitelist (what can be deployed)
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRole
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRoleBinding
+
+  # Namespace resource blacklist (what cannot be deployed)
+  namespaceResourceBlacklist:
+    - group: ''
+      kind: ResourceQuota
+    - group: ''
+      kind: LimitRange
+
+  # Roles for controlling access to the project
+  roles:
+    # Developer role - can view and sync applications
+    - name: developer
+      description: Developers can view and sync applications
+      policies:
+        - p, proj:qa-portfolio:developer, applications, get, qa-portfolio/*, allow
+        - p, proj:qa-portfolio:developer, applications, sync, qa-portfolio/*, allow
+      groups:
+        - developers
+
+    # Admin role - full access to project
+    - name: admin
+      description: Admins have full access to the project
+      policies:
+        - p, proj:qa-portfolio:admin, applications, *, qa-portfolio/*, allow
+        - p, proj:qa-portfolio:admin, repositories, *, *, allow
+        - p, proj:qa-portfolio:admin, clusters, *, *, allow
+      groups:
+        - admins
+
+  # Sync windows - when auto-sync is allowed
+  syncWindows:
+    # Allow sync during business hours
+    - kind: allow
+      schedule: '0 9-17 * * MON-FRI'  # 9 AM - 5 PM, Monday-Friday
+      duration: 8h
+      applications:
+        - '*'
+      namespaces:
+        - qa-portfolio
+        - qa-portfolio-dev
+        - qa-portfolio-staging
+
+    # Deny sync during maintenance window
+    - kind: deny
+      schedule: '0 2-4 * * SAT'  # 2 AM - 4 AM Saturday (maintenance)
+      duration: 2h
+      applications:
+        - '*'
+      namespaces:
+        - qa-portfolio-prod
+
+  # Orphaned resources settings
+  orphanedResources:
+    warn: true  # Warn about resources not tracked in Git
