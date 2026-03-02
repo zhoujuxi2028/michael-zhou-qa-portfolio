@@ -1,0 +1,153 @@
+name: PR Quick Checks (Node.js)
+
+# Trigger Configuration:
+# This workflow is AUTOMATICALLY triggered when:
+# 1. A pull request is opened
+# 2. New commits are pushed to an existing PR
+# 3. A PR is reopened
+# 4. Manual trigger via GitHub UI (workflow_dispatch)
+#
+# Interview Talking Point:
+# "This workflow provides fast feedback for pull requests using Node.js directly.
+# It completes in ~2-3 minutes vs ~5 minutes for Docker, giving developers rapid
+# iteration cycles during code review."
+
+on:
+  # Automatically trigger on ANY pull request activity
+  pull_request:
+    branches: [ portfolio ]
+    types: [opened, synchronize, reopened]
+
+  # Allow manual trigger from GitHub Actions UI
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: cicd-demo
+
+jobs:
+  quick-tests:
+    name: Fast Tests (Node.js Native)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      # Step 1: Checkout the PR branch
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Node.js with caching
+      # Interview Talking Point:
+      # "We cache npm dependencies based on package-lock.json hash. This reduces
+      # installation time from ~60s to ~10s on subsequent runs."
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'cicd-demo/package-lock.json'
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # Step 4: Verify Cypress installation
+      - name: Verify Cypress binary
+        run: npx cypress verify
+
+      # Step 5: Run Cypress E2E tests
+      - name: Run Cypress tests
+        run: npm run test:cypress
+        env:
+          CYPRESS_baseUrl: https://jsonplaceholder.typicode.com
+
+      # Step 6: Run Newman API tests
+      - name: Run Newman tests
+        run: npm run test:newman
+
+      # Step 7: Upload artifacts (only on failure)
+      - name: Upload Cypress videos (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos-pr
+          path: cicd-demo/cypress/videos/
+          if-no-files-found: ignore
+          retention-days: 3
+
+      - name: Upload Newman report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-report-pr
+          path: cicd-demo/newman/report.html
+          if-no-files-found: warn
+          retention-days: 7
+
+      # Step 8: Publish test results to PR
+      - name: Publish test results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: cicd-demo/newman/junit.xml
+          check_name: PR Quick Test Results
+
+  lint:
+    name: Code Linting
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'cicd-demo/package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+# =============================================================================
+# Interview Discussion Points
+# =============================================================================
+#
+# 1. Automatic Triggering:
+#    "This workflow runs automatically on every PR. GitHub detects pull_request
+#    events and triggers the workflow without any manual intervention. Developers
+#    get immediate feedback as soon as they push code."
+#
+# 2. PR Types Filter:
+#    "We listen to 'opened', 'synchronize' (new commits), and 'reopened' events.
+#    This ensures tests run when PRs are created, updated, or reopened after
+#    being closed. We don't run on 'closed' to avoid wasting CI resources."
+#
+# 3. Fast Feedback Loop:
+#    "Speed matters for developer productivity. This Node.js-based workflow
+#    completes in ~2 minutes, allowing developers to fix issues and iterate
+#    quickly during code review."
+#
+# 4. Conditional Artifact Upload:
+#    "We only upload Cypress videos on failure to save CI time and storage.
+#    Successful runs don't need debugging artifacts. This is a practical
+#    optimization for high-frequency workflows."
+#
+# 5. Separate Lint Job:
+#    "Linting runs in parallel with tests. If code style is wrong, we know
+#    in ~30 seconds without waiting for tests. Parallel jobs improve total
+#    execution time."
+#
+# 6. Branch Protection Integration:
+#    "In production, we'd configure branch protection rules requiring this
+#    workflow to pass before merging. This enforces quality gates automatically."
+#
+# 7. Manual Trigger Option:
+#    "workflow_dispatch allows re-running tests without creating a new commit.
+#    Useful when CI infrastructure had temporary issues or for demonstration
+#    purposes."
