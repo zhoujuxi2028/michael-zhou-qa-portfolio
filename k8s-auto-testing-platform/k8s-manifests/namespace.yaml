@@ -1,0 +1,10 @@
+# Kubernetes Namespace for K8S Auto Testing Platform
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: k8s-testing
+  labels:
+    name: k8s-testing
+    purpose: automated-testing
+    project: k8s-auto-testing-platform
