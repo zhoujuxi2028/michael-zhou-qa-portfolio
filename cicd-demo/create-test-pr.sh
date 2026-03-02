@@ -50,6 +50,6 @@ This PR will be **closed and deleted** after successful verification. It serves 
 **Interview Note:** This demonstrates understanding of GitHub Actions event-driven workflows and PR-based CI/CD validation strategies.
 EOF
 )" \
-  --base main \
+  --base portfolio \
   --head test/verify-pr-workflow \
   --web
