@@ -1,0 +1,35 @@
+# K8S Auto Testing Platform - Python Dependencies
+
+# Kubernetes Client
+kubernetes==28.1.0
+
+# Testing Framework
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-html==4.1.1
+pytest-xdist==3.5.0
+
+# HTTP Requests
+requests==2.31.0
+
+# Load Testing
+locust==2.20.0
+
+# YAML Processing
+pyyaml==6.0.1
+
+# Web Framework (for test app)
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+
+# Metrics and Monitoring
+prometheus-client==0.19.0
+
+# Utilities
+python-dotenv==1.0.0
+click==8.1.7
+
+# Code Quality
+black==23.12.1
+flake8==7.0.0
+pylint==3.0.3
