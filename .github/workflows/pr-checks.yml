@@ -85,7 +85,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: newman-report-pr
-          path: cicd-demo/newman/report.html
+          path: cicd-demo/newman/
           if-no-files-found: warn
           retention-days: 7
 
