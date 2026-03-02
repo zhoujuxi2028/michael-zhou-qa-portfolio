@@ -57,14 +57,23 @@ jobs:
 
       # Step 4: Run tests in Docker containers
       # Interview Talking Point:
-      # "We use 'docker compose up --abort-on-container-exit' to run both
-      # Cypress and Newman in parallel. If either fails, the workflow fails.
-      # This ensures comprehensive validation before deployment."
+      # "We run containers in detached mode and use 'docker compose wait' to let
+      # both Cypress and Newman complete naturally. Newman finishes in ~6s while
+      # Cypress needs ~14s, so we wait for both before checking exit codes.
+      # This avoids the SIGKILL issue with --abort-on-container-exit."
       - name: Run Cypress and Newman tests
         run: |
-          docker compose up \
-            --abort-on-container-exit \
-            --exit-code-from cypress
+          docker compose up -d
+          docker compose wait cypress newman || true
+          CYPRESS_EXIT=$(docker inspect qa-cypress-demo --format='{{.State.ExitCode}}')
+          NEWMAN_EXIT=$(docker inspect qa-newman-demo --format='{{.State.ExitCode}}')
+          echo "Cypress exit code: $CYPRESS_EXIT"
+          echo "Newman exit code: $NEWMAN_EXIT"
+          if [ "$CYPRESS_EXIT" != "0" ] || [ "$NEWMAN_EXIT" != "0" ]; then
+            docker compose logs cypress
+            docker compose logs newman
+            exit 1
+          fi
 
       # Step 5: Upload test artifacts
       - name: Upload Cypress screenshots
