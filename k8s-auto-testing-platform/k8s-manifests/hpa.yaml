@@ -1,0 +1,70 @@
+# Horizontal Pod Autoscaler (HPA) Configuration
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: test-app-hpa
+  namespace: k8s-testing
+  labels:
+    app: test-app
+spec:
+  # Target deployment
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: test-app
+
+  # Replica limits
+  minReplicas: 2
+  maxReplicas: 10
+
+  # Metrics for scaling decisions
+  metrics:
+
+  # CPU-based scaling
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50  # Scale up when CPU > 50%
+
+  # Memory-based scaling
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 70  # Scale up when Memory > 70%
+
+  # Scaling behavior
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 60  # Wait 60s before scaling down
+      policies:
+      - type: Percent
+        value: 50  # Scale down by max 50% of current replicas
+        periodSeconds: 60
+      - type: Pods
+        value: 2  # Scale down by max 2 pods at a time
+        periodSeconds: 60
+      selectPolicy: Min  # Use the policy that scales down the least
+
+    scaleUp:
+      stabilizationWindowSeconds: 0  # Scale up immediately
+      policies:
+      - type: Percent
+        value: 100  # Scale up by max 100% of current replicas
+        periodSeconds: 15
+      - type: Pods
+        value: 4  # Scale up by max 4 pods at a time
+        periodSeconds: 15
+      selectPolicy: Max  # Use the policy that scales up the most
+
+---
+# Note: Metrics Server is required for HPA to work
+# Install with: kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+#
+# For Docker Desktop Kubernetes, you may need to modify metrics-server deployment:
+# kubectl patch deployment metrics-server -n kube-system --type='json' \
+#   -p='[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--kubelet-insecure-tls"}]'
