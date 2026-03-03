@@ -1,0 +1,110 @@
+---
+# ServiceMonitor for Prometheus Operator (optional)
+# Use this if you have Prometheus Operator installed
+#
+# To install Prometheus Operator:
+#   helm install prometheus-operator prometheus-community/kube-prometheus-stack
+#
+# This file is for environments using the Prometheus Operator CRDs
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: test-app-monitor
+  namespace: k8s-testing
+  labels:
+    app: test-app
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: test-app
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
+  namespaceSelector:
+    matchNames:
+      - k8s-testing
+
+---
+# PodMonitor alternative for direct pod scraping
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: test-app-pods
+  namespace: k8s-testing
+  labels:
+    app: test-app
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: test-app
+  podMetricsEndpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+  namespaceSelector:
+    matchNames:
+      - k8s-testing
+
+---
+# PrometheusRule for alerting (Prometheus Operator)
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: test-app-alerts
+  namespace: k8s-testing
+  labels:
+    app: test-app
+    release: prometheus
+spec:
+  groups:
+    - name: test-app-alerts
+      rules:
+        - alert: TestAppHighCPU
+          expr: avg(app_cpu_usage_percent) > 80
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High CPU usage on test app"
+            description: "Average CPU usage is {{ $value }}%"
+
+        - alert: TestAppHighMemory
+          expr: avg(app_memory_usage_percent) > 85
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High memory usage on test app"
+            description: "Average memory usage is {{ $value }}%"
+
+        - alert: TestAppDown
+          expr: up{job="test-app"} == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Test app is down"
+            description: "Test app instance {{ $labels.instance }} is down"
+
+        - alert: TestAppHighLatency
+          expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High latency on test app"
+            description: "95th percentile latency is {{ $value }}s"
+
+        - alert: HPAScalingTooFrequent
+          expr: increase(app_scaling_events_total[10m]) > 10
+          for: 5m
+          labels:
+            severity: info
+          annotations:
+            summary: "Frequent scaling events detected"
+            description: "{{ $value }} scaling events in the last 10 minutes"
