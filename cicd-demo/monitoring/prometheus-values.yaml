@@ -2,7 +2,7 @@
 # Using kube-prometheus-stack Helm chart v57.0.0+
 # For DevOps Platform monitoring and observability
 
----
+
 # Prometheus Configuration
 prometheus:
   enabled: true
@@ -39,15 +39,16 @@ prometheus:
     scrapeInterval: 30s
     evaluationInterval: 30s
 
-    # Service configuration
-    service:
-      type: ClusterIP
-      port: 9090
-
     # Additional scrape configs (optional)
     additionalScrapeConfigs: []
 
----
+  # Service configuration (must be at prometheus.service, not inside prometheusSpec)
+  service:
+    type: NodePort
+    port: 9090
+    nodePort: 30090
+
+
 # Grafana Configuration (Embedded)
 grafana:
   enabled: true
@@ -98,14 +99,15 @@ grafana:
 
   # Service configuration
   service:
-    type: ClusterIP
+    type: NodePort
     port: 80
+    nodePort: 30030
 
   # Ingress (optional - disabled for demo)
   ingress:
     enabled: false
 
----
+
 # AlertManager Configuration
 alertmanager:
   enabled: true
@@ -122,17 +124,17 @@ alertmanager:
     receivers:
       - name: 'null'
 
----
+
 # Node Exporter - Per-node metrics
 nodeExporter:
   enabled: true
 
----
+
 # Kube State Metrics - Cluster-level metrics
 kubeStateMetrics:
   enabled: true
 
----
+
 # Prometheus Operator - CRD management
 prometheusOperator:
   enabled: true
@@ -140,23 +142,23 @@ prometheusOperator:
   # Manage CRDs
   manageCrds: true
 
----
+
 # ServiceMonitor for Prometheus itself
 prometheus-node-exporter:
   enabled: true
 
----
+
 # Namespace configuration
 namespaceOverride: monitoring
 
----
+
 # Global labels for all resources
 global:
   rbac:
     create: true
     pspEnabled: false
 
----
+
 # Common configuration
 commonLabels:
   app: monitoring
