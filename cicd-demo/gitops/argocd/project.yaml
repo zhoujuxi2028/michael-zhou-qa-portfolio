@@ -34,6 +34,8 @@ spec:
       kind: ClusterRole
     - group: 'rbac.authorization.k8s.io'
       kind: ClusterRoleBinding
+    - group: 'networking.k8s.io'
+      kind: IngressClass
 
   # Namespace resource blacklist (what cannot be deployed)
   namespaceResourceBlacklist:

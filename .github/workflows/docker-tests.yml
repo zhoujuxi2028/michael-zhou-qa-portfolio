@@ -39,6 +39,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
+    env:
+      HAS_AWS_CREDS: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+
     steps:
       # Step 1: Checkout code
       - name: Checkout repository
@@ -102,6 +105,44 @@ jobs:
           path: cicd-demo/newman/
           if-no-files-found: ignore
           retention-days: 30
+
+      # Step 5b: Upload artifacts to S3 (when AWS credentials are available)
+      # Interview Talking Point:
+      # "We upload artifacts to both GitHub Actions (for PR review) and S3 (for long-term
+      # storage and cross-pipeline access). The conditional check ensures the workflow
+      # doesn't fail when AWS credentials aren't configured."
+      - name: Upload test artifacts to S3
+        if: always() && env.HAS_AWS_CREDS == 'true'
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+        run: |
+          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+          BUCKET="qa-portfolio-dev-artifacts"
+
+          # Upload Cypress screenshots
+          if [ -d "cypress/screenshots" ]; then
+            aws s3 cp cypress/screenshots/ \
+              "s3://${BUCKET}/runs/${TIMESTAMP}/cypress-screenshots/" \
+              --recursive
+          fi
+
+          # Upload Cypress videos
+          if [ -d "cypress/videos" ]; then
+            aws s3 cp cypress/videos/ \
+              "s3://${BUCKET}/runs/${TIMESTAMP}/cypress-videos/" \
+              --recursive
+          fi
+
+          # Upload Newman reports
+          if [ -d "newman" ]; then
+            aws s3 cp newman/ \
+              "s3://${BUCKET}/runs/${TIMESTAMP}/newman-reports/" \
+              --recursive
+          fi
+
+          echo "Artifacts uploaded to s3://${BUCKET}/runs/${TIMESTAMP}/"
 
       # Step 6: Publish test results
       - name: Publish test results
