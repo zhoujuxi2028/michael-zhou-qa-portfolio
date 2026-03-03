@@ -1,0 +1,20 @@
+# PodChaos: Pod 删除实验
+# 随机删除一个 Pod，验证 HPA 恢复能力
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill-test
+  namespace: k8s-testing
+  labels:
+    app: chaos-test
+    scenario: pod-resilience
+spec:
+  action: pod-kill
+  mode: one  # 随机选择一个 Pod
+  selector:
+    namespaces:
+      - k8s-testing
+    labelSelectors:
+      app: test-app
+  # 实验持续时间（删除后立即结束）
+  duration: "30s"

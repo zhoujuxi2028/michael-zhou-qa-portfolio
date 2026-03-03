@@ -1,0 +1,22 @@
+# StressChaos: CPU 压力测试
+# 注入 CPU 压力，触发 HPA 扩容
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress-test
+  namespace: k8s-testing
+  labels:
+    app: chaos-test
+    scenario: hpa-scaling
+spec:
+  mode: all
+  selector:
+    namespaces:
+      - k8s-testing
+    labelSelectors:
+      app: test-app
+  stressors:
+    cpu:
+      workers: 2
+      load: 80  # 80% CPU 使用率
+  duration: "180s"  # 持续 3 分钟，触发 HPA

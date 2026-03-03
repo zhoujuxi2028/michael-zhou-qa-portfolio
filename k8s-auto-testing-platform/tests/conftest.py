@@ -110,9 +110,7 @@ def cleanup_pods(core_v1_api, namespace):
         pods = core_v1_api.list_namespaced_pod(namespace=namespace)
         for pod in pods.items:
             if "test-" in pod.metadata.name:
-                core_v1_api.delete_namespaced_pod(
-                    name=pod.metadata.name, namespace=namespace
-                )
+                core_v1_api.delete_namespaced_pod(name=pod.metadata.name, namespace=namespace)
                 logger.info(f"Cleaned up test pod: {pod.metadata.name}")
     except Exception as e:
         logger.warning(f"Cleanup failed: {e}")
