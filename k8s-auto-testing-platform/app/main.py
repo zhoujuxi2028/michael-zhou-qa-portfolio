@@ -3,13 +3,13 @@ K8S Auto Testing Platform - Test Application
 FastAPI application for testing HPA, Deployment, and Service
 """
 
-from fastapi import FastAPI, Response
-from fastapi.responses import JSONResponse
-import os
-import psutil
-import time
 import logging
+import os
+import time
 from datetime import datetime
+
+import psutil
+from fastapi import FastAPI
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI(
     title="K8S Test Application",
     description="Test application for K8S automated testing",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # Global variables for load simulation
@@ -35,26 +35,20 @@ async def root():
         "status": "running",
         "timestamp": datetime.now().isoformat(),
         "hostname": os.getenv("HOSTNAME", "unknown"),
-        "version": "1.0.0"
+        "version": "1.0.0",
     }
 
 
 @app.get("/health")
 async def health():
     """Health check endpoint for liveness probe"""
-    return {
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat()
-    }
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
 
 
 @app.get("/ready")
 async def ready():
     """Readiness check endpoint"""
-    return {
-        "status": "ready",
-        "timestamp": datetime.now().isoformat()
-    }
+    return {"status": "ready", "timestamp": datetime.now().isoformat()}
 
 
 @app.get("/metrics")
@@ -68,7 +62,7 @@ async def metrics():
         "memory_percent": memory.percent,
         "memory_available_mb": memory.available / 1024 / 1024,
         "hostname": os.getenv("HOSTNAME", "unknown"),
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.now().isoformat(),
     }
 
 
@@ -82,7 +76,7 @@ async def info():
         "pod_ip": os.getenv("POD_IP", "unknown"),
         "node_name": os.getenv("NODE_NAME", "unknown"),
         "service_account": os.getenv("SERVICE_ACCOUNT", "unknown"),
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.now().isoformat(),
     }
 
 
@@ -104,7 +98,7 @@ async def cpu_load_endpoint(duration: int = 10):
     return {
         "message": f"CPU load generated for {duration} seconds",
         "result": result,
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.now().isoformat(),
     }
 
 
@@ -128,7 +122,7 @@ async def memory_load_endpoint(size_mb: int = 100):
         "message": f"Allocated {size_mb}MB of memory",
         "total_allocations": len(memory_data),
         "memory_percent": memory.percent,
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.now().isoformat(),
     }
 
 
@@ -142,27 +136,20 @@ async def memory_release():
 
     return {
         "message": f"Released {count} memory allocations",
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.now().isoformat(),
     }
 
 
 @app.get("/version")
 async def version():
     """Application version"""
-    return {
-        "version": "1.0.0",
-        "name": "k8s-test-app",
-        "build_date": "2026-03-02"
-    }
+    return {"version": "1.0.0", "name": "k8s-test-app", "build_date": "2026-03-02"}
 
 
 @app.get("/env")
 async def environment():
     """Return environment variables (for debugging)"""
-    return {
-        "environment": dict(os.environ),
-        "timestamp": datetime.now().isoformat()
-    }
+    return {"environment": dict(os.environ), "timestamp": datetime.now().isoformat()}
 
 
 if __name__ == "__main__":
@@ -172,9 +159,4 @@ if __name__ == "__main__":
 
     logger.info(f"Starting K8S Test Application on port {port}")
 
-    uvicorn.run(
-        app,
-        host="0.0.0.0",
-        port=port,
-        log_level="info"
-    )
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")

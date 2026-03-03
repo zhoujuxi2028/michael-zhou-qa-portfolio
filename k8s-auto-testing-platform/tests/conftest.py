@@ -2,10 +2,11 @@
 Pytest Configuration and Fixtures for K8S Auto Testing Platform
 """
 
+import logging
+import time
+
 import pytest
 from kubernetes import client, config
-import time
-import logging
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -19,13 +20,13 @@ def k8s_client():
         # Try to load from kubeconfig
         config.load_kube_config()
         logger.info("Loaded kubeconfig")
-    except:
+    except Exception:
         # If that fails, try in-cluster config
         try:
             config.load_incluster_config()
             logger.info("Loaded in-cluster config")
-        except:
-            raise Exception("Could not load Kubernetes configuration")
+        except Exception as e:
+            raise Exception("Could not load Kubernetes configuration") from e
 
     return client
 
@@ -110,8 +111,7 @@ def cleanup_pods(core_v1_api, namespace):
         for pod in pods.items:
             if "test-" in pod.metadata.name:
                 core_v1_api.delete_namespaced_pod(
-                    name=pod.metadata.name,
-                    namespace=namespace
+                    name=pod.metadata.name, namespace=namespace
                 )
                 logger.info(f"Cleaned up test pod: {pod.metadata.name}")
     except Exception as e:
