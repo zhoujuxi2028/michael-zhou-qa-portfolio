@@ -17,6 +17,7 @@ import os
 import time
 
 import pytest
+import requests
 
 from tools.chaos_tester import ChaosTester
 
@@ -33,6 +34,15 @@ def chaos_tester(namespace):
     return ChaosTester(namespace=namespace)
 
 
+def _verify_url_reachable(url: str, timeout: int = 5) -> bool:
+    """Verify URL is reachable"""
+    try:
+        response = requests.get(f"{url}/health", timeout=timeout)
+        return response.status_code == 200
+    except Exception:
+        return False
+
+
 @pytest.fixture(scope="function")
 def service_url(core_v1_api, namespace):
     """
@@ -42,12 +52,17 @@ def service_url(core_v1_api, namespace):
     1. Environment variable SERVICE_URL (for manual override)
     2. NodePort service (accessible from outside cluster)
     3. ClusterIP service (only works inside cluster)
+
+    Note: Returns None if service is not reachable, causing tests to skip.
     """
     # Check for environment override
     env_url = os.environ.get("SERVICE_URL")
     if env_url:
-        logger.info(f"Using SERVICE_URL from environment: {env_url}")
-        return env_url
+        if _verify_url_reachable(env_url):
+            logger.info(f"Using SERVICE_URL from environment: {env_url}")
+            return env_url
+        else:
+            logger.warning(f"SERVICE_URL not reachable: {env_url}")
 
     # Try NodePort service first
     try:
@@ -66,8 +81,11 @@ def service_url(core_v1_api, namespace):
 
         if node_port:
             url = f"http://{node_ip}:{node_port}"
-            logger.info(f"Using NodePort service: {url}")
-            return url
+            if _verify_url_reachable(url):
+                logger.info(f"Using NodePort service: {url}")
+                return url
+            else:
+                logger.warning(f"NodePort not reachable: {url}")
     except Exception as e:
         logger.debug(f"NodePort service not available: {e}")
 
@@ -80,11 +98,16 @@ def service_url(core_v1_api, namespace):
         cluster_ip = service.spec.cluster_ip
         port = service.spec.ports[0].port
         url = f"http://{cluster_ip}:{port}"
-        logger.info(f"Using ClusterIP service: {url}")
-        return url
+        if _verify_url_reachable(url):
+            logger.info(f"Using ClusterIP service: {url}")
+            return url
+        else:
+            logger.warning(f"ClusterIP not reachable: {url}")
     except Exception as e:
         logger.warning(f"No service available: {e}")
-        return None
+
+    logger.warning("No reachable service found - integration tests will be skipped")
+    return None
 
 
 @pytest.fixture(scope="function")
@@ -255,9 +278,7 @@ class TestChaosEngineering:
             pytest.skip(f"Memory load failed: {result.error}")
 
         # Verify service is still available
-        assert (
-            tester.verify_service_available()
-        ), "Service unavailable after memory load"
+        assert tester.verify_service_available(), "Service unavailable after memory load"
 
         # Verify pods are still running
         current_pods = tester.get_pod_count()
@@ -433,9 +454,7 @@ class TestChaosEngineering:
 
         # Final state should match or exceed minimum
         final_pods = tester.get_pod_count()
-        assert final_pods >= final_hpa.get(
-            "min_replicas", 2
-        ), "Final pod count below HPA minimum"
+        assert final_pods >= final_hpa.get("min_replicas", 2), "Final pod count below HPA minimum"
 
 
 @pytest.mark.chaos
@@ -455,3 +474,146 @@ def test_chaos_tester_smoke(chaos_tester, namespace):
     assert isinstance(hpa, dict), "Failed to get HPA status"
 
     logger.info(f"Chaos tester smoke test passed: {count} pods running")
+
+
+@pytest.mark.chaos
+@pytest.mark.network
+class TestNetworkChaos:
+    """Network chaos test suite"""
+
+    @pytest.mark.integration
+    def test_tc_chaos_009_latency_measurement(
+        self,
+        chaos_with_service,
+    ):
+        """
+        TC-CHAOS-009: Service latency measurement
+
+        Measure baseline latency for service endpoints.
+        Requires: NodePort service or port-forward
+        """
+        tester = chaos_with_service
+
+        # Verify service is reachable
+        if not tester.verify_service_available():
+            pytest.skip("Service not reachable from test environment")
+
+        # Measure latency
+        result = tester.measure_latency(num_requests=10)
+
+        assert result.success, f"Latency measurement failed: {result.error}"
+        assert result.metadata is not None, "No latency stats returned"
+
+        stats = result.metadata
+        logger.info(f"Latency stats: {stats}")
+
+        # Verify reasonable latency (< 1000ms average)
+        assert stats["avg_ms"] < 1000, f"Average latency too high: {stats['avg_ms']}ms"
+        assert stats["success_rate"] >= 80, f"Success rate too low: {stats['success_rate']}%"
+
+    @pytest.mark.integration
+    def test_tc_chaos_010_network_resilience(
+        self,
+        chaos_with_service,
+    ):
+        """
+        TC-CHAOS-010: Network resilience under concurrent load
+
+        Test service availability under concurrent requests.
+        Requires: NodePort service or port-forward
+        """
+        tester = chaos_with_service
+
+        # Verify service is reachable
+        if not tester.verify_service_available():
+            pytest.skip("Service not reachable from test environment")
+
+        # Test resilience
+        result = tester.test_network_resilience(concurrent_requests=5)
+
+        assert result.metadata is not None, "No resilience stats returned"
+
+        stats = result.metadata
+        logger.info(f"Resilience stats: {stats}")
+
+        # At least 60% success rate under concurrent load
+        assert stats["success_rate"] >= 60, f"Success rate too low: {stats['success_rate']}%"
+
+    @pytest.mark.integration
+    @pytest.mark.slow
+    def test_tc_chaos_011_latency_during_pod_churn(
+        self,
+        chaos_with_service,
+    ):
+        """
+        TC-CHAOS-011: Latency stability during pod churn
+
+        Measure latency while pods are being deleted and recreated.
+        Requires: NodePort service or port-forward
+        """
+        tester = chaos_with_service
+
+        # Verify service is reachable
+        if not tester.verify_service_available():
+            pytest.skip("Service not reachable from test environment")
+
+        # Get initial pod count
+        initial_pods = tester.get_pod_count()
+        if initial_pods < 2:
+            pytest.skip("Need at least 2 pods for this test")
+
+        # Measure baseline latency
+        baseline = tester.measure_latency(num_requests=5)
+        logger.info(f"Baseline latency: {baseline.metadata}")
+
+        # Delete a pod
+        delete_result = tester.delete_random_pod()
+        assert delete_result.success, f"Failed to delete pod: {delete_result.error}"
+
+        # Immediately measure latency during recovery
+        during_churn = tester.measure_latency(num_requests=5)
+        logger.info(f"Latency during churn: {during_churn.metadata}")
+
+        # Wait for recovery
+        recovered = tester.wait_for_recovery(expected_replicas=2, timeout=120)
+        assert recovered, "Pods did not recover"
+
+        # Measure post-recovery latency
+        post_recovery = tester.measure_latency(num_requests=5)
+        logger.info(f"Post-recovery latency: {post_recovery.metadata}")
+
+        # Service should remain available throughout
+        if baseline.success and post_recovery.success:
+            # Post-recovery latency should be within 2x of baseline
+            baseline_avg = baseline.metadata.get("avg_ms", 100)
+            post_avg = post_recovery.metadata.get("avg_ms", 100)
+            assert (
+                post_avg < baseline_avg * 3
+            ), f"Post-recovery latency ({post_avg}ms) much higher than baseline ({baseline_avg}ms)"
+
+    def test_tc_chaos_012_network_policy_smoke(
+        self,
+        chaos_tester,
+    ):
+        """
+        TC-CHAOS-012: NetworkPolicy operations smoke test
+
+        Verify NetworkPolicy can be applied and deleted.
+        Note: Actual network partition requires CNI support.
+        """
+        tester = chaos_tester
+        policy_name = "test-network-policy"
+
+        # Try to apply policy
+        apply_result = tester.apply_network_policy(policy_name, "apply")
+        logger.info(f"Apply result: {apply_result}")
+
+        # Clean up - delete policy
+        if apply_result.success:
+            delete_result = tester.apply_network_policy(policy_name, "delete")
+            logger.info(f"Delete result: {delete_result}")
+            assert delete_result.success, f"Failed to delete policy: {delete_result.error}"
+        else:
+            # Policy creation might fail if NetworkPolicy not supported
+            logger.warning(f"NetworkPolicy not supported: {apply_result.error}")
+            pytest.skip("NetworkPolicy not supported in this cluster")

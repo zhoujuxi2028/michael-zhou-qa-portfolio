@@ -1,0 +1,87 @@
+# Workflow: HPA 混沌测试工作流
+# 编排多个混沌实验，验证 HPA 在各种故障下的行为
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: hpa-chaos-workflow
+  namespace: k8s-testing
+  labels:
+    app: chaos-test
+    scenario: hpa-comprehensive
+spec:
+  entry: hpa-chaos-entry
+  templates:
+    # 入口：串行执行所有测试
+    - name: hpa-chaos-entry
+      templateType: Serial
+      children:
+        - phase-1-pod-chaos
+        - phase-2-network-chaos
+        - phase-3-stress-chaos
+
+    # 阶段 1: Pod 故障测试
+    - name: phase-1-pod-chaos
+      templateType: Serial
+      children:
+        - pod-kill-step
+        - wait-recovery-1
+
+    - name: pod-kill-step
+      templateType: PodChaos
+      podChaos:
+        action: pod-kill
+        mode: one
+        selector:
+          namespaces:
+            - k8s-testing
+          labelSelectors:
+            app: test-app
+        duration: "30s"
+
+    - name: wait-recovery-1
+      templateType: Suspend
+      suspend:
+        duration: "60s"
+
+    # 阶段 2: 网络故障测试
+    - name: phase-2-network-chaos
+      templateType: Serial
+      children:
+        - network-delay-step
+        - wait-recovery-2
+
+    - name: network-delay-step
+      templateType: NetworkChaos
+      networkChaos:
+        action: delay
+        mode: all
+        selector:
+          namespaces:
+            - k8s-testing
+          labelSelectors:
+            app: test-app
+        delay:
+          latency: "200ms"
+          jitter: "50ms"
+        duration: "60s"
+
+    - name: wait-recovery-2
+      templateType: Suspend
+      suspend:
+        duration: "30s"
+
+    # 阶段 3: 压力测试 (触发 HPA)
+    - name: phase-3-stress-chaos
+      templateType: StressChaos
+      stressChaos:
+        mode: all
+        selector:
+          namespaces:
+            - k8s-testing
+          labelSelectors:
+            app: test-app
+        stressors:
+          cpu:
+            workers: 2
+            load: 80
+        duration: "180s"

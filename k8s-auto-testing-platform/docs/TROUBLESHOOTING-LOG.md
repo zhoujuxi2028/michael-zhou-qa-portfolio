@@ -30,6 +30,26 @@
 | 原因 | 资源创建顺序问题 |
 | 解决 | 重新执行 `kubectl apply -f k8s-manifests/` |
 
+### #4 test_deployment_smoke 失败
+
+| 项目 | 内容 |
+|------|------|
+| 测试文件 | `tests/test_deployment.py:173` |
+| 现象 | `AssertionError: No ready replicas found (ready: 0)` |
+| 原因 | 时序问题 - 无等待机制，直接断言 pod 就绪状态 |
+| 分类 | 测试设计缺陷 |
+| 解决 | 使用 `wait_helper` 动态等待 pods 就绪（timeout=120s, interval=5s）|
+
+### #5 test_min_replicas_maintained 失败
+
+| 项目 | 内容 |
+|------|------|
+| 测试文件 | `tests/test_hpa.py:71` |
+| 现象 | `AssertionError: Expected at least 2 replicas, got 1` |
+| 原因 | 时序问题 - 硬编码 10s 延迟不足，chaos 测试删除 pods 后恢复时间不够 |
+| 分类 | 测试设计缺陷 |
+| 解决 | 替换 `time.sleep(10)` 为 `wait_helper` 动态等待（timeout=120s, interval=5s）|
+
 ---
 
 ## 环境配置
