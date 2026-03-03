@@ -1,78 +1,117 @@
 # K8S Auto Testing Platform - Project Status
 
-**Last Updated**: 2026-03-02 22:50
+**Last Updated**: 2026-03-03 14:00
 **Current Branch**: k8s-auto-testing-platform
-**Project Status**: MVP Phase 1 Ready (45%)
+**Project Status**: Phase 2 Complete (70%)
 
 ---
 
-## Phase 1: Environment Deployment & Verification
+## Phase 2: Core Functionality ✅ COMPLETE
+
+### Test Results Summary
+
+| Category | Passed | Skipped | Failed | Total |
+|----------|--------|---------|--------|-------|
+| Deployment | 8 | 0 | 0 | 8 |
+| HPA | 6 | 2 | 0 | 8 |
+| Service | 8 | 0 | 0 | 8 |
+| **Total** | **22** | **2** | **0** | **24** |
+
+### HPA Scaling Verified
+
+| Metric | Before Load | Under Load | Result |
+|--------|-------------|------------|--------|
+| CPU | 3% | 201% | Triggered scaling |
+| Replicas | 2 | 4 | ✅ Scale-up worked |
+| Memory | 25% | 25% | Stable |
 
 ### Completed Tasks
 
 | Task | Status | Details |
 |------|--------|---------|
-| Docker image built | ✅ | `test-app:latest` (246MB) |
-| Application tested | ✅ | All endpoints working locally |
-| Python venv created | ✅ | Dependencies installed |
-| Setup script created | ✅ | `scripts/setup-phase1.sh` |
-| Dockerfile optimized | ✅ | Removed gcc, fixed proxy issues |
-| WBS documentation | ✅ | Complete work breakdown |
-
-### Pending Tasks (Requires Kubernetes)
-
-| Task | Status | Blocker |
-|------|--------|---------|
-| K8S cluster enabled | ⏳ | Enable in Docker Desktop |
-| Metrics Server installed | ⏳ | Requires K8S cluster |
-| Deploy K8S resources | ⏳ | Requires K8S cluster |
-| Run test suite | ⏳ | Requires deployment |
+| K8S cluster connection | ✅ | Connected with proxy bypass |
+| Metrics Server | ✅ | Installed and reporting metrics |
+| Deploy K8S resources | ✅ | All manifests applied |
+| Verify deployment health | ✅ | All endpoints responding |
+| Run test suite | ✅ | 22/24 passed, 2 skipped |
+| Verify HPA scaling | ✅ | 2→4 pods under CPU load |
+| Automation scripts | ✅ | run-tests.sh, setup-proxy.sh |
 
 ---
 
-## Quick Start Guide
+## Quick Verification Guide
 
-### Step 1: Enable Kubernetes (Manual)
-
-1. Open **Docker Desktop**
-2. Go to **Settings** → **Kubernetes**
-3. Check ✅ **Enable Kubernetes**
-4. Click **Apply & Restart**
-5. Wait for green status (~2-3 minutes)
-
-### Step 2: Run Setup Script (Automated)
+### Step 1: Setup Proxy Bypass (One-time)
 
 ```bash
-cd k8s-auto-testing-platform
-./scripts/setup-phase1.sh
+# Configure shell to bypass proxy for K8S
+./scripts/setup-proxy.sh
+source ~/.zshrc  # or restart terminal
 ```
 
-The script will automatically:
-- Verify Kubernetes cluster
-- Install Metrics Server
-- Build Docker image
-- Deploy all K8S resources
-- Run smoke tests
-
-### Step 3: Manual Setup (Alternative)
+### Step 2: Run Automated Tests
 
 ```bash
-# 1. Install Metrics Server
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
-kubectl patch deployment metrics-server -n kube-system --type='json' \
-  -p='[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--kubelet-insecure-tls"}]'
+# Run all tests with automatic proxy handling
+./scripts/run-tests.sh
 
-# 2. Build Docker image
-cd app && docker build -t test-app:latest . && cd ..
+# Run smoke tests only (faster)
+./scripts/run-tests.sh --smoke
 
-# 3. Deploy to K8S
-kubectl apply -f k8s-manifests/
+# Generate HTML report
+./scripts/run-tests.sh --report
+```
+
+### Step 3: Manual Verification Commands
+
+```bash
+# Check K8S cluster status
+kubectl cluster-info
+
+# Check all resources in k8s-testing namespace
 kubectl get all -n k8s-testing
 
-# 4. Run tests
-source venv/bin/activate
-pytest tests/ -v
+# Check HPA status and metrics
+kubectl get hpa -n k8s-testing
+
+# Test application endpoints
+curl http://localhost:30080/health
+curl http://localhost:30080/metrics
+
+# Generate CPU load (trigger HPA)
+curl "http://localhost:30080/cpu-load?duration=60"
+
+# Watch HPA scaling in real-time
+kubectl get hpa -n k8s-testing -w
 ```
+
+### Step 4: Verify Test Results
+
+```bash
+# Activate virtual environment
+source venv/bin/activate
+
+# Run full test suite
+pytest tests/ -v
+
+# Expected output:
+# - 22 passed
+# - 2 skipped (scale tests require sustained load)
+# - 0 failed
+```
+
+---
+
+## Phase 1: Environment Setup ✅ COMPLETE
+
+| Task | Status | Details |
+|------|--------|---------|
+| Docker image built | ✅ | `test-app:latest` (246MB) |
+| Application tested | ✅ | All 10 endpoints working |
+| Python venv created | ✅ | Dependencies installed |
+| Setup script created | ✅ | `scripts/setup-phase1.sh` |
+| Dockerfile optimized | ✅ | Removed gcc, fixed proxy |
+| WBS documentation | ✅ | Complete work breakdown |
 
 ---
 
@@ -84,117 +123,39 @@ k8s-auto-testing-platform/
 ├── PROJECT_STATUS.md            # This file
 ├── requirements.txt             # Python dependencies
 ├── pytest.ini                   # Pytest configuration
-├── .gitignore                   # Git ignore rules
 │
-├── app/                         # Test application
-│   ├── main.py                 # FastAPI app (235 lines)
-│   ├── Dockerfile              # Container config
+├── app/                         # Test application (FastAPI)
+│   ├── main.py                 # 10 endpoints, 235 lines
+│   ├── Dockerfile              # Multi-stage build
 │   └── requirements.txt        # App dependencies
 │
 ├── k8s-manifests/              # Kubernetes configs
 │   ├── namespace.yaml          # k8s-testing namespace
 │   ├── configmap.yaml          # App configuration
-│   ├── deployment.yaml         # 3-replica deployment
+│   ├── deployment.yaml         # 2-replica deployment
 │   ├── service.yaml            # ClusterIP + NodePort
-│   └── hpa.yaml                # HPA (CPU/Memory scaling)
+│   └── hpa.yaml                # HPA (CPU 50%, Memory 70%)
 │
-├── tests/                      # Automated tests
+├── tests/                      # Automated tests (24 cases)
 │   ├── conftest.py             # Pytest fixtures
-│   ├── test_hpa.py             # HPA tests (7 cases)
-│   ├── test_deployment.py      # Deployment tests (7 cases)
-│   └── test_service.py         # Service tests (6 cases)
+│   ├── test_hpa.py             # 8 HPA tests
+│   ├── test_deployment.py      # 8 Deployment tests
+│   └── test_service.py         # 8 Service tests
 │
 ├── tools/                      # Testing utilities
-│   ├── load_generator.py       # Load generation
-│   └── k8s_helper.py           # K8S operations
+│   ├── load_generator.py       # CPU/Memory load generation
+│   └── k8s_helper.py           # K8S operations wrapper
 │
 ├── scripts/                    # Automation scripts
-│   └── setup-phase1.sh         # Phase 1 setup automation
+│   ├── setup-phase1.sh         # Phase 1 setup
+│   ├── run-tests.sh            # Automated test runner ⭐ NEW
+│   └── setup-proxy.sh          # Proxy configuration ⭐ NEW
 │
-├── docs/                       # Documentation
-│   ├── WBS.md                  # Work breakdown structure
-│   └── WBS-GUIDE.md            # WBS usage guide
-│
-├── monitoring/                 # (Future: Grafana configs)
-└── .github/workflows/          # (Future: CI/CD)
-```
-
----
-
-## Application Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/` | GET | Root info with version |
-| `/health` | GET | Liveness probe |
-| `/ready` | GET | Readiness probe |
-| `/metrics` | GET | CPU/Memory usage |
-| `/info` | GET | Pod metadata |
-| `/cpu-load?duration=10` | GET | Generate CPU load |
-| `/memory-load?size_mb=100` | GET | Allocate memory |
-| `/memory-release` | GET | Release memory |
-| `/version` | GET | App version |
-
----
-
-## Test Suite
-
-### Test Categories
-
-| Category | Test File | Cases | Description |
-|----------|-----------|-------|-------------|
-| HPA | test_hpa.py | 7 | HPA scaling tests |
-| Deployment | test_deployment.py | 7 | Deployment health |
-| Service | test_service.py | 6 | Service connectivity |
-
-### Running Tests
-
-```bash
-# Activate virtual environment
-source venv/bin/activate
-
-# Run all tests
-pytest tests/ -v
-
-# Run specific test file
-pytest tests/test_hpa.py -v
-
-# Run with coverage
-pytest tests/ --cov=tests --cov-report=html
-
-# Run smoke tests only
-pytest tests/ -v -m smoke
-```
-
----
-
-## HPA Configuration
-
-```yaml
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: test-app-hpa
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: test-app
-  minReplicas: 2
-  maxReplicas: 10
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 50
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 70
+└── docs/                       # Documentation
+    ├── WBS.md                  # Work breakdown structure
+    ├── WBS-GUIDE.md            # WBS usage guide
+    ├── TEST-CASES.md           # Test case catalog
+    └── TROUBLESHOOTING-LOG.md  # Known issues
 ```
 
 ---
@@ -205,10 +166,38 @@ spec:
 |-----------|-------------|--------|
 | M1 | Project setup complete | ✅ |
 | M2 | Application containerized | ✅ |
-| M3 | K8S deployment verified | ⏳ |
-| M4 | Test suite passing | ⏳ |
-| M5 | Documentation complete | ⏳ |
+| M3 | K8S deployment verified | ✅ |
+| M4 | Test suite passing (22/24) | ✅ |
+| M5 | Documentation complete | 🚧 |
 | M6 | CI/CD configured | ⏳ |
+
+---
+
+## Known Issues & Solutions
+
+### Proxy Interference
+```
+Problem: Local proxy intercepts kubectl/curl requests
+Error: "Unable to connect to the server: EOF"
+Solution: Run ./scripts/setup-proxy.sh or use ./scripts/run-tests.sh
+```
+
+### HPA Scale Tests Skipped
+```
+Problem: test_hpa_scale_up and test_hpa_scale_down skipped
+Reason: Require sustained load generation beyond test scope
+Status: Expected behavior, not a failure
+```
+
+---
+
+## Next Steps (Phase 3)
+
+- [ ] CI/CD integration (GitHub Actions)
+- [ ] Code quality checks (pylint, flake8)
+- [ ] Test coverage report (target >80%)
+- [ ] Architecture documentation
+- [ ] Performance test report
 
 ---
 
@@ -217,21 +206,13 @@ spec:
 | Category | Technology | Version |
 |----------|------------|---------|
 | Container | Docker | 29.x |
-| Orchestration | Kubernetes | 1.25+ |
-| Runtime | Python | 3.9+ |
+| Orchestration | Kubernetes | 1.32+ |
+| Runtime | Python | 3.13 |
 | Web Framework | FastAPI | 0.109.0 |
 | Testing | Pytest | 7.4.3 |
 | K8S Client | kubernetes | 28.1.0 |
-| Load Testing | Locust | 2.20.0 |
 
 ---
-
-## Contact
 
 **Author**: Michael Zhou
-**Email**: zhou_juxi@hotmail.com
-**GitHub**: https://github.com/zhoujuxi2028
-
----
-
-*Project Progress: 45% → Next: Complete K8S Deployment*
+**Project Progress**: 70% → Next: CI/CD Integration
