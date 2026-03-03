@@ -19,7 +19,7 @@ class TestService:
     """Test Service functionality"""
 
     def test_service_exists(self, core_v1_api, namespace, service_name):
-        """Test that service exists"""
+        """TC-SVC-CFG-001: 验证 Service 存在"""
         service = core_v1_api.read_namespaced_service(
             name=service_name,
             namespace=namespace
@@ -32,7 +32,7 @@ class TestService:
 
 
     def test_service_type(self, core_v1_api, namespace, service_name):
-        """Test service type"""
+        """TC-SVC-CFG-002: 验证服务类型"""
         service = core_v1_api.read_namespaced_service(
             name=service_name,
             namespace=namespace
@@ -44,7 +44,7 @@ class TestService:
 
 
     def test_service_selector(self, core_v1_api, namespace, service_name):
-        """Test service selector"""
+        """TC-SVC-CFG-003: 验证选择器配置"""
         service = core_v1_api.read_namespaced_service(
             name=service_name,
             namespace=namespace
@@ -60,7 +60,7 @@ class TestService:
 
 
     def test_service_ports(self, core_v1_api, namespace, service_name):
-        """Test service ports configuration"""
+        """TC-SVC-CFG-004: 验证端口配置"""
         service = core_v1_api.read_namespaced_service(
             name=service_name,
             namespace=namespace
@@ -79,7 +79,7 @@ class TestService:
 
 
     def test_service_endpoints(self, core_v1_api, namespace, service_name):
-        """Test service has endpoints"""
+        """TC-SVC-FUN-001: 验证 Endpoints"""
         endpoints = core_v1_api.read_namespaced_endpoints(
             name=service_name,
             namespace=namespace
@@ -98,7 +98,7 @@ class TestService:
 
 
     def test_service_dns(self, core_v1_api, namespace, service_name):
-        """Test service DNS name"""
+        """TC-SVC-FUN-002: 验证 DNS 名称"""
         service = core_v1_api.read_namespaced_service(
             name=service_name,
             namespace=namespace
@@ -115,7 +115,7 @@ class TestService:
 
 
     def test_nodeport_service_exists(self, core_v1_api, namespace):
-        """Test that NodePort service exists"""
+        """TC-SVC-FUN-003: 验证 NodePort 服务"""
         nodeport_service_name = "test-app-nodeport"
 
         service = core_v1_api.read_namespaced_service(
@@ -134,7 +134,7 @@ class TestService:
 
 @pytest.mark.smoke
 def test_service_smoke(core_v1_api, namespace, service_name):
-    """Quick smoke test for service"""
+    """TC-SVC-SMK-001: Service 冒烟测试"""
     service = core_v1_api.read_namespaced_service(
         name=service_name,
         namespace=namespace

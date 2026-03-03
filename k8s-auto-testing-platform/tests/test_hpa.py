@@ -23,7 +23,7 @@ class TestHPAScaling:
     """Test HPA scaling behavior"""
 
     def test_hpa_exists(self, autoscaling_v2_api, namespace, hpa_name):
-        """Test that HPA resource exists"""
+        """TC-HPA-CFG-001: 验证 HPA 存在"""
         hpa = autoscaling_v2_api.read_namespaced_horizontal_pod_autoscaler(
             name=hpa_name,
             namespace=namespace
@@ -38,7 +38,7 @@ class TestHPAScaling:
 
 
     def test_hpa_metrics_configured(self, autoscaling_v2_api, namespace, hpa_name):
-        """Test that HPA has correct metrics configured"""
+        """TC-HPA-CFG-002: 验证指标配置"""
         hpa = autoscaling_v2_api.read_namespaced_horizontal_pod_autoscaler(
             name=hpa_name,
             namespace=namespace
@@ -56,7 +56,7 @@ class TestHPAScaling:
 
 
     def test_min_replicas_maintained(self, apps_v1_api, namespace, deployment_name, wait_helper):
-        """Test that minimum replicas are maintained"""
+        """TC-HPA-FUN-001: 验证最小副本数"""
         # Wait for deployment to stabilize
         time.sleep(10)
 
@@ -75,7 +75,7 @@ class TestHPAScaling:
 
     @pytest.mark.integration
     def test_hpa_scale_up(self, apps_v1_api, core_v1_api, namespace, deployment_name, service_name, wait_helper):
-        """Test HPA scale up on high CPU load"""
+        """TC-HPA-INT-001: 验证扩容行为"""
 
         # Get initial pod count
         initial_deployment = apps_v1_api.read_namespaced_deployment(
@@ -128,7 +128,7 @@ class TestHPAScaling:
 
     @pytest.mark.integration
     def test_hpa_scale_down(self, apps_v1_api, namespace, deployment_name, wait_helper):
-        """Test HPA scale down after load decreases"""
+        """TC-HPA-INT-002: 验证缩容行为"""
 
         # Get current pod count
         deployment = apps_v1_api.read_namespaced_deployment(
@@ -174,7 +174,7 @@ class TestHPAScaling:
 
 
     def test_max_replicas_not_exceeded(self, autoscaling_v2_api, apps_v1_api, namespace, hpa_name, deployment_name):
-        """Test that max replicas limit is respected"""
+        """TC-HPA-FUN-002: 验证最大副本限制"""
 
         hpa = autoscaling_v2_api.read_namespaced_horizontal_pod_autoscaler(
             name=hpa_name,
@@ -195,7 +195,7 @@ class TestHPAScaling:
 
 
     def test_hpa_status(self, autoscaling_v2_api, namespace, hpa_name):
-        """Test HPA status and current metrics"""
+        """TC-HPA-FUN-003: 验证 HPA 状态"""
 
         hpa = autoscaling_v2_api.read_namespaced_horizontal_pod_autoscaler(
             name=hpa_name,
@@ -218,7 +218,7 @@ class TestHPAScaling:
 
 @pytest.mark.smoke
 def test_hpa_smoke(autoscaling_v2_api, namespace, hpa_name):
-    """Quick smoke test for HPA"""
+    """TC-HPA-SMK-001: HPA 冒烟测试"""
     hpa = autoscaling_v2_api.read_namespaced_horizontal_pod_autoscaler(
         name=hpa_name,
         namespace=namespace
