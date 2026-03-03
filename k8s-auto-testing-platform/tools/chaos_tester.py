@@ -2,10 +2,17 @@
 K8S Auto Testing Platform - Chaos Tester
 
 Chaos engineering utilities for testing pod resilience and HPA behavior.
+
+Supported chaos types:
+- Pod chaos: delete, kill, restart
+- Resource chaos: CPU/memory exhaustion
+- Network chaos: latency measurement, partition simulation
+- Rolling chaos: sequential pod kills
 """
 
 import logging
 import random
+import statistics
 import time
 from dataclasses import dataclass
 from typing import Dict, List, Optional
@@ -190,9 +197,7 @@ class ChaosTester:
         count_to_delete = max(1, int(len(pods) * percent / 100))
         pods_to_delete = random.sample(pods, count_to_delete)
 
-        logger.info(
-            f"Deleting {count_to_delete} pods ({percent}% of {len(pods)}): {pods_to_delete}"
-        )
+        logger.info(f"Deleting {count_to_delete} pods ({percent}% of {len(pods)}): {pods_to_delete}")
 
         results = []
         for pod in pods_to_delete:
@@ -407,9 +412,7 @@ class ChaosTester:
 
             time.sleep(interval)
 
-        logger.error(
-            f"Recovery timeout: only {self.get_pod_count(label_selector)} pods"
-        )
+        logger.error(f"Recovery timeout: only {self.get_pod_count(label_selector)} pods")
         return False
 
     def verify_service_available(self, timeout: int = 30) -> bool:
@@ -491,17 +494,286 @@ class ChaosTester:
 
         return results
 
+    # ==================== Network Chaos Methods ====================
+
+    def measure_latency(
+        self,
+        num_requests: int = 10,
+        endpoint: str = "/health",
+    ) -> ChaosResult:
+        """
+        Measure service response latency
+
+        Args:
+            num_requests: Number of requests to make
+            endpoint: Endpoint to test
+
+        Returns:
+            ChaosResult: Latency statistics
+        """
+        start_time = time.time()
+
+        if not self.service_url:
+            return ChaosResult(
+                success=False,
+                operation="measure_latency",
+                target="none",
+                duration=0,
+                error="Service URL not configured",
+            )
+
+        latencies = []
+        errors = 0
+
+        for i in range(num_requests):
+            try:
+                req_start = time.time()
+                response = requests.get(
+                    f"{self.service_url}{endpoint}",
+                    timeout=10,
+                )
+                req_duration = (time.time() - req_start) * 1000  # ms
+
+                if response.status_code == 200:
+                    latencies.append(req_duration)
+                else:
+                    errors += 1
+            except Exception as e:
+                logger.warning(f"Request {i+1} failed: {e}")
+                errors += 1
+
+        elapsed = time.time() - start_time
+
+        if latencies:
+            stats = {
+                "min_ms": round(min(latencies), 2),
+                "max_ms": round(max(latencies), 2),
+                "avg_ms": round(statistics.mean(latencies), 2),
+                "p50_ms": round(statistics.median(latencies), 2),
+                "p95_ms": round(
+                    sorted(latencies)[int(len(latencies) * 0.95)] if len(latencies) > 1 else latencies[0],
+                    2,
+                ),
+                "requests": num_requests,
+                "errors": errors,
+                "success_rate": round((num_requests - errors) / num_requests * 100, 1),
+            }
+            logger.info(f"Latency stats: avg={stats['avg_ms']}ms, p95={stats['p95_ms']}ms")
+
+            return ChaosResult(
+                success=True,
+                operation="measure_latency",
+                target=self.service_url,
+                duration=elapsed,
+                metadata=stats,
+            )
+        else:
+            return ChaosResult(
+                success=False,
+                operation="measure_latency",
+                target=self.service_url,
+                duration=elapsed,
+                error=f"All {num_requests} requests failed",
+            )
+
+    def test_network_resilience(
+        self,
+        concurrent_requests: int = 5,
+        timeout: float = 5.0,
+    ) -> ChaosResult:
+        """
+        Test service resilience under concurrent requests
+
+        Args:
+            concurrent_requests: Number of concurrent requests
+            timeout: Request timeout in seconds
+
+        Returns:
+            ChaosResult: Resilience test results
+        """
+        import concurrent.futures
+
+        start_time = time.time()
+
+        if not self.service_url:
+            return ChaosResult(
+                success=False,
+                operation="test_network_resilience",
+                target="none",
+                duration=0,
+                error="Service URL not configured",
+            )
+
+        def make_request(req_id: int) -> Dict:
+            try:
+                req_start = time.time()
+                response = requests.get(
+                    f"{self.service_url}/health",
+                    timeout=timeout,
+                )
+                return {
+                    "id": req_id,
+                    "status": response.status_code,
+                    "latency_ms": (time.time() - req_start) * 1000,
+                    "success": response.status_code == 200,
+                }
+            except Exception as e:
+                return {
+                    "id": req_id,
+                    "status": 0,
+                    "latency_ms": timeout * 1000,
+                    "success": False,
+                    "error": str(e),
+                }
+
+        results = []
+        with concurrent.futures.ThreadPoolExecutor(max_workers=concurrent_requests) as executor:
+            futures = [executor.submit(make_request, i) for i in range(concurrent_requests)]
+            for future in concurrent.futures.as_completed(futures):
+                results.append(future.result())
+
+        elapsed = time.time() - start_time
+        success_count = sum(1 for r in results if r["success"])
+        avg_latency = statistics.mean([r["latency_ms"] for r in results])
+
+        stats = {
+            "total_requests": concurrent_requests,
+            "successful": success_count,
+            "failed": concurrent_requests - success_count,
+            "success_rate": round(success_count / concurrent_requests * 100, 1),
+            "avg_latency_ms": round(avg_latency, 2),
+        }
+
+        logger.info(f"Resilience test: {stats['success_rate']}% success, avg={stats['avg_latency_ms']}ms")
+
+        return ChaosResult(
+            success=success_count == concurrent_requests,
+            operation="test_network_resilience",
+            target=self.service_url,
+            duration=elapsed,
+            metadata=stats,
+        )
+
+    def apply_network_policy(
+        self,
+        policy_name: str = "deny-all",
+        action: str = "apply",
+    ) -> ChaosResult:
+        """
+        Apply or delete a NetworkPolicy to simulate network partition
+
+        Args:
+            policy_name: Name of the policy
+            action: "apply" or "delete"
+
+        Returns:
+            ChaosResult: Operation result
+        """
+        start_time = time.time()
+        networking_v1 = client.NetworkingV1Api()
+
+        # Define deny-all policy
+        policy = client.V1NetworkPolicy(
+            metadata=client.V1ObjectMeta(
+                name=policy_name,
+                namespace=self.namespace,
+            ),
+            spec=client.V1NetworkPolicySpec(
+                pod_selector=client.V1LabelSelector(match_labels={"app": "test-app"}),
+                policy_types=["Ingress", "Egress"],
+                ingress=[],  # Deny all ingress
+                egress=[],  # Deny all egress
+            ),
+        )
+
+        try:
+            if action == "apply":
+                try:
+                    networking_v1.create_namespaced_network_policy(
+                        namespace=self.namespace,
+                        body=policy,
+                    )
+                    logger.info(f"Applied NetworkPolicy: {policy_name}")
+                except client.exceptions.ApiException as e:
+                    if e.status == 409:  # Already exists
+                        logger.info(f"NetworkPolicy {policy_name} already exists")
+                    else:
+                        raise
+
+            elif action == "delete":
+                networking_v1.delete_namespaced_network_policy(
+                    name=policy_name,
+                    namespace=self.namespace,
+                )
+                logger.info(f"Deleted NetworkPolicy: {policy_name}")
+
+            elapsed = time.time() - start_time
+            return ChaosResult(
+                success=True,
+                operation=f"network_policy_{action}",
+                target=policy_name,
+                duration=elapsed,
+                metadata={"action": action, "namespace": self.namespace},
+            )
+
+        except Exception as e:
+            elapsed = time.time() - start_time
+            logger.error(f"NetworkPolicy {action} failed: {e}")
+            return ChaosResult(
+                success=False,
+                operation=f"network_policy_{action}",
+                target=policy_name,
+                duration=elapsed,
+                error=str(e),
+            )
+
+    def simulate_network_partition(
+        self,
+        duration: int = 30,
+    ) -> ChaosResult:
+        """
+        Simulate network partition using NetworkPolicy
+
+        Args:
+            duration: Duration of partition in seconds
+
+        Returns:
+            ChaosResult: Partition test result
+        """
+        start_time = time.time()
+        policy_name = "chaos-network-partition"
+
+        # Apply deny-all policy
+        apply_result = self.apply_network_policy(policy_name, "apply")
+        if not apply_result.success:
+            return apply_result
+
+        logger.info(f"Network partition active for {duration}s...")
+        time.sleep(duration)
+
+        # Remove policy
+        delete_result = self.apply_network_policy(policy_name, "delete")
+
+        elapsed = time.time() - start_time
+        return ChaosResult(
+            success=delete_result.success,
+            operation="simulate_network_partition",
+            target=self.namespace,
+            duration=elapsed,
+            metadata={
+                "partition_duration": duration,
+                "apply_result": apply_result.success,
+                "delete_result": delete_result.success,
+            },
+        )
+
 
 def main():
     """CLI entry point"""
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="K8S Auto Testing Platform - Chaos Tester"
-    )
-    parser.add_argument(
-        "--namespace", default="k8s-testing", help="Kubernetes namespace"
-    )
+    parser = argparse.ArgumentParser(description="K8S Auto Testing Platform - Chaos Tester")
+    parser.add_argument("--namespace", default="k8s-testing", help="Kubernetes namespace")
     parser.add_argument("--service-url", help="Service URL for load generation")
     parser.add_argument(
         "--action",
@@ -511,17 +783,16 @@ def main():
             "cpu-load",
             "memory-load",
             "rolling-chaos",
+            "measure-latency",
+            "network-resilience",
+            "network-partition",
             "status",
         ],
         required=True,
         help="Chaos action to perform",
     )
-    parser.add_argument(
-        "--percent", type=float, default=50, help="Percentage for delete"
-    )
-    parser.add_argument(
-        "--duration", type=int, default=30, help="Duration for CPU load"
-    )
+    parser.add_argument("--percent", type=float, default=50, help="Percentage for delete")
+    parser.add_argument("--duration", type=int, default=30, help="Duration for CPU load")
     parser.add_argument("--size-mb", type=int, default=100, help="Memory size in MB")
     parser.add_argument("--count", type=int, default=3, help="Count for rolling chaos")
 
@@ -553,6 +824,22 @@ def main():
         results = tester.rolling_chaos(count=args.count)
         for result in results:
             print(f"Result: {result}")
+
+    elif args.action == "measure-latency":
+        result = tester.measure_latency(num_requests=10)
+        print(f"Result: {result}")
+        if result.metadata:
+            print(f"Latency stats: {result.metadata}")
+
+    elif args.action == "network-resilience":
+        result = tester.test_network_resilience(concurrent_requests=5)
+        print(f"Result: {result}")
+        if result.metadata:
+            print(f"Resilience stats: {result.metadata}")
+
+    elif args.action == "network-partition":
+        result = tester.simulate_network_partition(duration=args.duration)
+        print(f"Result: {result}")
 
     elif args.action == "status":
         print(f"Running pods: {tester.get_pod_count()}")
