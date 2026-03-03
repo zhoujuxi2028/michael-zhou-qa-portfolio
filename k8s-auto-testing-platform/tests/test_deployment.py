@@ -20,7 +20,7 @@ class TestDeployment:
     """Test Deployment functionality"""
 
     def test_deployment_exists(self, apps_v1_api, namespace, deployment_name):
-        """Test that deployment exists"""
+        """TC-DEP-CFG-001: 验证 Deployment 存在"""
         deployment = apps_v1_api.read_namespaced_deployment(
             name=deployment_name,
             namespace=namespace
@@ -33,7 +33,7 @@ class TestDeployment:
 
 
     def test_deployment_replicas(self, apps_v1_api, namespace, deployment_name):
-        """Test deployment has correct replica count"""
+        """TC-DEP-CFG-002: 验证副本数正确"""
         deployment = apps_v1_api.read_namespaced_deployment(
             name=deployment_name,
             namespace=namespace
@@ -48,7 +48,7 @@ class TestDeployment:
 
 
     def test_deployment_labels(self, apps_v1_api, namespace, deployment_name):
-        """Test deployment has correct labels"""
+        """TC-DEP-CFG-003: 验证标签配置"""
         deployment = apps_v1_api.read_namespaced_deployment(
             name=deployment_name,
             namespace=namespace
@@ -64,7 +64,7 @@ class TestDeployment:
 
 
     def test_pods_running(self, core_v1_api, namespace):
-        """Test that pods are running"""
+        """TC-DEP-FUN-001: 验证 Pod 运行状态"""
         pods = core_v1_api.list_namespaced_pod(
             namespace=namespace,
             label_selector='app=test-app'
@@ -80,7 +80,7 @@ class TestDeployment:
 
 
     def test_pod_health_checks(self, core_v1_api, namespace):
-        """Test that pods have health checks configured"""
+        """TC-DEP-FUN-002: 验证健康检查配置"""
         pods = core_v1_api.list_namespaced_pod(
             namespace=namespace,
             label_selector='app=test-app'
@@ -105,7 +105,7 @@ class TestDeployment:
 
 
     def test_pod_resources(self, core_v1_api, namespace):
-        """Test that pods have resource limits"""
+        """TC-DEP-FUN-003: 验证资源限制"""
         pods = core_v1_api.list_namespaced_pod(
             namespace=namespace,
             label_selector='app=test-app'
@@ -132,7 +132,7 @@ class TestDeployment:
 
     @pytest.mark.integration
     def test_pod_restart(self, core_v1_api, apps_v1_api, namespace, deployment_name, wait_helper):
-        """Test pod auto-restart after deletion"""
+        """TC-DEP-INT-001: 验证 Pod 自愈能力"""
         # Get initial pod count
         initial_deployment = apps_v1_api.read_namespaced_deployment(
             name=deployment_name,
@@ -177,7 +177,7 @@ class TestDeployment:
 
 @pytest.mark.smoke
 def test_deployment_smoke(apps_v1_api, namespace, deployment_name):
-    """Quick smoke test for deployment"""
+    """TC-DEP-SMK-001: Deployment 冒烟测试"""
     deployment = apps_v1_api.read_namespaced_deployment(
         name=deployment_name,
         namespace=namespace
