@@ -6,9 +6,14 @@ This module tests pod resilience and HPA behavior under chaos conditions:
 - CPU/Memory exhaustion
 - Multi-pod failures
 - Rolling chaos scenarios
+
+Test Categories:
+- Basic chaos tests: Run with K8S API only
+- Integration tests: Require service connectivity (NodePort/port-forward)
 """
 
 import logging
+import os
 import time
 
 import pytest
@@ -16,6 +21,10 @@ import pytest
 from tools.chaos_tester import ChaosTester
 
 logger = logging.getLogger(__name__)
+
+# NodePort configuration
+NODEPORT_SERVICE_NAME = "test-app-nodeport"
+NODEPORT_PORT = 30080
 
 
 @pytest.fixture(scope="module")
@@ -25,24 +34,64 @@ def chaos_tester(namespace):
 
 
 @pytest.fixture(scope="function")
-def service_url(core_v1_api, namespace, service_name):
-    """Get service URL for load generation"""
+def service_url(core_v1_api, namespace):
+    """
+    Get service URL for load generation.
+
+    Priority:
+    1. Environment variable SERVICE_URL (for manual override)
+    2. NodePort service (accessible from outside cluster)
+    3. ClusterIP service (only works inside cluster)
+    """
+    # Check for environment override
+    env_url = os.environ.get("SERVICE_URL")
+    if env_url:
+        logger.info(f"Using SERVICE_URL from environment: {env_url}")
+        return env_url
+
+    # Try NodePort service first
+    try:
+        nodeport_svc = core_v1_api.read_namespaced_service(
+            name=NODEPORT_SERVICE_NAME,
+            namespace=namespace,
+        )
+        # Get node IP (use localhost for local clusters like Docker Desktop/Kind)
+        node_ip = os.environ.get("NODE_IP", "localhost")
+        node_port = None
+
+        for port in nodeport_svc.spec.ports:
+            if port.node_port:
+                node_port = port.node_port
+                break
+
+        if node_port:
+            url = f"http://{node_ip}:{node_port}"
+            logger.info(f"Using NodePort service: {url}")
+            return url
+    except Exception as e:
+        logger.debug(f"NodePort service not available: {e}")
+
+    # Fallback to ClusterIP
     try:
         service = core_v1_api.read_namespaced_service(
-            name=service_name,
+            name="test-app-service",
             namespace=namespace,
         )
         cluster_ip = service.spec.cluster_ip
         port = service.spec.ports[0].port
-        return f"http://{cluster_ip}:{port}"
-    except Exception:
-        pytest.skip("Service not available")
+        url = f"http://{cluster_ip}:{port}"
+        logger.info(f"Using ClusterIP service: {url}")
+        return url
+    except Exception as e:
+        logger.warning(f"No service available: {e}")
         return None
 
 
 @pytest.fixture(scope="function")
 def chaos_with_service(namespace, service_url):
     """Create chaos tester with service URL"""
+    if service_url is None:
+        pytest.skip("No service URL available")
     return ChaosTester(namespace=namespace, service_url=service_url)
 
 
@@ -87,21 +136,23 @@ class TestChaosEngineering:
         logger.info(f"Final pod count: {final_count}")
         assert final_count >= 2, f"Expected at least 2 pods, got {final_count}"
 
+    @pytest.mark.integration
     def test_tc_chaos_002_random_kill_under_load(
         self,
         chaos_with_service,
         wait_helper,
     ):
         """
-        TC-CHAOS-002: Random pod kill under load
+        TC-CHAOS-002: Random pod kill under load (Integration Test)
 
         Kill a pod during CPU load and verify service remains available.
+        Requires: NodePort service or port-forward
         """
         tester = chaos_with_service
 
-        # Verify service is available initially (skip if not reachable)
+        # Verify service is available initially
         if not tester.verify_service_available():
-            pytest.skip("Service not reachable (requires port-forward or in-cluster)")
+            pytest.skip("Service not reachable from test environment")
 
         # Get initial pod count
         initial_count = tester.get_pod_count()
@@ -130,6 +181,7 @@ class TestChaosEngineering:
         )
         assert recovered, "Pods did not recover after kill under load"
 
+    @pytest.mark.integration
     def test_tc_chaos_003_cpu_exhaustion_scaling(
         self,
         chaos_with_service,
@@ -138,15 +190,16 @@ class TestChaosEngineering:
         hpa_name,
     ):
         """
-        TC-CHAOS-003: CPU exhaustion and HPA response
+        TC-CHAOS-003: CPU exhaustion and HPA response (Integration Test)
 
         Generate CPU load and verify HPA responds appropriately.
+        Requires: NodePort service or port-forward
         """
         tester = chaos_with_service
 
-        # Skip if service is not reachable
+        # Verify service is reachable
         if not tester.verify_service_available():
-            pytest.skip("Service not reachable (requires port-forward or in-cluster)")
+            pytest.skip("Service not reachable from test environment")
 
         # Get initial state
         initial_hpa = tester.get_hpa_status()
@@ -173,20 +226,22 @@ class TestChaosEngineering:
 
         logger.info("CPU exhaustion test completed successfully")
 
+    @pytest.mark.integration
     def test_tc_chaos_004_memory_exhaustion_handling(
         self,
         chaos_with_service,
     ):
         """
-        TC-CHAOS-004: Memory exhaustion handling
+        TC-CHAOS-004: Memory exhaustion handling (Integration Test)
 
         Allocate memory and verify the system handles it gracefully.
+        Requires: NodePort service or port-forward
         """
         tester = chaos_with_service
 
-        # Skip if service is not reachable
+        # Verify service is reachable
         if not tester.verify_service_available():
-            pytest.skip("Service not reachable (requires port-forward or in-cluster)")
+            pytest.skip("Service not reachable from test environment")
 
         # Get initial pod count
         initial_pods = tester.get_pod_count()
