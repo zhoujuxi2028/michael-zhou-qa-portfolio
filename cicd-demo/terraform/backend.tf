@@ -13,24 +13,30 @@
 # Uncomment the block below when deploying to staging or production
 # This enables team collaboration and state locking
 
-# terraform {
-#   backend "s3" {
-#     # S3 bucket for state storage (created by main.tf)
-#     bucket = "qa-portfolio-${var.environment}-tfstate"
-#     key    = "terraform.tfstate"
-#     region = "us-east-1"
-#
-#     # DynamoDB table for state locking (prevents concurrent modifications)
-#     dynamodb_table = "qa-portfolio-${var.environment}-tf-locks"
-#
-#     # Encryption for state file (contains sensitive data)
-#     encrypt = true
-#
-#     # Note: Replace ${var.environment} with actual environment name
-#     # For staging:    bucket = "qa-portfolio-staging-tfstate"
-#     # For production: bucket = "qa-portfolio-production-tfstate"
-#   }
-# }
+terraform {
+  backend "s3" {
+    bucket = "qa-portfolio-dev-tfstate"
+    key    = "terraform.tfstate"
+    region = "us-east-1"
+
+    # DynamoDB table for state locking (prevents concurrent modifications)
+    dynamodb_table = "qa-portfolio-dev-tf-locks"
+
+    encrypt = true
+
+    # Localstack overrides
+    skip_credentials_validation = true
+    skip_requesting_account_id  = true
+    skip_metadata_api_check     = true
+    skip_s3_checksum            = true
+    use_path_style              = true
+
+    endpoints = {
+      s3       = "http://localhost:4566"
+      dynamodb = "http://localhost:4566"
+    }
+  }
+}
 
 # ==============================================================================
 # Backend Migration Instructions
