@@ -40,9 +40,7 @@ class LoadGenerator:
         Returns:
             dict: Results with success/failure counts
         """
-        logger.info(
-            f"Generating CPU load: duration={duration}s, concurrency={concurrency}"
-        )
+        logger.info(f"Generating CPU load: duration={duration}s, concurrency={concurrency}")
 
         url = f"{self.base_url}/cpu-load?duration=10"
 
@@ -78,9 +76,7 @@ class LoadGenerator:
 
         results["end_time"] = time.time()
 
-        logger.info(
-            f"CPU load generation complete: {results['success']} success, {results['failure']} failures"
-        )
+        logger.info(f"CPU load generation complete: {results['success']} success, {results['failure']} failures")
 
         return results
 
@@ -148,9 +144,7 @@ class LoadGenerator:
             duration: Total duration in seconds
             interval: Interval between load bursts
         """
-        logger.info(
-            f"Starting continuous load: duration={duration}s, interval={interval}s"
-        )
+        logger.info(f"Starting continuous load: duration={duration}s, interval={interval}s")
 
         start_time = time.time()
 
@@ -198,9 +192,7 @@ def main():
     parser = argparse.ArgumentParser(description="K8S Load Generator")
     parser.add_argument("--url", required=True, help="Application URL")
     parser.add_argument("--duration", type=int, default=60, help="Duration in seconds")
-    parser.add_argument(
-        "--concurrency", type=int, default=10, help="Concurrent requests"
-    )
+    parser.add_argument("--concurrency", type=int, default=10, help="Concurrent requests")
     parser.add_argument(
         "--type",
         choices=["cpu", "memory", "continuous"],
@@ -219,9 +211,7 @@ def main():
 
     # Generate load
     if args.type == "cpu":
-        generator.generate_cpu_load(
-            duration=args.duration, concurrency=args.concurrency
-        )
+        generator.generate_cpu_load(duration=args.duration, concurrency=args.concurrency)
     elif args.type == "memory":
         generator.generate_memory_load(size_mb=100, count=5)
     elif args.type == "continuous":
