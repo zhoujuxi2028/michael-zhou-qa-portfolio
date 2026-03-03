@@ -1,221 +1,307 @@
-# 🚀 K8S Auto Testing Platform
+# K8S Auto Testing Platform
 
 > Kubernetes 自动化测试平台 - 专注于 HPA/CA 测试、稳定性验证和混沌工程
 
+[![CI](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-1.25+-326CE5.svg)](https://kubernetes.io/)
-[![Pytest](https://img.shields.io/badge/Pytest-7.0+-green.svg)](https://pytest.org/)
+[![Pytest](https://img.shields.io/badge/Pytest-7.4.3-green.svg)](https://pytest.org/)
+[![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
-## 📋 项目简介
+## Project Overview
 
-**K8S Auto Testing Platform** 是一个针对 Kubernetes 云原生应用开发的自动化测试平台。该项目专注于：
-- **HPA/CA 自动扩缩容测试**
-- **云平台稳定性验证**
-- **混沌工程实践**
-- **DevOps 测试工具链集成**
+**K8S Auto Testing Platform** is an automated testing platform for Kubernetes cloud-native applications. This project focuses on:
 
-### 核心价值
-- ✅ **自动化优先** - 一键执行完整测试流程
-- ✅ **覆盖全面** - 从单元测试到集成测试到混沌测试
-- ✅ **可视化报告** - 清晰的测试结果和性能指标
-- ✅ **CI/CD 集成** - 无缝接入持续集成流水线
+- **HPA/CA Auto-scaling Testing** - Verify horizontal pod autoscaler behavior
+- **Cloud Platform Stability Validation** - Ensure reliable deployments
+- **Chaos Engineering Practices** - Test system resilience
+- **DevOps Toolchain Integration** - CI/CD pipeline automation
 
----
+### Key Achievements
 
-## 🎯 功能特性
-
-### 1. HPA (Horizontal Pod Autoscaler) 测试 ⭐⭐⭐⭐⭐
-- ✅ 扩容测试 - 负载增加时 Pod 自动扩展
-- ✅ 缩容测试 - 负载降低时 Pod 自动回收
-- ✅ 边界测试 - 验证 min/maxReplicas 限制
-- ✅ 性能测试 - 测量扩缩容响应时间
-
-### 2. Deployment 测试
-- ✅ 滚动更新测试 - 验证零停机部署
-- ✅ 回滚测试 - 测试版本回退能力
-- ✅ 资源限制测试 - 验证 CPU/Memory limits
-- ✅ 健康检查测试 - Liveness/Readiness Probes
-
-### 3. Service 测试
-- ✅ 负载均衡测试 - 验证流量分发
-- ✅ 服务发现测试 - DNS 解析验证
-- ✅ 端口映射测试 - ClusterIP/NodePort/LoadBalancer
-
-### 4. 混沌工程测试 ⭐⭐⭐
-- ✅ Pod 故障注入 - 随机删除 Pod 测试自愈
-- ✅ 网络延迟注入 - 模拟网络抖动
-- ✅ 资源耗尽测试 - CPU/Memory 压力测试
-
-### 5. CI/CD 集成
-- ✅ GitHub Actions 自动化测试
-- ✅ 测试报告自动生成
-- ✅ 覆盖率统计
+| Metric | Value |
+|--------|-------|
+| Test Cases | 24 |
+| Pass Rate | 92% (22/24) |
+| Code Coverage | 54% |
+| Code Quality | flake8 + black |
 
 ---
 
-## 📦 项目结构
+## Features
+
+### 1. HPA (Horizontal Pod Autoscaler) Testing
+
+- Scale-up testing - Pod auto-expansion under load
+- Scale-down testing - Pod auto-reduction when idle
+- Boundary testing - Verify min/max replica limits
+- Metrics verification - CPU and Memory thresholds
+
+### 2. Deployment Testing
+
+- Rolling update testing - Zero-downtime deployments
+- Resource limit testing - CPU/Memory constraints
+- Health check testing - Liveness/Readiness probes
+- Pod restart testing - Self-healing verification
+
+### 3. Service Testing
+
+- Load balancing - Traffic distribution
+- Service discovery - DNS resolution
+- Port mapping - ClusterIP/NodePort
+- Endpoint verification
+
+### 4. CI/CD Integration
+
+- GitHub Actions automated testing
+- Code quality checks (flake8, black, isort)
+- Test coverage reporting
+- Artifact upload
+
+---
+
+## Project Structure
 
 ```
 k8s-auto-testing-platform/
-├── app/                          # 测试目标应用
-│   ├── main.py                  # FastAPI 应用入口
-│   ├── Dockerfile               # 应用容器化
-│   └── requirements.txt         # Python 依赖
+├── app/                          # Test application (FastAPI)
+│   ├── main.py                  # 10 API endpoints
+│   ├── Dockerfile               # Multi-stage build
+│   └── requirements.txt         # App dependencies
 │
-├── k8s-manifests/               # Kubernetes 配置文件
-│   ├── deployment.yaml          # Deployment 配置
-│   ├── service.yaml             # Service 配置
-│   ├── hpa.yaml                 # HPA 配置 ⭐
-│   ├── configmap.yaml           # ConfigMap 配置
-│   └── namespace.yaml           # Namespace 配置
+├── k8s-manifests/               # Kubernetes configurations
+│   ├── namespace.yaml           # k8s-testing namespace
+│   ├── configmap.yaml           # Environment config
+│   ├── deployment.yaml          # 2-10 replica deployment
+│   ├── service.yaml             # ClusterIP + NodePort
+│   └── hpa.yaml                 # CPU 50% / Memory 70%
 │
-├── tests/                       # 自动化测试
-│   ├── conftest.py             # Pytest 配置
-│   ├── test_deployment.py      # Deployment 测试
-│   ├── test_hpa.py             # HPA 测试 ⭐⭐⭐
-│   ├── test_service.py         # Service 测试
-│   ├── test_chaos.py           # 混沌测试
-│   └── test_integration.py     # 集成测试
+├── tests/                       # Pytest test suite
+│   ├── conftest.py             # Shared fixtures
+│   ├── test_deployment.py      # 8 deployment tests
+│   ├── test_hpa.py             # 8 HPA tests
+│   └── test_service.py         # 8 service tests
 │
-├── tools/                       # 测试工具
-│   ├── load_generator.py       # 负载生成器
-│   ├── metrics_collector.py    # 指标收集器
-│   ├── k8s_helper.py           # K8S 操作封装
-│   └── report_generator.py     # 报告生成器
+├── tools/                       # Testing utilities
+│   ├── k8s_helper.py           # K8S operations wrapper
+│   └── load_generator.py       # CPU/Memory load generator
 │
-├── docs/                        # 文档
-│   ├── architecture.md         # 架构设计
-│   ├── test-plan.md            # 测试计划
-│   └── test-report.md          # 测试报告
+├── scripts/                     # Automation scripts
+│   ├── setup-phase1.sh         # Environment setup
+│   ├── run-tests.sh            # One-command test runner
+│   └── setup-proxy.sh          # Proxy configuration
 │
-├── .github/workflows/          # CI/CD
-│   └── test.yml                # 自动化测试流水线
+├── docs/                        # Documentation
+│   ├── WBS.md                  # Work breakdown structure
+│   ├── ARCHITECTURE.md         # System architecture
+│   ├── TEST-CASES.md           # Test case catalog
+│   └── TROUBLESHOOTING-LOG.md  # Known issues
 │
-├── requirements.txt            # 项目依赖
-├── pytest.ini                  # Pytest 配置
-└── README.md                   # 本文件
+├── .github/workflows/           # CI/CD
+│   └── ci.yml                  # GitHub Actions workflow
+│
+├── PROJECT_STATUS.md            # Current progress (100%)
+├── requirements.txt             # Python dependencies
+├── pytest.ini                   # Pytest configuration
+└── README.md                    # This file
 ```
 
 ---
 
-## 🚀 快速开始
+## Quick Start
 
-### 前置条件
+### Prerequisites
 
 - Python 3.9+
-- Docker Desktop (启用 Kubernetes)
-- kubectl 命令行工具
+- Docker Desktop with Kubernetes enabled
+- kubectl CLI tool
 
-### 1. 克隆项目
+### 1. Clone Repository
 
 ```bash
 git clone https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio.git
 cd michael-zhou-qa-portfolio/k8s-auto-testing-platform
 ```
 
-### 2. 安装依赖
+### 2. Setup Environment
 
 ```bash
-# 创建虚拟环境
+# Create virtual environment
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# 安装依赖
+# Install dependencies
 pip install -r requirements.txt
+
+# Configure proxy bypass (if needed)
+./scripts/setup-proxy.sh
+source ~/.zshrc
 ```
 
-### 3. 部署测试应用到 K8S
+### 3. Deploy to Kubernetes
 
 ```bash
-# 创建命名空间
-kubectl apply -f k8s-manifests/namespace.yaml
+# Build Docker image
+cd app && docker build -t test-app:latest . && cd ..
 
-# 部署应用
+# Deploy to K8S
 kubectl apply -f k8s-manifests/
 
-# 验证部署
+# Verify deployment
 kubectl get all -n k8s-testing
 ```
 
-### 4. 运行测试
+### 4. Run Tests
 
 ```bash
-# 运行所有测试
+# One-command test runner (recommended)
+./scripts/run-tests.sh
+
+# Or run manually
 pytest tests/ -v
 
-# 运行 HPA 测试
-pytest tests/test_hpa.py -v -s
+# Run with coverage
+pytest tests/ --cov=tests --cov-report=html
 
-# 生成覆盖率报告
-pytest tests/ --cov=. --cov-report=html
+# Run smoke tests only
+pytest tests/ -v -m smoke
 ```
 
 ---
 
-## 🛠️ 技术栈
+## Test Results
 
-| 类别 | 技术 |
-|-----|------|
-| **容器编排** | Kubernetes, Docker |
-| **编程语言** | Python 3.9+ |
-| **测试框架** | Pytest, Locust |
-| **应用框架** | FastAPI |
-| **CI/CD** | GitHub Actions |
-| **工具库** | kubernetes-client, requests, pyyaml |
+```
+tests/test_deployment.py::TestDeployment::test_deployment_exists PASSED
+tests/test_deployment.py::TestDeployment::test_deployment_replicas PASSED
+tests/test_deployment.py::TestDeployment::test_deployment_labels PASSED
+tests/test_deployment.py::TestDeployment::test_pods_running PASSED
+tests/test_deployment.py::TestDeployment::test_pod_health_checks PASSED
+tests/test_deployment.py::TestDeployment::test_pod_resources PASSED
+tests/test_deployment.py::TestDeployment::test_pod_restart PASSED
+tests/test_deployment.py::test_deployment_smoke PASSED
+tests/test_hpa.py::TestHPAScaling::test_hpa_exists PASSED
+tests/test_hpa.py::TestHPAScaling::test_hpa_metrics_configured PASSED
+tests/test_hpa.py::TestHPAScaling::test_min_replicas_maintained PASSED
+tests/test_hpa.py::TestHPAScaling::test_hpa_scale_up SKIPPED
+tests/test_hpa.py::TestHPAScaling::test_hpa_scale_down SKIPPED
+tests/test_hpa.py::TestHPAScaling::test_max_replicas_not_exceeded PASSED
+tests/test_hpa.py::TestHPAScaling::test_hpa_status PASSED
+tests/test_hpa.py::test_hpa_smoke PASSED
+tests/test_service.py::TestService::test_service_exists PASSED
+tests/test_service.py::TestService::test_service_type PASSED
+tests/test_service.py::TestService::test_service_selector PASSED
+tests/test_service.py::TestService::test_service_ports PASSED
+tests/test_service.py::TestService::test_service_endpoints PASSED
+tests/test_service.py::TestService::test_service_dns PASSED
+tests/test_service.py::TestService::test_nodeport_service_exists PASSED
+tests/test_service.py::test_service_smoke PASSED
+
+========================= 22 passed, 2 skipped =========================
+```
 
 ---
 
-## 📝 开发计划
+## HPA Configuration
 
-### Phase 1: 基础搭建
-- [ ] 项目结构搭建
-- [ ] 测试应用开发
-- [ ] K8S 配置文件
-- [ ] 基础测试用例
-
-### Phase 2: 核心功能
-- [ ] HPA 测试框架
-- [ ] 负载生成器
-- [ ] 测试报告生成
-- [ ] CI/CD 集成
-
-### Phase 3: 高级功能
-- [ ] 混沌工程实践
-- [ ] 性能监控集成
-- [ ] 完整测试报告
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: test-app-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: test-app
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 70
+```
 
 ---
 
-## 👤 作者
+## Technology Stack
+
+| Category | Technology | Version |
+|----------|------------|---------|
+| Container | Docker | 29.x |
+| Orchestration | Kubernetes | 1.32+ |
+| Runtime | Python | 3.9+ |
+| Web Framework | FastAPI | 0.109.0 |
+| Testing | Pytest | 7.4.3 |
+| K8S Client | kubernetes | 28.1.0 |
+| Load Testing | Locust | 2.20.0 |
+| Code Quality | flake8, black, isort | Latest |
+| CI/CD | GitHub Actions | - |
+
+---
+
+## Development Phases
+
+### Phase 1: Environment Setup ✅
+- Project structure setup
+- Test application development
+- Kubernetes manifests
+- Basic test framework
+
+### Phase 2: Core Functionality ✅
+- HPA testing implementation
+- Test suite execution (22/24 passing)
+- Load generation tools
+- Automation scripts
+
+### Phase 3: CI/CD & Quality ✅
+- GitHub Actions workflow
+- Code quality checks (flake8, black)
+- Test coverage reporting
+- Architecture documentation
+
+### Phase 4: Final Release ✅
+- Documentation updates
+- Final review and cleanup
+- Git tag v1.0.0
+
+---
+
+## Documentation
+
+- [Architecture Design](docs/ARCHITECTURE.md)
+- [Test Case Catalog](docs/TEST-CASES.md)
+- [Work Breakdown Structure](docs/WBS.md)
+- [Troubleshooting Guide](docs/TROUBLESHOOTING-LOG.md)
+- [Project Status](PROJECT_STATUS.md)
+
+---
+
+## Author
 
 **Michael Zhou**
-- 📧 Email: zhou_juxi@hotmail.com / zhoujuxi@163.com
-- 🔗 GitHub: [@zhoujuxi2028](https://github.com/zhoujuxi2028)
-- 💼 职位目标: 资深测试工程师（云产品）
+- Email: zhou_juxi@hotmail.com
+- GitHub: [@zhoujuxi2028](https://github.com/zhoujuxi2028)
+- Target Role: Senior Test Engineer (Cloud Products)
 
 ---
 
-## 📄 许可证
+## License
 
-本项目采用 MIT 许可证
-
----
-
-## 📞 联系方式
-
-如有问题或建议，欢迎通过以下方式联系：
-- 📧 Email: zhou_juxi@hotmail.com
-- 📧 备用邮箱: zhoujuxi@163.com
-- 🔗 GitHub: https://github.com/zhoujuxi2028
+This project is licensed under the MIT License.
 
 ---
 
-**⭐ 如果这个项目对您有帮助，欢迎 Star！**
-
----
-
-*项目创建时间: 2026-03-02*
-*最后更新: 2026-03-02*
+*Created: 2026-03-02 | Last Updated: 2026-03-03 | Version: 1.0.0*
