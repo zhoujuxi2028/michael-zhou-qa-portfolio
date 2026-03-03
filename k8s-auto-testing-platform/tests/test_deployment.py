@@ -169,6 +169,7 @@ def test_deployment_smoke(apps_v1_api, namespace, deployment_name):
     )
 
     assert deployment is not None
-    assert deployment.status.ready_replicas > 0
+    ready_replicas = deployment.status.ready_replicas or 0
+    assert ready_replicas > 0, f"No ready replicas found (ready: {ready_replicas})"
 
     logger.info("Deployment smoke test passed")
