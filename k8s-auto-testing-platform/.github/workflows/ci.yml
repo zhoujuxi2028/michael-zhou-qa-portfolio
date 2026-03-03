@@ -72,6 +72,9 @@ jobs:
           pip install -r requirements.txt
           pip install pytest-cov
 
+      - name: Create reports directory
+        run: mkdir -p reports
+
       - name: Run unit tests with coverage
         run: |
           pytest tests/ -v \
@@ -80,10 +83,19 @@ jobs:
             --cov-report=xml \
             --cov-report=html \
             --cov-report=term-missing \
-            --junitxml=test-results.xml \
+            --junitxml=reports/junit-results.xml \
+            --html=reports/test-report.html \
+            --self-contained-html \
             -m "not integration and not slow" \
             --ignore=tests/test_hpa.py \
             || true
+
+      - name: Generate enhanced reports
+        if: always()
+        run: |
+          python tools/report_generator.py \
+            --junit-xml reports/junit-results.xml \
+            --output-dir reports
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
@@ -92,13 +104,14 @@ jobs:
           path: k8s-auto-testing-platform/htmlcov/
           retention-days: 7
 
-      - name: Upload test results
+      - name: Upload test reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results
-          path: k8s-auto-testing-platform/test-results.xml
-          retention-days: 7
+          name: test-reports
+          path: |
+            k8s-auto-testing-platform/reports/
+          retention-days: 14
 
   k8s-integration-tests:
     name: K8S Integration Tests
