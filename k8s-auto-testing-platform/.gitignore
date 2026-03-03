@@ -65,9 +65,9 @@ logs/
 kubeconfig
 *.kubeconfig
 
-# Reports
-reports/
-*.html
+# Reports (keep .gitkeep)
+reports/*
+!reports/.gitkeep
 
 # Temporary files
 tmp/

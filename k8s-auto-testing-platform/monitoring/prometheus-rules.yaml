@@ -1,0 +1,150 @@
+# Prometheus Alerting Rules for K8S Auto Testing Platform
+# These rules define alerts for HPA testing scenarios
+
+groups:
+  - name: test-app-health
+    interval: 15s
+    rules:
+      # Application availability
+      - alert: TestAppDown
+        expr: up{job="test-app"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Test application is down"
+          description: "Test app instance {{ $labels.instance }} has been down for more than 1 minute"
+
+      - alert: TestAppHighErrorRate
+        expr: |
+          sum(rate(http_requests_total{status=~"5.."}[5m])) /
+          sum(rate(http_requests_total[5m])) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} for the last 5 minutes"
+
+  - name: hpa-scaling
+    interval: 15s
+    rules:
+      # CPU-based alerts
+      - alert: HighCPUUtilization
+        expr: avg(app_cpu_usage_percent) > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU utilization"
+          description: "Average CPU usage is {{ $value | printf \"%.1f\" }}% (threshold: 80%)"
+
+      - alert: CriticalCPUUtilization
+        expr: avg(app_cpu_usage_percent) > 95
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical CPU utilization"
+          description: "Average CPU usage is {{ $value | printf \"%.1f\" }}% (threshold: 95%)"
+
+      # Memory-based alerts
+      - alert: HighMemoryUtilization
+        expr: avg(app_memory_usage_percent) > 85
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory utilization"
+          description: "Average memory usage is {{ $value | printf \"%.1f\" }}% (threshold: 85%)"
+
+      - alert: CriticalMemoryUtilization
+        expr: avg(app_memory_usage_percent) > 95
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical memory utilization"
+          description: "Average memory usage is {{ $value | printf \"%.1f\" }}% (threshold: 95%)"
+
+      # Scaling behavior alerts
+      - alert: HPAScalingTooFrequent
+        expr: increase(app_scaling_events_total[10m]) > 10
+        for: 5m
+        labels:
+          severity: info
+        annotations:
+          summary: "Frequent scaling events"
+          description: "{{ $value | printf \"%.0f\" }} scaling events in the last 10 minutes"
+
+      - alert: HPAMaxReplicasReached
+        expr: count(app_pod_info) >= 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "HPA max replicas reached"
+          description: "Running {{ $value | printf \"%.0f\" }} pods - at or near maximum"
+
+  - name: request-performance
+    interval: 15s
+    rules:
+      # Latency alerts
+      - alert: HighRequestLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High request latency"
+          description: "95th percentile latency is {{ $value | printf \"%.2f\" }}s"
+
+      - alert: CriticalRequestLatency
+        expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) > 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical request latency"
+          description: "99th percentile latency is {{ $value | printf \"%.2f\" }}s"
+
+      # Request rate alerts
+      - alert: HighRequestRate
+        expr: sum(rate(http_requests_total[1m])) > 1000
+        for: 2m
+        labels:
+          severity: info
+        annotations:
+          summary: "High request rate detected"
+          description: "Request rate is {{ $value | printf \"%.0f\" }} req/s"
+
+  - name: chaos-testing
+    interval: 15s
+    rules:
+      # Pod disruption alerts
+      - alert: PodRestarted
+        expr: increase(kube_pod_container_status_restarts_total{namespace="k8s-testing"}[5m]) > 0
+        for: 0m
+        labels:
+          severity: info
+        annotations:
+          summary: "Pod restart detected"
+          description: "Pod {{ $labels.pod }} has restarted"
+
+      - alert: MultiplePodFailures
+        expr: count(app_pod_info) < 2
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Running below minimum replicas"
+          description: "Only {{ $value | printf \"%.0f\" }} pods running (minimum: 2)"
+
+      - alert: MemoryLoadTest
+        expr: sum(app_memory_allocated_mb) > 500
+        for: 1m
+        labels:
+          severity: info
+        annotations:
+          summary: "Memory load test in progress"
+          description: "{{ $value | printf \"%.0f\" }}MB of memory allocated for load testing"
