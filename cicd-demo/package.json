@@ -26,6 +26,10 @@
     "security:audit:fix": "npm audit fix",
     "security:scan": "docker run --rm -v $(pwd):/workspace aquasec/trivy fs --config /workspace/security/trivy-config.yaml /workspace",
     "security:report": "./security/security-report.sh",
+    "test:track": "./scripts/track-test-execution.sh",
+    "localstack:up": "docker compose -f docker-compose.localstack.yml up -d",
+    "localstack:down": "docker compose -f docker-compose.localstack.yml down",
+    "localstack:status": "curl -s http://localhost:4566/_localstack/health | python3 -m json.tool",
     "prepare": "husky install || true"
   },
   "keywords": [
