@@ -1,0 +1,22 @@
+# StressChaos: 内存压力测试
+# 注入内存压力，测试 OOM 处理
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: memory-stress-test
+  namespace: k8s-testing
+  labels:
+    app: chaos-test
+    scenario: hpa-scaling
+spec:
+  mode: one
+  selector:
+    namespaces:
+      - k8s-testing
+    labelSelectors:
+      app: test-app
+  stressors:
+    memory:
+      workers: 1
+      size: "128MB"
+  duration: "120s"

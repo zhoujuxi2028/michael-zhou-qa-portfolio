@@ -68,9 +68,7 @@ class ReportGenerator:
         self.summary.start_time = datetime.now()
 
         # Parse test results
-        test_pattern = re.compile(
-            r"(\S+\.py::\S+)\s+(PASSED|FAILED|SKIPPED|ERROR)\s*\[?\s*(\d+)%?\]?"
-        )
+        test_pattern = re.compile(r"(\S+\.py::\S+)\s+(PASSED|FAILED|SKIPPED|ERROR)\s*\[?\s*(\d+)%?\]?")
 
         for match in test_pattern.finditer(output):
             name, outcome, _ = match.groups()
@@ -84,8 +82,7 @@ class ReportGenerator:
 
         # Parse summary line
         summary_pattern = re.compile(
-            r"=+ (\d+) passed(?:, (\d+) failed)?(?:, (\d+) skipped)?(?:, (\d+) error)?"
-            r".*in ([\d.]+)s"
+            r"=+ (\d+) passed(?:, (\d+) failed)?(?:, (\d+) skipped)?(?:, (\d+) error)?" r".*in ([\d.]+)s"
         )
         summary_match = summary_pattern.search(output)
 
@@ -96,12 +93,7 @@ class ReportGenerator:
             self.summary.skipped = int(groups[2]) if groups[2] else 0
             self.summary.errors = int(groups[3]) if groups[3] else 0
             self.summary.duration = float(groups[4]) if groups[4] else 0.0
-            self.summary.total = (
-                self.summary.passed
-                + self.summary.failed
-                + self.summary.skipped
-                + self.summary.errors
-            )
+            self.summary.total = self.summary.passed + self.summary.failed + self.summary.skipped + self.summary.errors
 
         self.summary.end_time = datetime.now()
 
@@ -159,12 +151,7 @@ class ReportGenerator:
                         )
                     )
 
-            self.summary.passed = (
-                self.summary.total
-                - self.summary.failed
-                - self.summary.errors
-                - self.summary.skipped
-            )
+            self.summary.passed = self.summary.total - self.summary.failed - self.summary.errors - self.summary.skipped
 
         except Exception as e:
             print(f"Error parsing JUnit XML: {e}")
@@ -176,11 +163,7 @@ class ReportGenerator:
         Returns:
             dict: Executive summary data
         """
-        pass_rate = (
-            (self.summary.passed / self.summary.total * 100)
-            if self.summary.total > 0
-            else 0
-        )
+        pass_rate = (self.summary.passed / self.summary.total * 100) if self.summary.total > 0 else 0
 
         # Group by test category
         categories: Dict[str, Dict] = {}
@@ -195,9 +178,7 @@ class ReportGenerator:
             if category not in categories:
                 categories[category] = {"passed": 0, "failed": 0, "skipped": 0}
 
-            categories[category][result.outcome] = (
-                categories[category].get(result.outcome, 0) + 1
-            )
+            categories[category][result.outcome] = categories[category].get(result.outcome, 0) + 1
 
         return {
             "title": "K8S Auto Testing Platform - Test Report",
@@ -233,7 +214,7 @@ class ReportGenerator:
 
         html_content = self._render_html_template(summary)
 
-        with open(output_path, "w") as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(html_content)
 
         return str(output_path)
@@ -263,7 +244,7 @@ class ReportGenerator:
         if output_path is None:
             output_path = self.report_dir / "test-results.json"
 
-        with open(output_path, "w") as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(summary, f, indent=2)
 
         return str(output_path)
@@ -287,14 +268,8 @@ class ReportGenerator:
 
         categories_html = ""
         for cat, stats in summary.get("categories", {}).items():
-            cat_total = (
-                stats.get("passed", 0)
-                + stats.get("failed", 0)
-                + stats.get("skipped", 0)
-            )
-            cat_pass_rate = (
-                (stats.get("passed", 0) / cat_total * 100) if cat_total > 0 else 0
-            )
+            cat_total = stats.get("passed", 0) + stats.get("failed", 0) + stats.get("skipped", 0)
+            cat_pass_rate = (stats.get("passed", 0) / cat_total * 100) if cat_total > 0 else 0
             categories_html += f"""
             <tr>
                 <td>{cat}</td>
@@ -533,7 +508,7 @@ def run_tests_and_generate_report(
 
     # Run pytest
     print(f"Running: {' '.join(cmd)}")
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = subprocess.run(cmd, capture_output=True, text=True, check=False)
 
     print(result.stdout)
     if result.stderr:
@@ -565,19 +540,11 @@ def main():
     """CLI entry point"""
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="K8S Auto Testing Platform - Report Generator"
-    )
-    parser.add_argument(
-        "--test-path", default="tests/", help="Path to tests (default: tests/)"
-    )
+    parser = argparse.ArgumentParser(description="K8S Auto Testing Platform - Report Generator")
+    parser.add_argument("--test-path", default="tests/", help="Path to tests (default: tests/)")
     parser.add_argument("--markers", "-m", help="Pytest markers to filter tests")
-    parser.add_argument(
-        "--output-dir", "-o", default="reports", help="Output directory for reports"
-    )
-    parser.add_argument(
-        "--junit-xml", help="Parse existing JUnit XML instead of running tests"
-    )
+    parser.add_argument("--output-dir", "-o", default="reports", help="Output directory for reports")
+    parser.add_argument("--junit-xml", help="Parse existing JUnit XML instead of running tests")
 
     args = parser.parse_args()
 

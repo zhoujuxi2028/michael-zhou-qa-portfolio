@@ -21,9 +21,7 @@ class TestDeployment:
 
     def test_deployment_exists(self, apps_v1_api, namespace, deployment_name):
         """TC-DEP-CFG-001: 验证 Deployment 存在"""
-        deployment = apps_v1_api.read_namespaced_deployment(
-            name=deployment_name, namespace=namespace
-        )
+        deployment = apps_v1_api.read_namespaced_deployment(name=deployment_name, namespace=namespace)
 
         assert deployment is not None
         assert deployment.metadata.name == deployment_name
@@ -32,24 +30,18 @@ class TestDeployment:
 
     def test_deployment_replicas(self, apps_v1_api, namespace, deployment_name):
         """TC-DEP-CFG-002: 验证副本数正确"""
-        deployment = apps_v1_api.read_namespaced_deployment(
-            name=deployment_name, namespace=namespace
-        )
+        deployment = apps_v1_api.read_namespaced_deployment(name=deployment_name, namespace=namespace)
 
         spec_replicas = deployment.spec.replicas
         ready_replicas = deployment.status.ready_replicas or 0
 
-        logger.info(
-            f"Deployment replicas - Desired: {spec_replicas}, Ready: {ready_replicas}"
-        )
+        logger.info(f"Deployment replicas - Desired: {spec_replicas}, Ready: {ready_replicas}")
 
         assert ready_replicas > 0, "No ready replicas found"
 
     def test_deployment_labels(self, apps_v1_api, namespace, deployment_name):
         """TC-DEP-CFG-003: 验证标签配置"""
-        deployment = apps_v1_api.read_namespaced_deployment(
-            name=deployment_name, namespace=namespace
-        )
+        deployment = apps_v1_api.read_namespaced_deployment(name=deployment_name, namespace=namespace)
 
         labels = deployment.metadata.labels
 
@@ -61,9 +53,7 @@ class TestDeployment:
 
     def test_pods_running(self, core_v1_api, namespace):
         """TC-DEP-FUN-001: 验证 Pod 运行状态"""
-        pods = core_v1_api.list_namespaced_pod(
-            namespace=namespace, label_selector="app=test-app"
-        )
+        pods = core_v1_api.list_namespaced_pod(namespace=namespace, label_selector="app=test-app")
 
         assert len(pods.items) > 0, "No pods found"
 
@@ -75,9 +65,7 @@ class TestDeployment:
 
     def test_pod_health_checks(self, core_v1_api, namespace):
         """TC-DEP-FUN-002: 验证健康检查配置"""
-        pods = core_v1_api.list_namespaced_pod(
-            namespace=namespace, label_selector="app=test-app"
-        )
+        pods = core_v1_api.list_namespaced_pod(namespace=namespace, label_selector="app=test-app")
 
         assert len(pods.items) > 0
 
@@ -98,9 +86,7 @@ class TestDeployment:
 
     def test_pod_resources(self, core_v1_api, namespace):
         """TC-DEP-FUN-003: 验证资源限制"""
-        pods = core_v1_api.list_namespaced_pod(
-            namespace=namespace, label_selector="app=test-app"
-        )
+        pods = core_v1_api.list_namespaced_pod(namespace=namespace, label_selector="app=test-app")
 
         assert len(pods.items) > 0
 
@@ -121,20 +107,14 @@ class TestDeployment:
         logger.info(f"Resource limits: {container.resources.limits}")
 
     @pytest.mark.integration
-    def test_pod_restart(
-        self, core_v1_api, apps_v1_api, namespace, deployment_name, wait_helper
-    ):
+    def test_pod_restart(self, core_v1_api, apps_v1_api, namespace, deployment_name, wait_helper):
         """TC-DEP-INT-001: 验证 Pod 自愈能力"""
         # Get initial pod count
-        initial_deployment = apps_v1_api.read_namespaced_deployment(
-            name=deployment_name, namespace=namespace
-        )
+        initial_deployment = apps_v1_api.read_namespaced_deployment(name=deployment_name, namespace=namespace)
         initial_replicas = initial_deployment.status.ready_replicas or 0
 
         # Get a pod to delete
-        pods = core_v1_api.list_namespaced_pod(
-            namespace=namespace, label_selector="app=test-app"
-        )
+        pods = core_v1_api.list_namespaced_pod(namespace=namespace, label_selector="app=test-app")
 
         if not pods.items:
             pytest.skip("No pods found to test restart")
@@ -148,9 +128,7 @@ class TestDeployment:
 
         # Wait for new pod to be ready
         def check_pod_recovered():
-            deployment = apps_v1_api.read_namespaced_deployment(
-                name=deployment_name, namespace=namespace
-            )
+            deployment = apps_v1_api.read_namespaced_deployment(name=deployment_name, namespace=namespace)
             current_replicas = deployment.status.ready_replicas or 0
             return current_replicas == initial_replicas
 
@@ -162,14 +140,18 @@ class TestDeployment:
 
 
 @pytest.mark.smoke
-def test_deployment_smoke(apps_v1_api, namespace, deployment_name):
+def test_deployment_smoke(apps_v1_api, namespace, deployment_name, wait_helper):
     """TC-DEP-SMK-001: Deployment 冒烟测试"""
-    deployment = apps_v1_api.read_namespaced_deployment(
-        name=deployment_name, namespace=namespace
-    )
+    deployment = apps_v1_api.read_namespaced_deployment(name=deployment_name, namespace=namespace)
 
     assert deployment is not None
-    ready_replicas = deployment.status.ready_replicas or 0
-    assert ready_replicas > 0, f"No ready replicas found (ready: {ready_replicas})"
+
+    def check_pods_ready():
+        dep = apps_v1_api.read_namespaced_deployment(name=deployment_name, namespace=namespace)
+        ready_replicas = dep.status.ready_replicas or 0
+        return ready_replicas > 0
+
+    ready = wait_helper(check_pods_ready, timeout=120, interval=5)
+    assert ready, "No ready replicas found within timeout"
 
     logger.info("Deployment smoke test passed")
