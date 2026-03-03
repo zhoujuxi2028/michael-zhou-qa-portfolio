@@ -130,18 +130,9 @@ class MetricsCollector:
             memory_usage=self.query("avg(app_memory_usage_percent)") or 0,
             pod_count=int(self.query("count(app_pod_info)") or 0),
             request_rate=self.query("sum(rate(http_requests_total[1m]))") or 0,
-            latency_p50=self.query(
-                "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m]))"
-            )
-            or 0,
-            latency_p95=self.query(
-                "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))"
-            )
-            or 0,
-            latency_p99=self.query(
-                "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))"
-            )
-            or 0,
+            latency_p50=self.query("histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m]))") or 0,
+            latency_p95=self.query("histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))") or 0,
+            latency_p99=self.query("histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))") or 0,
             scaling_events=self._get_scaling_events(),
         )
 
@@ -160,9 +151,7 @@ class MetricsCollector:
         ]
 
         for event_type in event_types:
-            value = self.query(
-                f'sum(app_scaling_events_total{{event_type="{event_type}"}})'
-            )
+            value = self.query(f'sum(app_scaling_events_total{{event_type="{event_type}"}})')
             if value is not None:
                 events[event_type] = int(value)
 
@@ -327,7 +316,7 @@ class MetricsCollector:
             for s in self.snapshots
         ]
 
-        with open(filepath, "w") as f:
+        with open(filepath, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
         logger.info(f"Exported {len(self.snapshots)} snapshots to {filepath}")
@@ -346,9 +335,7 @@ class MetricsCollector:
         print("METRICS SUMMARY")
         print("=" * 50)
         print(f"Snapshots collected: {len(self.snapshots)}")
-        print(
-            f"Time range: {self.snapshots[0].timestamp} - {self.snapshots[-1].timestamp}"
-        )
+        print(f"Time range: {self.snapshots[0].timestamp} - {self.snapshots[-1].timestamp}")
         print()
         print("CPU Usage:")
         print(f"  Min: {min(cpu_values):.1f}%")
@@ -370,29 +357,21 @@ def main():
     """CLI entry point"""
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="K8S Auto Testing Platform - Metrics Collector"
-    )
+    parser = argparse.ArgumentParser(description="K8S Auto Testing Platform - Metrics Collector")
     parser.add_argument(
         "--prometheus-url",
         default="http://localhost:9090",
         help="Prometheus server URL",
     )
-    parser.add_argument(
-        "--namespace", default="k8s-testing", help="Kubernetes namespace"
-    )
+    parser.add_argument("--namespace", default="k8s-testing", help="Kubernetes namespace")
     parser.add_argument(
         "--action",
         choices=["snapshot", "watch", "report"],
         default="snapshot",
         help="Action to perform",
     )
-    parser.add_argument(
-        "--duration", type=int, default=60, help="Watch duration in seconds"
-    )
-    parser.add_argument(
-        "--interval", type=int, default=5, help="Collection interval in seconds"
-    )
+    parser.add_argument("--duration", type=int, default=60, help="Watch duration in seconds")
+    parser.add_argument("--interval", type=int, default=5, help="Collection interval in seconds")
     parser.add_argument("--output", "-o", help="Output file for export")
 
     args = parser.parse_args()

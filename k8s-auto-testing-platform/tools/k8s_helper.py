@@ -45,9 +45,7 @@ class K8sHelper:
         Returns:
             int: Number of running pods
         """
-        pods = self.core_v1.list_namespaced_pod(
-            namespace=self.namespace, label_selector=label_selector
-        )
+        pods = self.core_v1.list_namespaced_pod(namespace=self.namespace, label_selector=label_selector)
 
         running_pods = [p for p in pods.items if p.status.phase == "Running"]
 
@@ -63,9 +61,7 @@ class K8sHelper:
         Returns:
             dict: Replica counts
         """
-        deployment = self.apps_v1.read_namespaced_deployment(
-            name=deployment_name, namespace=self.namespace
-        )
+        deployment = self.apps_v1.read_namespaced_deployment(name=deployment_name, namespace=self.namespace)
 
         return {
             "desired": deployment.spec.replicas,
@@ -84,9 +80,7 @@ class K8sHelper:
         Returns:
             dict: HPA status
         """
-        hpa = self.autoscaling_v2.read_namespaced_horizontal_pod_autoscaler(
-            name=hpa_name, namespace=self.namespace
-        )
+        hpa = self.autoscaling_v2.read_namespaced_horizontal_pod_autoscaler(name=hpa_name, namespace=self.namespace)
 
         status = {
             "current_replicas": hpa.status.current_replicas,
@@ -108,9 +102,7 @@ class K8sHelper:
 
         return status
 
-    def wait_for_pods_ready(
-        self, count: int, label_selector: str = "app=test-app", timeout: int = 120
-    ) -> bool:
+    def wait_for_pods_ready(self, count: int, label_selector: str = "app=test-app", timeout: int = 120) -> bool:
         """
         Wait for pods to be ready
 
@@ -134,9 +126,7 @@ class K8sHelper:
             logger.info(f"Waiting for pods: {ready_count}/{count}")
             time.sleep(5)
 
-        logger.error(
-            f"Timeout waiting for pods: {self.get_pod_count(label_selector)}/{count}"
-        )
+        logger.error(f"Timeout waiting for pods: {self.get_pod_count(label_selector)}/{count}")
         return False
 
     def delete_pod(self, pod_name: str) -> bool:
@@ -157,9 +147,7 @@ class K8sHelper:
             logger.error(f"Failed to delete pod {pod_name}: {e}")
             return False
 
-    def get_pod_logs(
-        self, pod_name: str, container: Optional[str] = None, tail_lines: int = 100
-    ) -> str:
+    def get_pod_logs(self, pod_name: str, container: Optional[str] = None, tail_lines: int = 100) -> str:
         """
         Get pod logs
 
@@ -194,9 +182,7 @@ class K8sHelper:
             str: Service endpoint URL
         """
         try:
-            service = self.core_v1.read_namespaced_service(
-                name=service_name, namespace=self.namespace
-            )
+            service = self.core_v1.read_namespaced_service(name=service_name, namespace=self.namespace)
 
             cluster_ip = service.spec.cluster_ip
             port = service.spec.ports[0].port
