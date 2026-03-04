@@ -1,0 +1,16 @@
+apiVersion: v2
+name: qa-portfolio
+description: QA Portfolio CI/CD Demo - Test execution and results serving on Kubernetes
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - qa
+  - testing
+  - cicd
+  - cypress
+  - newman
+maintainers:
+  - name: Michael Zhou
+sources:
+  - https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio
