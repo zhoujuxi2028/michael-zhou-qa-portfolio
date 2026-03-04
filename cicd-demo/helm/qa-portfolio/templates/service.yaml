@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "qa-portfolio.fullname" . }}-results
+  labels:
+    {{- include "qa-portfolio.resultsServer.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    {{- include "qa-portfolio.resultsServer.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: 80
+      protocol: TCP
+  sessionAffinity: None
+{{- if .Values.headlessService.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "qa-portfolio.fullname" . }}-jobs-headless
+  labels:
+    {{- include "qa-portfolio.labels" . | nindent 4 }}
+    app.kubernetes.io/component: test-jobs
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    {{- include "qa-portfolio.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+{{- end }}
