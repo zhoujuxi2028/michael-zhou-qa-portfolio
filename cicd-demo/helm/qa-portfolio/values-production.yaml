@@ -1,0 +1,46 @@
+# Production environment overrides
+
+testConfig:
+  newmanEnvironment: "production"
+  logLevel: "warn"
+  enableDebug: "false"
+  bailOnFailure: "true"
+
+newmanEnv:
+  name: "JSONPlaceholder Production"
+  environment: "production"
+
+# More resources for production stability
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "200m"
+  limits:
+    memory: "256Mi"
+    cpu: "500m"
+
+cypress:
+  activeDeadlineSeconds: 900
+  resources:
+    requests:
+      memory: "2Gi"
+      cpu: "1000m"
+    limits:
+      memory: "4Gi"
+      cpu: "2000m"
+
+newman:
+  activeDeadlineSeconds: 600
+
+storage:
+  testResults:
+    size: 10Gi
+  cypressCache:
+    size: 2Gi
+
+ingress:
+  hosts:
+    - host: test-results.qa-portfolio.example.com
+      paths:
+        - path: /
+          pathType: Prefix

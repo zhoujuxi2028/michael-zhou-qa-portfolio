@@ -62,6 +62,23 @@ npm run docker:test
 # Automatically run on PR and main branch pushes
 ```
 
+## Phase Completion Doc Template
+
+When writing `docs/PHASE-*-COMPLETION.md` docs, follow this structure (~100-150 lines max):
+
+1. **Header** - Phase name, date, status
+2. **Deliverables table** - Files created/updated with brief descriptions
+3. **What was built** - Short description of each feature (no code blocks unless essential)
+4. **New commands/scripts** - Table of npm scripts or CLI commands added
+5. **Cross-references** - Link to existing docs, DO NOT duplicate their content
+
+**DO NOT include in phase completion docs:**
+- Interview talking points (add to `docs/INTERVIEW-GUIDE.md`)
+- Troubleshooting sections (add to `docs/guides/TROUBLESHOOTING.md`)
+- Error classification (add to `docs/ERROR-CLASSIFICATION.md`)
+- Verbose verification output / self-test transcripts
+- Metrics tables, future enhancements, or maintenance checklists
+
 ## Portfolio Context
 
 This project is part of Michael Zhou's QA Portfolio demonstrating CI/CD and DevOps skills.

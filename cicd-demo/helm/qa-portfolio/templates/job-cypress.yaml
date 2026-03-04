@@ -1,0 +1,71 @@
+{{- if .Values.cypress.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "qa-portfolio.fullname" . }}-cypress
+  labels:
+    {{- include "qa-portfolio.cypress.labels" . | nindent 4 }}
+spec:
+  backoffLimit: {{ .Values.cypress.backoffLimit }}
+  ttlSecondsAfterFinished: {{ .Values.cypress.ttlSecondsAfterFinished }}
+  activeDeadlineSeconds: {{ .Values.cypress.activeDeadlineSeconds }}
+  template:
+    metadata:
+      labels:
+        {{- include "qa-portfolio.cypress.labels" . | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: prepare-results-dir
+          image: busybox:1.36
+          command: ['sh', '-c']
+          args:
+            - |
+              mkdir -p /test-results/cypress/screenshots
+              mkdir -p /test-results/cypress/videos
+              chmod -R 777 /test-results
+              echo "Test results directory prepared"
+          volumeMounts:
+            - name: test-results
+              mountPath: /test-results
+      containers:
+        - name: cypress
+          image: "{{ .Values.cypress.image.repository }}:{{ .Values.cypress.image.tag }}"
+          imagePullPolicy: {{ .Values.cypress.image.pullPolicy }}
+          workingDir: /e2e
+          envFrom:
+            - configMapRef:
+                name: {{ include "qa-portfolio.fullname" . }}-test-config
+          command: ['npx']
+          args:
+            - cypress
+            - run
+            - --browser
+            - chrome
+            - --headless
+            - --config
+            - video=true
+          resources:
+            {{- toYaml .Values.cypress.resources | nindent 12 }}
+          volumeMounts:
+            - name: cypress-project
+              mountPath: /e2e
+              readOnly: true
+            - name: test-results
+              mountPath: /e2e/cypress/screenshots
+              subPath: cypress/screenshots
+            - name: test-results
+              mountPath: /e2e/cypress/videos
+              subPath: cypress/videos
+            - name: cypress-cache
+              mountPath: /root/.cache/Cypress
+      volumes:
+        - name: cypress-project
+          emptyDir: {}
+        - name: test-results
+          persistentVolumeClaim:
+            claimName: {{ include "qa-portfolio.fullname" . }}-test-results
+        - name: cypress-cache
+          persistentVolumeClaim:
+            claimName: {{ include "qa-portfolio.fullname" . }}-cypress-cache
+{{- end }}

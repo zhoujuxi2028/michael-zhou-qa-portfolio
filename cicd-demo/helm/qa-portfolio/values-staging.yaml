@@ -1,0 +1,40 @@
+# Staging environment overrides
+
+testConfig:
+  newmanEnvironment: "staging"
+  logLevel: "info"
+  enableDebug: "false"
+  bailOnFailure: "true"
+
+newmanEnv:
+  name: "JSONPlaceholder Staging"
+  environment: "staging"
+
+# Tighter resource limits in staging
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "100m"
+  limits:
+    memory: "128Mi"
+    cpu: "200m"
+
+cypress:
+  activeDeadlineSeconds: 600
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+
+newman:
+  activeDeadlineSeconds: 300
+
+ingress:
+  hosts:
+    - host: test-results.staging.qa-portfolio.local
+      paths:
+        - path: /
+          pathType: Prefix

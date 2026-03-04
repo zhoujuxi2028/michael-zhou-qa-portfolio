@@ -1,0 +1,35 @@
+QA Portfolio has been deployed to namespace: {{ .Release.Namespace }}
+
+=== Access Test Results ===
+
+  kubectl port-forward -n {{ .Release.Namespace }} svc/{{ include "qa-portfolio.fullname" . }}-results 8080:80
+  Open http://localhost:8080
+
+{{- if .Values.ingress.enabled }}
+
+  Or via Ingress:
+  {{- range .Values.ingress.hosts }}
+    http://{{ .host }}
+  {{- end }}
+{{- end }}
+
+=== Run Test Jobs ===
+
+  # Cypress E2E tests
+  kubectl create -n {{ .Release.Namespace }} -f <cypress-job-manifest>
+
+  # Newman API tests
+  kubectl create -n {{ .Release.Namespace }} -f <newman-job-manifest>
+
+=== Useful Commands ===
+
+  # Check deployment status
+  kubectl get all -n {{ .Release.Namespace }}
+
+  # View test job logs
+  kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/component=cypress
+  kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/component=newman
+
+  # Helm release info
+  helm status {{ .Release.Name }} -n {{ .Release.Namespace }}
+  helm history {{ .Release.Name }} -n {{ .Release.Namespace }}

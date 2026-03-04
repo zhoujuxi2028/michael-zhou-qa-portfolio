@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "qa-portfolio.fullname" . }}-test-results
+  labels:
+    {{- include "qa-portfolio.labels" . | nindent 4 }}
+    app.kubernetes.io/component: storage
+spec:
+  accessModes:
+    - {{ .Values.storage.testResults.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.storage.testResults.size }}
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "qa-portfolio.fullname" . }}-cypress-cache
+  labels:
+    {{- include "qa-portfolio.labels" . | nindent 4 }}
+    app.kubernetes.io/component: cypress-cache
+spec:
+  accessModes:
+    - {{ .Values.storage.cypressCache.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.storage.cypressCache.size }}
+  volumeMode: Filesystem

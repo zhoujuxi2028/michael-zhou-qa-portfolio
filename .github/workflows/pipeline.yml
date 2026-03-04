@@ -1,0 +1,295 @@
+# CI/CD Pipeline — Full Orchestration
+# Multi-stage pipeline: Lint → Build+Security → E2E Tests → Deploy Dev → Deploy Staging
+#
+# Interview Talking Point:
+# "This pipeline demonstrates environment promotion with gates:
+#  dev deploys automatically after tests pass, staging requires manual approval.
+#  Parallel stages (build + security scan) optimize total pipeline duration."
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cicd-demo/**'
+      - '.github/workflows/pipeline.yml'
+  workflow_dispatch:
+    inputs:
+      skip_e2e:
+        description: 'Skip E2E tests'
+        required: false
+        default: 'false'
+        type: boolean
+      deploy_env:
+        description: 'Deploy target'
+        required: false
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - staging
+          - none
+
+# Cancel in-progress runs for same branch
+concurrency:
+  group: pipeline-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================================
+  # Stage 1: Lint + Unit Test (fast gate, <2min)
+  # ============================================
+  lint-and-test:
+    name: "Stage 1: Lint & Test"
+    runs-on: ubuntu-latest
+    outputs:
+      test_result: ${{ steps.test.outcome }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: cicd-demo/package-lock.json
+
+      - name: Install dependencies
+        working-directory: cicd-demo
+        run: npm ci
+
+      - name: Lint
+        working-directory: cicd-demo
+        run: npm run lint --if-present
+
+      - name: Helm lint
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.0
+
+      - name: Validate Helm chart
+        run: helm lint cicd-demo/helm/qa-portfolio -f cicd-demo/helm/qa-portfolio/values.yaml
+
+      - id: test
+        name: Run unit tests
+        working-directory: cicd-demo
+        run: npm test --if-present
+        continue-on-error: false
+
+  # ============================================
+  # Stage 2a: Build Docker images (parallel)
+  # ============================================
+  build:
+    name: "Stage 2a: Build"
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Newman image
+        working-directory: cicd-demo
+        run: |
+          docker build -f Dockerfile.newman -t qa-newman-demo:${{ github.sha }} .
+          docker tag qa-newman-demo:${{ github.sha }} qa-newman-demo:latest
+          echo "Newman image built successfully"
+
+      - name: Build test with Docker Compose
+        working-directory: cicd-demo
+        run: |
+          docker compose build --no-cache 2>&1 | tail -5
+          echo "Docker Compose build complete"
+
+      - name: Helm template (validate chart renders)
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.0
+
+      - name: Render Helm chart
+        run: |
+          helm template qa-portfolio cicd-demo/helm/qa-portfolio \
+            -f cicd-demo/helm/qa-portfolio/values.yaml \
+            --namespace qa-portfolio > /dev/null
+          echo "Helm chart renders successfully"
+
+  # ============================================
+  # Stage 2b: Security scan (parallel with build)
+  # ============================================
+  security:
+    name: "Stage 2b: Security"
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy filesystem scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: 'cicd-demo/'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'  # Don't fail on findings (demo project)
+
+      - name: npm audit
+        working-directory: cicd-demo
+        run: npm audit --audit-level=critical || true
+        continue-on-error: true
+
+      - name: Scan Helm chart for misconfigurations
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          scan-ref: 'cicd-demo/helm/'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'
+
+  # ============================================
+  # Stage 3: E2E Tests (Cypress + Newman in Docker)
+  # ============================================
+  e2e-tests:
+    name: "Stage 3: E2E Tests"
+    runs-on: ubuntu-latest
+    needs: [build, security]
+    if: ${{ github.event.inputs.skip_e2e != 'true' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run E2E tests in Docker
+        working-directory: cicd-demo
+        run: |
+          docker compose up --build --wait --wait-timeout 120
+          echo "E2E tests completed"
+        timeout-minutes: 10
+
+      - name: Collect test results
+        if: always()
+        working-directory: cicd-demo
+        run: |
+          mkdir -p test-artifacts
+          docker compose cp cypress:/e2e/cypress/videos test-artifacts/videos 2>/dev/null || true
+          docker compose cp cypress:/e2e/cypress/screenshots test-artifacts/screenshots 2>/dev/null || true
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results
+          path: cicd-demo/test-artifacts/
+          retention-days: 14
+
+      - name: Cleanup Docker
+        if: always()
+        working-directory: cicd-demo
+        run: docker compose down -v --remove-orphans 2>/dev/null || true
+
+  # ============================================
+  # Stage 4: Deploy to Dev (auto, Helm + ArgoCD)
+  # ============================================
+  deploy-dev:
+    name: "Stage 4: Deploy Dev"
+    runs-on: ubuntu-latest
+    needs: e2e-tests
+    if: ${{ github.event.inputs.deploy_env != 'none' }}
+    environment:
+      name: dev
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.0
+
+      - name: Validate chart for dev deployment
+        run: |
+          helm template qa-portfolio cicd-demo/helm/qa-portfolio \
+            -f cicd-demo/helm/qa-portfolio/values.yaml \
+            --namespace qa-portfolio > /tmp/dev-manifests.yaml
+
+          RESOURCES=$(grep -c '^kind:' /tmp/dev-manifests.yaml)
+          echo "Dev deployment: $RESOURCES resources"
+          echo "ArgoCD will auto-sync from Git (GitOps)"
+
+      - name: Deployment summary
+        run: |
+          echo "=== Dev Deployment ==="
+          echo "Chart: qa-portfolio v$(grep '^version:' cicd-demo/helm/qa-portfolio/Chart.yaml | awk '{print $2}')"
+          echo "App: v$(grep '^appVersion:' cicd-demo/helm/qa-portfolio/Chart.yaml | awk '{print $2}')"
+          echo "Commit: ${{ github.sha }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Trigger: ArgoCD auto-sync (GitOps)"
+          echo ""
+          echo "ArgoCD monitors this repo and auto-syncs Helm chart changes to dev."
+          echo "No manual helm install needed — ArgoCD handles deployment."
+
+  # ============================================
+  # Stage 5: Deploy to Staging (manual approval)
+  # ============================================
+  deploy-staging:
+    name: "Stage 5: Deploy Staging"
+    runs-on: ubuntu-latest
+    needs: deploy-dev
+    if: ${{ github.event.inputs.deploy_env == 'staging' || github.ref == 'refs/heads/main' }}
+    environment:
+      name: staging
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.0
+
+      - name: Validate chart for staging deployment
+        run: |
+          helm template qa-portfolio cicd-demo/helm/qa-portfolio \
+            -f cicd-demo/helm/qa-portfolio/values.yaml \
+            -f cicd-demo/helm/qa-portfolio/values-staging.yaml \
+            --namespace qa-portfolio > /tmp/staging-manifests.yaml
+
+          RESOURCES=$(grep -c '^kind:' /tmp/staging-manifests.yaml)
+          echo "Staging deployment: $RESOURCES resources"
+
+      - name: Deployment summary
+        run: |
+          echo "=== Staging Deployment ==="
+          echo "Chart: qa-portfolio v$(grep '^version:' cicd-demo/helm/qa-portfolio/Chart.yaml | awk '{print $2}')"
+          echo "App: v$(grep '^appVersion:' cicd-demo/helm/qa-portfolio/Chart.yaml | awk '{print $2}')"
+          echo "Commit: ${{ github.sha }}"
+          echo "Trigger: Manual approval gate passed"
+          echo ""
+          echo "ArgoCD staging app uses manual sync (selfHeal: false)."
+          echo "An operator must manually sync in ArgoCD UI to deploy."
+
+  # ============================================
+  # Pipeline Summary
+  # ============================================
+  pipeline-summary:
+    name: "Pipeline Summary"
+    runs-on: ubuntu-latest
+    needs: [lint-and-test, build, security, e2e-tests, deploy-dev]
+    if: always()
+    steps:
+      - name: Pipeline results
+        run: |
+          echo "=== CI/CD Pipeline Results ==="
+          echo "Lint & Test:  ${{ needs.lint-and-test.result }}"
+          echo "Build:        ${{ needs.build.result }}"
+          echo "Security:     ${{ needs.security.result }}"
+          echo "E2E Tests:    ${{ needs.e2e-tests.result }}"
+          echo "Deploy Dev:   ${{ needs.deploy-dev.result }}"
+          echo ""
+          echo "Commit: ${{ github.sha }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Actor:  ${{ github.actor }}"
