@@ -155,7 +155,7 @@ INITIAL_REPLICAS=$(kubectl get deployment test-app -n $NAMESPACE -o jsonpath='{.
 log_result "Initial replicas: $INITIAL_REPLICAS"
 
 # Check application health
-if ! curl -s "$APP_URL/health" &>/dev/null; then
+if ! curl --noproxy '*' -s "$APP_URL/health" &>/dev/null; then
     print_error "Application health check failed at $APP_URL"
     exit 1
 fi
@@ -176,7 +176,7 @@ echo ""
     END_TIME=$(($(date +%s) + DURATION))
     while [ $(date +%s) -lt $END_TIME ]; do
         for i in $(seq 1 $CONCURRENCY); do
-            curl -s "$APP_URL/cpu-load?duration=5" &>/dev/null &
+            curl --noproxy '*' -s "$APP_URL/cpu-load?duration=5" &>/dev/null &
         done
         sleep 1
     done
