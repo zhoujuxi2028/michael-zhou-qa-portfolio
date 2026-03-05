@@ -1,0 +1,7 @@
+[2026-03-04 14:44:50] Initial replicas: 2
+[2026-03-04 14:44:50] Starting HPA stress test
+[2026-03-04 14:44:50] Parameters: duration=60, concurrency=10
+[2026-03-04 14:46:26] Test completed
+[2026-03-04 14:46:26] Initial: 2, Max: 2, Final: 2
+[2026-03-04 14:46:26] Scale-up: N/As, Scale-down: N/As
+[2026-03-04 14:46:26] RESULT: NO SCALE-UP DETECTED

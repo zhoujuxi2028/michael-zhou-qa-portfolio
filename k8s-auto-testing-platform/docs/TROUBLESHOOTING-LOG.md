@@ -50,6 +50,25 @@
 | 分类 | 测试设计缺陷 |
 | 解决 | 替换 `time.sleep(10)` 为 `wait_helper` 动态等待（timeout=120s, interval=5s）|
 
+### #6 HPA 压力测试未触发扩容
+
+| 项目 | 内容 |
+|------|------|
+| 测试脚本 | `scripts/hpa-stress-test.sh` |
+| 现象 | `NO SCALE-UP DETECTED` - HPA 未扩容 |
+| 原因 | curl 命令被本地代理拦截，返回 502 Bad Gateway，导致负载未到达应用 |
+| 分类 | 环境配置问题 |
+| 解决 | 在所有 curl 命令添加 `--noproxy '*'` 参数 |
+
+**诊断命令**:
+```bash
+# 检查是否被代理拦截
+curl -v "http://localhost:30080/health" 2>&1 | grep -E "proxy|502"
+
+# 正确方式（绕过代理）
+curl --noproxy '*' -s "http://localhost:30080/health"
+```
+
 ---
 
 ## 环境配置
