@@ -64,9 +64,10 @@ logs/
 kubeconfig
 *.kubeconfig
 
-# Reports (keep .gitkeep)
+# Reports (keep .gitkeep and hpa-stress reports)
 reports/*
 !reports/.gitkeep
+!reports/hpa-stress/
 
 # Temporary files
 tmp/
