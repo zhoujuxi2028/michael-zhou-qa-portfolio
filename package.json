@@ -7,9 +7,9 @@
   "private": true,
   "scripts": {
     "prepare": "husky",
-    "test:postman": "cd postman-demo && npm run test",
-    "test:postman:smoke": "cd postman-demo && npm run test:smoke",
-    "validate:postman": "cd postman-demo && npm run validate"
+    "test:api": "cd api-testing-demo && npm run test",
+    "test:api:smoke": "cd api-testing-demo && npm run test:smoke",
+    "validate:api": "cd api-testing-demo && npm run validate"
   },
   "devDependencies": {
     "husky": "^9.0.0"
