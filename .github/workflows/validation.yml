@@ -3,14 +3,14 @@ name: Dependency & Environment Validation
 on:
   push:
     branches:
-      - portfolio
+      - main
       - develop
     paths:
       - 'cicd-demo/**'
       - '.github/workflows/validation.yml'
   pull_request:
     branches:
-      - portfolio
+      - main
       - develop
     paths:
       - 'cicd-demo/**'
