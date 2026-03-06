@@ -1,557 +1,258 @@
-# CI/CD Demo Project - DevOps Skills Showcase
+# CI/CD Demo — DevOps Platform
 
-## Overview
+A complete CI/CD pipeline demonstration: from code push to production deployment, with monitoring, alerting, and GitOps.
 
-This project is part of the **QA Portfolio** and demonstrates CI/CD pipeline integration, Docker containerization, and DevOps practices. It features:
+## What This Project Demonstrates
 
-- **Dual-layer GitHub Actions strategy** (PR fast checks + production Docker tests)
-- **Docker container orchestration** with Cypress and Newman
-- **100% test pass rate** (16 Cypress E2E + 18 Newman API tests)
-- **Comprehensive architecture documentation** with interview talking points
+```
+Code Push → GitHub Actions (CI) → Docker Build & Test → Helm Package
+    → ArgoCD (CD) → Kubernetes Deploy → Prometheus Monitoring → Grafana Dashboards
+```
 
-Use this project to:
-- Understand modern CI/CD pipeline design
-- Practice Docker containerization
-- Learn GitHub Actions workflows
-- Demonstrate DevOps skills in interviews
+### Phase 1: Foundation (Complete)
+
+| Component | Technology | What It Does |
+|-----------|-----------|--------------|
+| **CI Pipeline** | GitHub Actions | 4 workflows: PR checks, Docker tests, security scan, validation |
+| **Test Automation** | Cypress + Newman | 16 E2E tests + 18 API assertions, 100% pass rate |
+| **Containerization** | Docker Compose | Cypress + Newman in containers, reproducible test env |
+| **Infrastructure as Code** | Terraform + Localstack | S3, DynamoDB, 3 environment configs (dev/staging/prod) |
+| **Container Orchestration** | Kubernetes (k3d) | 3-node cluster, Jobs, Deployments, Services, Ingress |
+| **Security Scanning** | Trivy + npm audit | 4-layer scanning (filesystem, Docker, IaC, dependencies) |
+| **GitOps** | ArgoCD | 2 apps (dev auto-sync, staging manual), self-healing |
+| **Monitoring** | Prometheus + Grafana | Metrics collection, 2 dashboards (14 panels) |
+
+### Phase 2: CI/CD Pipeline Integration (Planned)
+
+| Component | Technology | What It Adds |
+|-----------|-----------|-------------|
+| **Release Management** | Helm Charts | Versioned releases, parameterized deploys, rollback |
+| **Pipeline Orchestration** | GitHub Actions | Multi-stage: lint → test → build → deploy dev → deploy staging |
+| **Pipeline Alerting** | AlertManager + Slack | Alert on deployment failure, test failure, infra issues |
+| **Pipeline Metrics** | Pushgateway | Track build times, test pass rates, deployment frequency |
+| **Log Aggregation** | Loki + Promtail | Centralized logging, debug failed deployments in Grafana |
+
+See [WBS.md](docs/WBS.md) for detailed task breakdown.
+
+## Quick Start
+
+### Run Tests Locally
+
+```bash
+cd cicd-demo
+npm install
+npm test                         # Both Cypress + Newman
+npm run test:cypress:headed      # Interactive Cypress
+```
+
+### Run in Docker
+
+```bash
+npm run docker:test              # Docker containers
+npm run docker:test:logs         # With detailed logs
+```
+
+### Deploy to Kubernetes (Phase 1)
+
+```bash
+# Prerequisites: docker, kubectl, k3d, terraform, helm
+# Create cluster
+k3d cluster create qa-portfolio --agents 2 --port "8080:80@loadbalancer"
+
+# Deploy infrastructure
+cd terraform && terraform init && terraform apply -var-file=environments/dev.tfvars
+
+# Deploy to K8s
+./scripts/deploy-to-k8s.sh
+
+# Install ArgoCD
+./gitops/argocd/install-argocd.sh
+
+# Install monitoring
+./monitoring/deploy-monitoring.sh
+```
+
+### Access Dashboards
+
+```bash
+# Grafana (metrics + dashboards)
+kubectl port-forward -n monitoring svc/prometheus-grafana 3000:80
+# Open http://localhost:3000 (admin / grafana-admin)
+
+# ArgoCD (GitOps deployments)
+kubectl port-forward -n argocd svc/argocd-server 9090:443
+# Open https://localhost:9090
+
+# Prometheus (raw metrics)
+kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-prometheus 9091:9090
+```
 
 ## Project Structure
 
 ```
-test-project/
-├── README.md                      # This file - project overview
-├── CLAUDE.md                      # Organization guidelines for AI assistance
-├── package.json                   # Node.js dependencies and scripts
-├── cypress.config.js              # Cypress configuration
-├── docker-compose.yml             # Multi-container orchestration
-├── Dockerfile.newman              # Newman container definition
+cicd-demo/
+├── .github/workflows/           # CI/CD pipelines
+│   ├── pr-checks.yml            #   Fast PR validation (2-3 min)
+│   ├── docker-tests.yml         #   Production Docker tests (5-8 min)
+│   ├── security-scan.yml        #   Trivy 4-layer security scanning
+│   └── validation.yml           #   Environment & permission checks
 │
-├── cypress/                       # Cypress test suite
-│   ├── e2e/                       # E2E test files
-│   │   ├── 01-api-tests.cy.js    # API testing examples
-│   │   └── 02-ui-tests.cy.js     # UI testing examples
-│   ├── fixtures/                  # Test data files
-│   ├── support/                   # Support files and custom commands
-│   ├── videos/                    # Test execution recordings (auto-generated)
-│   └── screenshots/               # Failure screenshots (auto-generated)
+├── cypress/                     # Cypress E2E tests (16 tests)
+├── postman/                     # Newman API tests (18 assertions)
+├── docker-compose.yml           # Container orchestration
+├── Dockerfile.newman            # Newman container
 │
-├── postman/                       # Postman/Newman API tests
-│   ├── api-collection.json        # API test collection
-│   └── environment.json           # Environment variables
+├── terraform/                   # Infrastructure as Code
+│   ├── main.tf                  #   S3 buckets, DynamoDB table
+│   ├── variables.tf             #   Configurable parameters
+│   ├── backend.tf               #   Localstack S3 backend
+│   └── environments/            #   dev / staging / production tfvars
 │
-├── newman/                        # Newman test output
-│   ├── report.html                # HTML test report
-│   └── junit.xml                  # JUnit XML for CI integration
+├── k8s/                         # Kubernetes manifests
+│   ├── namespace.yaml           #   qa-portfolio namespace
+│   ├── deployment.yaml          #   Test results server (nginx)
+│   ├── job-cypress.yaml         #   Cypress test job
+│   ├── job-newman.yaml          #   Newman test job
+│   ├── service.yaml             #   ClusterIP service
+│   ├── ingress.yaml             #   External access
+│   ├── configmap-*.yaml         #   Test configs, nginx config
+│   └── pvc.yaml                 #   Persistent storage (5Gi)
 │
-├── test-logs/                     # Test execution logs
-│   └── README.md                  # Log directory documentation
+├── gitops/argocd/               # GitOps configuration
+│   ├── install-argocd.sh        #   ArgoCD installation script
+│   ├── project.yaml             #   AppProject with RBAC
+│   └── applications/            #   Dev (auto-sync) + Staging (manual)
 │
-├── scripts/                       # Utility scripts
-│   └── run-regression-test-with-logs.sh  # Regression test runner
+├── monitoring/                  # Observability stack
+│   ├── prometheus-values.yaml   #   Prometheus + Grafana Helm values
+│   ├── dashboards/              #   Cluster Overview + Test Metrics JSON
+│   ├── deploy-monitoring.sh     #   Automated deployment
+│   └── verify-monitoring.sh     #   Health verification
 │
-└── docs/                          # Project documentation
-    ├── README.md                  # Documentation directory overview
-    ├── guides/                    # User guides and tutorials
-    │   ├── CI-CD-GUIDE.md        # CI/CD setup and integration guide
-    │   └── TROUBLESHOOTING.md    # Common issues and solutions
-    ├── analysis/                  # Analysis reports
-    │   ├── CICD-COMPLETE-ANALYSIS.md     # CI/CD implementation analysis
-    │   └── REGRESSION-TEST-RESULT.md     # Test execution results
-    └── fixes/                     # Bug fix records
-        ├── BUGFIX-SUMMARY.md      # Summary of applied fixes
-        ├── BUG-LIST.md            # Identified bugs and status
-        └── README-DOCKER-FIXES.md # Docker-related fixes
+├── security/                    # Security scanning config
+│   ├── trivy-config.yaml        #   Scan rules, severity thresholds
+│   └── security-report.sh       #   Consolidated report generator
+│
+├── scripts/                     # Automation scripts
+│   ├── validate-environment.sh  #   Pre-flight checks
+│   └── fix-permissions.sh       #   Docker file permission fix
+│
+└── docs/                        # Documentation
+    ├── WBS.md                   #   Work breakdown (Phase 1 + Phase 2)
+    ├── ARCHITECTURE.md          #   Technical architecture deep dive
+    ├── INTERVIEW-GUIDE.md       #   35+ interview Q&A
+    ├── QUICKSTART.md            #   5-minute setup guide
+    └── guides/                  #   CI/CD guide, troubleshooting
 ```
 
-## Quick Start
+## CI/CD Pipeline Architecture
 
-### Prerequisites
-```bash
-# Ensure you have Node.js installed (v18+ recommended)
-node --version
+### Current (Phase 1): CI with Manual CD
 
-# Ensure you have npm installed
-npm --version
+```
+PR opened ──→ pr-checks.yml ──→ Lint + Test (2-3 min) ──→ PR status
+Push to main ──→ docker-tests.yml ──→ Docker Build + Test (5-8 min) ──→ Artifacts
+Any push ──→ security-scan.yml ──→ Trivy + npm audit ──→ SARIF → GitHub Security
 ```
 
-### Installation
+ArgoCD watches the Git repo and syncs K8s manifests, but there's no automated CI → CD handoff.
 
-```bash
-# Navigate to the test project directory
-cd test-project
+### Target (Phase 2): Full CI/CD Pipeline
 
-# Install all dependencies
-npm install
+```
+Push ──→ Stage 1: Lint + Unit Test ──→ Stage 2: Build + Security Scan (parallel)
+     ──→ Stage 3: E2E Tests ──→ Stage 4: Deploy Dev (auto, Helm)
+     ──→ Stage 5: Deploy Staging (manual approval gate)
 
-# Verify Cypress installation
-npm run ci:verify
+Pipeline failure ──→ AlertManager ──→ Slack notification
+Pipeline metrics ──→ Pushgateway ──→ Prometheus ──→ Grafana dashboard
+Pod logs ──→ Promtail ──→ Loki ──→ Grafana log explorer
 ```
 
-### Running Tests
+## Test Coverage
 
-#### Run All Tests
-```bash
-npm test
+### Cypress E2E Tests (16 tests)
+
+| Category | Tests | What's Covered |
+|----------|-------|---------------|
+| API Tests | 8 | GET, POST, PUT, DELETE, error handling, response validation |
+| UI Tests | 8 | Page load, links, responsive design, performance budgets |
+
+### Newman API Tests (18 assertions)
+
+| Category | Assertions | What's Covered |
+|----------|-----------|---------------|
+| User API | 6 | CRUD operations, schema validation |
+| Post API | 6 | Create, read, filter, pagination |
+| Error Cases | 6 | 404 handling, invalid input, edge cases |
+
+## Infrastructure Overview
+
+### Kubernetes Cluster (k3d)
+
+```
+Nodes: 3 (1 server + 2 agents)
+Namespaces: qa-portfolio, argocd, monitoring, kube-system
+Total Pods: 30+
 ```
 
-#### Run Cypress Tests Only
-```bash
-# Headless mode (for CI/CD)
-npm run test:cypress
+### Namespace Breakdown
 
-# Interactive mode (for development)
-npm run test:cypress:headed
-```
+| Namespace | Pods | Purpose |
+|-----------|------|---------|
+| qa-portfolio | 1 | Test results server (nginx) |
+| argocd | 7 | GitOps controller, repo server, UI |
+| monitoring | 8 | Prometheus, Grafana, AlertManager, Node Exporter |
+| kube-system | 9 | CoreDNS, Traefik, Metrics Server |
 
-#### Run Newman Tests Only
-```bash
-npm run test:newman
-```
+## GitHub Actions Workflows
 
-#### Run with Different Base URL
-```bash
-# Set custom base URL for Cypress
-CYPRESS_baseUrl=https://example.com npm run test:cypress
-
-# Set custom base URL for Newman
-BASE_URL=https://api.example.com npm run test:newman
-```
-
-#### Run Regression Tests with Detailed Logs
-```bash
-# Run full regression suite with detailed logging
-npm run docker:test:logs
-
-# Or directly
-./scripts/run-regression-test-with-logs.sh
-
-# Logs are saved to test-logs/ directory
-```
-
-## Test Details
-
-### Cypress E2E Tests
-
-**01-api-tests.cy.js** - RESTful API Testing
-- GET requests with validation
-- POST requests (create resources)
-- PUT requests (update resources)
-- DELETE requests
-- Error handling (404 scenarios)
-- Response structure validation
-
-**02-ui-tests.cy.js** - UI End-to-End Testing
-- Page load tests
-- Link validation
-- Responsive design testing (mobile/tablet/desktop)
-- Performance testing (load time budgets)
-- Network condition simulation
-
-**Key Features Demonstrated**:
-- Test isolation with `beforeEach`
-- Retry logic for flaky test handling
-- Screenshot and video capture
-- Custom command patterns
-- Environment variable usage
-- Data-driven testing
-
-### Newman API Tests
-
-**api-collection.json** - Postman Collection
-- User management endpoints
-- Post CRUD operations
-- Error handling tests
-- Request/response validation
-- Collection variables
-- Test scripts with assertions
-
-**Key Features Demonstrated**:
-- Comprehensive test assertions
-- Collection and environment variables
-- Pre-request scripts
-- Test chaining (storing IDs for subsequent requests)
-- Multiple reporter formats (CLI, HTML, JUnit)
-
-## CI/CD Integration
-
-This project includes **production-ready GitHub Actions workflows**:
-
-### GitHub Actions Workflows
-
-Located in `.github/workflows/`:
-
-- **`pr-checks.yml`**: Fast Node.js-based checks for pull requests (2-3 min)
-  - Runs Cypress and Newman tests
-  - Parallel linting
-  - Conditional artifact uploads
-
-- **`docker-tests.yml`**: Production-grade Docker-based tests (5-8 min)
-  - Runs on main branch pushes
-  - Scheduled nightly runs (2:00 AM UTC)
-  - Full Docker containerization
-  - Comprehensive artifact collection
-
-**To enable**: These workflows will automatically trigger when pushed to a GitHub repository with Actions enabled.
-
-## Docker Integration
-
-### Docker Compose (Recommended)
-
-This project includes a `docker-compose.yml` configuration for running tests in containers:
-
-```bash
-# Build images (if needed)
-docker compose build
-
-# Run all tests
-docker compose up --abort-on-container-exit
-
-# Or use the npm script
-npm run docker:test
-
-# Run with detailed logs
-npm run docker:test:logs
-
-# Clean up
-docker compose down -v
-```
-
-### Container Architecture
-
-- **Cypress Service**: Official `cypress/included:13.6.0` image with Chrome browser
-- **Newman Service**: Custom image with `newman-reporter-htmlextra` support
-- **Network Isolation**: Custom bridge network for clean test environment
-- **Volume Caching**: Cypress binary cached for faster subsequent runs
-
-For detailed Docker usage, see the `docker-compose.yml` file comments.
-
-## Test Reports
-
-### Cypress Reports
-- **Videos**: `cypress/videos/` - Full test execution recordings
-- **Screenshots**: `cypress/screenshots/` - Failure screenshots
-- **Console**: Terminal output with pass/fail status
-
-### Newman Reports
-- **HTML Report**: `newman/report.html` - Detailed visual report
-- **JUnit XML**: `newman/junit.xml` - For CI/CD integration
-- **CLI Output**: Terminal summary
-
-To view the HTML report:
-```bash
-# After running Newman tests
-open newman/report.html  # macOS
-xdg-open newman/report.html  # Linux
-start newman/report.html  # Windows
-```
-
-## Interview Demonstration Tips
-
-### Scenario 1: "Show me your test automation framework"
-
-**Steps**:
-1. Open this project in your IDE
-2. Run `npm install && npm test`
-3. Show the test execution and results
-4. Open test files and explain key patterns
-5. Show reports (videos, screenshots, HTML)
-
-**Talking Points**:
-- "I've structured tests with clear organization and naming conventions"
-- "Tests use retry logic and proper assertions for reliability"
-- "We generate multiple report formats for different audiences"
-- "Configuration is externalized for environment flexibility"
-
-### Scenario 2: "Explain your CI/CD setup"
-
-**Steps**:
-1. Show the pipeline configuration files
-2. Explain each stage (install, lint, test, report)
-3. Demonstrate Docker containerization
-4. Show how artifacts are stored
-
-**Talking Points**:
-- "Our pipeline has 4 stages: build, test, report, deploy"
-- "We use Docker for consistent test environments"
-- "Tests run in parallel across browsers/workers"
-- "Reports and videos are stored as artifacts for 7 days"
-
-### Scenario 3: "How do you handle test failures?"
-
-**Steps**:
-1. Force a test failure (change an assertion)
-2. Run the test suite
-3. Show the failure output, screenshot, and video
-4. Demonstrate debugging with Cypress Test Runner
-
-**Talking Points**:
-- "Cypress captures videos and screenshots automatically on failure"
-- "We have retry logic configured for transient failures"
-- "Test logs include detailed error messages and stack traces"
-- "The interactive Test Runner helps debug issues locally"
-
-## Common Interview Questions - With This Project
-
-### Q1: "Walk me through your test automation setup"
-
-**Answer using this project**:
-"This project demonstrates my approach to test automation:
-- **Framework**: Cypress for E2E and API tests, Newman for Postman collections
-- **Organization**: Tests organized by type (API vs UI) with clear naming
-- **Configuration**: Externalized config for different environments
-- **CI/CD**: Ready-to-integrate pipeline configs for GitHub Actions, GitLab CI, Jenkins
-- **Reporting**: Multiple formats - videos, screenshots, HTML, JUnit XML
-- **Containerization**: Dockerfiles for reproducible test environments"
-
-### Q2: "How do you ensure test reliability?"
-
-**Answer**:
-"Several strategies demonstrated in this project:
-- **Retry Logic**: Configured 2 retries in CI mode (`cypress.config.js:32`)
-- **Test Isolation**: Each test runs independently with fresh state
-- **Explicit Waits**: No arbitrary sleeps, only explicit waits for conditions
-- **Error Handling**: Proper use of `failOnStatusCode: false` for error scenarios
-- **Assertions**: Comprehensive assertions on status, headers, body structure"
-
-### Q3: "How do you integrate tests into CI/CD?"
-
-**Answer**:
-"This project includes three pipeline configurations:
-- **GitHub Actions**: Matrix strategy for parallel browser testing
-- **GitLab CI**: Docker-in-Docker for containerized execution
-- **Jenkins**: Declarative pipeline with parallel stages
-
-Key integration points:
-- Tests run on every PR and merge
-- Reports generated as artifacts
-- Notifications on failure
-- Environment-specific configurations"
+| Workflow | Trigger | Duration | Purpose |
+|----------|---------|----------|---------|
+| `pr-checks.yml` | PR open/sync | 2-3 min | Fast developer feedback |
+| `docker-tests.yml` | Push to main, nightly | 5-8 min | Production-grade Docker tests |
+| `security-scan.yml` | Push, PR, daily, manual | 10-15 min | 4-layer security scanning |
+| `validation.yml` | Push/PR to main | 1-2 min | Environment validation |
 
 ## Documentation
 
-This project includes comprehensive documentation in the `docs/` directory:
+| Document | What It Covers |
+|----------|---------------|
+| [WBS.md](docs/WBS.md) | Phase 1 (complete) + Phase 2 (planned) task breakdown |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technical architecture, design decisions, scaling |
+| [INTERVIEW-GUIDE.md](docs/INTERVIEW-GUIDE.md) | 35+ interview Q&A across 6 technology areas |
+| [QUICKSTART.md](docs/QUICKSTART.md) | 5-minute setup from zero to running cluster |
+| [CI-CD-GUIDE.md](docs/guides/CI-CD-GUIDE.md) | CI/CD pipeline setup and integration |
 
-### Guides (`docs/guides/`)
-- **CI-CD-GUIDE.md**: Complete guide for integrating tests into CI/CD pipelines (GitHub Actions, GitLab CI, Jenkins)
-- **TROUBLESHOOTING.md**: Common issues and solutions
+## Interview Preparation
 
-### Analysis Reports (`docs/analysis/`)
-- **CICD-COMPLETE-ANALYSIS.md**: Detailed analysis of the CI/CD implementation
-- **REGRESSION-TEST-RESULT.md**: Latest regression test execution results
+### 30-Second Pitch
 
-### Fix Records (`docs/fixes/`)
-- Historical records of bugs fixed and troubleshooting sessions
-- Useful for understanding project evolution and problem-solving approaches
+> "I built a complete DevOps platform demonstrating the full CI/CD lifecycle: GitHub Actions pipelines, Docker containerization, Kubernetes orchestration, Terraform IaC, ArgoCD GitOps, security scanning with Trivy, and Prometheus + Grafana monitoring. All deployed to a k3d cluster with 30+ pods across 3 namespaces."
 
-**Quick access**:
-```bash
-# Browse all documentation
-ls docs/*/
+### Key Skills Demonstrated
 
-# View CI/CD guide
-cat docs/guides/CI-CD-GUIDE.md
-
-# View latest test results
-cat docs/analysis/REGRESSION-TEST-RESULT.md
-```
-
-## Troubleshooting
-
-For detailed troubleshooting information, see **[docs/guides/TROUBLESHOOTING.md](docs/guides/TROUBLESHOOTING.md)**.
-
-### Quick Fixes
-
-**Cypress installation fails**:
-```bash
-npm cache clean --force && rm -rf node_modules package-lock.json && npm install
-```
-
-**Tests fail with "baseUrl" error**:
-```bash
-curl https://jsonplaceholder.typicode.com/users  # Verify connectivity
-```
-
-**Docker build fails**:
-```bash
-docker ps  # Ensure Docker is running
-docker compose build --no-cache
-```
-
-**Newman command not found**:
-```bash
-npm install -g newman newman-reporter-htmlextra
-# Or use: npx newman run postman/api-collection.json -e postman/environment.json
-```
-
-## 📚 Comprehensive Documentation
-
-This DevOps Platform includes complete documentation across all 6 phases:
-
-### Quick Links
-
-**Getting Started:**
-- **[QUICKSTART.md](docs/QUICKSTART.md)** - 5-minute setup guide to get everything running
-
-**Technical Reference:**
-- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Deep dive into all 6 phases, design decisions, scalability
-
-**Interview Preparation:**
-- **[INTERVIEW-GUIDE.md](docs/INTERVIEW-GUIDE.md)** - 35+ interview questions with detailed answers
-  - Organized by technology (CI/CD, IaC, K8s, Security, GitOps, Monitoring)
-  - 5 demo scenarios with walkthroughs
-  - STAR method examples
-  - Technical deep dives
-
-**Phase Completion Reports:**
-- [Phase 1.4: Security Integration](docs/PHASE-1.4-COMPLETION.md)
-- [Phase 1.5: GitOps Implementation](docs/PHASE-1.5-COMPLETION.md)
-- [Phase 1.6: Monitoring Setup](docs/PHASE-1.6-COMPLETION.md)
-- [Phase 1.7: Documentation](docs/PHASE-1.7-COMPLETION.md)
-
----
-
-## 🎤 Interview Preparation
-
-This project is **interview-ready** with comprehensive preparation materials.
-
-### Quick Facts
-
-| Metric | Value |
-|--------|-------|
-| **Total Phases** | 6 complete (Environment → Documentation) |
-| **Total Pods** | 30+ deployed across 3 namespaces |
-| **Technology Stack** | 10+ (Docker, K8s, Terraform, ArgoCD, Prometheus, Grafana, Trivy) |
-| **Lines of Code** | 8,000+ |
-| **Test Pass Rate** | 100% (16 Cypress + 18 Newman) |
-| **Interview Q&A** | 35+ questions with detailed answers |
-| **Demo Time** | 5-10 minutes |
-
-### 30-Second Elevator Pitch
-
-> "I built a complete DevOps platform demonstrating the full infrastructure lifecycle: containerization with Docker → Kubernetes orchestration → infrastructure-as-code with Terraform → security scanning with Trivy → GitOps deployments with ArgoCD → observability with Prometheus + Grafana. All 6 phases deployed to a k3d cluster with production-grade automation, comprehensive documentation, and 100% test pass rate."
+- **CI/CD Pipeline Design**: Dual-layer strategy (fast PR checks + production Docker tests)
+- **Docker**: Multi-container orchestration, custom images, volume caching
+- **Kubernetes**: Deployments, Jobs, Services, Ingress, PVCs, ConfigMaps
+- **Terraform**: Multi-environment IaC with Localstack
+- **GitOps**: ArgoCD with auto-sync, self-heal, manual approval
+- **Security**: Trivy container/filesystem/IaC scanning, npm audit, SARIF
+- **Monitoring**: Prometheus metrics, Grafana dashboards, PromQL
 
 ### Pre-Interview Checklist
 
-Before your interview, verify:
-- [ ] k3d cluster running (3 nodes)
-- [ ] 30+ pods healthy across all namespaces
-- [ ] Grafana accessible (2 dashboards ready)
-- [ ] ArgoCD accessible (2 Applications synced)
-- [ ] Prometheus collecting metrics
-- [ ] All documentation available locally
-- [ ] Read INTERVIEW-GUIDE.md (35+ Q&A)
-- [ ] Practiced 5-minute demo scenario
+```bash
+# Verify cluster
+kubectl get nodes                              # 3 nodes
+kubectl get pods --all-namespaces | grep -c Running  # 25+ running
 
-### 5-Minute Demo Path
+# Verify dashboards
+kubectl port-forward -n monitoring svc/prometheus-grafana 3000:80 &
+kubectl port-forward -n argocd svc/argocd-server 9090:443 &
 
-1. **Show the cluster** (30 sec)
-   ```bash
-   kubectl get pods --all-namespaces | head -20
-   # Shows: 30+ pods across 3 namespaces
-   ```
+# Verify tests
+npm test                                        # All pass
+```
 
-2. **Show Grafana dashboards** (1.5 min)
-   - Port-forward: `kubectl port-forward -n monitoring svc/prometheus-grafana 3000:80`
-   - Open: http://localhost:3000 (admin/grafana-admin)
-   - Show: Cluster Overview dashboard (real-time metrics)
-
-3. **Show ArgoCD applications** (1.5 min)
-   - Port-forward: `kubectl port-forward -n argocd svc/argocd-server 9090:443`
-   - Open: https://localhost:9090
-   - Show: 2 Applications (dev auto-sync, staging manual)
-
-4. **Explain Git integration** (1 min)
-   - Describe: Commits to Git trigger ArgoCD sync
-   - Show: Feature branch → dev environment (auto)
-   - Show: Main branch → staging (manual approval)
-
-5. **Discuss architecture** (1 min)
-   - Summarize: 6 phases, production patterns
-   - Mention: Interview talking points in docs
-
-### Key Interview Topics
-
-See **[INTERVIEW-GUIDE.md](docs/INTERVIEW-GUIDE.md)** for complete coverage of:
-
-**CI/CD** (6 questions)
-- Your CI/CD strategy and dual-layer approach
-- Docker vs native execution trade-offs
-- Secret handling in CI/CD
-- Deployment pipeline design
-
-**Infrastructure as Code** (6 questions)
-- Why Terraform over CloudFormation
-- Multi-environment management
-- State management strategies
-- Drift detection and remediation
-
-**Kubernetes** (7 questions)
-- Why Kubernetes for this project
-- Cluster architecture and namespaces
-- Persistent storage and scaling
-- Troubleshooting pod issues
-
-**Security** (6 questions)
-- Multi-layer scanning approach
-- Vulnerability handling policies
-- Secret management strategies
-- Security baseline practices
-
-**GitOps** (7 questions)
-- GitOps principles and benefits
-- ArgoCD vs Flux comparison
-- Auto-sync and selfHeal mechanisms
-- Rollback procedures
-
-**Monitoring** (7 questions)
-- Prometheus + Grafana selection
-- ServiceMonitor auto-discovery
-- PromQL query language
-- Monitoring at scale with Thanos
-
----
-
-## Next Steps
-
-1. **Study the Documentation**
-   - Read [QUICKSTART.md](docs/QUICKSTART.md) for fast track
-   - Study [INTERVIEW-GUIDE.md](docs/INTERVIEW-GUIDE.md) for interview prep
-   - Review [ARCHITECTURE.md](docs/ARCHITECTURE.md) for technical depth
-
-2. **Prepare Demo Environment**
-   - Verify cluster is running
-   - Test all port-forwards
-   - Ensure dashboards accessible
-
-3. **Practice Demonstration**
-   - Run through 5-minute demo scenario
-   - Practice explaining each component
-   - Be ready to discuss design decisions
-
-4. **Interview Success**
-   - Study STAR method examples in INTERVIEW-GUIDE.md
-   - Know answers to all 35+ interview questions
-   - Be confident discussing all 6 phases
-
-## Resources
-
-- [Kubernetes Documentation](https://kubernetes.io/docs/)
-- [ArgoCD Documentation](https://argo-cd.readthedocs.io/)
-- [Prometheus Documentation](https://prometheus.io/docs/)
-- [Grafana Documentation](https://grafana.com/docs/)
-- [Terraform Documentation](https://www.terraform.io/docs/)
-- [Docker Documentation](https://docs.docker.com/)
-
-## Interview Success Metrics
-
-You're interview-ready when you can:
-- [ ] Explain all 6 phases in under 10 minutes
-- [ ] Answer all 35+ interview questions from INTERVIEW-GUIDE.md
-- [ ] Complete 5-minute demo without reference notes
-- [ ] Discuss design decisions and trade-offs confidently
-- [ ] Demonstrate understanding of production patterns
-- [ ] Talk about your learning journey and challenges overcome
-
----
-
-**This project demonstrates enterprise-grade DevOps skills. You're well-prepared for technical interviews!**
+See [INTERVIEW-GUIDE.md](docs/INTERVIEW-GUIDE.md) for 35+ Q&A with detailed answers.

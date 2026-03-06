@@ -1,0 +1,84 @@
+{{- if .Values.newman.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "qa-portfolio.fullname" . }}-newman
+  labels:
+    {{- include "qa-portfolio.newman.labels" . | nindent 4 }}
+spec:
+  backoffLimit: {{ .Values.newman.backoffLimit }}
+  ttlSecondsAfterFinished: {{ .Values.newman.ttlSecondsAfterFinished }}
+  activeDeadlineSeconds: {{ .Values.newman.activeDeadlineSeconds }}
+  template:
+    metadata:
+      labels:
+        {{- include "qa-portfolio.newman.labels" . | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: prepare-reports-dir
+          image: busybox:1.36
+          command: ['sh', '-c']
+          args:
+            - |
+              mkdir -p /test-results/newman
+              chmod -R 777 /test-results/newman
+              echo "Newman reports directory prepared"
+          volumeMounts:
+            - name: test-results
+              mountPath: /test-results
+      containers:
+        - name: newman
+          image: "{{ .Values.newman.image.repository }}:{{ .Values.newman.image.tag }}"
+          imagePullPolicy: {{ .Values.newman.image.pullPolicy }}
+          workingDir: /etc/newman
+          envFrom:
+            - configMapRef:
+                name: {{ include "qa-portfolio.fullname" . }}-test-config
+          env:
+            - name: ENVIRONMENT
+              value: {{ .Values.newmanEnv.environment | quote }}
+          command: ['newman']
+          args:
+            - run
+            - api-collection.json
+            - -e
+            - environment.json
+            - --reporters
+            - cli,htmlextra,junit
+            - --reporter-htmlextra-export
+            - /test-results/newman/api-report.html
+            - --reporter-junit-export
+            - /test-results/newman/junit.xml
+            - --delay-request
+            - "500"
+            - --timeout-request
+            - "10000"
+            - --bail
+          resources:
+            {{- toYaml .Values.newman.resources | nindent 12 }}
+          volumeMounts:
+            - name: postman-config
+              mountPath: /etc/newman/api-collection.json
+              subPath: api-collection.json
+              readOnly: true
+            - name: newman-env
+              mountPath: /etc/newman/environment.json
+              subPath: environment.json
+              readOnly: true
+            - name: test-results
+              mountPath: /test-results/newman
+              subPath: newman
+      volumes:
+        - name: postman-config
+          emptyDir: {}
+        - name: newman-env
+          configMap:
+            name: {{ include "qa-portfolio.fullname" . }}-newman-env
+            items:
+              - key: environment.json
+                path: environment.json
+        - name: test-results
+          persistentVolumeClaim:
+            claimName: {{ include "qa-portfolio.fullname" . }}-test-results
+{{- end }}

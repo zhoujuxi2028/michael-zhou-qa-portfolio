@@ -1,0 +1,101 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "qa-portfolio.fullname" . }}-test-config
+  labels:
+    {{- include "qa-portfolio.labels" . | nindent 4 }}
+    app.kubernetes.io/component: test-runner
+data:
+  # Cypress Configuration
+  CYPRESS_baseUrl: {{ .Values.testConfig.baseUrl | quote }}
+  CYPRESS_VIDEO: {{ .Values.testConfig.video | quote }}
+  CYPRESS_SCREENSHOT_ON_RUN_FAILURE: {{ .Values.testConfig.screenshotOnFailure | quote }}
+  CYPRESS_VIDEO_COMPRESSION: {{ .Values.testConfig.videoCompression | quote }}
+  CYPRESS_VIDEOS_FOLDER: "/e2e/cypress/videos"
+  CYPRESS_SCREENSHOTS_FOLDER: "/e2e/cypress/screenshots"
+  # Newman Configuration
+  NEWMAN_ENVIRONMENT: {{ .Values.testConfig.newmanEnvironment | quote }}
+  NEWMAN_TIMEOUT: {{ .Values.testConfig.newmanTimeout | quote }}
+  NEWMAN_DELAY: {{ .Values.testConfig.newmanDelay | quote }}
+  # Test Execution Configuration
+  TEST_BROWSER: {{ .Values.testConfig.browser | quote }}
+  TEST_HEADLESS: {{ .Values.testConfig.headless | quote }}
+  TEST_PARALLEL: {{ .Values.testConfig.parallel | quote }}
+  TEST_BAIL_ON_FAILURE: {{ .Values.testConfig.bailOnFailure | quote }}
+  # Report Configuration
+  REPORT_DIR: {{ .Values.testConfig.reportDir | quote }}
+  CYPRESS_REPORT_DIR: "{{ .Values.testConfig.reportDir }}/cypress"
+  NEWMAN_REPORT_DIR: "{{ .Values.testConfig.reportDir }}/newman"
+  # Logging Configuration
+  LOG_LEVEL: {{ .Values.testConfig.logLevel | quote }}
+  ENABLE_DEBUG: {{ .Values.testConfig.enableDebug | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "qa-portfolio.fullname" . }}-newman-env
+  labels:
+    {{- include "qa-portfolio.labels" . | nindent 4 }}
+    app.kubernetes.io/component: newman
+data:
+  environment.json: |
+    {
+      "name": {{ .Values.newmanEnv.name | quote }},
+      "values": [
+        {
+          "key": "baseUrl",
+          "value": {{ .Values.newmanEnv.baseUrl | quote }},
+          "enabled": true
+        },
+        {
+          "key": "timeout",
+          "value": {{ .Values.newmanEnv.timeout | quote }},
+          "enabled": true
+        },
+        {
+          "key": "environment",
+          "value": {{ .Values.newmanEnv.environment | quote }},
+          "enabled": true
+        }
+      ]
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "qa-portfolio.fullname" . }}-nginx-config
+  labels:
+    {{- include "qa-portfolio.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nginx-config
+data:
+  default.conf: |
+    server {
+        listen 80;
+        server_name _;
+        root /usr/share/nginx/html;
+        autoindex on;
+        autoindex_exact_size off;
+        autoindex_localtime on;
+        types {
+            text/html html htm;
+            text/css css;
+            application/javascript js;
+            application/json json;
+            application/xml xml;
+            image/png png;
+            image/jpeg jpg jpeg;
+            video/mp4 mp4;
+            video/webm webm;
+        }
+        index index.html;
+        location / {
+            try_files $uri $uri/ =404;
+        }
+        location ~* \.(mp4|webm|png|jpg|jpeg)$ {
+            add_header Access-Control-Allow-Origin *;
+        }
+        location ~* \.(css|js|png|jpg|jpeg|gif|ico|svg)$ {
+            expires 1d;
+            add_header Cache-Control "public, immutable";
+        }
+    }
