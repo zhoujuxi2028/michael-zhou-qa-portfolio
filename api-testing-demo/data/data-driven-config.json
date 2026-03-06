@@ -1,0 +1,174 @@
+{
+  "name": "E-Commerce Data-Driven Test Configurations",
+  "description": "Data-driven test configurations for Postman Newman iterations",
+  "version": "1.0.0",
+  "updated": "2026-02-28",
+  "dataFiles": {
+    "users": "data/test-users.json",
+    "products": "data/test-products.json",
+    "orders": "data/test-orders-data.csv",
+    "coupons": "data/test-coupons.json"
+  },
+  "iterations": {
+    "userRegistration": {
+      "dataFile": "data/test-users.json",
+      "description": "Data-driven user registration tests",
+      "variableMappings": {
+        "userName": "name",
+        "userEmail": "email",
+        "userUsername": "username"
+      }
+    },
+    "productSearch": {
+      "dataFile": "data/test-products.json",
+      "description": "Data-driven product search tests",
+      "variableMappings": {
+        "productId": "id",
+        "productName": "name",
+        "productCategory": "category"
+      }
+    },
+    "orderCreation": {
+      "dataFile": "data/test-orders-data.csv",
+      "description": "Data-driven order creation tests",
+      "variableMappings": {
+        "orderId": "orderId",
+        "productId": "productId",
+        "quantity": "quantity",
+        "expectedPrice": "expectedPrice",
+        "couponCode": "couponCode",
+        "expectedTotal": "expectedTotal"
+      }
+    },
+    "couponValidation": {
+      "dataFile": "data/test-coupons.json",
+      "description": "Data-driven coupon validation tests",
+      "variableMappings": {
+        "couponCode": "code",
+        "discountType": "discountType",
+        "discountValue": "discountValue",
+        "minimumOrderAmount": "minimumOrderAmount"
+      }
+    }
+  },
+  "runConfigurations": {
+    "smokeTest": {
+      "iterations": 1,
+      "folder": "01-User Management",
+      "description": "Quick smoke test - User module"
+    },
+    "fullRegression": {
+      "iterations": 10,
+      "folder": "all",
+      "description": "Full regression with data iterations"
+    },
+    "dataDrivenUsers": {
+      "dataFile": "data/test-users.json",
+      "iterations": 5,
+      "folder": "01-User Management",
+      "description": "Data-driven user tests"
+    },
+    "dataDrivenOrders": {
+      "dataFile": "data/test-orders-data.csv",
+      "iterations": 10,
+      "folder": "04-Order Management",
+      "description": "Data-driven order tests"
+    }
+  },
+  "variableManagement": {
+    "environmentVariables": [
+      "baseUrl",
+      "authToken",
+      "testUserEmail",
+      "firstUserId",
+      "createdUserId",
+      "firstProductId",
+      "createdProductId",
+      "firstCartItemId",
+      "createdCartItemId",
+      "firstOrderId",
+      "createdOrderId",
+      "firstCouponId",
+      "createdCouponId",
+      "lastResponseId",
+      "lastCreatedId",
+      "testStartTime",
+      "requestCount",
+      "errorCount",
+      "successCount"
+    ],
+    "collectionVariables": [
+      "baseUrl",
+      "collectionVersion",
+      "testEnvironment",
+      "defaultTimeout",
+      "maxRetries",
+      "expectedResponseTime",
+      "paginationDefaultLimit",
+      "paginationMaxLimit"
+    ],
+    "globalVariables": [
+      "ValidationLibrary",
+      "TestDataFactory",
+      "ErrorHandler"
+    ]
+  },
+  "crossRequestCorrelation": {
+    "userToPost": {
+      "sourceRequest": "01-Get All Users",
+      "extractVariable": "firstUserId",
+      "sourcePath": "response.json()[0].id",
+      "targetRequests": [
+        "02-Get Single User",
+        "08-Get User Posts"
+      ]
+    },
+    "userToOrder": {
+      "sourceRequest": "01-Get All Users",
+      "extractVariable": "userIdForOrder",
+      "sourcePath": "response.json()[0].id",
+      "targetRequests": [
+        "04-Create Order"
+      ]
+    },
+    "productToCart": {
+      "sourceRequest": "01-Get All Posts (as Products)",
+      "extractVariable": "productIdForCart",
+      "sourcePath": "response.json()[0].id",
+      "targetRequests": [
+        "04-Create Cart Item (Comment)"
+      ]
+    },
+    "cartToOrder": {
+      "sourceRequest": "01-Get All Comments (as Cart Items)",
+      "extractVariable": "cartItemId",
+      "sourcePath": "response.json()[0].id",
+      "targetRequests": [
+        "05-Update Cart Item"
+      ]
+    }
+  },
+  "loggingConfiguration": {
+    "enabled": true,
+    "levels": {
+      "request": true,
+      "response": true,
+      "variable": true,
+      "assertion": true,
+      "error": true,
+      "timing": true
+    },
+    "format": {
+      "timestamp": "ISO8601",
+      "includeEnvironment": true,
+      "includeIteration": true
+    }
+  },
+  "errorHandling": {
+    "retryOnStatus": [408, 429, 500, 502, 503, 504],
+    "maxRetries": 3,
+    "retryDelay": 1000,
+    "circuitBreakerThreshold": 3,
+    "circuitBreakerTimeout": 60000
+  }
+}

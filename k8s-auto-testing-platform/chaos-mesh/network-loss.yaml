@@ -1,0 +1,22 @@
+# NetworkChaos: 网络丢包
+# 模拟网络丢包，测试重试机制
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-loss-test
+  namespace: k8s-testing
+  labels:
+    app: chaos-test
+    scenario: network-resilience
+spec:
+  action: loss
+  mode: all
+  selector:
+    namespaces:
+      - k8s-testing
+    labelSelectors:
+      app: test-app
+  loss:
+    loss: "30"
+    correlation: "50"
+  duration: "120s"

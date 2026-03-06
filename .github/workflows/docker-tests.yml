@@ -1,0 +1,214 @@
+name: Docker-Based Tests (Production-Grade)
+
+# Trigger Configuration:
+# This workflow is triggered by:
+# 1. Push to portfolio branch (after PR merge)
+# 2. Scheduled runs (nightly at 2:00 AM UTC / 10:00 AM Beijing)
+# 3. Manual trigger via GitHub UI
+#
+# Interview Talking Point:
+# "This workflow uses Docker containers to ensure environment parity between
+# local development, CI, and production. It's triggered on portfolio branch pushes
+# and runs nightly to catch flaky tests and environment drift."
+
+on:
+  # Trigger on push to portfolio branch (after PR is merged)
+  push:
+    branches: [ portfolio ]
+
+  # Scheduled nightly regression tests
+  schedule:
+    # Runs at 2:00 AM UTC (10:00 AM Beijing time) every day
+    - cron: '0 2 * * *'
+
+  # Allow manual trigger from GitHub Actions UI
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+defaults:
+  run:
+    working-directory: cicd-demo
+
+jobs:
+  docker-tests:
+    name: Comprehensive Tests (Docker Containers)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      HAS_AWS_CREDS: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Docker Buildx
+      # Interview Talking Point:
+      # "Docker Buildx enables advanced features like build caching and
+      # multi-platform builds. This speeds up image builds significantly."
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Step 3: Build Newman Docker image
+      - name: Build Newman image
+        run: docker compose build newman
+
+      # Step 4: Run tests in Docker containers
+      # Interview Talking Point:
+      # "We run containers in detached mode and use 'docker compose wait' to let
+      # both Cypress and Newman complete naturally. Newman finishes in ~6s while
+      # Cypress needs ~14s, so we wait for both before checking exit codes.
+      # This avoids the SIGKILL issue with --abort-on-container-exit."
+      - name: Run Cypress and Newman tests
+        run: |
+          docker compose up -d
+          docker compose wait cypress newman || true
+          CYPRESS_EXIT=$(docker inspect qa-cypress-demo --format='{{.State.ExitCode}}')
+          NEWMAN_EXIT=$(docker inspect qa-newman-demo --format='{{.State.ExitCode}}')
+          echo "Cypress exit code: $CYPRESS_EXIT"
+          echo "Newman exit code: $NEWMAN_EXIT"
+          if [ "$CYPRESS_EXIT" != "0" ] || [ "$NEWMAN_EXIT" != "0" ]; then
+            docker compose logs cypress
+            docker compose logs newman
+            exit 1
+          fi
+
+      # Step 5: Upload test artifacts
+      - name: Upload Cypress screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots-docker
+          path: cicd-demo/cypress/screenshots/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload Cypress videos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos-docker
+          path: cicd-demo/cypress/videos/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload Newman reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-reports-docker
+          path: cicd-demo/newman/
+          if-no-files-found: ignore
+          retention-days: 30
+
+      # Step 5b: Upload artifacts to S3 (when AWS credentials are available)
+      # Interview Talking Point:
+      # "We upload artifacts to both GitHub Actions (for PR review) and S3 (for long-term
+      # storage and cross-pipeline access). The conditional check ensures the workflow
+      # doesn't fail when AWS credentials aren't configured."
+      - name: Upload test artifacts to S3
+        if: always() && env.HAS_AWS_CREDS == 'true'
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+        run: |
+          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+          BUCKET="qa-portfolio-dev-artifacts"
+
+          # Upload Cypress screenshots
+          if [ -d "cypress/screenshots" ]; then
+            aws s3 cp cypress/screenshots/ \
+              "s3://${BUCKET}/runs/${TIMESTAMP}/cypress-screenshots/" \
+              --recursive
+          fi
+
+          # Upload Cypress videos
+          if [ -d "cypress/videos" ]; then
+            aws s3 cp cypress/videos/ \
+              "s3://${BUCKET}/runs/${TIMESTAMP}/cypress-videos/" \
+              --recursive
+          fi
+
+          # Upload Newman reports
+          if [ -d "newman" ]; then
+            aws s3 cp newman/ \
+              "s3://${BUCKET}/runs/${TIMESTAMP}/newman-reports/" \
+              --recursive
+          fi
+
+          echo "Artifacts uploaded to s3://${BUCKET}/runs/${TIMESTAMP}/"
+
+      # Step 6: Publish test results
+      - name: Publish test results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: cicd-demo/newman/junit.xml
+          check_name: Docker Test Results
+
+      # Step 7: Cleanup Docker resources
+      - name: Cleanup
+        if: always()
+        run: docker compose down
+
+# =============================================================================
+# Interview Discussion Points
+# =============================================================================
+#
+# 1. Trigger Strategy:
+#    "We use a layered testing strategy: fast Node.js checks on PRs, comprehensive
+#    Docker tests on main branch. This balances speed during development with
+#    thoroughness for production-bound code."
+#
+# 2. Push to Main:
+#    "This workflow runs automatically when PRs are merged to main. It validates
+#    that the integration didn't break anything and ensures main branch is always
+#    in a deployable state."
+#
+# 3. Scheduled Testing:
+#    "The nightly cron schedule (0 2 * * *) runs tests even when no code changes.
+#    This detects external dependencies breaking, flaky tests, and environment
+#    drift. It's essential for maintaining test suite health."
+#
+# 4. Docker Environment Parity:
+#    "Using Docker in CI ensures tests run in identical environments as local
+#    development and production. The same Dockerfile that developers use locally
+#    runs in CI, eliminating environment-specific bugs."
+#
+# 5. Parallel Container Execution:
+#    "Docker Compose starts Cypress and Newman containers in parallel, reducing
+#    total execution time. Both containers test external APIs (jsonplaceholder),
+#    so they don't interfere with each other."
+#
+# 6. Artifact Retention:
+#    "We keep screenshots/videos for 7 days, reports for 30 days. This balances
+#    debugging needs with storage costs. Critical reports are kept longer for
+#    compliance and audit trails."
+#
+# 7. Always Run Cleanup:
+#    "The 'if: always()' condition on cleanup ensures we remove containers and
+#    networks even if tests fail. This prevents resource leaks in CI environment."
+#
+# 8. Exit Code Handling:
+#    "The --exit-code-from cypress flag makes the workflow inherit Cypress's
+#    exit code. Combined with --abort-on-container-exit, we get fast failure
+#    feedback while allowing both containers to complete naturally."
+#
+# 9. Manual Trigger Use Cases:
+#    "workflow_dispatch allows running comprehensive Docker tests on-demand:
+#    - Before creating a release tag
+#    - After infrastructure changes
+#    - For demonstrating the CI pipeline (like in this interview!)"
+#
+# 10. Production Readiness:
+#     "This workflow is production-ready. Next steps would include:
+#     - Deployment to staging/production on success
+#     - Slack/email notifications on failure
+#     - Performance benchmarking to detect regressions
+#     - Security scanning of Docker images"
