@@ -1,2 +1,2 @@
 # Validate Postman files on commit
-cd postman-demo && npm run validate
+cd api-testing-demo && npm run validate
