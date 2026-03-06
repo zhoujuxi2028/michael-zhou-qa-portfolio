@@ -1,0 +1,124 @@
+# Helm Chart Validation & CD Pipeline
+# Validates the Helm chart on PRs, deploys via ArgoCD on main branch pushes
+#
+# Trigger: Push to main or PR (when Helm chart files change)
+# Stages: Lint → Template → Validate → (ArgoCD sync on main)
+
+name: Helm Deploy
+
+on:
+  push:
+    branches: [main, feature/devops-platform]
+    paths:
+      - 'cicd-demo/helm/**'
+      - 'cicd-demo/k8s/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'cicd-demo/helm/**'
+
+jobs:
+  # Stage 1: Lint and validate the Helm chart
+  lint:
+    name: Helm Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.0
+
+      - name: Lint chart (dev values)
+        run: helm lint cicd-demo/helm/qa-portfolio -f cicd-demo/helm/qa-portfolio/values.yaml
+
+      - name: Lint chart (staging values)
+        run: |
+          helm lint cicd-demo/helm/qa-portfolio \
+            -f cicd-demo/helm/qa-portfolio/values.yaml \
+            -f cicd-demo/helm/qa-portfolio/values-staging.yaml
+
+      - name: Lint chart (production values)
+        run: |
+          helm lint cicd-demo/helm/qa-portfolio \
+            -f cicd-demo/helm/qa-portfolio/values.yaml \
+            -f cicd-demo/helm/qa-portfolio/values-production.yaml
+
+  # Stage 2: Template rendering and resource validation
+  template:
+    name: Helm Template
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.0
+
+      - name: Template chart (dev)
+        run: |
+          helm template qa-portfolio cicd-demo/helm/qa-portfolio \
+            -f cicd-demo/helm/qa-portfolio/values.yaml \
+            --namespace qa-portfolio > /tmp/rendered-dev.yaml
+          echo "--- Dev template rendered successfully ---"
+          echo "Resource count:"
+          grep -c '^kind:' /tmp/rendered-dev.yaml || true
+
+      - name: Template chart (staging)
+        run: |
+          helm template qa-portfolio cicd-demo/helm/qa-portfolio \
+            -f cicd-demo/helm/qa-portfolio/values.yaml \
+            -f cicd-demo/helm/qa-portfolio/values-staging.yaml \
+            --namespace qa-portfolio > /tmp/rendered-staging.yaml
+          echo "--- Staging template rendered successfully ---"
+          echo "Resource count:"
+          grep -c '^kind:' /tmp/rendered-staging.yaml || true
+
+      - name: Validate YAML syntax
+        run: |
+          # Install yq for YAML validation
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.40.5/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+          echo "Validating dev template..."
+          yq eval '.' /tmp/rendered-dev.yaml > /dev/null
+          echo "Validating staging template..."
+          yq eval '.' /tmp/rendered-staging.yaml > /dev/null
+          echo "All templates valid"
+
+      - name: Upload rendered templates
+        uses: actions/upload-artifact@v4
+        with:
+          name: helm-templates
+          path: /tmp/rendered-*.yaml
+          retention-days: 7
+
+  # Stage 3: Summary (runs on all triggers)
+  summary:
+    name: Chart Summary
+    runs-on: ubuntu-latest
+    needs: [lint, template]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.0
+
+      - name: Chart info
+        run: |
+          echo "=== Chart.yaml ==="
+          cat cicd-demo/helm/qa-portfolio/Chart.yaml
+          echo ""
+          echo "=== Templates ==="
+          ls cicd-demo/helm/qa-portfolio/templates/
+          echo ""
+          echo "=== Values files ==="
+          ls cicd-demo/helm/qa-portfolio/values*.yaml

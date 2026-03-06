@@ -14,17 +14,13 @@ spec:
 
   source:
     repoURL: https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio.git
-
-    # Staging tracks main branch (more stable than feature branches)
     targetRevision: main
-
-    path: cicd-demo/k8s
-
-    # Optional: Use Kustomize overlays for staging-specific config
-    # kustomize:
-    #   namePrefix: staging-
-    #   commonLabels:
-    #     environment: staging
+    # Helm chart source (upgraded from raw K8s manifests)
+    path: cicd-demo/helm/qa-portfolio
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-staging.yaml
 
   destination:
     server: https://kubernetes.default.svc
@@ -32,20 +28,17 @@ spec:
 
   syncPolicy:
     automated:
-      # Staging: Manual approval required for sync (more controlled)
-      # Set to false to require manual sync
+      # Staging: manual approval required
       selfHeal: false
       prune: true
       allowEmpty: false
-
     syncOptions:
       - CreateNamespace=true
       - Validate=true
       - ServerSideApply=false
       - PruneLast=false
-
     retry:
-      limit: 3  # Fewer retries in staging
+      limit: 3
       backoff:
         duration: 10s
         maxDuration: 5m
@@ -60,9 +53,3 @@ spec:
       kind: Deployment
       jsonPointers:
         - /spec/template/metadata/annotations
-
-# Interview Talking Points:
-# - "Staging environment uses main branch, more stable than dev feature branches"
-# - "selfHeal is disabled for staging to prevent automatic changes"
-# - "This allows QA team to manually approve deployments to staging"
-# - "Production would have even stricter controls with manual sync only"
