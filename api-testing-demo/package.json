@@ -19,10 +19,14 @@
     "test:smoke": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json --folder \"01-User Management\" -r cli",
     "test:ci": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json -r cli,json --reporter-json-export reports/newman-report.json --bail",
     "test:data-driven": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json -d data/test-orders-data.csv -r cli,htmlextra --reporter-htmlextra-export reports/data-driven-report.html",
+    "test:full": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/jsonplaceholder.postman_environment.json -r cli,htmlextra,json,junit --reporter-htmlextra-export reports/newman-report.html --reporter-json-export reports/newman-report.json --reporter-junit-export reports/newman-report.xml 2>&1 | tee logs/newman-$(date +%Y%m%d_%H%M%S).log",
+    "test:with-log": "npm run test 2>&1 | tee logs/newman-$(date +%Y%m%d_%H%M%S).log",
     "validate": "node scripts/validate-collection.js && node scripts/validate-environment.js",
     "validate:collection": "node scripts/validate-collection.js",
     "validate:environment": "node scripts/validate-environment.js",
-    "clean": "rm -rf reports/*.html reports/*.json",
+    "clean": "rm -rf reports/*.html reports/*.json reports/*.xml",
+    "clean:logs": "rm -rf logs/*.log",
+    "clean:all": "npm run clean && npm run clean:logs",
     "prepare": "husky"
   },
   "devDependencies": {

@@ -1,6 +1,4 @@
 # Newman reports
-reports/*.html
-reports/*.json
 
 # Keep package files
 !package.json
@@ -24,8 +22,6 @@ node_modules/
 *-credentials.json
 
 # Logs
-*.log
-logs/
 
 # OS files
 .DS_Store
