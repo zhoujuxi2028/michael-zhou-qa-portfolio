@@ -1,0 +1,44 @@
+{
+  "name": "postman-demo",
+  "version": "1.0.0",
+  "description": "Enterprise-grade Postman API Test Automation Framework",
+  "author": "Michael Zhou <zhou_juxi@hotmail.com>",
+  "license": "MIT",
+  "keywords": [
+    "postman",
+    "newman",
+    "api-testing",
+    "automation",
+    "e-commerce"
+  ],
+  "scripts": {
+    "test": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json -r cli,htmlextra,json --reporter-htmlextra-export reports/newman-report.html --reporter-json-export reports/newman-report.json",
+    "test:dev": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json -r cli,htmlextra,json --reporter-htmlextra-export reports/newman-report-dev.html --reporter-json-export reports/newman-report-dev.json",
+    "test:staging": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/staging.postman_environment.json -r cli,htmlextra,json --reporter-htmlextra-export reports/newman-report-staging.html --reporter-json-export reports/newman-report-staging.json",
+    "test:prod": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/prod.postman_environment.json -r cli,htmlextra,json --reporter-htmlextra-export reports/newman-report-prod.html --reporter-json-export reports/newman-report-prod.json",
+    "test:smoke": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json --folder \"01-User Management\" -r cli",
+    "test:ci": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json -r cli,json --reporter-json-export reports/newman-report.json --bail",
+    "test:data-driven": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json -d data/test-orders-data.csv -r cli,htmlextra --reporter-htmlextra-export reports/data-driven-report.html",
+    "validate": "node scripts/validate-collection.js && node scripts/validate-environment.js",
+    "validate:collection": "node scripts/validate-collection.js",
+    "validate:environment": "node scripts/validate-environment.js",
+    "clean": "rm -rf reports/*.html reports/*.json",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "newman": "^6.1.0",
+    "newman-reporter-htmlextra": "^1.23.1",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.2.0",
+    "@commitlint/cli": "^18.6.0",
+    "@commitlint/config-conventional": "^18.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio.git",
+    "directory": "postman-demo"
+  }
+}

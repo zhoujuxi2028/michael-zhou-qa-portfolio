@@ -1,0 +1,68 @@
+[tool.black]
+line-length = 120
+target-version = ['py311']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+    | \.venv
+    | venv
+    | __pycache__
+    | \.pytest_cache
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 120
+skip = [".git", "venv", ".venv", "__pycache__"]
+
+[tool.pylint.master]
+ignore = ["venv", ".venv", "__pycache__"]
+jobs = 0
+
+[tool.pylint.messages_control]
+disable = [
+    "C0114",  # missing-module-docstring
+    "C0115",  # missing-class-docstring
+    "C0116",  # missing-function-docstring
+    "C0415",  # import-outside-toplevel (acceptable for lazy imports)
+    "W1203",  # logging-fstring-interpolation (f-strings are more readable)
+    "R0801",  # duplicate-code (K8S config loading is intentionally similar)
+    "R0902",  # too-many-instance-attributes
+    "W0718",  # broad-exception-caught (acceptable for K8S error handling)
+]
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint.design]
+max-args = 10
+max-attributes = 10
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short --strict-markers"
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "hpa: HPA related tests",
+    "deployment: Deployment related tests",
+    "service: Service related tests",
+    "chaos: Chaos engineering tests",
+    "network: Network chaos tests",
+    "slow: Tests that take a long time to run",
+    "smoke: Quick smoke tests",
+]
+
+[tool.coverage.run]
+source = ["."]
+omit = ["*/tests/*", "*/venv/*", "*/__pycache__/*", "*/site-packages/*"]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false

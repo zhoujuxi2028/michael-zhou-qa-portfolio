@@ -1,0 +1,29 @@
+[
+  {
+    "code": "WELCOME10",
+    "discountType": "percentage",
+    "discountValue": 10,
+    "minimumOrderAmount": 50,
+    "expiryDate": "2027-12-31T23:59:59Z",
+    "active": true,
+    "description": "10% off for new customers"
+  },
+  {
+    "code": "SAVE20",
+    "discountType": "fixed",
+    "discountValue": 20,
+    "minimumOrderAmount": 100,
+    "expiryDate": "2027-12-31T23:59:59Z",
+    "active": true,
+    "description": "$20 off on orders over $100"
+  },
+  {
+    "code": "FREESHIP",
+    "discountType": "shipping",
+    "discountValue": 0,
+    "minimumOrderAmount": 0,
+    "expiryDate": "2027-12-31T23:59:59Z",
+    "active": true,
+    "description": "Free shipping on all orders"
+  }
+]

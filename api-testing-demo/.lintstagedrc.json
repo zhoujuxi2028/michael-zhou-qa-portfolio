@@ -1,0 +1,8 @@
+{
+  "collections/*.json": [
+    "node scripts/validate-collection.js"
+  ],
+  "environments/*.json": [
+    "node scripts/validate-environment.js"
+  ]
+}

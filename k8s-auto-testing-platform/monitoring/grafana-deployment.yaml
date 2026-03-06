@@ -1,0 +1,287 @@
+# Grafana Deployment for K8S Auto Testing Platform
+# Provides visualization dashboards for HPA monitoring
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  namespace: monitoring
+data:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus:9090
+        isDefault: true
+        editable: false
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards-config
+  namespace: monitoring
+data:
+  dashboards.yaml: |
+    apiVersion: 1
+    providers:
+      - name: 'K8S HPA Dashboards'
+        orgId: 1
+        folder: 'K8S Auto Testing'
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana-credentials
+  namespace: monitoring
+type: Opaque
+stringData:
+  admin-user: admin
+  admin-password: admin123
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: monitoring
+  labels:
+    app: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      securityContext:
+        fsGroup: 472
+        runAsUser: 472
+      containers:
+        - name: grafana
+          image: grafana/grafana:10.2.2
+          ports:
+            - containerPort: 3000
+              name: http
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-credentials
+                  key: admin-user
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-credentials
+                  key: admin-password
+            - name: GF_INSTALL_PLUGINS
+              value: "grafana-clock-panel,grafana-piechart-panel"
+            - name: GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH
+              value: "/var/lib/grafana/dashboards/k8s-hpa-dashboard.json"
+          volumeMounts:
+            - name: datasources
+              mountPath: /etc/grafana/provisioning/datasources
+            - name: dashboards-config
+              mountPath: /etc/grafana/provisioning/dashboards
+            - name: dashboards
+              mountPath: /var/lib/grafana/dashboards
+            - name: storage
+              mountPath: /var/lib/grafana
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: datasources
+          configMap:
+            name: grafana-datasources
+        - name: dashboards-config
+          configMap:
+            name: grafana-dashboards-config
+        - name: dashboards
+          configMap:
+            name: grafana-dashboard-json
+        - name: storage
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-json
+  namespace: monitoring
+data:
+  k8s-hpa-dashboard.json: |
+    {
+      "annotations": {
+        "list": []
+      },
+      "description": "K8S Auto Testing Platform - HPA Monitoring",
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 1,
+      "id": null,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {
+          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+          "id": 100,
+          "title": "Overview",
+          "type": "row"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "#EAB839", "value": 50},
+                  {"color": "red", "value": 80}
+                ]
+              },
+              "unit": "percent"
+            }
+          },
+          "gridPos": {"h": 6, "w": 6, "x": 0, "y": 1},
+          "id": 1,
+          "options": {"orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"]}},
+          "title": "CPU Usage",
+          "type": "gauge",
+          "targets": [{"expr": "avg(app_cpu_usage_percent)", "refId": "A"}]
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "#EAB839", "value": 60},
+                  {"color": "red", "value": 85}
+                ]
+              },
+              "unit": "percent"
+            }
+          },
+          "gridPos": {"h": 6, "w": 6, "x": 6, "y": 1},
+          "id": 2,
+          "options": {"orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"]}},
+          "title": "Memory Usage",
+          "type": "gauge",
+          "targets": [{"expr": "avg(app_memory_usage_percent)", "refId": "A"}]
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "thresholds": {"mode": "absolute", "steps": [{"color": "blue", "value": null}]},
+              "unit": "short"
+            }
+          },
+          "gridPos": {"h": 6, "w": 6, "x": 12, "y": 1},
+          "id": 3,
+          "options": {"colorMode": "value", "graphMode": "area"},
+          "title": "Active Pods",
+          "type": "stat",
+          "targets": [{"expr": "count(app_pod_info)", "refId": "A"}]
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+              "unit": "reqps"
+            }
+          },
+          "gridPos": {"h": 6, "w": 6, "x": 18, "y": 1},
+          "id": 4,
+          "options": {"colorMode": "value", "graphMode": "area"},
+          "title": "Request Rate",
+          "type": "stat",
+          "targets": [{"expr": "sum(rate(http_requests_total[1m]))", "refId": "A"}]
+        },
+        {
+          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 7},
+          "id": 101,
+          "title": "HPA Scaling",
+          "type": "row"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "short"}},
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+          "id": 10,
+          "title": "Pod Count Over Time",
+          "type": "timeseries",
+          "targets": [{"expr": "count(app_pod_info)", "legendFormat": "Running Pods", "refId": "A"}]
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "short"}},
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+          "id": 11,
+          "title": "CPU Usage Over Time",
+          "type": "timeseries",
+          "targets": [{"expr": "app_cpu_usage_percent", "legendFormat": "{{pod}}", "refId": "A"}]
+        }
+      ],
+      "refresh": "5s",
+      "schemaVersion": 38,
+      "tags": ["kubernetes", "hpa", "autoscaling"],
+      "time": {"from": "now-15m", "to": "now"},
+      "title": "K8S HPA Testing Dashboard",
+      "uid": "k8s-hpa-testing",
+      "version": 1
+    }
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: monitoring
+  labels:
+    app: grafana
+spec:
+  type: NodePort
+  ports:
+    - port: 3000
+      targetPort: 3000
+      nodePort: 30030
+      name: http
+  selector:
+    app: grafana

@@ -1,0 +1,14 @@
+# ConfigMap for Test Application
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-app-config
+  namespace: k8s-testing
+  labels:
+    app: test-app
+data:
+  APP_NAME: "k8s-test-app"
+  LOG_LEVEL: "info"
+  PORT: "8080"
+  ENVIRONMENT: "testing"
