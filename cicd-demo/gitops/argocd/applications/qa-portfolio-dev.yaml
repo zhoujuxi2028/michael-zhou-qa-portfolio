@@ -18,7 +18,7 @@ spec:
   # Source repository configuration
   source:
     # Git repository URL
-    repoURL: https://github.com/michael-zhou-qa/michael-zhou-qa-portfolio.git
+    repoURL: https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio.git
 
     # Branch to track (use feature branch during development)
     targetRevision: feature/devops-platform

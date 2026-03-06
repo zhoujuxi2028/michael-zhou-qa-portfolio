@@ -1,0 +1,42 @@
+# Service for Test Application
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-app-service
+  namespace: k8s-testing
+  labels:
+    app: test-app
+spec:
+  type: ClusterIP
+  selector:
+    app: test-app
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    protocol: TCP
+
+  # Session affinity
+  sessionAffinity: None
+
+---
+# NodePort Service (for external access during testing)
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-app-nodeport
+  namespace: k8s-testing
+  labels:
+    app: test-app
+    type: nodeport
+spec:
+  type: NodePort
+  selector:
+    app: test-app
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    nodePort: 30080
+    protocol: TCP

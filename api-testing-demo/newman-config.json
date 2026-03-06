@@ -1,0 +1,28 @@
+{
+  "name": "E-Commerce API Test Suite - Newman Configuration",
+  "version": "1.0.0",
+  "description": "Newman CLI configuration for automated test execution",
+  "collection": "collections/E-Commerce-API-Test-Suite.postman_collection.json",
+  "environment": "environments/dev.postman_environment.json",
+  "reporters": [
+    "cli",
+    "html",
+    "json"
+  ],
+  "reporter": {
+    "html": {
+      "export": "reports/newman-report.html"
+    },
+    "json": {
+      "export": "reports/newman-report.json"
+    }
+  },
+  "timeoutRequest": 10000,
+  "timeoutScript": 5000,
+  "delayRequest": 0,
+  "iterationCount": 1,
+  "bail": false,
+  "insecure": false,
+  "color": "on",
+  "verbose": false
+}

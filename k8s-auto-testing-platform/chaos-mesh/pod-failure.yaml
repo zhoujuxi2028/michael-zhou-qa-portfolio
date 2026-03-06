@@ -1,0 +1,20 @@
+# PodChaos: Pod 故障注入
+# 使 Pod 进入故障状态，但不删除
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-failure-test
+  namespace: k8s-testing
+  labels:
+    app: chaos-test
+    scenario: pod-resilience
+spec:
+  action: pod-failure
+  mode: fixed-percent
+  value: "50"  # 影响 50% 的 Pod
+  selector:
+    namespaces:
+      - k8s-testing
+    labelSelectors:
+      app: test-app
+  duration: "60s"

@@ -15,6 +15,15 @@ CHART_REPO="https://prometheus-community.github.io/helm-charts"
 CHART_NAME="kube-prometheus-stack"
 CHART_VERSION="57.0.0"
 
+# Ensure KUBECONFIG is set for k3s environments
+if [ -z "$KUBECONFIG" ]; then
+    if [ -f "$HOME/.kube/config" ]; then
+        export KUBECONFIG="$HOME/.kube/config"
+    elif [ -r "/etc/rancher/k3s/k3s.yaml" ]; then
+        export KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
+    fi
+fi
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -195,25 +204,21 @@ echo "║                    Monitoring Stack Ready!                            
 echo "╚══════════════════════════════════════════════════════════════════════════╝"
 echo ""
 
+NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}' 2>/dev/null || echo "localhost")
+
 echo -e "${GREEN}Prometheus${NC}"
-echo "  URL: http://localhost:9090"
-echo "  Port-forward command:"
-echo "    kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-prometheus 9090:9090"
+echo "  NodePort URL: http://${NODE_IP}:30090"
+echo "  (or port-forward: kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-prometheus 9090:9090)"
 echo ""
 
 echo -e "${GREEN}Grafana${NC}"
-echo "  URL: http://localhost:3000"
-echo "  Port-forward command:"
-echo "    kubectl port-forward -n monitoring svc/prometheus-grafana 3000:80"
-echo "  Default Credentials:"
-echo "    Username: admin"
-echo "    Password: grafana-admin"
+echo "  NodePort URL: http://${NODE_IP}:30030"
+echo "  (or port-forward: kubectl port-forward -n monitoring svc/prometheus-grafana 3000:80)"
+echo "  Credentials: admin / grafana-admin"
 echo ""
 
 echo -e "${GREEN}AlertManager${NC}"
-echo "  URL: http://localhost:9093"
-echo "  Port-forward command:"
-echo "    kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-alertmanager 9093:9093"
+echo "  Port-forward: kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-alertmanager 9093:9093"
 echo ""
 
 # ============================================================================
@@ -247,3 +252,16 @@ log_info "See above for access instructions"
 log_info "For more information, see: MONITORING.md"
 
 echo ""
+
+# ============================================================================
+# Step 8: Auto-Verification
+# ============================================================================
+
+VERIFY_SCRIPT="$SCRIPT_DIR/verify-monitoring.sh"
+if [ -x "$VERIFY_SCRIPT" ]; then
+    log_info "Step 8: Running automated verification..."
+    echo ""
+    bash "$VERIFY_SCRIPT"
+else
+    log_warning "verify-monitoring.sh not found or not executable, skipping auto-verification"
+fi
