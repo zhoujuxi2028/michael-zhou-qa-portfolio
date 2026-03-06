@@ -3,107 +3,51 @@ kind: Application
 metadata:
   name: qa-portfolio-dev
   namespace: argocd
-  # Finalizer ensures proper cleanup when application is deleted
   finalizers:
     - resources-finalizer.argocd.argoproj.io
-  # Labels for organizing applications
   labels:
     environment: dev
     team: qa
     project: qa-portfolio
 spec:
-  # Project this application belongs to
   project: qa-portfolio
 
-  # Source repository configuration
   source:
-    # Git repository URL
     repoURL: https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio.git
-
-    # Branch to track (use feature branch during development)
     targetRevision: feature/devops-platform
+    # Helm chart source (upgraded from raw K8s manifests)
+    path: cicd-demo/helm/qa-portfolio
+    helm:
+      valueFiles:
+        - values.yaml
 
-    # Path to Kubernetes manifests
-    path: cicd-demo/k8s
-
-    # Helm chart settings (if using Helm - commented out for raw manifests)
-    # helm:
-    #   valueFiles:
-    #     - values-dev.yaml
-
-  # Destination cluster and namespace
   destination:
-    # Target cluster (in-cluster reference)
     server: https://kubernetes.default.svc
-
-    # Target namespace
     namespace: qa-portfolio
 
-  # Sync policy configuration
   syncPolicy:
-    # Automated sync settings
     automated:
-      # Automatically sync when Git changes detected
       selfHeal: true
-
-      # Automatically delete resources removed from Git
       prune: true
-
-      # Allow empty directories
       allowEmpty: false
-
-    # Sync options
     syncOptions:
-      # Create namespace if it doesn't exist
       - CreateNamespace=true
-
-      # Validate resources before applying
       - Validate=true
-
-      # Use server-side apply (better for large manifests)
       - ServerSideApply=false
-
-      # Prune last (delete resources after creating new ones)
       - PruneLast=false
-
-    # Retry policy for failed syncs
     retry:
-      # Maximum number of retry attempts
       limit: 5
-
-      # Backoff configuration
       backoff:
-        # Initial wait time before retry
         duration: 5s
-
-        # Maximum wait time between retries
         maxDuration: 3m
-
-        # Backoff factor (exponential)
         factor: 2
 
-  # Ignore differences in specific fields
   ignoreDifferences:
-    # Ignore replica count differences (for HPA)
     - group: apps
       kind: Deployment
       jsonPointers:
         - /spec/replicas
-
-    # Ignore mutating webhook injected fields
     - group: apps
       kind: Deployment
       jsonPointers:
         - /spec/template/metadata/annotations
-
-  # Health assessment configuration
-  # (ArgoCD will use built-in health checks for standard resources)
-
-  # Resource tracking - how ArgoCD tracks resources
-  # revisionHistoryLimit: 10  # Keep 10 previous sync revisions
-
-# Interview Talking Points:
-# - "This Application CRD uses GitOps principles - Git is the single source of truth"
-# - "selfHeal ensures cluster state matches Git, preventing configuration drift"
-# - "prune automatically removes resources deleted from Git"
-# - "Automated sync means deployments happen automatically when code is merged"
