@@ -1,0 +1,1762 @@
+newman
+
+E-Commerce API Test Suite - Expert Level
+
+❏ 01-User Management
+↳ 01-Get All Users
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 01-Get All Users'
+  │ '📍 URL: {{baseUrl}}/users'
+  │ '🕒 Timestamp: 2026-03-06T10:25:14.384Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/users [200 OK, 3.02kB, 600ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 600ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 5645 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [User] Should return all users
+  ✓  [User] Each user should have required fields
+  ✓  [User] User email should be valid format
+  ✓  [User] Response time should be less than 2s
+  ✓  [User] Store first user ID for后续 tests
+
+↳ 02-Get Single User
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 02-Get Single User'
+  │ '📍 URL: {{baseUrl}}/users/{{firstUserId}}'
+  │ '🕒 Timestamp: 2026-03-06T10:25:15.049Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/users/1 [200 OK, 1.65kB, 570ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 570ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 509 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [User] Should return single user
+  ✓  [User] Should have complete user profile
+  ✓  [User] Address should be complete
+  ✓  [User] Company info should exist
+
+↳ 03-Get User by Username
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 03-Get User by Username'
+  │ '📍 URL: {{baseUrl}}/users?username=Bret'
+  │ '🕒 Timestamp: 2026-03-06T10:25:15.656Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/users?username=Bret [200 OK, 1.7kB, 573ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 573ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 559 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [User] Should filter users by username
+  ✓  [User] Returned user should match username
+
+↳ 04-Create User
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 04-Create User'
+  │ '📍 URL: {{baseUrl}}/users'
+  │ '🕒 Timestamp: 2026-03-06T10:25:16.272Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST https://jsonplaceholder.typicode.com/users [201 Created, 1.24kB, 744ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 744ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 14 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  1. [User] Should create new user
+  ✓  [User] Should return 201 Created
+  ✓  [User] Store created user ID
+
+↳ 05-Update User (PUT)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 05-Update User (PUT)'
+  │ '📍 URL: {{baseUrl}}/users/1'
+  │ '🕒 Timestamp: 2026-03-06T10:25:17.053Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PUT https://jsonplaceholder.typicode.com/users/1 [200 OK, 1.11kB, 836ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 836ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 13 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  2. [User] Should update existing user
+  ✓  [User] Should preserve user ID
+
+↳ 06-Update User (PATCH)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 06-Update User (PATCH)'
+  │ '📍 URL: {{baseUrl}}/users/1'
+  │ '🕒 Timestamp: 2026-03-06T10:25:17.926Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PATCH https://jsonplaceholder.typicode.com/users/1 [200 OK, 1.64kB, 626ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 626ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 509 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [User] Should partially update user
+
+↳ 07-Delete User
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 07-Delete User'
+  │ '📍 URL: {{baseUrl}}/users/1'
+  │ '🕒 Timestamp: 2026-03-06T10:25:18.577Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  DELETE https://jsonplaceholder.typicode.com/users/1 [200 OK, 1.1kB, 614ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 614ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [User] Should delete user successfully
+  ✓  [User] Response body should be empty
+
+↳ 08-Get User Posts
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 08-Get User Posts'
+  │ '📍 URL: {{baseUrl}}/users/{{firstUserId}}/posts'
+  │ '🕒 Timestamp: 2026-03-06T10:25:19.219Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/users/1/posts [200 OK, 3.87kB, 608ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 608ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2726 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [User] Should return user posts
+  ✓  [User] Each post should belong to user
+  ✓  [User] Post should have title and body
+
+❏ 02-Product Management
+↳ 01-Get All Posts (as Products)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 01-Get All Posts (as Products)'
+  │ '📍 URL: {{baseUrl}}/posts'
+  │ '🕒 Timestamp: 2026-03-06T10:25:19.864Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/posts [200 OK, 28.67kB, 564ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 564ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 27520 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Product] Should return all posts
+  ✓  [Product] Each post should have required fields
+  ✓  [Product] Store first product ID
+
+↳ 02-Get Single Post (Product)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 02-Get Single Post (Product)'
+  │ '📍 URL: {{baseUrl}}/posts/{{firstProductId}}'
+  │ '🕒 Timestamp: 2026-03-06T10:25:20.479Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/posts/1 [200 OK, 1.44kB, 564ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 564ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 292 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Product] Should return single post
+  ✓  [Product] ID should match request
+
+↳ 03-Get Posts by User
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 03-Get Posts by User'
+  │ '📍 URL: {{baseUrl}}/posts?userId=1'
+  │ '🕒 Timestamp: 2026-03-06T10:25:21.083Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/posts?userId=1 [200 OK, 2.17kB, 546ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 546ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2726 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Product] Should filter posts by user
+
+↳ 04-Create Post (Product)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 04-Create Post (Product)'
+  │ '📍 URL: {{baseUrl}}/posts'
+  │ '🕒 Timestamp: 2026-03-06T10:25:21.659Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST https://jsonplaceholder.typicode.com/posts [201 Created, 1.24kB, 639ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 639ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 15 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  3. [Product] Should create new post
+  ✓  [Product] Should return 201 Created
+  ✓  [Product] Store created product ID
+
+↳ 05-Update Post (Product)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 05-Update Post (Product)'
+  │ '📍 URL: {{baseUrl}}/posts/1'
+  │ '🕒 Timestamp: 2026-03-06T10:25:22.330Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PUT https://jsonplaceholder.typicode.com/posts/1 [200 OK, 1.11kB, 751ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 751ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 13 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  4. [Product] Should update post
+  5. [Product] Should preserve ID and userId
+
+↳ 06-Delete Post (Product)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 06-Delete Post (Product)'
+  │ '📍 URL: {{baseUrl}}/posts/1'
+  │ '🕒 Timestamp: 2026-03-06T10:25:23.113Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  DELETE https://jsonplaceholder.typicode.com/posts/1 [200 OK, 1.1kB, 635ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 635ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Product] Should delete post
+
+↳ 07-Get Post Comments
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 07-Get Post Comments'
+  │ '📍 URL: {{baseUrl}}/posts/1/comments'
+  │ '🕒 Timestamp: 2026-03-06T10:25:23.773Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/posts/1/comments [200 OK, 1.82kB, 569ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 569ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 1510 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Product] Should return post comments
+  ✓  [Product] Each comment should have email
+
+↳ 08-Pagination - Get Posts with Limit
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 08-Pagination - Get Posts with Limit'
+  │ '📍 URL: {{baseUrl}}/posts?_limit=5'
+  │ '🕒 Timestamp: 2026-03-06T10:25:24.377Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/posts?_limit=5 [200 OK, 1.84kB, 623ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 623ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 1420 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Product] Should return limited posts
+  ✓  [Product] Should support pagination parameters
+
+↳ 09-Pagination - Get Posts with Start
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 09-Pagination - Get Posts with Start'
+  │ '📍 URL: {{baseUrl}}/posts?_start=10&_end=15'
+  │ '🕒 Timestamp: 2026-03-06T10:25:25.032Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/posts?_start=10&_end=15 [200 OK, 1.82kB, 573ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 573ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 1385 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Product] Should return posts with offset
+  ✓  [Product] First post should have correct ID
+
+↳ 10-Sort Posts
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 10-Sort Posts'
+  │ '📍 URL: {{baseUrl}}/posts?_sort=title&_order=asc'
+  │ '🕒 Timestamp: 2026-03-06T10:25:25.645Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/posts?_sort=title&_order=asc [200 OK, 28.67kB, 1797ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 1797ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 27520 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Product] Should sort posts by title
+  ✓  [Product] Titles should be sorted
+
+❏ 03-Cart Management
+↳ 01-Get All Comments (as Cart Items)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 01-Get All Comments (as Cart Items)'
+  │ '📍 URL: {{baseUrl}}/comments'
+  │ '🕒 Timestamp: 2026-03-06T10:25:27.484Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/comments [200 OK, 158.89kB, 873ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 873ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 157745 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Cart] Should return all comments
+  ✓  [Cart] Each comment should have required fields
+  ✓  [Cart] Store first cart item ID
+
+↳ 02-Get Cart Item by ID
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 02-Get Cart Item by ID'
+  │ '📍 URL: {{baseUrl}}/comments/{{firstCartItemId}}'
+  │ '🕒 Timestamp: 2026-03-06T10:25:28.503Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/comments/1 [200 OK, 1.41kB, 634ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 634ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 268 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Cart] Should return single comment
+
+↳ 03-Get Cart Items by Post
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 03-Get Cart Items by Post'
+  │ '📍 URL: {{baseUrl}}/comments?postId=1'
+  │ '🕒 Timestamp: 2026-03-06T10:25:29.169Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/comments?postId=1 [200 OK, 2.66kB, 597ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 597ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 1510 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Cart] Should filter by post ID
+
+↳ 04-Create Cart Item (Comment)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 04-Create Cart Item (Comment)'
+  │ '📍 URL: {{baseUrl}}/comments'
+  │ '🕒 Timestamp: 2026-03-06T10:25:29.793Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST https://jsonplaceholder.typicode.com/comments [201 Created, 1.24kB, 648ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 648ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 15 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  6. [Cart] Should create comment
+  ✓  [Cart] Store created cart item ID
+
+↳ 05-Update Cart Item
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 05-Update Cart Item'
+  │ '📍 URL: {{baseUrl}}/comments/1'
+  │ '🕒 Timestamp: 2026-03-06T10:25:30.472Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PUT https://jsonplaceholder.typicode.com/comments/1 [200 OK, 1.12kB, 832ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 832ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 13 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  7. [Cart] Should update cart item
+
+↳ 06-Delete Cart Item
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 06-Delete Cart Item'
+  │ '📍 URL: {{baseUrl}}/comments/1'
+  │ '🕒 Timestamp: 2026-03-06T10:25:31.340Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  DELETE https://jsonplaceholder.typicode.com/comments/1 [200 OK, 1.11kB, 829ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 829ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Cart] Should delete cart item
+
+↳ 07-Get Multiple Cart Items
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 07-Get Multiple Cart Items'
+  │ '📍 URL: {{baseUrl}}/comments?postId=1,2,3'
+  │ '🕒 Timestamp: 2026-03-06T10:25:32.195Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/comments?postId=1,2,3 [200 OK, 1.14kB, 635ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 635ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Cart] Should filter by multiple post IDs
+
+↳ 08-Bulk Cart Operations
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 08-Bulk Cart Operations'
+  │ '📍 URL: {{baseUrl}}/comments?_page=1&_limit=10'
+  │ '🕒 Timestamp: 2026-03-06T10:25:32.856Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/comments?_page=1&_limit=10 [200 OK, 4.51kB, 580ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 580ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 3042 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Cart] Should handle sub-selective queries
+  ✓  [Cart] Should return valid data structure
+
+❏ 04-Order Management
+↳ 01-Get All Todos (as Orders)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 01-Get All Todos (as Orders)'
+  │ '📍 URL: {{baseUrl}}/todos'
+  │ '🕒 Timestamp: 2026-03-06T10:25:33.468Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/todos [200 OK, 5.17kB, 562ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 562ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 24311 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Order] Should return all todos
+  ✓  [Order] Each todo should have required fields
+  ✓  [Order] Store first order ID
+
+↳ 02-Get Single Order
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 02-Get Single Order'
+  │ '📍 URL: {{baseUrl}}/todos/{{firstOrderId}}'
+  │ '🕒 Timestamp: 2026-03-06T10:25:34.088Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/todos/1 [200 OK, 1.23kB, 681ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 681ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 83 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Order] Should return single todo
+  ✓  [Order] ID should match request
+
+↳ 03-Get Orders by User
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 03-Get Orders by User'
+  │ '📍 URL: {{baseUrl}}/todos?userId=1'
+  │ '🕒 Timestamp: 2026-03-06T10:25:34.796Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/todos?userId=1 [200 OK, 1.7kB, 566ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 566ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2271 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Order] Should filter todos by user
+
+↳ 04-Create Order
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 04-Create Order'
+  │ '📍 URL: {{baseUrl}}/todos'
+  │ '🕒 Timestamp: 2026-03-06T10:25:35.399Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST https://jsonplaceholder.typicode.com/todos [201 Created, 1.25kB, 615ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 615ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 15 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  8. [Order] Should create new todo
+  ✓  [Order] Store created order ID
+
+↳ 05-Update Order
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 05-Update Order'
+  │ '📍 URL: {{baseUrl}}/todos/1'
+  │ '🕒 Timestamp: 2026-03-06T10:25:36.048Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PUT https://jsonplaceholder.typicode.com/todos/1 [200 OK, 1.12kB, 772ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 772ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 13 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  9. [Order] Should update todo
+
+↳ 06-Complete Order (PATCH)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 06-Complete Order (PATCH)'
+  │ '📍 URL: {{baseUrl}}/todos/1'
+  │ '🕒 Timestamp: 2026-03-06T10:25:36.855Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PATCH https://jsonplaceholder.typicode.com/todos/1 [200 OK, 1.21kB, 640ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 640ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 83 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 10. [Order] Should mark as completed
+
+↳ 07-Delete Order
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 07-Delete Order'
+  │ '📍 URL: {{baseUrl}}/todos/1'
+  │ '🕒 Timestamp: 2026-03-06T10:25:37.528Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  DELETE https://jsonplaceholder.typicode.com/todos/1 [200 OK, 1.11kB, 716ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 716ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Order] Should delete todo
+
+↳ 08-Filter Completed Orders
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 08-Filter Completed Orders'
+  │ '📍 URL: {{baseUrl}}/todos?completed=true'
+  │ '🕒 Timestamp: 2026-03-06T10:25:38.266Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/todos?completed=true [200 OK, 3.2kB, 577ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 577ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 10961 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Order] Should filter completed todos
+
+↳ 09-Filter Pending Orders
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 09-Filter Pending Orders'
+  │ '📍 URL: {{baseUrl}}/todos?completed=false'
+  │ '🕒 Timestamp: 2026-03-06T10:25:38.872Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/todos?completed=false [200 OK, 3.49kB, 577ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 577ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 13352 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Order] Should filter pending todos
+
+↳ 10-Get Order Details
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 10-Get Order Details'
+  │ '📍 URL: {{baseUrl}}/todos/5'
+  │ '🕒 Timestamp: 2026-03-06T10:25:39.490Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/todos/5 [200 OK, 1.28kB, 609ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 609ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 128 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Order] Should return todo with correct ID
+  ✓  [Order] Title should not be empty
+
+↳ 11-Bulk Order Creation
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 11-Bulk Order Creation'
+  │ '📍 URL: {{baseUrl}}/todos'
+  │ '🕒 Timestamp: 2026-03-06T10:25:40.132Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST https://jsonplaceholder.typicode.com/todos [201 Created, 1.25kB, 764ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 764ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 15 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 11. [Order] Should create multiple todos
+
+↳ 12-Order Status Transition
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 12-Order Status Transition'
+  │ '📍 URL: {{baseUrl}}/todos/10'
+  │ '🕒 Timestamp: 2026-03-06T10:25:40.928Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PATCH https://jsonplaceholder.typicode.com/todos/10 [200 OK, 1.24kB, 29.8s]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 29856ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 109 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Order] Should handle todo update
+
+❏ 05-Coupon Management
+↳ 01-Get Albums (as Coupon Types)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 01-Get Albums (as Coupon Types)'
+  │ '📍 URL: {{baseUrl}}/albums'
+  │ '🕒 Timestamp: 2026-03-06T10:26:10.824Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/albums [200 OK, 3.22kB, 763ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 763ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 9333 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Coupon] Should return all albums
+  ✓  [Coupon] Store first coupon type ID
+
+↳ 02-Get Single Coupon Type
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 02-Get Single Coupon Type'
+  │ '📍 URL: {{baseUrl}}/albums/{{firstCouponTypeId}}'
+  │ '🕒 Timestamp: 2026-03-06T10:26:11.625Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/albums/1 [200 OK, 1.21kB, 637ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 637ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 64 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Coupon] Should return single album
+
+↳ 03-Get Photos (as Coupons)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 03-Get Photos (as Coupons)'
+  │ '📍 URL: {{baseUrl}}/photos'
+  │ '🕒 Timestamp: 2026-03-06T10:26:12.297Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/photos [200 OK, 1.07MB, 1136ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 1136ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 1071472 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Coupon] Should return photos
+  ✓  [Coupon] Each photo should have albumId
+  ✓  [Coupon] Store first coupon ID
+
+↳ 04-Create Coupon
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 04-Create Coupon'
+  │ '📍 URL: {{baseUrl}}/photos'
+  │ '🕒 Timestamp: 2026-03-06T10:26:14.249Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST https://jsonplaceholder.typicode.com/photos [503 Service Unavailable, 1.41kB, 849ms]
+ 12. [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 849ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 503 Service Unavailable'
+  │ '📊 Response Size: 567 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 13. [Coupon] Should create photo
+
+↳ 05-Update Coupon
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 05-Update Coupon'
+  │ '📍 URL: {{baseUrl}}/photos/1'
+  │ '🕒 Timestamp: 2026-03-06T10:26:15.129Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PUT https://jsonplaceholder.typicode.com/photos/1 [200 OK, 1.11kB, 766ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 766ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 13 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 14. [Coupon] Should update photo
+
+↳ 06-Delete Coupon
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 06-Delete Coupon'
+  │ '📍 URL: {{baseUrl}}/photos/1'
+  │ '🕒 Timestamp: 2026-03-06T10:26:15.923Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  DELETE https://jsonplaceholder.typicode.com/photos/1 [200 OK, 1.1kB, 627ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 627ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Coupon] Should delete photo
+
+❏ 06-Payment
+↳ 01-Get Photos (as Payment Methods)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 01-Get Photos (as Payment Methods)'
+  │ '📍 URL: {{baseUrl}}/photos?_limit=5'
+  │ '🕒 Timestamp: 2026-03-06T10:26:16.584Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/photos?_limit=5 [200 OK, 2.31kB, 633ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 633ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 1102 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Payment] Should return photos
+
+↳ 02-Get Single Payment Method
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 02-Get Single Payment Method'
+  │ '📍 URL: {{baseUrl}}/photos/1'
+  │ '🕒 Timestamp: 2026-03-06T10:26:17.250Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/photos/1 [200 OK, 1.35kB, 749ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 749ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 205 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Payment] Should return photo
+
+↳ 03-Validate Payment Method URL
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 03-Validate Payment Method URL'
+  │ '📍 URL: {{baseUrl}}/photos/5'
+  │ '🕒 Timestamp: 2026-03-06T10:26:18.032Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/photos/5 [200 OK, 1.35kB, 624ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 624ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 206 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Payment] Photo URL should be valid
+
+↳ 04-Create Payment Record
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 04-Create Payment Record'
+  │ '📍 URL: {{baseUrl}}/photos'
+  │ '🕒 Timestamp: 2026-03-06T10:26:18.687Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST https://jsonplaceholder.typicode.com/photos [201 Created, 1.24kB, 617ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 617ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 16 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Payment] Should create photo record
+
+↳ 05-Update Payment Details
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 05-Update Payment Details'
+  │ '📍 URL: {{baseUrl}}/photos/1'
+  │ '🕒 Timestamp: 2026-03-06T10:26:19.341Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PATCH https://jsonplaceholder.typicode.com/photos/1 [200 OK, 1.33kB, 681ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 681ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 205 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Payment] Should update photo details
+
+↳ 06-Delete Payment Record
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 06-Delete Payment Record'
+  │ '📍 URL: {{baseUrl}}/photos/1'
+  │ '🕒 Timestamp: 2026-03-06T10:26:20.058Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  DELETE https://jsonplaceholder.typicode.com/photos/1 [200 OK, 1.1kB, 649ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 649ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Payment] Should delete payment record
+
+❏ 07-Negative Tests
+↳ 01-Get Non-existent User
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 01-Get Non-existent User'
+  │ '📍 URL: {{baseUrl}}/users/999999'
+  │ '🕒 Timestamp: 2026-03-06T10:26:20.745Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/users/999999 [404 Not Found, 1.12kB, 563ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 563ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Negative] Should return empty object for non-existent user
+
+↳ 02-Create User with Invalid Email
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 02-Create User with Invalid Email'
+  │ '📍 URL: {{baseUrl}}/users'
+  │ '🕒 Timestamp: 2026-03-06T10:26:21.334Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST https://jsonplaceholder.typicode.com/users [201 Created, 1.26kB, 719ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 719ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 14 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Negative] Should still create user (API accepts any)
+
+↳ 03-Get User with Invalid ID Format
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 03-Get User with Invalid ID Format'
+  │ '📍 URL: {{baseUrl}}/users/abc'
+  │ '🕒 Timestamp: 2026-03-06T10:26:22.085Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/users/abc [404 Not Found, 1.12kB, 568ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 568ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Negative] Should handle invalid ID gracefully
+
+↳ 04-Create Post with Missing Required Fields
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 04-Create Post with Missing Required Fi
+  │ elds'
+  │ '📍 URL: {{baseUrl}}/posts'
+  │ '🕒 Timestamp: 2026-03-06T10:26:22.687Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST https://jsonplaceholder.typicode.com/posts [201 Created, 1.24kB, 756ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 756ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 15 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Negative] Should create with defaults when required fields missing
+
+↳ 05-Update Non-existent Resource
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 05-Update Non-existent Resource'
+  │ '📍 URL: {{baseUrl}}/posts/999999'
+  │ '🕒 Timestamp: 2026-03-06T10:26:23.474Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PUT https://jsonplaceholder.typicode.com/posts/999999 [500 Internal Server Error, 1.9kB, 751ms]
+ 15. [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 751ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 500 Internal Server Error'
+  │ '📊 Response Size: 819 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 16. [Negative] Should handle update of non-existent resource
+
+↳ 06-Delete Non-existent Resource
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 06-Delete Non-existent Resource'
+  │ '📍 URL: {{baseUrl}}/posts/999999'
+  │ '🕒 Timestamp: 2026-03-06T10:26:24.258Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  DELETE https://jsonplaceholder.typicode.com/posts/999999 [200 OK, 1.1kB, 630ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 630ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Negative] Should return success for non-existent delete
+
+↳ 07-Query with Invalid Parameters
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 07-Query with Invalid Parameters'
+  │ '📍 URL: {{baseUrl}}/posts?invalidparam=invalid'
+  │ '🕒 Timestamp: 2026-03-06T10:26:24.921Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/posts?invalidparam=invalid [200 OK, 28.67kB, 556ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 556ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 27520 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Negative] Should handle invalid query gracefully
+
+↳ 08-Post with Very Long Title
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 08-Post with Very Long Title'
+  │ '📍 URL: {{baseUrl}}/posts'
+  │ '🕒 Timestamp: 2026-03-06T10:26:25.524Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST https://jsonplaceholder.typicode.com/posts [201 Created, 1.24kB, 629ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 629ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 15 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Negative] Should handle long content
+
+↳ 09-Get with Negative ID
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 09-Get with Negative ID'
+  │ '📍 URL: {{baseUrl}}/posts/-1'
+  │ '🕒 Timestamp: 2026-03-06T10:26:26.182Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/posts/-1 [404 Not Found, 1.12kB, 856ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 856ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Negative] Should handle negative ID
+
+↳ 10-Concurrent Request Simulation
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 10-Concurrent Request Simulation'
+  │ '📍 URL: {{baseUrl}}/posts/1'
+  │ '🕒 Timestamp: 2026-03-06T10:26:27.072Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/posts/1 [200 OK, 1.44kB, 565ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 565ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 292 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Negative] Should handle rapid sequential requests
+  ✓  [Negative] Response time should be acceptable
+
+❏ 08-Enhanced Testing (Data-Driven & Correlation)
+↳ 01-Data-Driven User Creation
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 01-Data-Driven User Creation'
+  │ '📍 URL: {{baseUrl}}/users'
+  │ '🕒 Timestamp: 2026-03-06T10:26:27.663Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  │ '📝 [REQ] Data-Driven User Creation'
+  │ '─────────────────────────────────────────────────────
+  │ ──'
+  │ '🔧 Environment:', undefined
+  │ '🔢 Iteration:', 0
+  │ '📧 Generated Email:', 'testuser.297@example.com'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  └
+  POST https://jsonplaceholder.typicode.com/users [201 Created, 1.24kB, 687ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 687ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 14 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  │ '✅ [TEST] Data-Driven User Creation Results'
+  └
+  ✓  [Enhanced-001] User should be created successfully
+  ┌
+  │ '💾 Stored user ID:', 11
+  └
+  ✓  [Enhanced-002] Response should contain user ID
+ 17. [Enhanced-003] User name should match request
+ 18. [Enhanced-004] User email should be valid format
+  ✓  [Enhanced-005] Response time should be acceptable
+  ┌
+  │ '📊 Success count:', '1'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  └
+
+↳ 02-Get Created User (Correlation)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 02-Get Created User (Correlation)'
+  │ '📍 URL: {{baseUrl}}/users/{{createdUserId}}'
+  │ '🕒 Timestamp: 2026-03-06T10:26:28.393Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  │ '📝 [REQ] Get Created User (Cross-Request Correlation)
+  │ '
+  │ '─────────────────────────────────────────────────────
+  │ ──'
+  │ '🔗 Using correlated user ID:', '11'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  └
+  GET https://jsonplaceholder.typicode.com/users/11 [404 Not Found, 1.12kB, 694ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 694ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  │ '✅ [TEST] Get Created User Results'
+  │ 'ℹ️  Note: JSONPlaceholder mock API does not persist c
+  │ reated resources'
+  └
+  ✓  [Enhanced-006] Should retrieve user or handle mock API limitation
+  ✓  [Enhanced-010] Response time should be optimal
+  ┌
+  │ 'ℹ️  Skipping correlation storage - response code:', 4
+  │ 04
+  │ '📊 Response time:', '694ms'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  └
+
+↳ 03-Update User with Validation
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 03-Update User with Validation'
+  │ '📍 URL: {{baseUrl}}/users/{{createdUserId}}'
+  │ '🕒 Timestamp: 2026-03-06T10:26:29.115Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  │ '📝 [REQ] Update User with Full Validation'
+  │ '─────────────────────────────────────────────────────
+  │ ──'
+  │ '📋 Previous user name:', undefined
+  │ '📋 Previous user email:', undefined
+  │ '📧 New email:', 'updated.1772792789120@example.com'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  └
+  PUT https://jsonplaceholder.typicode.com/users/11 [500 Internal Server Error, 1.91kB, 617ms]
+ 19. [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 617ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 500 Internal Server Error'
+  │ '📊 Response Size: 819 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  │ '✅ [TEST] Update User Validation Results'
+  └
+ 20. [Enhanced-011] User should be updated successfully
+ 21. [Enhanced-012] Response should contain all updated fields
+ 22. [Enhanced-013] User ID should remain unchanged
+ 23. [Enhanced-014] Response should indicate update
+ 24. [Enhanced-015] Data should be consistent after update
+ 25. [Enhanced-016] No validation errors in response
+  ┌
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  └
+
+↳ 04-Data-Driven Product Search
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 04-Data-Driven Product Search'
+  │ '📍 URL: {{baseUrl}}/posts?q={{searchTerm}}&_limit={{s
+  │ earchLimit}}'
+  │ '🕒 Timestamp: 2026-03-06T10:26:29.768Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  │ '📝 [REQ] Data-Driven Product Search'
+  │ '─────────────────────────────────────────────────────
+  │ ──'
+  │ '🔍 Search term:', 'aut'
+  │ '📄 Results limit:', '10'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  └
+  GET https://jsonplaceholder.typicode.com/posts?q=aut&_limit=10 [200 OK, 2.26kB, 612ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 612ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2791 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  │ '✅ [TEST] Data-Driven Product Search Results'
+  │ '🔍 Testing search for:', 'aut'
+  └
+  ✓  [Enhanced-017] Should return search results
+  ✓  [Enhanced-018] Response should be an array
+  ✓  [Enhanced-019] Results should respect pagination limit
+  ✓  [Enhanced-020] Each result should have required fields
+  ┌
+  │ '🔍 Search relevance:', true
+  └
+  ✓  [Enhanced-021] Results should contain search term
+  ┌
+  │ '📊 Results count:', 10
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  └
+
+↳ 05-Workflow Test (Full User Journey)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 05-Workflow Test (Full User Journey)'
+  │ '📍 URL: {{baseUrl}}/users/{{createdUserId}}'
+  │ '🕒 Timestamp: 2026-03-06T10:26:30.423Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET https://jsonplaceholder.typicode.com/users/11 [404 Not Found, 1.12kB, 572ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 572ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  │ '🔄 [WORKFLOW] Full User Journey Test'
+  │ '─────────────────────────────────────────────────────
+  │ ──'
+  │ '📊 Total requests in workflow:', '1'
+  └
+ 26. [Workflow-001] Workflow should maintain state
+ 27. [Workflow-002] Data should flow through workflow
+  ┌
+  │ '📈 Performance summary:'
+  │ '   - Current request time:', '572ms'
+  │ '   - Total workflow requests:', 1
+  └
+  ✓  [Workflow-003] Cumulative performance should be acceptable
+  ┌
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  └
+
+┌─────────────────────────┬─────────────────────┬────────────────────┐
+│                         │            executed │             failed │
+├─────────────────────────┼─────────────────────┼────────────────────┤
+│              iterations │                   1 │                  0 │
+├─────────────────────────┼─────────────────────┼────────────────────┤
+│                requests │                  65 │                  0 │
+├─────────────────────────┼─────────────────────┼────────────────────┤
+│            test-scripts │                 130 │                  0 │
+├─────────────────────────┼─────────────────────┼────────────────────┤
+│      prerequest-scripts │                  69 │                  0 │
+├─────────────────────────┼─────────────────────┼────────────────────┤
+│              assertions │                 313 │                 27 │
+├─────────────────────────┴─────────────────────┴────────────────────┤
+│ total run duration: 1m 16.6s                                       │
+├────────────────────────────────────────────────────────────────────┤
+│ total data received: 1.34MB (approx)                               │
+├────────────────────────────────────────────────────────────────────┤
+│ average response time: 1130ms [min: 546ms, max: 29.8s, s.d.: 3.5s] │
+└────────────────────────────────────────────────────────────────────┘
+
+[31m   # [39m[31m failure        [39m[31m detail                                                                                                                                                                                                                    [39m
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 01.  AssertionError  [User] Should create new user                                                                                                                                                                                             
+                      expected undefined to equal 'Test User'                                                                                                                                                                                   
+                      at assertion:0 in test-script                                                                                                                                                                                             
+                      inside "01-User Management / 04-Create User"                                                                                                                                                                              
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 02.  AssertionError  [User] Should update existing user                                                                                                                                                                                        
+                      expected undefined to equal 'Updated User Name'                                                                                                                                                                           
+                      at assertion:0 in test-script                                                                                                                                                                                             
+                      inside "01-User Management / 05-Update User (PUT)"                                                                                                                                                                        
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 03.  AssertionError  [Product] Should create new post                                                                                                                                                                                          
+                      expected undefined to equal 'Test Product Title'                                                                                                                                                                          
+                      at assertion:0 in test-script                                                                                                                                                                                             
+                      inside "02-Product Management / 04-Create Post (Product)"                                                                                                                                                                 
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 04.  AssertionError  [Product] Should update post                                                                                                                                                                                              
+                      expected undefined to equal 'Updated Product Title'                                                                                                                                                                       
+                      at assertion:0 in test-script                                                                                                                                                                                             
+                      inside "02-Product Management / 05-Update Post (Product)"                                                                                                                                                                 
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 05.  AssertionError  [Product] Should preserve ID and userId                                                                                                                                                                                   
+                      expected undefined to equal 1                                                                                                                                                                                             
+                      at assertion:1 in test-script                                                                                                                                                                                             
+                      inside "02-Product Management / 05-Update Post (Product)"                                                                                                                                                                 
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 06.  AssertionError  [Cart] Should create comment                                                                                                                                                                                              
+                      expected undefined to equal 'Test Cart Item'                                                                                                                                                                              
+                      at assertion:0 in test-script                                                                                                                                                                                             
+                      inside "03-Cart Management / 04-Create Cart Item (Comment)"                                                                                                                                                               
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 07.  AssertionError  [Cart] Should update cart item                                                                                                                                                                                            
+                      expected undefined to equal 'Updated Cart Item'                                                                                                                                                                           
+                      at assertion:0 in test-script                                                                                                                                                                                             
+                      inside "03-Cart Management / 05-Update Cart Item"                                                                                                                                                                         
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 08.  AssertionError  [Order] Should create new todo                                                                                                                                                                                            
+                      expected undefined to equal 'Test Order Item'                                                                                                                                                                             
+                      at assertion:0 in test-script                                                                                                                                                                                             
+                      inside "04-Order Management / 04-Create Order"                                                                                                                                                                            
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 09.  AssertionError  [Order] Should update todo                                                                                                                                                                                                
+                      expected undefined to equal 'Updated Order'                                                                                                                                                                               
+                      at assertion:0 in test-script                                                                                                                                                                                             
+                      inside "04-Order Management / 05-Update Order"                                                                                                                                                                            
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 10.  AssertionError  [Order] Should mark as completed                                                                                                                                                                                          
+                      expected false to equal true                                                                                                                                                                                              
+                      at assertion:0 in test-script                                                                                                                                                                                             
+                      inside "04-Order Management / 06-Complete Order (PATCH)"                                                                                                                                                                  
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 11.  AssertionError  [Order] Should create multiple todos                                                                                                                                                                                      
+                      expected { id: 201 } to be an array                                                                                                                                                                                       
+                      at assertion:0 in test-script                                                                                                                                                                                             
+                      inside "04-Order Management / 11-Bulk Order Creation"                                                                                                                                                                     
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 12.  AssertionError  [Common] Response is valid JSON                                                                                                                                                                                           
+                      Response is not valid JSON                                                                                                                                                                                                
+                      at assertion:0 in test-script                                                                                                                                                                                             
+                      inside "05-Coupon Management / 04-Create Coupon"                                                                                                                                                                          
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 13.  JSONError       [Coupon] Should create photo                                                                                                                                                                                              
+                      Unexpected token '<' at 1:1                                                                                                                                                                                               
+                      <!DOCTYPE html>                                                                                                                                                                                                           
+                      ^                                                                                                                                                                                                                         
+                      at assertion:0 in test-script                                                                                                                                                                                             
+                      inside "05-Coupon Management / 04-Create Coupon"                                                                                                                                                                          
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 14.  AssertionError  [Coupon] Should update photo                                                                                                                                                                                              
+                      expected undefined to equal 'Updated Coupon'                                                                                                                                                                              
+                      at assertion:0 in test-script                                                                                                                                                                                             
+                      inside "05-Coupon Management / 05-Update Coupon"                                                                                                                                                                          
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 15.  AssertionError  [Common] Response is valid JSON                                                                                                                                                                                           
+                      Response is not valid JSON                                                                                                                                                                                                
+                      at assertion:0 in test-script                                                                                                                                                                                             
+                      inside "07-Negative Tests / 05-Update Non-existent Resource"                                                                                                                                                              
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 16.  JSONError       [Negative] Should handle update of non-existent resource                                                                                                                                                                  
+                      Unexpected token 'T' at 1:1                                                                                                                                                                                               
+                      TypeError: Cannot read properties of undefined (reading 'id')                                                                                                                                                             
+                      ^                                                                                                                                                                                                                         
+                      at assertion:0 in test-script                                                                                                                                                                                             
+                      inside "07-Negative Tests / 05-Update Non-existent Resource"                                                                                                                                                              
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 17.  AssertionError  [Enhanced-003] User name should match request                                                                                                                                                                             
+                      Created user name does not match request. Expected: TestUser_1772792787669, Got: undefined: expected undefined to equal 'TestUser_1772792787669'                                                                          
+                      at assertion:2 in test-script                                                                                                                                                                                             
+                      inside "08-Enhanced Testing (Data-Driven & Correlation) / 01-Data-Driven User Creation"                                                                                                                                   
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 18.  AssertionError  [Enhanced-004] User email should be valid format                                                                                                                                                                          
+                      Invalid email format: undefined: expected false to be true                                                                                                                                                                
+                      at assertion:3 in test-script                                                                                                                                                                                             
+                      inside "08-Enhanced Testing (Data-Driven & Correlation) / 01-Data-Driven User Creation"                                                                                                                                   
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 19.  AssertionError  [Common] Response is valid JSON                                                                                                                                                                                           
+                      Response is not valid JSON                                                                                                                                                                                                
+                      at assertion:0 in test-script                                                                                                                                                                                             
+                      inside "08-Enhanced Testing (Data-Driven & Correlation) / 03-Update User with Validation"                                                                                                                                 
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 20.  AssertionError  [Enhanced-011] User should be updated successfully                                                                                                                                                                        
+                      User update failed. Expected 200, got 500. Possible causes: invalid user ID, server error, or permission issue.: expected 500 to equal 200                                                                                
+                      at assertion:0 in test-script                                                                                                                                                                                             
+                      inside "08-Enhanced Testing (Data-Driven & Correlation) / 03-Update User with Validation"                                                                                                                                 
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 21.  JSONError       [Enhanced-012] Response should contain all updated fields                                                                                                                                                                 
+                      Unexpected token 'T' at 1:1                                                                                                                                                                                               
+                      TypeError: Cannot read properties of undefined (reading 'id')                                                                                                                                                             
+                      ^                                                                                                                                                                                                                         
+                      at assertion:1 in test-script                                                                                                                                                                                             
+                      inside "08-Enhanced Testing (Data-Driven & Correlation) / 03-Update User with Validation"                                                                                                                                 
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 22.  JSONError       [Enhanced-013] User ID should remain unchanged                                                                                                                                                                            
+                      Unexpected token 'T' at 1:1                                                                                                                                                                                               
+                      TypeError: Cannot read properties of undefined (reading 'id')                                                                                                                                                             
+                      ^                                                                                                                                                                                                                         
+                      at assertion:2 in test-script                                                                                                                                                                                             
+                      inside "08-Enhanced Testing (Data-Driven & Correlation) / 03-Update User with Validation"                                                                                                                                 
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 23.  JSONError       [Enhanced-014] Response should indicate update                                                                                                                                                                            
+                      Unexpected token 'T' at 1:1                                                                                                                                                                                               
+                      TypeError: Cannot read properties of undefined (reading 'id')                                                                                                                                                             
+                      ^                                                                                                                                                                                                                         
+                      at assertion:3 in test-script                                                                                                                                                                                             
+                      inside "08-Enhanced Testing (Data-Driven & Correlation) / 03-Update User with Validation"                                                                                                                                 
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 24.  JSONError       [Enhanced-015] Data should be consistent after update                                                                                                                                                                     
+                      Unexpected token 'T' at 1:1                                                                                                                                                                                               
+                      TypeError: Cannot read properties of undefined (reading 'id')                                                                                                                                                             
+                      ^                                                                                                                                                                                                                         
+                      at assertion:4 in test-script                                                                                                                                                                                             
+                      inside "08-Enhanced Testing (Data-Driven & Correlation) / 03-Update User with Validation"                                                                                                                                 
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 25.  JSONError       [Enhanced-016] No validation errors in response                                                                                                                                                                           
+                      Unexpected token 'T' at 1:1                                                                                                                                                                                               
+                      TypeError: Cannot read properties of undefined (reading 'id')                                                                                                                                                             
+                      ^                                                                                                                                                                                                                         
+                      at assertion:5 in test-script                                                                                                                                                                                             
+                      inside "08-Enhanced Testing (Data-Driven & Correlation) / 03-Update User with Validation"                                                                                                                                 
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 26.  AssertionError  [Workflow-001] Workflow should maintain state                                                                                                                                                                             
+                      Last user name not found in workflow state: expected undefined not to be undefined                                                                                                                                        
+                      at assertion:0 in test-script                                                                                                                                                                                             
+                      inside "08-Enhanced Testing (Data-Driven & Correlation) / 05-Workflow Test (Full User Journey)"                                                                                                                           
+[90m     [39m[90m                [39m[90m                                                                                                                                                                                                                           [39m
+ 27.  AssertionError  [Workflow-002] Data should flow through workflow                                                                                                                                                                          
+                      Email should contain @ for valid data: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string 
+                      at assertion:1 in test-script                                                                                                                                                                                             
+                      inside "08-Enhanced Testing (Data-Driven & Correlation) / 05-Workflow Test (Full User Journey)"                                                                                                                           
