@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git ls-tree:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(tree:*)",
+      "Bash(git rm:*)",
+      "Bash(test:*)",
+      "Bash(gh pr view:*)",
+      "Bash(docker --version:*)",
+      "Bash(minikube version:*)",
+      "Bash(gh:*)",
+      "Bash(brew install:*)",
+      "Bash(while read name)",
+      "Bash(do if ls *$name*)",
+      "Bash(then echo \"✓ $name\" else echo \"✗ $name\" fi done)",
+      "Bash(do if ! ls *$name*)",
+      "Bash(then echo \"✗ $name\" fi done)",
+      "Bash(python3:*)",
+      "Bash(npm test:*)",
+      "Bash(newman run:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(xargs ls:*)",
+      "Bash(git checkout:*)",
+      "Bash(sed -n:*)"
+    ]
+  }
+}
