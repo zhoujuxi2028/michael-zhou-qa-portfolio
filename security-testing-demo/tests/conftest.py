@@ -1,13 +1,19 @@
 """
 Pytest Configuration and Fixtures for Security Testing
 
-Provides common fixtures for ZAP connection, target URLs, and test setup.
+Provides common fixtures for ZAP connection, Nessus scanning, target URLs, and test setup.
 """
 
 import os
+import sys
 import pytest
 import requests
 from dotenv import load_dotenv
+
+# Add project root to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from utils.nessus_helper import NessusHelper
 
 # Load environment variables
 load_dotenv()
@@ -257,6 +263,7 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "nosql: NoSQL injection tests")
     config.addinivalue_line("markers", "api: API security tests")
     config.addinivalue_line("markers", "business_logic: Business logic tests")
+    config.addinivalue_line("markers", "nessus: marks tests requiring Nessus (skip if unavailable)")
 
 
 # Test hooks
@@ -283,3 +290,99 @@ def _is_zap_available():
         return response.status_code == 200
     except Exception:
         return False
+
+
+# ============================================================================
+# Nessus Fixtures
+# ============================================================================
+
+@pytest.fixture(scope="session")
+def nessus_client():
+    """
+    Nessus API client fixture.
+
+    Returns an unauthenticated NessusHelper instance.
+    Tests should check is_connected() before proceeding.
+
+    Yields:
+        NessusHelper: Nessus client instance
+    """
+    client = NessusHelper(
+        host=os.getenv("NESSUS_HOST", "localhost"),
+        port=int(os.getenv("NESSUS_PORT", "8834")),
+        username=os.getenv("NESSUS_USERNAME", "admin"),
+        password=os.getenv("NESSUS_PASSWORD", ""),
+        access_key=os.getenv("NESSUS_ACCESS_KEY", ""),
+        secret_key=os.getenv("NESSUS_SECRET_KEY", ""),
+    )
+    yield client
+
+
+@pytest.fixture(scope="session")
+def nessus_authenticated(nessus_client):
+    """
+    Authenticated Nessus session fixture.
+
+    Requires Nessus to be running and accessible.
+    Skips tests if authentication fails.
+
+    Args:
+        nessus_client: The base Nessus client fixture
+
+    Yields:
+        NessusHelper: Authenticated Nessus client
+    """
+    if not nessus_client.is_connected():
+        pytest.skip("Nessus server not accessible")
+
+    if not nessus_client.authenticate():
+        pytest.skip("Nessus authentication failed")
+
+    yield nessus_client
+
+
+@pytest.fixture(scope="session")
+def dvwa_ip():
+    """
+    DVWA target IP fixture for Nessus scanning.
+
+    Returns:
+        str: DVWA IP address
+    """
+    return os.getenv("DVWA_HOST", "localhost")
+
+
+@pytest.fixture(scope="session")
+def juice_shop_ip():
+    """
+    Juice Shop target IP fixture for Nessus scanning.
+
+    Returns:
+        str: Juice Shop IP address
+    """
+    return os.getenv("JUICE_SHOP_HOST", "localhost")
+
+
+@pytest.fixture
+def cleanup_scan(nessus_authenticated):
+    """
+    Fixture that cleans up scans after test completion.
+
+    Yields a list that tests can append scan IDs to.
+    All scans in the list will be deleted after the test.
+
+    Args:
+        nessus_authenticated: Authenticated Nessus client
+
+    Yields:
+        list: List to append scan IDs for cleanup
+    """
+    scan_ids = []
+    yield scan_ids
+
+    # Cleanup: delete all created scans
+    for scan_id in scan_ids:
+        try:
+            nessus_authenticated.delete_scan(scan_id)
+        except Exception:
+            pass  # Best effort cleanup
