@@ -1,6 +1,6 @@
-# Security Testing Interview Q&A
+# Security Testing FAQ
 
-## 常见面试问题
+## 常见问题
 
 ### 1. 什么是 DAST？与 SAST 有什么区别？
 
@@ -18,7 +18,7 @@
 
 **最佳实践：结合使用 SAST 和 DAST（DevSecOps）**
 
-### 2. 解释 OWASP Top 10
+### 2. OWASP Top 10
 
 | 编号 | 漏洞类型 | 示例 |
 |------|----------|------|
@@ -33,7 +33,7 @@
 | A09 | 日志和监控不足 | 缺乏审计日志 |
 | A10 | SSRF | 服务端请求伪造 |
 
-### 3. 如何测试 SQL 注入？
+### 3. SQL 注入测试方法
 
 ```python
 # 1. 错误基注入
@@ -54,7 +54,7 @@ payload_false = "1' AND '1'='2"
 # 比较响应差异
 ```
 
-### 4. XSS 有哪些类型？
+### 4. XSS 类型
 
 1. **反射型 XSS (Reflected)**
    - Payload 在 URL 参数中
@@ -71,7 +71,7 @@ payload_false = "1' AND '1'='2"
    - 不经过服务器
    - 示例：`location.hash` 被直接写入 DOM
 
-### 5. 什么是 CSRF？如何防御？
+### 5. CSRF 攻击与防御
 
 **CSRF (Cross-Site Request Forgery)** - 跨站请求伪造
 
@@ -87,7 +87,7 @@ payload_false = "1' AND '1'='2"
 3. **Referer 检查** - 验证请求来源
 4. **双重 Cookie 验证** - Cookie 值与请求参数匹配
 
-### 6. 如何使用 OWASP ZAP？
+### 6. OWASP ZAP 使用
 
 ```bash
 # 1. 启动 ZAP
@@ -103,7 +103,7 @@ python zap-full-scan.py --target http://target.com
 python zap-api-scan.py --spec openapi.yaml
 ```
 
-### 7. 安全测试在 CI/CD 中的位置？
+### 7. 安全测试在 CI/CD 中的位置
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -122,7 +122,7 @@ python zap-api-scan.py --spec openapi.yaml
 └─────────────────────────────────────────────────────────┘
 ```
 
-### 8. 常见安全响应头有哪些？
+### 8. 安全响应头
 
 | Header | 用途 | 推荐值 |
 |--------|------|--------|
@@ -132,7 +132,7 @@ python zap-api-scan.py --spec openapi.yaml
 | Content-Security-Policy | 控制资源加载 | default-src 'self' |
 | X-XSS-Protection | 浏览器 XSS 过滤 | 1; mode=block |
 
-### 9. 如何评估漏洞严重性？
+### 9. CVSS 漏洞评分
 
 使用 **CVSS (Common Vulnerability Scoring System)**：
 
@@ -155,26 +155,13 @@ CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
 - **Medium**: 4.0 - 6.9
 - **Low**: 0.1 - 3.9
 
-### 10. 本项目亮点
-
-1. **DAST 自动化**：使用 OWASP ZAP 实现自动化漏洞扫描
-2. **测试用例覆盖**：25+ 测试用例覆盖 OWASP Top 10
-3. **CI/CD 集成**：GitHub Actions 实现持续安全测试
-4. **可演示**：Docker 环境可即时演示
-
 ---
 
-## 技术演示话术
-
-### 30 秒介绍
-
-> "我构建了一个安全测试自动化平台，使用 OWASP ZAP 进行动态应用安全测试。平台包含基线扫描（2-5分钟）、全量扫描（15-30分钟）和 API 扫描三种模式，可以集成到 CI/CD 流水线中实现持续安全测试。测试用例覆盖 XSS、SQL 注入、CSRF 等 OWASP Top 10 漏洞类型。"
-
-### 演示流程
+## 快速演示
 
 ```bash
 # 1. 启动环境
-docker compose up -d
+docker compose -f docker/docker-compose.yml up -d
 
 # 2. 运行测试
 pytest tests/test_xss.py -v
