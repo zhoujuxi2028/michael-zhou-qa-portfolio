@@ -252,7 +252,7 @@ docker push your-registry/qa-newman-demo:latest
 # Update job-newman.yaml image reference
 ```
 
-## Interview Talking Points
+## Key Points
 
 ### 1. Jobs vs Deployments
 > "We use Jobs for tests because they're one-time executions with a defined completion state. Deployments are for long-running services. Jobs retry on failure, track completion, and clean up automatically with TTL."

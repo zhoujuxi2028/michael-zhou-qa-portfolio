@@ -140,7 +140,7 @@ cicd-demo/
 └── docs/                        # Documentation
     ├── WBS.md                   #   Work breakdown (Phase 1 + Phase 2)
     ├── ARCHITECTURE.md          #   Technical architecture deep dive
-    ├── INTERVIEW-GUIDE.md       #   35+ interview Q&A
+    ├── FAQ-GUIDE.md             #   35+ Q&A
     ├── QUICKSTART.md            #   5-minute setup guide
     └── guides/                  #   CI/CD guide, troubleshooting
 ```
@@ -220,11 +220,11 @@ Total Pods: 30+
 |----------|---------------|
 | [WBS.md](docs/WBS.md) | Phase 1 (complete) + Phase 2 (planned) task breakdown |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technical architecture, design decisions, scaling |
-| [INTERVIEW-GUIDE.md](docs/INTERVIEW-GUIDE.md) | 35+ interview Q&A across 6 technology areas |
+| [FAQ-GUIDE.md](docs/FAQ-GUIDE.md) | 35+ Q&A across 6 technology areas |
 | [QUICKSTART.md](docs/QUICKSTART.md) | 5-minute setup from zero to running cluster |
 | [CI-CD-GUIDE.md](docs/guides/CI-CD-GUIDE.md) | CI/CD pipeline setup and integration |
 
-## Interview Preparation
+## FAQ
 
 ### 30-Second Pitch
 
@@ -240,7 +240,7 @@ Total Pods: 30+
 - **Security**: Trivy container/filesystem/IaC scanning, npm audit, SARIF
 - **Monitoring**: Prometheus metrics, Grafana dashboards, PromQL
 
-### Pre-Interview Checklist
+### Pre-Demo Checklist
 
 ```bash
 # Verify cluster
@@ -255,4 +255,4 @@ kubectl port-forward -n argocd svc/argocd-server 9090:443 &
 npm test                                        # All pass
 ```
 
-See [INTERVIEW-GUIDE.md](docs/INTERVIEW-GUIDE.md) for 35+ Q&A with detailed answers.
+See [FAQ-GUIDE.md](docs/FAQ-GUIDE.md) for 35+ Q&A with detailed answers.

@@ -363,7 +363,7 @@ Staging environment configuration:
 
 ---
 
-## Interview Talking Points
+## FAQ
 
 ### Q: What is GitOps?
 

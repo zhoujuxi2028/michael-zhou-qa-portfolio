@@ -179,9 +179,9 @@ k8s-auto-testing-platform/
 - [Coverage Report](docs/COVERAGE-REPORT.md) - Test coverage analysis
 - [Test Report](docs/TEST-REPORT.md) - Test execution summary
 
-### Interview Preparation
-- [Interview Story](docs/INTERVIEW-STORY.md) - Project talking points
-- [Technical Q&A](docs/TECHNICAL-QA.md) - Technical interview prep
+### FAQ
+- [Project Story](docs/INTERVIEW-STORY.md) - Project talking points
+- [Technical Q&A](docs/TECHNICAL-QA.md) - Technical deep dive
 - [WBS Guide](docs/WBS-GUIDE.md) - Work breakdown structure
 
 ### Demo Resources
@@ -342,9 +342,9 @@ k8s-auto-testing-platform/
 - [覆盖率报告](docs/COVERAGE-REPORT.md) - 测试覆盖分析
 - [测试报告](docs/TEST-REPORT.md) - 测试执行摘要
 
-### 面试准备
+### 常见问题
 - [项目故事](docs/INTERVIEW-STORY.md) - 项目要点
-- [技术问答](docs/TECHNICAL-QA.md) - 技术面试准备
+- [技术问答](docs/TECHNICAL-QA.md) - 技术深入解析
 - [WBS 指南](docs/WBS-GUIDE.md) - 工作分解结构
 
 ### 演示资源
