@@ -22,3 +22,6 @@ colorlog>=6.7.0
 
 # Data Validation
 jsonschema>=4.20.0
+
+# Nessus API Client
+pyTenable>=1.4.0
