@@ -42,8 +42,8 @@ Welcome to the IWSVA Selenium Tests documentation. This hub provides quick acces
 
 ## 🎭 Demos & Presentations
 
-**For Interviews and Demonstrations:**
-- [Interview Demo](demos/INTERVIEW_DEMO.md) - Demo guide for interviews
+**Demonstrations:**
+- [Demo Guide](demos/INTERVIEW_DEMO.md) - Demo walkthrough
 - [Run Demo](demos/RUN_DEMO.md) - How to run demonstrations
 - [Project Stats](demos/PROJECT_STATS.md) - Project statistics and metrics
 
