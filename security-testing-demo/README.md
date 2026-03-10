@@ -19,7 +19,7 @@ This project demonstrates professional security testing automation capabilities,
 |-------|---------|-------|--------|
 | 1 | DVWA Security Tests | Pytest | ✅ 25 tests |
 | 2 | ZAP Automation | OWASP ZAP | ✅ 13 tests |
-| 3 | Burp Suite Learning | Burp Suite CE | Notes |
+| 3 | Burp Suite Learning | Burp Suite CE | ✅ Guide |
 | 4 | Juice Shop Tests | Pytest + ZAP | 21 tests |
 | 5 | Nessus Learning | Nessus Essentials | Notes |
 
@@ -175,7 +175,7 @@ The project includes GitHub Actions workflow for automated security scanning:
 |------|------|------|------|
 | 1 | DVWA 安全测试 | Pytest | ✅ 25 tests |
 | 2 | ZAP 自动化 | OWASP ZAP | ✅ 13 tests |
-| 3 | Burp Suite 学习 | Burp Suite CE | 笔记 |
+| 3 | Burp Suite 学习 | Burp Suite CE | ✅ 指南 |
 | 4 | Juice Shop 测试 | Pytest + ZAP | 21 tests |
 | 5 | Nessus 学习 | Nessus Essentials | 笔记 |
 
