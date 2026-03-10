@@ -1,0 +1,51 @@
+services:
+  # OWASP ZAP - Security Scanner
+  zap:
+    image: ghcr.io/zaproxy/zaproxy:stable
+    container_name: zap-scanner
+    command: >
+      zap.sh -daemon
+      -host 0.0.0.0
+      -port 8080
+      -config api.disablekey=true
+      -config api.addrs.addr.name=.*
+      -config api.addrs.addr.regex=true
+    ports:
+      - "8090:8080"
+    networks:
+      - security-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/JSON/core/view/version/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+  # DVWA - Damn Vulnerable Web Application
+  dvwa:
+    image: vulnerables/web-dvwa
+    container_name: dvwa-target
+    ports:
+      - "80:80"
+    environment:
+      - MYSQL_PASS=p@ssw0rd
+    networks:
+      - security-net
+    depends_on:
+      - zap
+    restart: unless-stopped
+
+  # OWASP Juice Shop - Modern Vulnerable Application
+  juice-shop:
+    image: bkimminich/juice-shop
+    container_name: juice-shop-target
+    ports:
+      - "3000:3000"
+    networks:
+      - security-net
+    restart: unless-stopped
+
+networks:
+  security-net:
+    driver: bridge
