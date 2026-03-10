@@ -13,7 +13,7 @@ Test automation and DevOps demonstration projects.
 |---------|-------------|------------|
 | [iwsva-cypress-e2e](./iwsva-cypress-e2e/) | IWSVA E2E Testing (77 tests) | Cypress, JavaScript |
 | [k8s-auto-testing-platform](./k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests) | Python, Pytest, Chaos Mesh |
-| [security-testing-demo](./security-testing-demo/) | DAST Security Testing (15+ tests) | OWASP ZAP, Python, Docker |
+| [security-testing-demo](./security-testing-demo/) | DAST Security Testing (59 tests) | OWASP ZAP, Pytest, Docker |
 | [cicd-demo](./cicd-demo/) | CI/CD Pipeline Demo | GitHub Actions, Docker |
 | [api-testing-demo](./api-testing-demo/) | API Testing | Newman, Postman |
 | [selenium-demo](./selenium-demo/) | Browser Automation | Selenium, Python |

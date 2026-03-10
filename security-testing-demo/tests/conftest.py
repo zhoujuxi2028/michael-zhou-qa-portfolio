@@ -30,6 +30,10 @@ class Config:
     DVWA_USERNAME = os.getenv("DVWA_USERNAME", "admin")
     DVWA_PASSWORD = os.getenv("DVWA_PASSWORD", "password")
 
+    # Juice Shop configuration
+    JUICE_SHOP_URL = os.getenv("JUICE_SHOP_URL", "http://localhost:3000")
+    JUICE_SHOP_API_URL = os.getenv("JUICE_SHOP_API_URL", "http://localhost:3000/api")
+
 
 @pytest.fixture(scope="session")
 def config():
@@ -128,6 +132,116 @@ def http_session():
     session.close()
 
 
+@pytest.fixture(scope="session")
+def juice_shop_url(config):
+    """Provide Juice Shop URL."""
+    return config.JUICE_SHOP_URL
+
+
+@pytest.fixture(scope="session")
+def juice_shop_api_url(config):
+    """Provide Juice Shop API URL."""
+    return config.JUICE_SHOP_API_URL
+
+
+@pytest.fixture(scope="session")
+def juice_shop_session(config):
+    """Create session for Juice Shop testing.
+
+    Returns:
+        requests.Session configured for Juice Shop
+    """
+    session = requests.Session()
+    session.headers.update({
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+    })
+
+    try:
+        # Verify Juice Shop is available
+        response = session.get(f"{config.JUICE_SHOP_URL}/rest/admin/application-version", timeout=10)
+        if response.status_code not in [200, 401, 403]:
+            pytest.skip("Juice Shop is not available")
+            return None
+        return session
+    except requests.RequestException:
+        pytest.skip("Juice Shop is not available")
+        return None
+
+
+@pytest.fixture(scope="function")
+def juice_shop_auth_session(config):
+    """Create authenticated session for Juice Shop.
+
+    Registers a test user and returns authenticated session.
+
+    Returns:
+        tuple: (session, auth_token, user_email)
+    """
+    import json
+    import time
+
+    session = requests.Session()
+    session.headers.update({
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+    })
+
+    try:
+        # Generate unique test user
+        timestamp = int(time.time())
+        test_email = f"test{timestamp}@test.com"
+        test_password = "TestPass123!"
+
+        # Register user
+        register_url = f"{config.JUICE_SHOP_URL}/api/Users/"
+        register_data = {
+            "email": test_email,
+            "password": test_password,
+            "passwordRepeat": test_password,
+            "securityQuestion": {
+                "id": 1,
+                "question": "Your eldest siblings middle name?"
+            },
+            "securityAnswer": "test"
+        }
+
+        response = session.post(
+            register_url,
+            data=json.dumps(register_data),
+            timeout=10
+        )
+
+        # Login
+        login_url = f"{config.JUICE_SHOP_URL}/rest/user/login"
+        login_data = {
+            "email": test_email,
+            "password": test_password
+        }
+
+        response = session.post(
+            login_url,
+            data=json.dumps(login_data),
+            timeout=10
+        )
+
+        if response.status_code == 200:
+            auth_data = response.json()
+            token = auth_data.get("authentication", {}).get("token", "")
+            session.headers.update({"Authorization": f"Bearer {token}"})
+            yield session, token, test_email
+        else:
+            pytest.skip("Could not authenticate with Juice Shop")
+            yield None, None, None
+
+    except requests.RequestException:
+        pytest.skip("Juice Shop is not available")
+        yield None, None, None
+
+    finally:
+        session.close()
+
+
 # Pytest markers
 def pytest_configure(config):
     """Register custom markers."""
@@ -138,6 +252,11 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "headers: Security headers tests")
     config.addinivalue_line("markers", "slow: Slow running tests")
     config.addinivalue_line("markers", "zap: Tests requiring ZAP")
+    config.addinivalue_line("markers", "juice_shop: Juice Shop tests")
+    config.addinivalue_line("markers", "jwt: JWT authentication tests")
+    config.addinivalue_line("markers", "nosql: NoSQL injection tests")
+    config.addinivalue_line("markers", "api: API security tests")
+    config.addinivalue_line("markers", "business_logic: Business logic tests")
 
 
 # Test hooks
