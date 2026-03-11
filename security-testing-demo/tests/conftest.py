@@ -266,6 +266,13 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "business_logic: Business logic tests")
     config.addinivalue_line("markers", "nessus: marks tests requiring Nessus (skip if unavailable)")
     config.addinivalue_line("markers", "openvas: marks tests requiring OpenVAS/GVM (skip if unavailable)")
+    config.addinivalue_line("markers", "multi_level: Multi-security-level tests")
+    config.addinivalue_line("markers", "sqlmap: SQLMap integration tests")
+    config.addinivalue_line("markers", "crypto: Cryptographic failures tests (A02)")
+    config.addinivalue_line("markers", "components: Vulnerable components tests (A06)")
+    config.addinivalue_line("markers", "integrity: Software integrity tests (A08)")
+    config.addinivalue_line("markers", "logging: Logging failures tests (A09)")
+    config.addinivalue_line("markers", "ssrf: SSRF tests (A10)")
 
 
 # Test hooks
@@ -459,3 +466,66 @@ def cleanup_openvas_task(openvas_available):
             openvas_available.delete_target(target_id)
         except Exception:
             pass
+
+
+# ============================================================================
+# Multi-Security-Level Fixtures
+# ============================================================================
+
+@pytest.fixture
+def set_security_level(dvwa_session, config):
+    """
+    Factory fixture to set DVWA security level.
+
+    Usage:
+        def test_something(set_security_level):
+            set_security_level("medium")
+            # ... test code ...
+
+    Args:
+        dvwa_session: Authenticated DVWA session
+        config: Test configuration
+
+    Returns:
+        Function to set security level
+    """
+    def _set_level(level: str):
+        """Set DVWA security level (low, medium, high, impossible)."""
+        if dvwa_session is None:
+            pytest.skip("DVWA not available")
+
+        dvwa_session.post(
+            f"{config.DVWA_URL}/security.php",
+            data={"security": level, "seclev_submit": "Submit"},
+            timeout=10,
+        )
+        return level
+
+    return _set_level
+
+
+@pytest.fixture(params=["low", "medium", "high"])
+def security_level(request, dvwa_session, config):
+    """
+    Parameterized fixture for testing across security levels.
+
+    Automatically runs tests 3 times with different security levels.
+
+    Args:
+        request: pytest request object
+        dvwa_session: Authenticated DVWA session
+        config: Test configuration
+
+    Yields:
+        str: Current security level
+    """
+    if dvwa_session is None:
+        pytest.skip("DVWA not available")
+
+    level = request.param
+    dvwa_session.post(
+        f"{config.DVWA_URL}/security.php",
+        data={"security": level, "seclev_submit": "Submit"},
+        timeout=10,
+    )
+    yield level
