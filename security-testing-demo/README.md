@@ -10,7 +10,7 @@
 
 This project demonstrates professional security testing automation capabilities, including:
 - **OWASP ZAP Integration**: Automated vulnerability scanning (baseline, full, API scans)
-- **Security Test Cases**: 170 Pytest tests covering full OWASP Top 10 (DVWA, Juice Shop, ZAP, Nessus, OpenVAS)
+- **Security Test Cases**: 170 Pytest tests covering OWASP Top 10 2021 (DVWA, Juice Shop, ZAP, Nessus, OpenVAS)
 - **Multiple Target Apps**: DVWA (PHP/MySQL) and Juice Shop (Node.js/Angular)
 - **CI/CD Integration**: GitHub Actions for continuous security testing
 - **Docker Environment**: Complete testing environment with ZAP and vulnerable targets
@@ -25,6 +25,7 @@ This project demonstrates professional security testing automation capabilities,
 | 4 | Juice Shop Tests | Pytest + ZAP | ✅ 30 tests |
 | 5 | Nessus Scanning | Nessus Essentials | ✅ 15 tests |
 | 6 | OpenVAS Scanning | OpenVAS/GVM | ✅ 20 tests |
+| 7 | OWASP Top 10 Complete | SQLMap, Multi-level | ✅ 67 tests |
 
 ## Quick Start
 
@@ -123,6 +124,7 @@ Step-by-step learning guides for each phase:
 | [Phase 4: Juice Shop API Testing](docs/PHASE4-LEARNING-GUIDE.md) | REST API, JWT, NoSQL Injection, Business Logic | Advanced |
 | [Phase 5: Nessus Essentials](docs/PHASE5-LEARNING-GUIDE.md) | Vulnerability Scanning, CVE, CVSS, Compliance | Intermediate |
 | [Phase 6: OpenVAS](docs/PHASE6-LEARNING-GUIDE.md) | Open Source Scanning, GVM Architecture, NVT | Intermediate |
+| [Phase 7: OWASP Top 10 Complete](docs/PHASE7-LEARNING-GUIDE.md) | SQLMap, Multi-level Tests, Full OWASP Coverage | Advanced |
 
 ## Project Structure
 
@@ -197,7 +199,7 @@ The project includes GitHub Actions workflow for automated security scanning:
 
 本项目展示专业的安全测试自动化能力，包括：
 - **OWASP ZAP 集成**: 自动化漏洞扫描（基线扫描、全量扫描、API 扫描）
-- **安全测试用例**: 103 个 Pytest 测试，覆盖 OWASP Top 10 漏洞 (DVWA, Juice Shop, ZAP, Nessus, OpenVAS)
+- **安全测试用例**: 170 个 Pytest 测试，完整覆盖 OWASP Top 10 2021 漏洞 (DVWA, Juice Shop, ZAP, Nessus, OpenVAS, SQLMap)
 - **多目标应用**: DVWA (PHP/MySQL) 和 Juice Shop (Node.js/Angular)
 - **CI/CD 集成**: GitHub Actions 持续安全测试
 - **Docker 环境**: 完整的测试环境，包含 ZAP 和靶机
@@ -212,6 +214,7 @@ The project includes GitHub Actions workflow for automated security scanning:
 | 4 | Juice Shop 测试 | Pytest + ZAP | ✅ 30 tests |
 | 5 | Nessus 扫描 | Nessus Essentials | ✅ 15 tests |
 | 6 | OpenVAS 扫描 | OpenVAS/GVM | ✅ 20 tests |
+| 7 | OWASP Top 10 完整覆盖 | SQLMap, Multi-level | ✅ 67 tests |
 
 ### 学习指南
 
@@ -223,11 +226,12 @@ The project includes GitHub Actions workflow for automated security scanning:
 | [Phase 4: Juice Shop API 测试](docs/PHASE4-LEARNING-GUIDE.md) | REST API、JWT、NoSQL 注入、业务逻辑 | 高级 |
 | [Phase 5: Nessus Essentials](docs/PHASE5-LEARNING-GUIDE.md) | 漏洞扫描、CVE、CVSS、合规检查 | 中级 |
 | [Phase 6: OpenVAS](docs/PHASE6-LEARNING-GUIDE.md) | 开源扫描、GVM 架构、NVT | 中级 |
+| [Phase 7: OWASP Top 10 完整覆盖](docs/PHASE7-LEARNING-GUIDE.md) | SQLMap、多安全级别测试、完整 OWASP 覆盖 | 高级 |
 
 ### 项目亮点
 
 1. **DAST 自动化**: 展示动态应用安全测试的自动化实现
-2. **OWASP Top 10**: 覆盖主要 Web 安全漏洞类型
+2. **OWASP Top 10 2021**: 完整覆盖主要 Web 安全漏洞类型
 3. **现代应用测试**: Juice Shop (Angular/Node.js) + 传统 DVWA (PHP)
 4. **JWT/NoSQL**: 现代 Web 应用常见安全问题
 5. **可演示**: 实际运行扫描并生成报告

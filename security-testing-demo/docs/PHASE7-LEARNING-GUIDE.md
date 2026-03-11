@@ -1,8 +1,8 @@
-# Phase 7 学习指南: OWASP Top 10 完整覆盖
+# Phase 7 学习指南: OWASP Top 10 2021 完整覆盖
 
 ## 学习目标
 
-通过本阶段学习完成 OWASP Top 10 的完整覆盖，掌握：
+通过本阶段学习完成 OWASP Top 10 2021 的完整覆盖，掌握：
 - A02: 加密失败检测
 - A06: 易受攻击组件识别
 - A08: 软件完整性验证
@@ -560,7 +560,7 @@ pytest tests/test_crypto.py tests/test_components.py \
 
 ### 知识掌握
 
-- [ ] 理解 OWASP Top 10 所有类别
+- [ ] 理解 OWASP Top 10 2021 所有类别
 - [ ] 理解加密失败的常见问题
 - [ ] 理解依赖漏洞检测方法
 - [ ] 理解软件完整性验证
@@ -586,7 +586,7 @@ pytest tests/test_crypto.py tests/test_components.py \
 
 ---
 
-## 11. OWASP Top 10 完整覆盖总结
+## 11. OWASP Top 10 2021 完整覆盖总结
 
 | ID | 名称 | 测试文件 | 测试数 |
 |----|------|----------|--------|
