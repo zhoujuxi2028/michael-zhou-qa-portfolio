@@ -8,7 +8,7 @@
 
 This project demonstrates professional security testing automation capabilities, including:
 - **OWASP ZAP Integration**: Automated vulnerability scanning (baseline, full, API scans)
-- **Security Test Cases**: 59 Pytest tests covering OWASP Top 10 vulnerabilities
+- **Security Test Cases**: 68 Pytest tests covering OWASP Top 10 vulnerabilities
 - **Multiple Target Apps**: DVWA (PHP/MySQL) and Juice Shop (Node.js/Angular)
 - **CI/CD Integration**: GitHub Actions for continuous security testing
 - **Docker Environment**: Complete testing environment with ZAP and vulnerable targets
@@ -20,8 +20,9 @@ This project demonstrates professional security testing automation capabilities,
 | 1 | DVWA Security Tests | Pytest | ✅ 25 tests |
 | 2 | ZAP Automation | OWASP ZAP | ✅ 13 tests |
 | 3 | Burp Suite Learning | Burp Suite CE | ✅ Guide |
-| 4 | Juice Shop Tests | Pytest + ZAP | 21 tests |
-| 5 | Nessus Learning | Nessus Essentials | Notes |
+| 4 | Juice Shop Tests | Pytest + ZAP | ✅ 30 tests |
+| 5 | Nessus Learning | Nessus Essentials | ✅ Guide |
+| 6 | OpenVAS Learning | OpenVAS/GVM | ✅ Guide |
 
 ## Quick Start
 
@@ -71,14 +72,14 @@ python zap/zap-api-scan.py --spec openapi.yaml
 | Authentication | 6 | A07:2021 - Identification Failures |
 | Security Headers | 5 | A05:2021 - Security Misconfiguration |
 
-### Juice Shop Tests (21 tests)
+### Juice Shop Tests (30 tests)
 
 | Category | Tests | OWASP Top 10 |
 |----------|-------|--------------|
-| API Security | 5 | A01:2021 - Broken Access Control |
+| API Security | 9 | A01:2021 - Broken Access Control |
 | JWT Authentication | 6 | A07:2021 - Identification Failures |
-| NoSQL Injection | 5 | A03:2021 - Injection |
-| Business Logic | 5 | A04:2021 - Insecure Design |
+| NoSQL Injection | 7 | A03:2021 - Injection |
+| Business Logic | 8 | A04:2021 - Insecure Design |
 
 ### ZAP Integration Tests (13 tests)
 
@@ -108,6 +109,19 @@ pytest -m zap -v
 pytest tests/ -v --html=reports/test-report.html
 ```
 
+## Learning Guides
+
+Step-by-step learning guides for each phase:
+
+| Guide | Content | Level |
+|-------|---------|-------|
+| [Phase 1: DVWA Security Testing](docs/PHASE1-LEARNING-GUIDE.md) | XSS, SQL Injection, CSRF, Authentication, Security Headers | Beginner |
+| [Phase 2: ZAP Automation](docs/PHASE2-LEARNING-GUIDE.md) | ZAP API, Spider, Scanning, CI/CD Integration | Intermediate |
+| [Phase 3: Burp Suite Manual Testing](docs/PHASE3-LEARNING-GUIDE.md) | Proxy, Repeater, Intruder, Decoder | Intermediate |
+| [Phase 4: Juice Shop API Testing](docs/PHASE4-LEARNING-GUIDE.md) | REST API, JWT, NoSQL Injection, Business Logic | Advanced |
+| [Phase 5: Nessus Essentials](docs/PHASE5-LEARNING-GUIDE.md) | Vulnerability Scanning, CVE, CVSS, Compliance | Intermediate |
+| [Phase 6: OpenVAS](docs/PHASE6-LEARNING-GUIDE.md) | Open Source Scanning, GVM Architecture, NVT | Intermediate |
+
 ## Project Structure
 
 ```
@@ -116,7 +130,7 @@ security-testing-demo/
 │   ├── zap-baseline.py           # Baseline scan (2-5 min)
 │   ├── zap-full-scan.py          # Full scan (15-30 min)
 │   └── zap-api-scan.py           # API security scan
-├── tests/                        # Pytest security tests (59 tests)
+├── tests/                        # Pytest security tests (68 tests)
 │   ├── conftest.py               # Fixtures for DVWA + Juice Shop
 │   ├── test_xss.py               # XSS vulnerability tests
 │   ├── test_sqli.py              # SQL injection tests
@@ -132,6 +146,14 @@ security-testing-demo/
 ├── docker/                       # Docker environment
 ├── reports/                      # Scan reports
 └── docs/                         # Documentation
+    ├── PHASE1-LEARNING-GUIDE.md  # DVWA security testing guide
+    ├── PHASE2-LEARNING-GUIDE.md  # ZAP automation guide
+    ├── PHASE3-LEARNING-GUIDE.md  # Burp Suite guide
+    ├── PHASE4-LEARNING-GUIDE.md  # Juice Shop API testing guide
+    ├── PHASE5-LEARNING-GUIDE.md  # Nessus Essentials guide
+    ├── PHASE6-LEARNING-GUIDE.md  # OpenVAS/GVM guide
+    ├── BURP-SUITE-GUIDE.md       # Burp Suite quick reference
+    └── TROUBLESHOOTING.md        # Troubleshooting guide
 ```
 
 ## CI/CD Integration
@@ -164,7 +186,7 @@ The project includes GitHub Actions workflow for automated security scanning:
 
 本项目展示专业的安全测试自动化能力，包括：
 - **OWASP ZAP 集成**: 自动化漏洞扫描（基线扫描、全量扫描、API 扫描）
-- **安全测试用例**: 59 个 Pytest 测试，覆盖 OWASP Top 10 漏洞
+- **安全测试用例**: 68 个 Pytest 测试，覆盖 OWASP Top 10 漏洞
 - **多目标应用**: DVWA (PHP/MySQL) 和 Juice Shop (Node.js/Angular)
 - **CI/CD 集成**: GitHub Actions 持续安全测试
 - **Docker 环境**: 完整的测试环境，包含 ZAP 和靶机
@@ -176,8 +198,20 @@ The project includes GitHub Actions workflow for automated security scanning:
 | 1 | DVWA 安全测试 | Pytest | ✅ 25 tests |
 | 2 | ZAP 自动化 | OWASP ZAP | ✅ 13 tests |
 | 3 | Burp Suite 学习 | Burp Suite CE | ✅ 指南 |
-| 4 | Juice Shop 测试 | Pytest + ZAP | 21 tests |
-| 5 | Nessus 学习 | Nessus Essentials | 笔记 |
+| 4 | Juice Shop 测试 | Pytest + ZAP | ✅ 30 tests |
+| 5 | Nessus 学习 | Nessus Essentials | ✅ 指南 |
+| 6 | OpenVAS 学习 | OpenVAS/GVM | ✅ 指南 |
+
+### 学习指南
+
+| 指南 | 内容 | 级别 |
+|------|------|------|
+| [Phase 1: DVWA 安全测试](docs/PHASE1-LEARNING-GUIDE.md) | XSS、SQL 注入、CSRF、认证、安全头 | 入门 |
+| [Phase 2: ZAP 自动化](docs/PHASE2-LEARNING-GUIDE.md) | ZAP API、爬虫、扫描、CI/CD 集成 | 中级 |
+| [Phase 3: Burp Suite 手动测试](docs/PHASE3-LEARNING-GUIDE.md) | Proxy、Repeater、Intruder、Decoder | 中级 |
+| [Phase 4: Juice Shop API 测试](docs/PHASE4-LEARNING-GUIDE.md) | REST API、JWT、NoSQL 注入、业务逻辑 | 高级 |
+| [Phase 5: Nessus Essentials](docs/PHASE5-LEARNING-GUIDE.md) | 漏洞扫描、CVE、CVSS、合规检查 | 中级 |
+| [Phase 6: OpenVAS](docs/PHASE6-LEARNING-GUIDE.md) | 开源扫描、GVM 架构、NVT | 中级 |
 
 ### 项目亮点
 
