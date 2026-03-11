@@ -8,7 +8,7 @@
 
 This project demonstrates professional security testing automation capabilities, including:
 - **OWASP ZAP Integration**: Automated vulnerability scanning (baseline, full, API scans)
-- **Security Test Cases**: 68 Pytest tests covering OWASP Top 10 vulnerabilities
+- **Security Test Cases**: 103 Pytest tests covering OWASP Top 10 vulnerabilities (DVWA, Juice Shop, ZAP, Nessus, OpenVAS)
 - **Multiple Target Apps**: DVWA (PHP/MySQL) and Juice Shop (Node.js/Angular)
 - **CI/CD Integration**: GitHub Actions for continuous security testing
 - **Docker Environment**: Complete testing environment with ZAP and vulnerable targets
@@ -21,8 +21,8 @@ This project demonstrates professional security testing automation capabilities,
 | 2 | ZAP Automation | OWASP ZAP | ✅ 13 tests |
 | 3 | Burp Suite Learning | Burp Suite CE | ✅ Guide |
 | 4 | Juice Shop Tests | Pytest + ZAP | ✅ 30 tests |
-| 5 | Nessus Learning | Nessus Essentials | ✅ Guide |
-| 6 | OpenVAS Learning | OpenVAS/GVM | ✅ Guide |
+| 5 | Nessus Scanning | Nessus Essentials | ✅ 15 tests |
+| 6 | OpenVAS Scanning | OpenVAS/GVM | ✅ 20 tests |
 
 ## Quick Start
 
@@ -130,7 +130,7 @@ security-testing-demo/
 │   ├── zap-baseline.py           # Baseline scan (2-5 min)
 │   ├── zap-full-scan.py          # Full scan (15-30 min)
 │   └── zap-api-scan.py           # API security scan
-├── tests/                        # Pytest security tests (68 tests)
+├── tests/                        # Pytest security tests (103 tests)
 │   ├── conftest.py               # Fixtures for DVWA + Juice Shop
 │   ├── test_xss.py               # XSS vulnerability tests
 │   ├── test_sqli.py              # SQL injection tests
@@ -186,7 +186,7 @@ The project includes GitHub Actions workflow for automated security scanning:
 
 本项目展示专业的安全测试自动化能力，包括：
 - **OWASP ZAP 集成**: 自动化漏洞扫描（基线扫描、全量扫描、API 扫描）
-- **安全测试用例**: 68 个 Pytest 测试，覆盖 OWASP Top 10 漏洞
+- **安全测试用例**: 103 个 Pytest 测试，覆盖 OWASP Top 10 漏洞 (DVWA, Juice Shop, ZAP, Nessus, OpenVAS)
 - **多目标应用**: DVWA (PHP/MySQL) 和 Juice Shop (Node.js/Angular)
 - **CI/CD 集成**: GitHub Actions 持续安全测试
 - **Docker 环境**: 完整的测试环境，包含 ZAP 和靶机
@@ -199,8 +199,8 @@ The project includes GitHub Actions workflow for automated security scanning:
 | 2 | ZAP 自动化 | OWASP ZAP | ✅ 13 tests |
 | 3 | Burp Suite 学习 | Burp Suite CE | ✅ 指南 |
 | 4 | Juice Shop 测试 | Pytest + ZAP | ✅ 30 tests |
-| 5 | Nessus 学习 | Nessus Essentials | ✅ 指南 |
-| 6 | OpenVAS 学习 | OpenVAS/GVM | ✅ 指南 |
+| 5 | Nessus 扫描 | Nessus Essentials | ✅ 15 tests |
+| 6 | OpenVAS 扫描 | OpenVAS/GVM | ✅ 20 tests |
 
 ### 学习指南
 

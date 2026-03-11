@@ -46,6 +46,33 @@ services:
       - security-net
     restart: unless-stopped
 
+  # OpenVAS/GVM - Open Source Vulnerability Scanner
+  openvas:
+    image: immauss/openvas:latest
+    container_name: openvas-scanner
+    ports:
+      - "9392:9392"   # Web UI (HTTPS)
+      - "9390:9390"   # GMP Protocol
+    environment:
+      - USERNAME=admin
+      - PASSWORD=admin
+      - RELAYHOST=172.17.0.1
+      - SMTPPORT=25
+    volumes:
+      - openvas-data:/data
+    networks:
+      - security-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-k", "https://localhost:9392/login"]
+      interval: 60s
+      timeout: 30s
+      retries: 5
+      start_period: 300s
+    restart: unless-stopped
+
 networks:
   security-net:
     driver: bridge
+
+volumes:
+  openvas-data:
