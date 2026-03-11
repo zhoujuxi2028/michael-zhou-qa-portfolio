@@ -13,7 +13,7 @@ Test automation and DevOps demonstration projects.
 |---------|-------------|------------|
 | [iwsva-cypress-e2e](./iwsva-cypress-e2e/) | IWSVA E2E Testing (77 tests) | Cypress, JavaScript |
 | [k8s-auto-testing-platform](./k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests) | Python, Pytest, Chaos Mesh |
-| [security-testing-demo](./security-testing-demo/) | DAST Security Testing (59 tests) | OWASP ZAP, Pytest, Docker |
+| [security-testing-demo](./security-testing-demo/) | DAST Security Testing (68 tests) | OWASP ZAP, Nessus, Pytest |
 | [cicd-demo](./cicd-demo/) | CI/CD Pipeline Demo | GitHub Actions, Docker |
 | [api-testing-demo](./api-testing-demo/) | API Testing | Newman, Postman |
 | [selenium-demo](./selenium-demo/) | Browser Automation | Selenium, Python |
@@ -24,7 +24,7 @@ Test automation and DevOps demonstration projects.
 
 - **Test Automation | 测试自动化**: Cypress, Selenium, Pytest
 - **API Testing | API测试**: Postman, Newman
-- **Security Testing | 安全测试**: OWASP ZAP, DAST, OWASP Top 10
+- **Security Testing | 安全测试**: OWASP ZAP, Nessus, DAST, OWASP Top 10
 - **CI/CD**: GitHub Actions, Docker
 - **Cloud/K8S | 云原生**: Kubernetes, HPA, Chaos Mesh
 - **Monitoring | 监控**: Prometheus, Grafana
