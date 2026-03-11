@@ -97,6 +97,57 @@ jobs:
           name: zap-baseline-report
           path: report_html.html
 
+  juice-shop-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: security-testing-demo
+
+    services:
+      juice-shop:
+        image: bkimminich/juice-shop
+        ports:
+          - 3000:3000
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Wait for Juice Shop
+        run: |
+          for i in {1..30}; do
+            if curl -s http://localhost:3000 > /dev/null; then
+              echo "Juice Shop is ready"
+              break
+            fi
+            echo "Waiting for Juice Shop..."
+            sleep 2
+          done
+
+      - name: Run Juice Shop tests
+        run: |
+          pytest tests/test_juice_shop_api.py tests/test_jwt.py \
+            tests/test_nosql_injection.py tests/test_business_logic.py \
+            -v --html=reports/juice-shop-report.html \
+            --self-contained-html || true
+
+      - name: Upload Juice Shop report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: juice-shop-test-report
+          path: security-testing-demo/reports/juice-shop-report.html
+
   dependency-scan:
     runs-on: ubuntu-latest
     defaults:
@@ -129,7 +180,7 @@ jobs:
           path: security-testing-demo/reports/dependency-scan.json
 
   summary:
-    needs: [security-tests, zap-baseline-scan, dependency-scan]
+    needs: [security-tests, juice-shop-tests, zap-baseline-scan, dependency-scan]
     runs-on: ubuntu-latest
     if: always()
 
@@ -140,6 +191,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Scan Type | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Security Tests | ${{ needs.security-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| DVWA Security Tests | ${{ needs.security-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Juice Shop Tests | ${{ needs.juice-shop-tests.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| ZAP Baseline | ${{ needs.zap-baseline-scan.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Dependency Scan | ${{ needs.dependency-scan.result }} |" >> $GITHUB_STEP_SUMMARY

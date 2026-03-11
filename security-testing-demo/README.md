@@ -1,5 +1,7 @@
 # Security Testing Demo
 
+[![Security Scan](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/security-scan.yml/badge.svg)](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/security-scan.yml)
+
 > Automated security testing demonstration using OWASP ZAP for Dynamic Application Security Testing (DAST)
 
 [English](#overview) | [中文](#项目概述)
@@ -8,7 +10,7 @@
 
 This project demonstrates professional security testing automation capabilities, including:
 - **OWASP ZAP Integration**: Automated vulnerability scanning (baseline, full, API scans)
-- **Security Test Cases**: 103 Pytest tests covering OWASP Top 10 vulnerabilities (DVWA, Juice Shop, ZAP, Nessus, OpenVAS)
+- **Security Test Cases**: 170 Pytest tests covering full OWASP Top 10 (DVWA, Juice Shop, ZAP, Nessus, OpenVAS)
 - **Multiple Target Apps**: DVWA (PHP/MySQL) and Juice Shop (Node.js/Angular)
 - **CI/CD Integration**: GitHub Actions for continuous security testing
 - **Docker Environment**: Complete testing environment with ZAP and vulnerable targets
@@ -130,18 +132,27 @@ security-testing-demo/
 │   ├── zap-baseline.py           # Baseline scan (2-5 min)
 │   ├── zap-full-scan.py          # Full scan (15-30 min)
 │   └── zap-api-scan.py           # API security scan
-├── tests/                        # Pytest security tests (103 tests)
+├── tests/                        # Pytest security tests (170 tests)
 │   ├── conftest.py               # Fixtures for DVWA + Juice Shop
-│   ├── test_xss.py               # XSS vulnerability tests
-│   ├── test_sqli.py              # SQL injection tests
-│   ├── test_csrf.py              # CSRF tests
-│   ├── test_auth.py              # Authentication tests
-│   ├── test_headers.py           # Security headers tests
+│   ├── test_xss.py               # XSS vulnerability tests (A03)
+│   ├── test_sqli.py              # SQL injection tests (A03)
+│   ├── test_csrf.py              # CSRF tests (A01)
+│   ├── test_auth.py              # Authentication tests (A07)
+│   ├── test_headers.py           # Security headers tests (A05)
+│   ├── test_crypto.py            # Cryptographic failures (A02)
+│   ├── test_components.py        # Vulnerable components (A06)
+│   ├── test_integrity.py         # Software integrity (A08)
+│   ├── test_logging.py           # Logging failures (A09)
+│   ├── test_ssrf.py              # SSRF tests (A10)
+│   ├── test_multi_level.py       # Multi-security-level tests
+│   ├── test_sqlmap.py            # SQLMap integration tests
 │   ├── test_zap_scan.py          # ZAP integration tests
 │   ├── test_juice_shop_api.py    # Juice Shop API security
 │   ├── test_jwt.py               # JWT authentication tests
 │   ├── test_nosql_injection.py   # NoSQL injection tests
-│   └── test_business_logic.py    # Business logic tests
+│   ├── test_business_logic.py    # Business logic tests (A04)
+│   ├── test_nessus_scan.py       # Nessus integration tests
+│   └── test_openvas_scan.py      # OpenVAS integration tests
 ├── utils/                        # Helper utilities
 ├── docker/                       # Docker environment
 ├── reports/                      # Scan reports
