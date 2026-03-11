@@ -5,14 +5,14 @@
 | Item | Value |
 |------|-------|
 | Start Point | 103 tests (Phase 1-6 complete) |
-| Target | ~150+ tests with full OWASP Top 10 |
+| Target | ~150+ tests with full OWASP Top 10 2021 |
 | Branch | `feature/security-testing` |
 
 ---
 
 ## Task Breakdown
 
-### Task 1: OWASP Top 10 Full Coverage
+### Task 1: OWASP Top 10 2021 Full Coverage
 
 **Current Coverage:**
 
