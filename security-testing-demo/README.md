@@ -8,7 +8,7 @@
 
 This project demonstrates professional security testing automation capabilities, including:
 - **OWASP ZAP Integration**: Automated vulnerability scanning (baseline, full, API scans)
-- **Security Test Cases**: 68 Pytest tests covering OWASP Top 10 vulnerabilities
+- **Security Test Cases**: 103 Pytest tests covering OWASP Top 10 vulnerabilities
 - **Multiple Target Apps**: DVWA (PHP/MySQL) and Juice Shop (Node.js/Angular)
 - **CI/CD Integration**: GitHub Actions for continuous security testing
 - **Docker Environment**: Complete testing environment with ZAP and vulnerable targets
@@ -21,8 +21,8 @@ This project demonstrates professional security testing automation capabilities,
 | 2 | ZAP Automation | OWASP ZAP | ✅ 13 tests |
 | 3 | Burp Suite Learning | Burp Suite CE | ✅ Guide |
 | 4 | Juice Shop Tests | Pytest + ZAP | ✅ 30 tests |
-| 5 | Nessus Learning | Nessus Essentials | ✅ Guide |
-| 6 | OpenVAS Learning | OpenVAS/GVM | ✅ Guide |
+| 5 | Nessus Scanning | Nessus Essentials | ✅ 15 tests |
+| 6 | OpenVAS Scanning | OpenVAS/GVM | ✅ 20 tests |
 
 ## Quick Start
 

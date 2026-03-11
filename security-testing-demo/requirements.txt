@@ -25,3 +25,6 @@ jsonschema>=4.20.0
 
 # Nessus API Client
 pyTenable>=1.4.0
+
+# OpenVAS/GVM Client
+python-gvm>=24.1.0

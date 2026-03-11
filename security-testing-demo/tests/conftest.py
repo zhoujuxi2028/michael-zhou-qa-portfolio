@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from utils.nessus_helper import NessusHelper
+from utils.openvas_helper import OpenVASHelper
 
 # Load environment variables
 load_dotenv()
@@ -264,6 +265,7 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "api: API security tests")
     config.addinivalue_line("markers", "business_logic: Business logic tests")
     config.addinivalue_line("markers", "nessus: marks tests requiring Nessus (skip if unavailable)")
+    config.addinivalue_line("markers", "openvas: marks tests requiring OpenVAS/GVM (skip if unavailable)")
 
 
 # Test hooks
@@ -386,3 +388,74 @@ def cleanup_scan(nessus_authenticated):
             nessus_authenticated.delete_scan(scan_id)
         except Exception:
             pass  # Best effort cleanup
+
+
+# ============================================================================
+# OpenVAS/GVM Fixtures
+# ============================================================================
+
+@pytest.fixture(scope="session")
+def openvas_client():
+    """
+    OpenVAS/GVM API client fixture.
+
+    Returns an unauthenticated OpenVASHelper instance.
+    Tests should check is_connected() before proceeding.
+
+    Yields:
+        OpenVASHelper: OpenVAS client instance
+    """
+    client = OpenVASHelper(
+        host=os.getenv("OPENVAS_HOST", "localhost"),
+        port=int(os.getenv("OPENVAS_PORT", "9390")),
+        username=os.getenv("OPENVAS_USERNAME", "admin"),
+        password=os.getenv("OPENVAS_PASSWORD", "admin"),
+    )
+    yield client
+
+
+@pytest.fixture(scope="session")
+def openvas_available(openvas_client):
+    """
+    Check if OpenVAS is available and skip if not.
+
+    Args:
+        openvas_client: The base OpenVAS client fixture
+
+    Yields:
+        OpenVASHelper: OpenVAS client (if available)
+    """
+    if not openvas_client.is_connected():
+        pytest.skip("OpenVAS/GVM server not accessible")
+
+    yield openvas_client
+
+
+@pytest.fixture
+def cleanup_openvas_task(openvas_available):
+    """
+    Fixture that cleans up OpenVAS tasks after test completion.
+
+    Yields a dict to store task_id and target_id for cleanup.
+
+    Args:
+        openvas_available: Available OpenVAS client
+
+    Yields:
+        dict: Dictionary to store IDs for cleanup
+    """
+    cleanup_ids = {"task_ids": [], "target_ids": []}
+    yield cleanup_ids
+
+    # Cleanup: delete all created tasks and targets
+    for task_id in cleanup_ids["task_ids"]:
+        try:
+            openvas_available.delete_task(task_id)
+        except Exception:
+            pass
+
+    for target_id in cleanup_ids["target_ids"]:
+        try:
+            openvas_available.delete_target(target_id)
+        except Exception:
+            pass
