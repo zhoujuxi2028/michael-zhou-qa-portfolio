@@ -1,17 +1,16 @@
 """
 OWASP A02:2021 - Cryptographic Failures Tests
 
-Tests for detecting cryptographic weaknesses including:
-- Weak TLS/SSL configuration
+Tests for detecting cryptographic weaknesses in DVWA including:
+- Missing HTTPS / TLS configuration
 - Sensitive data exposure
-- Weak encryption algorithms
-- Missing encryption
+- Weak session token generation
+- Missing secure cookie flags
 
 Reference: https://owasp.org/Top10/A02_2021-Cryptographic_Failures/
 """
 
-import ssl
-import socket
+import re
 import pytest
 import requests
 
@@ -20,303 +19,205 @@ pytestmark = pytest.mark.crypto
 
 
 class TestTLSConfiguration:
-    """Tests for TLS/SSL configuration."""
+    """Tests for TLS/SSL configuration against DVWA."""
 
+    @pytest.mark.xfail(reason="DVWA does not support HTTPS")
     def test_https_available(self, config):
         """
-        Test if HTTPS is available.
+        SEC-CRYPTO-001: Site should support HTTPS.
 
-        ID: SEC-CRYPTO-001
-        Sites should support HTTPS for secure communication.
+        All web applications should be accessible over HTTPS.
+        DVWA only serves HTTP - this is a cryptographic failure.
         """
-        # Note: Local test environments typically don't have HTTPS
-        # This test is designed for production sites
-
         https_url = config.TARGET_URL.replace("http://", "https://")
 
         try:
             response = requests.get(https_url, timeout=5, verify=False)
-            print(f"[+] HTTPS available: {https_url}")
-            assert True
-        except requests.exceptions.SSLError as e:
-            print(f"[!] SSL Error: {e}")
-            assert True  # Informational
-        except requests.exceptions.ConnectionError:
-            print(f"[*] HTTPS not available (expected for local testing)")
-            assert True
+        except (requests.exceptions.ConnectionError, requests.exceptions.SSLError) as e:
+            pytest.fail(f"HTTPS not available: {e}")
 
+        assert response.status_code < 500, f"HTTPS returned server error: {response.status_code}"
+
+    @pytest.mark.xfail(reason="DVWA does not redirect HTTP to HTTPS")
     def test_http_to_https_redirect(self, http_session, config):
         """
-        Test if HTTP redirects to HTTPS.
+        SEC-CRYPTO-002: HTTP should redirect to HTTPS.
 
-        ID: SEC-CRYPTO-002
-        Production sites should redirect HTTP to HTTPS.
+        Production sites must redirect all HTTP traffic to HTTPS.
+        DVWA does not redirect, which is a vulnerability.
         """
         try:
-            # Don't follow redirects
             response = http_session.get(
                 config.TARGET_URL,
                 allow_redirects=False,
                 timeout=5,
             )
-
-            if response.status_code in [301, 302, 307, 308]:
-                location = response.headers.get("Location", "")
-                if location.startswith("https://"):
-                    print(f"[+] HTTP redirects to HTTPS: {location}")
-                else:
-                    print(f"[*] Redirect to: {location}")
-            else:
-                print("[*] No HTTPS redirect (expected for local testing)")
-
-            assert True
-
         except requests.RequestException:
             pytest.skip("Target not available")
 
-    def test_hsts_header(self, http_session, config):
-        """
-        Test for HTTP Strict Transport Security header.
+        location = response.headers.get("Location", "")
+        assert location.startswith("https://"), (
+            f"No HTTPS redirect (status={response.status_code}, location='{location}')"
+        )
 
-        ID: SEC-CRYPTO-003
-        HSTS prevents protocol downgrade attacks.
+    @pytest.mark.xfail(reason="DVWA does not set HSTS header")
+    def test_hsts_header_present(self, http_session, config):
+        """
+        SEC-CRYPTO-003: Site should set HSTS header.
+
+        HSTS (Strict-Transport-Security) prevents protocol downgrade attacks.
+        DVWA does not set this header.
         """
         try:
             response = http_session.get(config.TARGET_URL, timeout=5)
-            hsts = response.headers.get("Strict-Transport-Security", "")
-
-            if hsts:
-                print(f"[+] HSTS enabled: {hsts}")
-
-                # Check for recommended values
-                if "max-age=31536000" in hsts or int(hsts.split("max-age=")[1].split(";")[0]) >= 31536000:
-                    print("[+] HSTS max-age is at least 1 year")
-                if "includeSubDomains" in hsts:
-                    print("[+] HSTS includes subdomains")
-                if "preload" in hsts:
-                    print("[+] HSTS preload enabled")
-            else:
-                print("[!] HSTS header missing")
-
-            assert True
-
         except requests.RequestException:
             pytest.skip("Target not available")
 
+        hsts = response.headers.get("Strict-Transport-Security")
+        assert hsts is not None, "HSTS header missing"
+        assert "max-age=" in hsts, f"HSTS missing max-age directive: {hsts}"
+
 
 class TestSensitiveDataExposure:
-    """Tests for sensitive data exposure."""
+    """Tests for sensitive data exposure in DVWA."""
 
-    def test_password_in_url(self, http_session, config):
+    def test_login_form_uses_post(self, http_session, config):
         """
-        Test if passwords are transmitted in URL.
+        SEC-CRYPTO-004: Verify login form uses POST, not GET.
 
-        ID: SEC-CRYPTO-004
-        Passwords should never appear in URLs.
+        GET would expose credentials in URL / server logs / browser history.
         """
-        # Check login form method
         login_url = f"{config.DVWA_URL}/login.php"
 
         try:
             response = http_session.get(login_url, timeout=5)
-
-            # Check for GET method in login forms
-            if 'method="get"' in response.text.lower():
-                print("[!] Login form uses GET - passwords may be in URL")
-            elif 'method="post"' in response.text.lower():
-                print("[+] Login form uses POST")
-            else:
-                print("[*] Could not determine form method")
-
-            assert True
-
         except requests.RequestException:
             pytest.skip("Target not available")
 
-    def test_sensitive_data_in_response(self, dvwa_session, config):
-        """
-        Test for sensitive data in HTTP responses.
+        html_lower = response.text.lower()
+        assert 'method="get"' not in html_lower, "Login form uses GET - passwords exposed in URL"
+        assert 'method="post"' in html_lower, "Login form should explicitly use POST"
 
-        ID: SEC-CRYPTO-005
-        Responses should not contain sensitive data like passwords.
+    def test_password_field_not_in_query_params(self, dvwa_session, config):
+        """
+        SEC-CRYPTO-005: Verify login does not leak password in URL.
+
+        After POST login, the response/redirect should not contain password in URL.
         """
         if dvwa_session is None:
             pytest.skip("DVWA not available")
 
-        # Access a page and check for sensitive data patterns
-        url = f"{config.DVWA_URL}/index.php"
-        response = dvwa_session.get(url)
+        response = dvwa_session.get(f"{config.DVWA_URL}/index.php", timeout=5)
+        assert "password=" not in response.url, f"Password leaked in URL: {response.url}"
 
-        sensitive_patterns = [
-            "password=",
-            "passwd=",
-            "secret=",
-            "api_key=",
-            "apikey=",
-            "token=",  # Careful - this may have false positives
-        ]
-
-        found = []
-        for pattern in sensitive_patterns:
-            if pattern in response.text.lower():
-                found.append(pattern)
-
-        if found:
-            print(f"[!] Potential sensitive data in response: {found}")
-        else:
-            print("[+] No obvious sensitive data patterns found")
-
-        assert True
-
-    def test_autocomplete_on_sensitive_fields(self, http_session, config):
+    def test_autocomplete_on_password_fields(self, http_session, config):
         """
-        Test if autocomplete is disabled on sensitive fields.
+        SEC-CRYPTO-006: Password fields should have autocomplete="off".
 
-        ID: SEC-CRYPTO-006
-        Password fields should have autocomplete="off".
+        Prevents browsers from caching credentials.
         """
         login_url = f"{config.TARGET_URL}/login.php"
 
         try:
             response = http_session.get(login_url, timeout=5)
-
-            # Check for autocomplete settings
-            if 'autocomplete="off"' in response.text.lower():
-                print("[+] Autocomplete disabled on form/fields")
-            elif 'autocomplete="new-password"' in response.text.lower():
-                print("[+] Autocomplete set to new-password")
-            else:
-                print("[*] No autocomplete attribute found")
-
-            assert True
-
         except requests.RequestException:
             pytest.skip("Target not available")
 
+        html_lower = response.text.lower()
+        password_inputs = re.findall(r'<input[^>]*type=["\']password["\'][^>]*>', html_lower)
+        assert len(password_inputs) > 0, "No password field found on login page"
+
+        has_autocomplete_off = any(
+            'autocomplete="off"' in inp or 'autocomplete="new-password"' in inp
+            for inp in password_inputs
+        )
+        assert has_autocomplete_off, (
+            f"Password field missing autocomplete='off': {password_inputs}"
+        )
+
 
 class TestWeakCryptography:
-    """Tests for weak cryptographic implementations."""
+    """Tests for weak cryptographic implementations in DVWA."""
 
-    def test_weak_session_token(self, dvwa_session, config):
+    def test_session_token_length(self, dvwa_session, config):
         """
-        Test for weak session token generation.
+        SEC-CRYPTO-007: Verify session token has sufficient length.
 
-        ID: SEC-CRYPTO-007
-        Session tokens should be sufficiently random.
+        Session tokens should be at least 26 characters (PHP default)
+        to resist brute-force attacks.
         """
         if dvwa_session is None:
             pytest.skip("DVWA not available")
 
         session_id = dvwa_session.cookies.get("PHPSESSID", "")
+        assert session_id, "No PHPSESSID cookie found"
+        assert len(session_id) >= 26, (
+            f"Session ID too short ({len(session_id)} chars), vulnerable to brute-force"
+        )
 
-        if session_id:
-            # Check session ID length (should be at least 128 bits = 32 hex chars)
-            if len(session_id) >= 26:  # PHP default is 26+ chars
-                print(f"[+] Session ID length: {len(session_id)} chars")
-            else:
-                print(f"[!] Session ID may be too short: {len(session_id)} chars")
-
-            # Check for predictable patterns
-            if session_id.isdigit():
-                print("[!] Session ID is numeric only - may be predictable")
-            elif session_id.isalpha():
-                print("[!] Session ID is alphabetic only")
-            else:
-                print("[+] Session ID contains mixed characters")
-        else:
-            print("[*] No session cookie found")
-
-        assert True
-
-    def test_cookie_security_flags(self, http_session, config):
+    def test_session_token_not_predictable(self, dvwa_session, config):
         """
-        Test for secure cookie flags.
+        SEC-CRYPTO-008: Verify session token is not purely numeric or sequential.
 
-        ID: SEC-CRYPTO-008
-        Cookies should have Secure and HttpOnly flags.
+        Predictable tokens can be guessed by attackers.
+        """
+        if dvwa_session is None:
+            pytest.skip("DVWA not available")
+
+        session_id = dvwa_session.cookies.get("PHPSESSID", "")
+        assert session_id, "No PHPSESSID cookie found"
+        assert not session_id.isdigit(), "Session ID is numeric only - predictable"
+        assert not session_id.isalpha(), "Session ID is alphabetic only - weak entropy"
+
+    @pytest.mark.xfail(reason="DVWA does not set Secure flag on cookies (HTTP only)")
+    def test_cookie_secure_flag(self, http_session, config):
+        """
+        SEC-CRYPTO-009: Cookies should have Secure flag.
+
+        The Secure flag ensures cookies are only sent over HTTPS.
+        DVWA runs on HTTP so it does not set this flag.
         """
         try:
-            response = http_session.get(config.TARGET_URL, timeout=5)
-            set_cookie = response.headers.get("Set-Cookie", "")
-
-            flags = {
-                "Secure": "secure" in set_cookie.lower(),
-                "HttpOnly": "httponly" in set_cookie.lower(),
-                "SameSite": "samesite" in set_cookie.lower(),
-            }
-
-            print("\n=== Cookie Security Flags ===")
-            for flag, present in flags.items():
-                status = "[+]" if present else "[!]"
-                print(f"{status} {flag}: {'Present' if present else 'Missing'}")
-
-            assert True
-
+            response = http_session.get(f"{config.DVWA_URL}/login.php", timeout=5)
         except requests.RequestException:
             pytest.skip("Target not available")
+
+        set_cookie = response.headers.get("Set-Cookie", "")
+        assert set_cookie, "No Set-Cookie header returned from login.php"
+        assert "secure" in set_cookie.lower(), (
+            f"Cookie missing Secure flag: {set_cookie}"
+        )
 
 
 class TestDataInTransit:
-    """Tests for data in transit protection."""
+    """Tests for data-in-transit protection."""
 
-    def test_mixed_content(self, http_session, config):
+    @pytest.mark.xfail(reason="DVWA does not set Cache-Control: no-store on sensitive pages")
+    def test_sensitive_pages_cache_headers(self, http_session, config):
         """
-        Test for mixed content issues.
+        SEC-CRYPTO-010: Sensitive pages should set Cache-Control: no-store.
 
-        ID: SEC-CRYPTO-009
-        HTTPS pages should not load HTTP resources.
-        """
-        try:
-            response = http_session.get(config.TARGET_URL, timeout=5)
-
-            # Check for HTTP resources in HTTPS page
-            http_resources = []
-            patterns = [
-                'src="http://',
-                "src='http://",
-                'href="http://',
-                "href='http://",
-            ]
-
-            for pattern in patterns:
-                if pattern in response.text:
-                    http_resources.append(pattern)
-
-            if http_resources:
-                print(f"[!] Potential mixed content: {http_resources}")
-            else:
-                print("[+] No obvious mixed content found")
-
-            assert True
-
-        except requests.RequestException:
-            pytest.skip("Target not available")
-
-    def test_cache_control_sensitive_pages(self, http_session, config):
-        """
-        Test Cache-Control headers for sensitive pages.
-
-        ID: SEC-CRYPTO-010
-        Sensitive pages should not be cached.
+        Prevents credential caching by browsers and proxies.
+        DVWA does not set proper cache headers.
         """
         sensitive_paths = ["/login.php", "/setup.php"]
+        results = {}
 
         for path in sensitive_paths:
             url = f"{config.DVWA_URL}{path}"
-
             try:
                 response = http_session.get(url, timeout=5)
                 cache_control = response.headers.get("Cache-Control", "")
-                pragma = response.headers.get("Pragma", "")
-
-                if "no-store" in cache_control.lower():
-                    print(f"[+] {path}: no-store (best)")
-                elif "no-cache" in cache_control.lower() or "no-cache" in pragma.lower():
-                    print(f"[*] {path}: no-cache (acceptable)")
-                else:
-                    print(f"[!] {path}: May be cached - {cache_control or 'no header'}")
-
+                results[path] = cache_control
             except requests.RequestException:
                 continue
 
-        assert True
+        assert results, "Could not reach any sensitive page"
+
+        missing_no_store = [
+            path for path, cc in results.items()
+            if "no-store" not in cc.lower()
+        ]
+        assert not missing_no_store, (
+            f"Sensitive pages cacheable (missing no-store): {missing_no_store}"
+        )

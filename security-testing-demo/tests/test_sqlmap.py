@@ -75,6 +75,7 @@ class TestSQLMapDetection:
     """Tests for SQL injection detection using sqlmap."""
 
     @pytest.mark.slow
+    @pytest.mark.xfail(reason="sqlmap session cookie may not maintain DVWA authentication")
     def test_sqlmap_detect_dvwa(self, dvwa_session, config):
         """
         Test sqlmap detection on DVWA.
@@ -126,14 +127,13 @@ class TestSQLMapDetection:
             if is_injectable:
                 print("[!] SQL injection detected by sqlmap")
 
-            # Test passes - we're detecting the vulnerability
-            assert True
+            assert is_injectable, "sqlmap should detect SQL injection in DVWA"
 
         except subprocess.TimeoutExpired:
-            print("[*] SQLMap timed out (expected for quick test)")
-            assert True
+            pytest.skip("sqlmap timed out")
 
     @pytest.mark.slow
+    @pytest.mark.xfail(reason="sqlmap session cookie may not maintain DVWA authentication")
     def test_sqlmap_enumerate_dbs(self, dvwa_session, config):
         """
         Test sqlmap database enumeration.
@@ -181,11 +181,10 @@ class TestSQLMapDetection:
             if has_dbs:
                 print("[!] Databases enumerated successfully")
 
-            assert True
+            assert has_dbs, "sqlmap should enumerate databases on DVWA"
 
         except subprocess.TimeoutExpired:
-            print("[*] SQLMap timed out")
-            assert True
+            pytest.skip("sqlmap timed out")
 
 
 class TestSQLMapOptions:

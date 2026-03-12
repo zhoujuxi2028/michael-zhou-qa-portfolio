@@ -45,12 +45,16 @@ class TestXSSMultiLevel:
         if "Login ::" in response.text or "login.php" in response.url:
             pytest.skip(f"Session not maintained for {security_level} level")
 
-        # Check results based on level (informational)
         has_payload = payload.lower() in response.text.lower() or "alert" in response.text
         print(f"[{security_level}] Payload reflected: {has_payload}")
 
-        # Test passes - we're documenting behavior
-        assert True
+        if security_level == "low":
+            assert has_payload, "Low security should be vulnerable to XSS"
+        elif security_level == "high":
+            # DVWA high level uses regex to strip <script> tags but event handlers
+            # like <img onerror> may still work - this is a known DVWA behavior
+            if has_payload:
+                print("[!] High security bypassed with event handler payload")
 
     @pytest.mark.xss
     def test_xss_filter_evolution(self, dvwa_session, config, set_security_level):
@@ -81,8 +85,8 @@ class TestXSSMultiLevel:
         print(f"Medium (basic filter): Vulnerable = {results.get('medium', 'N/A')}")
         print(f"High (strong filter): Vulnerable = {results.get('high', 'N/A')}")
 
-        # Informational test
-        assert True
+        assert results.get("low"), "Low security should be vulnerable to basic XSS"
+        assert not results.get("high"), "High security should block basic XSS"
 
 
 class TestSQLiMultiLevel:
@@ -116,12 +120,13 @@ class TestSQLiMultiLevel:
         if "Login ::" in response.text:
             pytest.skip(f"Session not maintained for {security_level} level")
 
-        # Check for successful injection indicators (informational)
         user_count = response.text.lower().count("surname")
         print(f"[{security_level}] Users returned: {user_count}")
 
-        # Informational test
-        assert True
+        if security_level == "low":
+            assert user_count > 1, "Low security should be vulnerable to SQLi"
+        elif security_level == "high":
+            assert user_count <= 1, "High security should block SQLi attacks"
 
     @pytest.mark.sqli
     def test_sqli_error_exposure(self, dvwa_session, config, security_level):
@@ -136,7 +141,8 @@ class TestSQLiMultiLevel:
 
         response = dvwa_session.get(url, params={"id": error_payload, "Submit": "Submit"})
 
-        error_indicators = ["sql syntax", "mysql", "error"]
+        # Use specific SQL error indicators (not generic "error" which appears in page text)
+        error_indicators = ["sql syntax", "mysql_", "you have an error in your sql"]
         has_error = any(ind in response.text.lower() for ind in error_indicators)
 
         print(f"[{security_level}] SQL error exposed: {has_error}")
@@ -145,7 +151,7 @@ class TestSQLiMultiLevel:
             # Low level often exposes errors
             pass  # Informational
         elif security_level == "high":
-            # High level should not expose errors
+            # High level should not expose SQL errors
             assert not has_error, "High level should not expose SQL errors"
 
 
@@ -187,8 +193,8 @@ class TestCSRFMultiLevel:
 
         print(f"[{security_level}] Has token: {has_token}, Attack success: {password_changed}")
 
-        # Informational test - documenting behavior
-        assert True
+        if security_level == "high":
+            assert not password_changed, "High security should block CSRF attacks with invalid tokens"
 
 
 class TestCommandInjectionMultiLevel:
@@ -222,12 +228,13 @@ class TestCommandInjectionMultiLevel:
         if "Login ::" in response.text:
             pytest.skip(f"Session not maintained for {security_level} level")
 
-        # Check for command execution
         has_uid = "uid=" in response.text
         print(f"[{security_level}] Command executed: {has_uid}")
 
-        # Informational test
-        assert True
+        if security_level == "low":
+            assert has_uid, "Low security should be vulnerable to command injection"
+        elif security_level == "high":
+            assert not has_uid, "High security should block command injection"
 
 
 class TestFileInclusionMultiLevel:
@@ -260,12 +267,13 @@ class TestFileInclusionMultiLevel:
         if "Login ::" in response.text:
             pytest.skip(f"Session not maintained for {security_level} level")
 
-        # Check for /etc/passwd content
         has_passwd = "root:" in response.text
         print(f"[{security_level}] File inclusion success: {has_passwd}")
 
-        # Informational test
-        assert True
+        if security_level == "low":
+            assert has_passwd, "Low security should be vulnerable to file inclusion"
+        elif security_level == "high":
+            assert not has_passwd, "High security should block file inclusion"
 
 
 class TestSecurityLevelComparison:
@@ -321,5 +329,8 @@ class TestSecurityLevelComparison:
             print(f"{level:<10} {xss:<10} {sqli:<10} {csrf:<10}")
         print("=" * 50)
 
-        # Informational test - documenting behavior
-        assert True
+        # Low should be vulnerable, high should be secure
+        low_vuln = any(results["low"].values())
+        high_secure = not any(results["high"].values())
+        assert low_vuln, "Low security should have at least one vulnerability"
+        assert high_secure, "High security should block all tested attacks"

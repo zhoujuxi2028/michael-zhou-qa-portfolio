@@ -494,9 +494,14 @@ def set_security_level(dvwa_session, config):
         if dvwa_session is None:
             pytest.skip("DVWA not available")
 
+        import re as _re
+        # GET security.php to extract CSRF token
+        resp = dvwa_session.get(f"{config.DVWA_URL}/security.php", timeout=10)
+        token_match = _re.search(r"user_token'[^>]+value='([^']+)'", resp.text)
+        token = token_match.group(1) if token_match else ""
         dvwa_session.post(
             f"{config.DVWA_URL}/security.php",
-            data={"security": level, "seclev_submit": "Submit"},
+            data={"security": level, "seclev_submit": "Submit", "user_token": token},
             timeout=10,
         )
         return level
@@ -523,9 +528,14 @@ def security_level(request, dvwa_session, config):
         pytest.skip("DVWA not available")
 
     level = request.param
+    import re as _re
+    # GET security.php to extract CSRF token
+    resp = dvwa_session.get(f"{config.DVWA_URL}/security.php", timeout=10)
+    token_match = _re.search(r"user_token'[^>]+value='([^']+)'", resp.text)
+    token = token_match.group(1) if token_match else ""
     dvwa_session.post(
         f"{config.DVWA_URL}/security.php",
-        data={"security": level, "seclev_submit": "Submit"},
+        data={"security": level, "seclev_submit": "Submit", "user_token": token},
         timeout=10,
     )
     yield level
