@@ -20,6 +20,7 @@ pytestmark = pytest.mark.logging
 class TestLogInjection:
     """Tests for log injection vulnerabilities."""
 
+    @pytest.mark.skip(reason="Conceptual: cannot verify log injection without server log access")
     def test_log_injection_via_user_agent(self, http_session, config):
         """
         Test for log injection via User-Agent header.
@@ -49,8 +50,8 @@ class TestLogInjection:
 
         print("[*] Log injection test completed")
         print("[*] Manual verification: Check server logs for injected entries")
-        assert True
 
+    @pytest.mark.skip(reason="Conceptual: cannot verify log injection without server log access")
     def test_log_injection_via_username(self, http_session, config):
         """
         Test for log injection via username field.
@@ -77,7 +78,6 @@ class TestLogInjection:
                 pass
 
         print("[*] Username log injection test completed")
-        assert True
 
     def test_crlf_injection(self, http_session, config):
         """
@@ -93,22 +93,28 @@ class TestLogInjection:
             "test%0d%0aContent-Length: 0%0d%0a%0d%0aInjected",
         ]
 
+        crlf_injected = False
+        checked = 0
         for payload in crlf_payloads:
             try:
                 response = http_session.get(
                     f"{config.TARGET_URL}?param={payload}",
                     timeout=5,
                 )
+                checked += 1
 
-                # Check if injection worked
                 if "X-Injected" in str(response.headers):
                     print("[!] CRLF injection successful")
+                    crlf_injected = True
 
             except requests.RequestException:
                 pass
 
+        if not checked:
+            pytest.skip("Target not available")
+
         print("[*] CRLF injection test completed")
-        assert True
+        assert not crlf_injected, "CRLF injection should not be possible"
 
 
 class TestSensitiveDataInLogs:
@@ -137,7 +143,8 @@ class TestSensitiveDataInLogs:
         except requests.RequestException:
             pytest.skip("Target not available")
 
-        assert True
+        uses_post = 'method="post"' in response.text.lower()
+        assert uses_post, "Login form should use POST method to avoid password in URL/logs"
 
     def test_error_messages_not_verbose(self, dvwa_session, config):
         """
@@ -164,6 +171,7 @@ class TestSensitiveDataInLogs:
             "include(",
         ]
 
+        all_found = []
         for url in error_urls:
             try:
                 response = dvwa_session.get(url, timeout=5)
@@ -175,11 +183,12 @@ class TestSensitiveDataInLogs:
 
                 if found:
                     print(f"[!] Sensitive info in error: {found}")
+                    all_found.extend(found)
 
             except requests.RequestException:
                 pass
 
-        assert True
+        assert not all_found, f"Error messages should not expose sensitive info: {all_found}"
 
 
 class TestSecurityEventLogging:
@@ -202,19 +211,27 @@ class TestSecurityEventLogging:
                 timeout=5,
             )
 
-            # Check response
+            # Check response - DVWA shows login form again on failure
             if "login failed" in response.text.lower():
-                print("[+] Failed login detected in response")
+                print("[+] Failed login detected: explicit error message")
+                detected = True
             elif response.status_code == 401:
-                print("[+] 401 response on failed login")
+                print("[+] Failed login detected: 401 status")
+                detected = True
+            elif "login" in response.text.lower() and "password" in response.text.lower():
+                # Login form shown again = login was rejected
+                print("[+] Failed login detected: login form re-displayed")
+                detected = True
             else:
                 print("[*] Failed login handling unclear")
+                detected = False
 
         except requests.RequestException:
             pytest.skip("Target not available")
 
-        assert True
+        assert detected, "Failed login should be detected in response"
 
+    @pytest.mark.xfail(reason="DVWA does not implement brute force protection")
     def test_brute_force_detection(self, http_session, config):
         """
         Test for brute force detection.
@@ -248,7 +265,7 @@ class TestSecurityEventLogging:
         else:
             print("[!] No brute force protection after 5 attempts")
 
-        assert True
+        assert blocked, "Brute force protection should be active after multiple failed attempts"
 
 
 class TestMonitoringCapabilities:
@@ -289,8 +306,11 @@ class TestMonitoringCapabilities:
             if variance > 0.5:
                 print("[!] High timing variance - potential timing attack vector")
 
-        assert True
+        if not times:
+            pytest.skip("Target not available")
+        assert variance < 1.0, f"Response time variance too high: {variance:.3f}s"
 
+    @pytest.mark.xfail(reason="DVWA does not set monitoring-related headers")
     def test_security_headers_present(self, http_session, config):
         """
         Test for security headers that aid monitoring.
@@ -316,10 +336,12 @@ class TestMonitoringCapabilities:
                 else:
                     print(f"[-] {header}: Not present ({desc})")
 
+            present_headers = [h for h in monitoring_headers if response.headers.get(h)]
+
         except requests.RequestException:
             pytest.skip("Target not available")
 
-        assert True
+        assert len(present_headers) > 0, "At least one monitoring header should be present"
 
 
 class TestAuditCapabilities:
@@ -343,4 +365,4 @@ class TestAuditCapabilities:
         else:
             print("[!] No session cookie found")
 
-        assert True
+        assert session_id, "Session cookie should be present for audit tracking"

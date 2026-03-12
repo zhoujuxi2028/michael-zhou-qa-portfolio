@@ -15,21 +15,35 @@
 
 ## 1. 环境准备
 
+> **前置条件**: 运行 Phase 7 测试前 **必须** 先启动 Docker 环境。大部分测试（test_crypto, test_logging, test_multi_level, test_sqlmap, test_ssrf 等）需要连接 DVWA 或 Juice Shop 服务，未启动 Docker 会导致测试 skip 或失败。
+
 ### 启动测试环境
 
 ```bash
 cd /Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio/security-testing-demo
 
-# 启动 Docker 环境
+# 1. 启动 Docker 环境（必须）
 docker compose -f docker/docker-compose.yml up -d
 
-# 验证服务
-curl -I http://localhost        # DVWA
-curl -I http://localhost:3000   # Juice Shop
+# 2. 验证服务已就绪
+curl -I http://localhost        # DVWA (应返回 200/302)
+curl -I http://localhost:3000   # Juice Shop (应返回 200)
 
-# 安装依赖
+# 3. 安装依赖
 pip install -r requirements.txt
 ```
+
+### 测试与 Docker 服务依赖关系
+
+| 测试文件 | 需要 DVWA | 需要 Juice Shop | 需要 ZAP |
+|----------|:---------:|:---------------:|:--------:|
+| test_crypto.py | ✅ | | |
+| test_logging.py | ✅ | | |
+| test_multi_level.py | ✅ | | |
+| test_sqlmap.py | ✅ | | |
+| test_ssrf.py | | ✅ | |
+| test_components.py | | | |
+| test_integrity.py | | | |
 
 ### 安装额外工具
 

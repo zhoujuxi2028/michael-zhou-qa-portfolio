@@ -74,8 +74,11 @@ class TestNegativeQuantity:
         if products_response.status_code != 200:
             pytest.skip("Could not get products")
 
-        # Note: Price should be calculated server-side
-        # This test verifies the concept
+        products = products_response.json().get("data", [])
+        assert products, "Should be able to fetch products"
+        for product in products:
+            price = product.get("price", 0)
+            assert price >= 0, f"Product price should not be negative: {product.get('name')} = {price}"
 
 
 @pytest.mark.juice_shop
@@ -104,14 +107,8 @@ class TestCouponAbuse:
             responses.append(response.status_code)
 
         # After first application, subsequent should fail
-        # If all succeed, coupon might be reusable
-        if all(r == 200 for r in responses):
-            # Check if discount stacked
-            basket_response = session.get(
-                f"{juice_shop_url}/rest/basket/1",
-                timeout=10,
-            )
-            # Note: This documents potential vulnerability
+        assert not all(r == 200 for r in responses), \
+            "Coupon should not be reusable multiple times"
 
     def test_coupon_stacking(self, juice_shop_auth_session, juice_shop_url):
         """SEC-BL-003: Test multiple coupon stacking.
@@ -171,9 +168,8 @@ class TestPriceManipulation:
         )
 
         # Server should calculate price, not accept client value
-        if response.status_code == 200:
-            # If order was created, verify price wasn't manipulated
-            pass  # Further validation would check order total
+        assert response.status_code != 200, \
+            "Server should not accept client-provided price in checkout"
 
     def test_free_delivery_manipulation(self, juice_shop_auth_session, juice_shop_url):
         """SEC-BL-004: Test delivery cost bypass.
@@ -193,12 +189,10 @@ class TestPriceManipulation:
         if delivery_response.status_code == 200:
             deliveries = delivery_response.json().get("data", [])
 
-            # Find cheapest delivery
             if deliveries:
                 cheapest = min(deliveries, key=lambda d: d.get("price", 999))
-
-                # Note: Proper validation would be in checkout
-                # This tests that delivery options are fetched securely
+                assert cheapest.get("price", 0) >= 0, \
+                    "Delivery price should not be negative"
 
 
 @pytest.mark.juice_shop
@@ -249,6 +243,7 @@ class TestPrivilegeEscalation:
 
             assert role != "admin", "Privilege escalation should not be allowed"
 
+    @pytest.mark.xfail(reason="Juice Shop exposes some admin endpoints to regular users")
     def test_access_admin_section(self, juice_shop_auth_session, juice_shop_url):
         """SEC-BL-005: Test access to admin section.
 
@@ -264,19 +259,16 @@ class TestPrivilegeEscalation:
             "/api/Complaints/",
         ]
 
+        exposed = []
         for endpoint in admin_endpoints:
             response = session.get(
                 f"{juice_shop_url}{endpoint}",
                 timeout=10,
             )
 
-            # Regular user should not access admin endpoints
-            # 401 or 403 = properly protected
-            # 200 could be vulnerability (needs data inspection)
             if response.status_code == 200:
                 data = response.json()
-                # Check if sensitive admin data is exposed
                 if "data" in data and len(data.get("data", [])) > 0:
-                    # Depending on endpoint, this might be a vulnerability
-                    # Feedbacks might be intentionally public
-                    pass
+                    exposed.append(endpoint)
+
+        assert not exposed, f"Admin endpoints should not be accessible to regular users: {exposed}"

@@ -67,6 +67,7 @@ def decode_jwt_header(token):
 class TestJWTSignature:
     """Test JWT signature validation."""
 
+    @pytest.mark.xfail(reason="Juice Shop may accept tampered JWT tokens")
     def test_jwt_signature_validation(self, juice_shop_auth_session, juice_shop_url):
         """SEC-JWT-001: Verify JWT signature is validated.
 
@@ -109,11 +110,10 @@ class TestJWTSignature:
             timeout=10,
         )
 
-        # Should reject tampered token
-        if response.status_code not in [401, 403, 500]:
-            # Vulnerability detected - tampered JWT accepted
-            pytest.xfail("VULNERABILITY DETECTED: JWT signature not validated - tampered token accepted")
+        assert response.status_code in [401, 403, 500], \
+            "Tampered JWT should be rejected"
 
+    @pytest.mark.xfail(reason="Juice Shop may accept 'none' algorithm JWT tokens")
     def test_jwt_none_algorithm(self, juice_shop_auth_session, juice_shop_url):
         """SEC-JWT-002: Test 'none' algorithm attack.
 
@@ -152,10 +152,8 @@ class TestJWTSignature:
             timeout=10,
         )
 
-        # Should reject 'none' algorithm
-        if response.status_code not in [401, 403, 500]:
-            # Vulnerability detected - 'none' algorithm accepted
-            pytest.xfail("VULNERABILITY DETECTED: JWT 'none' algorithm accepted - signature bypass possible")
+        assert response.status_code in [401, 403, 500], \
+            "JWT with 'none' algorithm should be rejected"
 
 
 @pytest.mark.juice_shop
@@ -195,6 +193,7 @@ class TestJWTWeakSecret:
 class TestJWTExpiration:
     """Test JWT token expiration handling."""
 
+    @pytest.mark.xfail(reason="Juice Shop JWT tokens may lack expiration claim")
     def test_jwt_expiration_present(self, juice_shop_auth_session, juice_shop_url):
         """SEC-JWT-004: Verify JWT has expiration claim.
 
@@ -212,11 +211,8 @@ class TestJWTExpiration:
         has_exp = "exp" in payload
         has_iat = "iat" in payload
 
-        # Note: Juice Shop tokens may not have exp
-        if not has_exp:
-            # Document the finding - tokens without exp don't expire
-            assert True, "Note: JWT lacks expiration claim (potential vulnerability)"
-        else:
+        assert has_exp, "JWT token should have an expiration (exp) claim"
+        if has_exp:
             import time
             exp = payload.get("exp", 0)
             iat = payload.get("iat", time.time())
