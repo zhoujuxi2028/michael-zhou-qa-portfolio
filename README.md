@@ -9,14 +9,14 @@ Test automation and DevOps demonstration projects.
 
 ## Projects | 项目
 
-| Project | Description | Tech Stack |
-|---------|-------------|------------|
-| [iwsva-cypress-e2e](./iwsva-cypress-e2e/) | IWSVA E2E Testing (77 tests) | Cypress, JavaScript |
-| [k8s-auto-testing-platform](./k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests) | Python, Pytest, Chaos Mesh |
-| [security-testing-demo](./security-testing-demo/) | DAST Security Testing (170 tests, OWASP Top 10 2021) | OWASP ZAP, Nessus, SQLMap, Pytest |
-| [cicd-demo](./cicd-demo/) | CI/CD Pipeline Demo | GitHub Actions, Docker |
-| [api-testing-demo](./api-testing-demo/) | API Testing | Newman, Postman |
-| [selenium-demo](./selenium-demo/) | Browser Automation | Selenium, Python |
+| Project                                                   | Description                                          | Tech Stack                        |
+| --------------------------------------------------------- | ---------------------------------------------------- | --------------------------------- |
+| [iwsva-cypress-e2e](./iwsva-cypress-e2e/)                 | IWSVA E2E Testing (77 tests) ([setup notes](./docs/iwsva-setup.md)) | Cypress, JavaScript               |
+| [k8s-auto-testing-platform](./k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests)               | Python, Pytest, Chaos Mesh        |
+| [security-testing-demo](./security-testing-demo/)         | DAST Security Testing (170 tests, OWASP Top 10 2021) | OWASP ZAP, Nessus, SQLMap, Pytest |
+| [cicd-demo](./cicd-demo/)                                 | CI/CD Pipeline Demo                                  | GitHub Actions, Docker            |
+| [api-testing-demo](./api-testing-demo/)                   | API Testing                                          | Newman, Postman                   |
+| [selenium-demo](./selenium-demo/)                         | Browser Automation                                   | Selenium, Python                  |
 
 ---
 
