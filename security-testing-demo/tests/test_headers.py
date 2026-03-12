@@ -45,6 +45,7 @@ class TestSecurityHeaders:
     }
 
     @pytest.mark.headers
+    @pytest.mark.xfail(reason="DVWA does not set HSTS header")
     def test_hsts_header(self, http_session, config):
         """Test for HTTP Strict Transport Security header.
 
@@ -84,9 +85,10 @@ class TestSecurityHeaders:
         except requests.RequestException:
             pytest.skip("Target not available")
 
-        assert True
+        assert hsts, "HSTS header should be present"
 
     @pytest.mark.headers
+    @pytest.mark.xfail(reason="DVWA does not set X-Frame-Options or CSP frame-ancestors")
     def test_x_frame_options(self, http_session, config):
         """Test for X-Frame-Options header.
 
@@ -118,9 +120,11 @@ class TestSecurityHeaders:
         except requests.RequestException:
             pytest.skip("Target not available")
 
-        assert True
+        csp = response.headers.get("Content-Security-Policy", "")
+        assert xfo or "frame-ancestors" in csp.lower(), "Clickjacking protection should be present"
 
     @pytest.mark.headers
+    @pytest.mark.xfail(reason="DVWA does not set Content-Security-Policy header")
     def test_content_security_policy(self, http_session, config):
         """Test for Content-Security-Policy header.
 
@@ -164,9 +168,10 @@ class TestSecurityHeaders:
         except requests.RequestException:
             pytest.skip("Target not available")
 
-        assert True
+        assert csp, "Content-Security-Policy header should be present"
 
     @pytest.mark.headers
+    @pytest.mark.xfail(reason="DVWA is missing most security headers")
     def test_all_security_headers(self, http_session, config):
         """Test all recommended security headers.
 
@@ -202,13 +207,14 @@ class TestSecurityHeaders:
         except requests.RequestException:
             pytest.skip("Target not available")
 
-        assert True
+        assert missing == 0, f"{missing} security headers are missing"
 
 
 class TestCacheHeaders:
     """Tests for Cache-related security headers."""
 
     @pytest.mark.headers
+    @pytest.mark.xfail(reason="DVWA does not set cache-control headers on sensitive pages")
     def test_cache_control_sensitive_pages(self, http_session, config):
         """Test Cache-Control for sensitive pages.
 
@@ -221,11 +227,14 @@ class TestCacheHeaders:
 
         sensitive_paths = ["/login", "/account", "/profile", "/admin"]
 
+        uncached = []
+        checked = 0
         for path in sensitive_paths:
             url = f"{config.TARGET_URL}{path}"
 
             try:
                 response = http_session.get(url, timeout=10)
+                checked += 1
 
                 cache_control = response.headers.get("Cache-Control", "")
                 pragma = response.headers.get("Pragma", "")
@@ -236,8 +245,12 @@ class TestCacheHeaders:
                     print(f"[*] {path}: Cache-Control has no-cache (weaker)")
                 else:
                     print(f"[!] {path}: May be cached - {cache_control or 'no header'}")
+                    uncached.append(path)
 
             except requests.RequestException:
                 continue
 
-        assert True
+        if not checked:
+            pytest.skip("Target not available")
+
+        assert not uncached, f"Sensitive pages without cache-control: {uncached}"

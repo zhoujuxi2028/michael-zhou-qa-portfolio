@@ -80,8 +80,9 @@ class TestZAPPassiveScan:
         # Run passive scan
         zap_helper.passive_scan(wait_time=15)
 
-        # Passive scan should complete (no exception = success)
-        assert True, "Passive scan completed"
+        # Get alerts to verify scan produced results
+        alerts = zap_helper.get_alerts(target=target_url)
+        assert isinstance(alerts, list), "Passive scan should produce an alerts list"
 
     def test_passive_scan_generates_alerts(self, zap_helper, target_url):
         """SEC-ZAP-005: Verify passive scan can detect vulnerabilities."""
@@ -206,6 +207,5 @@ class TestZAPContext:
 
     def test_clear_session(self, zap_helper):
         """SEC-ZAP-013: Verify session can be cleared."""
-        # Should not raise exception
         zap_helper.clear_session()
-        assert True, "Session cleared successfully"
+        assert zap_helper.is_connected(), "ZAP should still be connected after clearing session"

@@ -52,8 +52,7 @@ class TestDependencyVulnerabilities:
         else:
             print("[+] No known vulnerabilities in dependencies")
 
-        # This is informational - we don't fail on vulnerabilities
-        assert True
+        assert result.returncode in [0, 64], f"safety check failed with return code {result.returncode}"
 
     def test_pip_audit(self):
         """
@@ -84,12 +83,13 @@ class TestDependencyVulnerabilities:
         else:
             print("[+] pip-audit: No vulnerabilities found")
 
-        assert True
+        assert result.returncode in [0, 1], f"pip-audit failed with return code {result.returncode}"
 
 
 class TestServerVersionDisclosure:
     """Tests for server version disclosure."""
 
+    @pytest.mark.xfail(reason="DVWA server header discloses version information")
     def test_server_header_disclosure(self, http_session, config):
         """
         Test if Server header discloses version info.
@@ -106,14 +106,16 @@ class TestServerVersionDisclosure:
 
                 # Check for version numbers
                 version_pattern = r"\d+\.\d+"
-                if re.search(version_pattern, server):
+                has_version = bool(re.search(version_pattern, server))
+                if has_version:
                     print("[!] Server header discloses version number")
                 else:
                     print("[+] No version number in Server header")
             else:
+                has_version = False
                 print("[+] Server header not present")
 
-            assert True
+            assert not has_version, f"Server header should not disclose version: {server}"
 
         except requests.RequestException:
             pytest.skip("Target not available")
@@ -134,7 +136,7 @@ class TestServerVersionDisclosure:
             else:
                 print("[+] X-Powered-By header not present")
 
-            assert True
+            assert not powered_by, f"X-Powered-By header should not be present: {powered_by}"
 
         except requests.RequestException:
             pytest.skip("Target not available")
@@ -153,12 +155,11 @@ class TestServerVersionDisclosure:
                 "X-AspNetMvc-Version",
             ]
 
-            for header in aspnet_headers:
-                value = response.headers.get(header, "")
-                if value:
-                    print(f"[!] {header}: {value}")
+            aspnet_found = [h for h in aspnet_headers if response.headers.get(h)]
+            for header in aspnet_found:
+                print(f"[!] {header}: {response.headers.get(header)}")
 
-            assert True
+            assert not aspnet_found, f"ASP.NET version headers should not be present: {aspnet_found}"
 
         except requests.RequestException:
             pytest.skip("Target not available")
@@ -184,21 +185,25 @@ class TestKnownVulnerabilities:
                 r"jquery\.min\.js\?v=(\d+\.\d+\.\d+)",
             ]
 
+            jquery_version = None
             for pattern in jquery_patterns:
                 match = re.search(pattern, response.text, re.IGNORECASE)
                 if match:
-                    version = match.group(1)
-                    major, minor, patch = map(int, version.split("."))
+                    jquery_version = match.group(1)
+                    major, minor, patch = map(int, jquery_version.split("."))
 
                     if major < 3 or (major == 3 and minor < 5):
-                        print(f"[!] Potentially vulnerable jQuery version: {version}")
+                        print(f"[!] Potentially vulnerable jQuery version: {jquery_version}")
                     else:
-                        print(f"[+] jQuery version {version} is current")
+                        print(f"[+] jQuery version {jquery_version} is current")
                     break
             else:
                 print("[*] jQuery version not detected")
 
-            assert True
+            if jquery_version:
+                major, minor, patch = map(int, jquery_version.split("."))
+                assert major > 3 or (major == 3 and minor >= 5), \
+                    f"jQuery {jquery_version} has known XSS vulnerabilities (need >= 3.5.0)"
 
         except requests.RequestException:
             pytest.skip("Target not available")
@@ -219,16 +224,20 @@ class TestKnownVulnerabilities:
                 r"Bootstrap v(\d+\.\d+\.\d+)",
             ]
 
+            bootstrap_version = None
             for pattern in bootstrap_patterns:
                 match = re.search(pattern, response.text, re.IGNORECASE)
                 if match:
-                    version = match.group(1)
-                    print(f"[*] Bootstrap version: {version}")
+                    bootstrap_version = match.group(1)
+                    print(f"[*] Bootstrap version: {bootstrap_version}")
                     break
             else:
                 print("[*] Bootstrap version not detected")
 
-            assert True
+            if bootstrap_version:
+                major, minor, patch = map(int, bootstrap_version.split("."))
+                assert major > 4 or (major == 4 and minor > 3) or (major == 4 and minor == 3 and patch >= 1), \
+                    f"Bootstrap {bootstrap_version} has known XSS vulnerabilities (need >= 4.3.1)"
 
         except requests.RequestException:
             pytest.skip("Target not available")
@@ -257,7 +266,7 @@ class TestDockerVulnerabilities:
         except FileNotFoundError:
             pytest.skip("Trivy not installed")
 
-        assert True
+        assert result.returncode == 0, "Trivy should be available"
 
     @pytest.mark.slow
     def test_scan_dvwa_image(self):
@@ -286,13 +295,14 @@ class TestDockerVulnerabilities:
             timeout=300,
         )
 
-        if "CRITICAL" in result.stdout or "HIGH" in result.stdout:
+        output = result.stdout
+        if "CRITICAL" in output or "HIGH" in output:
             print("[!] Vulnerabilities found in DVWA image (expected)")
         else:
             print("[+] No critical vulnerabilities")
 
-        # DVWA is intentionally vulnerable
-        assert True
+        assert "CRITICAL" in output or "HIGH" in output, \
+            "DVWA image should have known vulnerabilities (intentionally vulnerable)"
 
 
 class TestComponentInventory:

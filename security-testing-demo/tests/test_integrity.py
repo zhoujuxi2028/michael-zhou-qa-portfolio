@@ -22,6 +22,7 @@ pytestmark = pytest.mark.integrity
 class TestInsecureDeserialization:
     """Tests for insecure deserialization vulnerabilities."""
 
+    @pytest.mark.xfail(reason="Juice Shop accepts malformed JSON payloads")
     def test_json_deserialization(self, juice_shop_session, config):
         """
         Test for JSON deserialization issues.
@@ -41,6 +42,7 @@ class TestInsecureDeserialization:
 
         api_url = f"{config.JUICE_SHOP_URL}/api/Users/"
 
+        dangerous_accepted = []
         for payload in malformed_payloads:
             try:
                 response = juice_shop_session.post(
@@ -50,17 +52,18 @@ class TestInsecureDeserialization:
                     timeout=5,
                 )
 
-                # Check for unusual behavior
                 if response.status_code == 500:
                     print(f"[!] Server error with payload: {payload[:50]}")
-                elif response.status_code == 200:
+                elif response.status_code in [200, 201]:
                     print(f"[!] Payload accepted: {payload[:50]}")
+                    dangerous_accepted.append(payload[:50])
 
             except requests.RequestException:
                 pass
 
-        assert True
+        assert not dangerous_accepted, f"Malicious JSON payloads should be rejected: {dangerous_accepted}"
 
+    @pytest.mark.skip(reason="Conceptual: no XML endpoint available to test XXE")
     def test_xml_external_entity(self, http_session, config):
         """
         Test for XML External Entity (XXE) vulnerability.
@@ -68,24 +71,14 @@ class TestInsecureDeserialization:
         ID: SEC-INTEG-002
         XML parsers should disable external entity processing.
         """
-        # XXE payload
-        xxe_payload = """<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE foo [
-  <!ENTITY xxe SYSTEM "file:///etc/passwd">
-]>
-<root>&xxe;</root>"""
-
-        # Note: Most modern APIs use JSON, not XML
-        # This is a conceptual test
         print("[*] XXE Test: Most modern APIs use JSON")
         print("[*] If XML is used, ensure external entities are disabled")
-
-        assert True
 
 
 class TestCICDIntegrity:
     """Tests for CI/CD pipeline integrity."""
 
+    @pytest.mark.xfail(reason="Workflow does not yet define explicit permissions")
     def test_github_actions_permissions(self):
         """
         Test GitHub Actions workflow permissions.
@@ -114,7 +107,7 @@ class TestCICDIntegrity:
             status = "[+]" if present else "[-]"
             print(f"{status} {desc}")
 
-        assert True
+        assert "permissions:" in content, "Workflow should define explicit permissions"
 
     def test_no_hardcoded_secrets(self):
         """
@@ -154,7 +147,7 @@ class TestCICDIntegrity:
         else:
             print("[+] No obvious hardcoded secrets found")
 
-        assert True
+        assert not issues, f"Hardcoded secrets found in workflow files: {issues}"
 
 
 class TestSubresourceIntegrity:
@@ -188,10 +181,11 @@ class TestSubresourceIntegrity:
                     print(f"[+] Scripts with SRI: {len(scripts_with_sri)}")
                 else:
                     print("[!] No SRI hashes found on external scripts")
+
+                assert len(scripts_with_sri) >= len(external_scripts), \
+                    f"All external scripts should have SRI ({len(scripts_with_sri)}/{len(external_scripts)})"
             else:
                 print("[+] No external scripts found")
-
-            assert True
 
         except requests.RequestException:
             pytest.skip("Target not available")
@@ -214,10 +208,13 @@ class TestSubresourceIntegrity:
 
             if external_css:
                 print(f"[*] External stylesheets: {len(external_css)}")
+                # Check for integrity attribute on link tags
+                integrity_pattern = r'<link[^>]+integrity=["\']([^"\']+)["\'][^>]*>'
+                links_with_sri = re.findall(integrity_pattern, response.text, re.IGNORECASE)
+                assert len(links_with_sri) >= len(external_css), \
+                    f"All external stylesheets should have SRI ({len(links_with_sri)}/{len(external_css)})"
             else:
                 print("[+] No external stylesheets")
-
-            assert True
 
         except requests.RequestException:
             pytest.skip("Target not available")
@@ -248,11 +245,12 @@ class TestDataIntegrity:
             else:
                 print("[!] Content-Type header missing")
 
-            assert True
+            assert content_type, "Content-Type header should be present"
 
         except requests.RequestException:
             pytest.skip("Target not available")
 
+    @pytest.mark.xfail(reason="DVWA does not set X-Content-Type-Options header")
     def test_x_content_type_options(self, http_session, config):
         """
         Test for X-Content-Type-Options header.
@@ -271,7 +269,7 @@ class TestDataIntegrity:
             else:
                 print("[!] X-Content-Type-Options header missing")
 
-            assert True
+            assert xcto.lower() == "nosniff", f"X-Content-Type-Options should be 'nosniff', got: '{xcto}'"
 
         except requests.RequestException:
             pytest.skip("Target not available")
@@ -305,7 +303,7 @@ class TestUpdateIntegrity:
         else:
             print("[*] No lock files found")
 
-        assert True
+        assert len(found) > 0, "Should have at least one dependency lock/version file"
 
     def test_pinned_versions(self):
         """
@@ -333,4 +331,4 @@ class TestUpdateIntegrity:
         else:
             print("[+] All dependencies have version specifiers")
 
-        assert True
+        assert not unpinned, f"All dependencies should have pinned versions: {unpinned[:5]}"

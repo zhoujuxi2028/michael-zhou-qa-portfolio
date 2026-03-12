@@ -92,26 +92,22 @@ class TestIDOR:
             assert basket_id != 1 or "test" in email.lower(), \
                 "IDOR vulnerability: Can access other user's basket"
 
+    @pytest.mark.xfail(reason="Juice Shop has IDOR vulnerability in order history")
     def test_order_history_idor(self, juice_shop_auth_session, juice_shop_url):
         """SEC-API-003: Test IDOR in order history access."""
         session, token, email = juice_shop_auth_session
         if not session:
             pytest.skip("Authentication not available")
 
-        # Try to access order history for user ID 1
         response = session.get(
             f"{juice_shop_url}/rest/track-order/1",
             timeout=10,
         )
 
-        # Properly secured apps return 401/403 for other users' orders
-        # If 200, check that data isn't exposed
         if response.status_code == 200:
             data = response.json()
-            # Should only return own orders
-            if "error" not in str(data).lower() and data.get("data") is not None:
-                # Vulnerability detected - this is expected for Juice Shop
-                pytest.xfail("VULNERABILITY DETECTED: Order history IDOR - can access other users' orders")
+            assert "error" in str(data).lower() or data.get("data") is None, \
+                "Should not expose other users' order history"
 
 
 @pytest.mark.juice_shop
@@ -150,6 +146,7 @@ class TestAPIInformationLeak:
             if info_leaked:
                 pytest.skip("Information disclosure detected - known Juice Shop vulnerability")
 
+    @pytest.mark.xfail(reason="Juice Shop exposes version endpoint without authentication")
     def test_version_disclosure(self, juice_shop_url):
         """SEC-API-004: Test if API version is disclosed."""
         response = requests.get(
@@ -157,13 +154,10 @@ class TestAPIInformationLeak:
             timeout=10,
         )
 
-        # Version endpoint should require auth
         if response.status_code == 200:
             data = response.json()
-            # If version is exposed without auth, it's a minor info leak
-            if "version" in data:
-                # Vulnerability detected - this is expected for Juice Shop
-                pytest.xfail(f"VULNERABILITY DETECTED: Version disclosure - {data.get('version')}")
+            assert "version" not in data, \
+                f"Version should not be disclosed without auth: {data.get('version')}"
 
 
 @pytest.mark.juice_shop
@@ -194,6 +188,7 @@ class TestHTTPMethodAbuse:
                     assert method_response.status_code in [401, 403, 405], \
                         f"{method} method should be protected"
 
+    @pytest.mark.xfail(reason="Juice Shop may not disable TRACE method")
     def test_trace_method_disabled(self, juice_shop_url):
         """SEC-API-005: Verify TRACE method is disabled."""
         try:
@@ -202,12 +197,11 @@ class TestHTTPMethodAbuse:
                 juice_shop_url,
                 timeout=10,
             )
-            if response.status_code not in [405, 501]:
-                # Vulnerability detected - TRACE method enabled
-                pytest.xfail(f"VULNERABILITY DETECTED: TRACE method enabled (status {response.status_code})")
         except requests.RequestException:
-            # Connection errors are acceptable (method not supported)
-            pass
+            pytest.skip("Juice Shop not available")
+
+        assert response.status_code in [405, 501], \
+            f"TRACE method should be disabled (got status {response.status_code})"
 
 
 @pytest.mark.juice_shop
@@ -215,6 +209,7 @@ class TestHTTPMethodAbuse:
 class TestRateLimiting:
     """Test rate limiting on sensitive endpoints."""
 
+    @pytest.mark.xfail(reason="Juice Shop does not implement login rate limiting")
     def test_login_rate_limiting(self, juice_shop_url):
         """SEC-API-005: Test if login has rate limiting.
 
@@ -228,6 +223,7 @@ class TestRateLimiting:
 
         # Send 10 rapid requests
         responses = []
+        connection_errors = 0
         for _ in range(10):
             try:
                 response = requests.post(
@@ -237,14 +233,12 @@ class TestRateLimiting:
                 )
                 responses.append(response.status_code)
             except requests.RequestException:
-                # Timeout or connection reset could indicate rate limiting
-                responses.append(429)
+                connection_errors += 1
+
+        if not responses:
+            pytest.skip("Juice Shop not available")
 
         # Check if any rate limiting was applied
-        rate_limited = any(code == 429 for code in responses)
+        rate_limited = any(code == 429 for code in responses) or connection_errors > 0
 
-        # Note: Juice Shop may not have rate limiting - document the finding
-        if not rate_limited:
-            # All requests succeeded (no rate limiting)
-            # This is expected for Juice Shop (intentionally vulnerable)
-            assert True, "Note: No rate limiting detected (expected for vulnerable app)"
+        assert rate_limited, "Login endpoint should implement rate limiting"
