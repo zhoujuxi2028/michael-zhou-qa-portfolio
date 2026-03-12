@@ -22,6 +22,7 @@ class TestReflectedXSS:
     ]
 
     @pytest.mark.xss
+    @pytest.mark.xfail(reason="DVWA at low security reflects XSS payloads without sanitization")
     def test_xss_in_search_parameter(self, dvwa_session, config):
         """Test for XSS in search/query parameters.
 
@@ -34,19 +35,23 @@ class TestReflectedXSS:
         # DVWA XSS Reflected page
         url = f"{config.DVWA_URL}/vulnerabilities/xss_r/"
 
+        reflected = []
         for payload in self.XSS_PAYLOADS:
             response = dvwa_session.get(url, params={"name": payload})
 
-            # Check if payload is reflected without encoding
-            if payload in response.text:
-                # Vulnerability found - this is expected in DVWA (low security)
-                assert True, f"XSS payload reflected: {payload}"
-                return
+            if "Login ::" in response.text:
+                pytest.skip("DVWA session not maintained")
 
-        # If no payload reflected, test passes (secure)
-        assert True
+            if payload in response.text:
+                reflected.append(payload)
+
+        if reflected:
+            print(f"[!] XSS payloads reflected: {len(reflected)}")
+
+        assert len(reflected) == 0, f"XSS payloads should not be reflected: {reflected}"
 
     @pytest.mark.xss
+    @pytest.mark.xfail(reason="DVWA at low security does not HTML-encode output")
     def test_xss_payload_encoding(self, dvwa_session, config):
         """Test if XSS payloads are properly HTML encoded.
 
@@ -61,6 +66,9 @@ class TestReflectedXSS:
 
         response = dvwa_session.get(url, params={"name": payload})
 
+        if "Login ::" in response.text:
+            pytest.skip("DVWA session not maintained")
+
         # Check for proper encoding
         encoded_payload = "&lt;script&gt;alert('XSS')&lt;/script&gt;"
 
@@ -70,11 +78,9 @@ class TestReflectedXSS:
         is_raw = payload in response.text
 
         if is_raw and not is_encoded:
-            # Vulnerability: Raw payload reflected
             print(f"[!] XSS Vulnerability: Payload reflected without encoding")
 
-        # Test passes - we're detecting behavior
-        assert True
+        assert is_encoded and not is_raw, "XSS payload should be HTML-encoded in output"
 
     @pytest.mark.xss
     def test_xss_in_url_fragment(self, http_session, config):
@@ -105,14 +111,14 @@ class TestReflectedXSS:
             if unsafe_patterns:
                 print(f"[!] Potential DOM XSS patterns found: {unsafe_patterns}")
 
-            # This is informational - real DOM XSS requires browser testing
-            assert True
+            assert len(unsafe_patterns) == 0, f"Unsafe DOM patterns found: {unsafe_patterns}"
 
         except requests.RequestException:
             pytest.skip("Target not available")
 
     @pytest.mark.xss
     @pytest.mark.slow
+    @pytest.mark.xfail(reason="DVWA at low security has no XSS filter to bypass")
     def test_xss_filter_bypass(self, dvwa_session, config):
         """Test XSS filter bypass techniques.
 
@@ -137,6 +143,9 @@ class TestReflectedXSS:
         for payload in bypass_payloads:
             response = dvwa_session.get(url, params={"name": payload})
 
+            if "Login ::" in response.text:
+                pytest.skip("DVWA session not maintained")
+
             # Check for execution indicators
             if "alert" in response.text.lower() and "xss" in response.text.lower():
                 bypassed.append(payload)
@@ -144,13 +153,14 @@ class TestReflectedXSS:
         if bypassed:
             print(f"[!] Filter bypass successful with {len(bypassed)} payloads")
 
-        assert True
+        assert len(bypassed) == 0, f"XSS filter bypass should not be possible: {len(bypassed)} payloads succeeded"
 
 
 class TestStoredXSS:
     """Tests for Stored XSS vulnerabilities."""
 
     @pytest.mark.xss
+    @pytest.mark.xfail(reason="DVWA at low security stores XSS payloads without sanitization")
     def test_stored_xss_in_comments(self, dvwa_session, config):
         """Test for Stored XSS in comment/guestbook functionality.
 
@@ -177,7 +187,10 @@ class TestStoredXSS:
         # Check if payload is stored and rendered
         response = dvwa_session.get(url)
 
+        if "Login ::" in response.text:
+            pytest.skip("DVWA session not maintained")
+
         if payload in response.text:
             print("[!] Stored XSS vulnerability found")
 
-        assert True
+        assert payload not in response.text, "Stored XSS payload should not be rendered raw"

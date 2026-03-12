@@ -20,6 +20,7 @@ pytestmark = pytest.mark.ssrf
 class TestSSRFBasic:
     """Basic SSRF vulnerability tests."""
 
+    @pytest.mark.skip(reason="Conceptual: DVWA has no SSRF-vulnerable endpoint")
     def test_url_parameter_ssrf(self, dvwa_session, config):
         """
         Test for SSRF via URL parameters.
@@ -53,8 +54,7 @@ class TestSSRFBasic:
         print("  - Webhook URLs")
         print("  - Import from URL features")
 
-        assert True
-
+    @pytest.mark.skip(reason="Conceptual: documents open redirect payloads for SSRF chaining")
     def test_ssrf_via_redirect(self, http_session, config):
         """
         Test SSRF via open redirect.
@@ -73,12 +73,11 @@ class TestSSRFBasic:
         for payload in redirect_payloads:
             print(f"  {payload}")
 
-        assert True
-
 
 class TestInternalServiceAccess:
     """Tests for internal service access via SSRF."""
 
+    @pytest.mark.skip(reason="Conceptual: documents cloud metadata endpoints for SSRF targeting")
     def test_cloud_metadata_endpoints(self):
         """
         Test for cloud metadata endpoint access.
@@ -103,8 +102,7 @@ class TestInternalServiceAccess:
         print("  - Instance identity")
         print("  - Network configuration")
 
-        assert True
-
+    @pytest.mark.skip(reason="Conceptual: documents internal service ports for SSRF scanning")
     def test_internal_service_ports(self):
         """
         Test for internal service port access.
@@ -125,12 +123,11 @@ class TestInternalServiceAccess:
         for service, endpoint in internal_services.items():
             print(f"  {service}: http://{endpoint}")
 
-        assert True
-
 
 class TestProtocolSmuggling:
     """Tests for protocol smuggling via SSRF."""
 
+    @pytest.mark.skip(reason="Conceptual: documents file:// protocol payloads for SSRF")
     def test_file_protocol(self):
         """
         Test for file:// protocol access.
@@ -149,8 +146,7 @@ class TestProtocolSmuggling:
         for payload in file_payloads:
             print(f"  {payload}")
 
-        assert True
-
+    @pytest.mark.skip(reason="Conceptual: documents gopher:// protocol smuggling for SSRF")
     def test_gopher_protocol(self):
         """
         Test for gopher:// protocol smuggling.
@@ -169,8 +165,8 @@ class TestProtocolSmuggling:
             print(f"  {example}")
 
         print("\n[*] Gopher can send arbitrary TCP data")
-        assert True
 
+    @pytest.mark.skip(reason="Conceptual: documents dict:// protocol payloads for SSRF")
     def test_dict_protocol(self):
         """
         Test for dict:// protocol access.
@@ -187,12 +183,11 @@ class TestProtocolSmuggling:
         for payload in dict_payloads:
             print(f"  {payload}")
 
-        assert True
-
 
 class TestSSRFBypass:
     """Tests for SSRF filter bypasses."""
 
+    @pytest.mark.skip(reason="Conceptual: documents IP encoding techniques for SSRF filter bypass")
     def test_ip_encoding_bypass(self):
         """
         Test IP encoding techniques for filter bypass.
@@ -216,8 +211,7 @@ class TestSSRFBypass:
         for name, ip in ip_encodings.items():
             print(f"  {name}: http://{ip}")
 
-        assert True
-
+    @pytest.mark.skip(reason="Conceptual: documents DNS rebinding attack concept")
     def test_dns_rebinding(self):
         """
         Test DNS rebinding concept.
@@ -234,8 +228,7 @@ class TestSSRFBypass:
 
         print("\n[*] Mitigation: Validate IP at request time, not just hostname")
 
-        assert True
-
+    @pytest.mark.skip(reason="Conceptual: documents URL parsing confusion techniques for SSRF")
     def test_url_parsing_confusion(self):
         """
         Test URL parsing confusion.
@@ -255,8 +248,6 @@ class TestSSRFBypass:
             print(f"  {payload}")
 
         print("\n[*] Different parsers may extract different hosts")
-
-        assert True
 
 
 class TestJuiceShopSSRF:
@@ -279,12 +270,17 @@ class TestJuiceShopSSRF:
         ]
 
         print("[*] Testing Juice Shop for SSRF endpoints")
-        print("[*] Common vulnerable features:")
-        print("  - Profile image URL")
-        print("  - Product image URL")
-        print("  - File import features")
+        reachable = []
+        for url in ssrf_urls:
+            try:
+                response = juice_shop_session.get(url, timeout=5)
+                # 200, 401, 403 all indicate the endpoint exists
+                if response.status_code < 500:
+                    reachable.append(url)
+            except requests.RequestException:
+                pass
 
-        assert True
+        assert len(reachable) > 0, "At least one Juice Shop API endpoint should be reachable"
 
     def test_juice_shop_redirect(self, juice_shop_session, config):
         """
@@ -304,17 +300,18 @@ class TestJuiceShopSSRF:
                 allow_redirects=False,
                 timeout=5,
             )
-
-            if response.status_code in [301, 302, 303, 307, 308]:
-                location = response.headers.get("Location", "")
-                if "localhost" in location or "127.0.0.1" in location:
-                    print("[!] Open redirect allows internal access")
-                else:
-                    print(f"[*] Redirect to: {location}")
-            else:
-                print("[*] No redirect behavior detected")
-
         except requests.RequestException:
-            pass
+            pytest.skip("Juice Shop not reachable")
 
-        assert True
+        location = ""
+        if response.status_code in [301, 302, 303, 307, 308]:
+            location = response.headers.get("Location", "")
+            if "localhost" in location or "127.0.0.1" in location:
+                print("[!] Open redirect allows internal access")
+            else:
+                print(f"[*] Redirect to: {location}")
+        else:
+            print("[*] No redirect behavior detected")
+
+        assert "localhost" not in location and "127.0.0.1" not in location, \
+            "Redirect should not allow access to internal addresses"

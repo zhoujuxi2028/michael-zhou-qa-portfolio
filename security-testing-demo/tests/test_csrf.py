@@ -14,6 +14,7 @@ class TestCSRF:
     """Tests for CSRF vulnerabilities."""
 
     @pytest.mark.csrf
+    @pytest.mark.xfail(reason="DVWA low security does not enforce CSRF tokens on all forms")
     def test_csrf_token_presence(self, dvwa_session, config):
         """Test if CSRF tokens are present in forms.
 
@@ -26,6 +27,9 @@ class TestCSRF:
         # Check DVWA CSRF page
         url = f"{config.DVWA_URL}/vulnerabilities/csrf/"
         response = dvwa_session.get(url)
+
+        if "Login ::" in response.text:
+            pytest.skip("DVWA session not maintained")
 
         # Look for CSRF token indicators
         csrf_indicators = [
@@ -44,11 +48,10 @@ class TestCSRF:
                 print(f"[+] CSRF token found: {indicator}")
                 break
 
-        # Note: DVWA on low security may not enforce CSRF tokens
         if not has_csrf_token:
             print("[!] No CSRF token found in form")
 
-        assert True
+        assert has_csrf_token, "Form should contain a CSRF token"
 
     @pytest.mark.csrf
     def test_csrf_token_validation(self, dvwa_session, config):
@@ -81,9 +84,10 @@ class TestCSRF:
         else:
             print("[+] CSRF protection working: Request rejected")
 
-        assert True
+        assert "Password Changed" not in response.text, "Request with invalid CSRF token should be rejected"
 
     @pytest.mark.csrf
+    @pytest.mark.xfail(reason="DVWA does not validate Referer header")
     def test_referer_header_check(self, http_session, config):
         """Test if Referer header is validated.
 
@@ -121,13 +125,14 @@ class TestCSRF:
         except requests.RequestException:
             pytest.skip("Target not available")
 
-        assert True
+        assert not all_same, "Application should validate Referer header"
 
 
 class TestSameSiteCookie:
     """Tests for SameSite cookie attribute."""
 
     @pytest.mark.csrf
+    @pytest.mark.xfail(reason="DVWA does not set SameSite cookie attribute")
     def test_samesite_cookie_attribute(self, http_session, config):
         """Test if session cookies have SameSite attribute.
 
@@ -164,7 +169,8 @@ class TestSameSiteCookie:
             else:
                 print("[!] No SameSite attribute found in cookies")
 
-            assert True
+            has_samesite = samesite_status["has_samesite"]
+            assert has_samesite, "Session cookies should have SameSite attribute"
 
         except requests.RequestException:
             pytest.skip("Target not available")
