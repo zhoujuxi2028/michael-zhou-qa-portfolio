@@ -1,6 +1,7 @@
 # Security Testing Demo
 
-[![Security Scan](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/security-scan.yml/badge.svg)](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/security-scan.yml)
+[![Security Tests](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/security-tests.yml/badge.svg)](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/security-tests.yml)
+[![Security Scanning](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/security-scan.yml/badge.svg)](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/security-scan.yml)
 
 > Automated security testing demonstration using OWASP ZAP for Dynamic Application Security Testing (DAST)
 
@@ -39,6 +40,10 @@ This project demonstrates professional security testing automation capabilities,
 ```bash
 # Clone and navigate
 cd security-testing-demo
+
+# Create virtual environment (recommended, do not commit venv to repo)
+python3 -m venv venv
+source venv/bin/activate
 
 # Start environment (ZAP + DVWA)
 docker compose -f docker/docker-compose.yml up -d
@@ -237,6 +242,10 @@ Triggers: push to main, PR to main, weekly schedule, manual dispatch.
 ### 快速开始
 
 ```bash
+# 创建虚拟环境（推荐，venv 不要提交到仓库）
+python3 -m venv venv
+source venv/bin/activate
+
 # 启动环境
 docker compose -f docker/docker-compose.yml up -d
 
