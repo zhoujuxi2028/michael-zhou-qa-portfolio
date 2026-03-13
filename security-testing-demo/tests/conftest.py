@@ -278,24 +278,39 @@ def pytest_configure(config):
 # Test hooks
 def pytest_collection_modifyitems(config, items):
     """Modify test collection based on markers."""
-    # Skip ZAP tests if ZAP is not available
+    zap_available = None
+    juice_shop_available = None
+
     for item in items:
+        # Skip ZAP tests if ZAP is not available
         if "zap" in item.keywords:
-            item.add_marker(
-                pytest.mark.skipif(
-                    not _is_zap_available(),
-                    reason="ZAP is not available",
-                )
-            )
+            if zap_available is None:
+                zap_available = _is_zap_available()
+            if not zap_available:
+                item.add_marker(pytest.mark.skip(reason="ZAP is not available"))
+
+        # Skip Juice Shop tests if Juice Shop is not available
+        if "juice_shop" in item.keywords:
+            if juice_shop_available is None:
+                juice_shop_available = _is_juice_shop_available()
+            if not juice_shop_available:
+                item.add_marker(pytest.mark.skip(reason="Juice Shop is not available"))
 
 
 def _is_zap_available():
     """Check if ZAP is available."""
     try:
-        # Use custom Host header to tell ZAP this is an API request, not a proxy request
-        # Without this, ZAP treats localhost:8090 as a proxy target and fails
         zap_url = f"http://{Config.ZAP_HOST}:{Config.ZAP_PORT}/JSON/core/view/version/"
         response = requests.get(zap_url, timeout=5, headers={"Host": "zap"})
+        return response.status_code == 200
+    except Exception:
+        return False
+
+
+def _is_juice_shop_available():
+    """Check if Juice Shop is available."""
+    try:
+        response = requests.get(f"{Config.JUICE_SHOP_URL}/", timeout=5)
         return response.status_code == 200
     except Exception:
         return False
