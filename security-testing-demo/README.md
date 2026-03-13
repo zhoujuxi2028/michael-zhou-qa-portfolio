@@ -1,6 +1,7 @@
 # Security Testing Demo
 
-[![Security Scan](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/security-scan.yml/badge.svg)](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/security-scan.yml)
+[![Security Tests](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/security-tests.yml/badge.svg)](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/security-tests.yml)
+[![Security Scanning](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/security-scan.yml/badge.svg)](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/security-scan.yml)
 
 > Automated security testing demonstration using OWASP ZAP for Dynamic Application Security Testing (DAST)
 
@@ -10,7 +11,7 @@
 
 This project demonstrates professional security testing automation capabilities, including:
 - **OWASP ZAP Integration**: Automated vulnerability scanning (baseline, full, API scans)
-- **Security Test Cases**: 170 Pytest tests covering OWASP Top 10 2021 (DVWA, Juice Shop, ZAP, Nessus, OpenVAS)
+- **Security Test Cases**: 182 Pytest tests covering OWASP Top 10 2021 (DVWA, Juice Shop, ZAP, Nessus, OpenVAS)
 - **Multiple Target Apps**: DVWA (PHP/MySQL) and Juice Shop (Node.js/Angular)
 - **CI/CD Integration**: GitHub Actions for continuous security testing
 - **Docker Environment**: Complete testing environment with ZAP and vulnerable targets
@@ -39,6 +40,10 @@ This project demonstrates professional security testing automation capabilities,
 ```bash
 # Clone and navigate
 cd security-testing-demo
+
+# Create virtual environment (recommended, do not commit venv to repo)
+python3 -m venv venv
+source venv/bin/activate
 
 # Start environment (ZAP + DVWA)
 docker compose -f docker/docker-compose.yml up -d
@@ -134,7 +139,7 @@ security-testing-demo/
 │   ├── zap-baseline.py           # Baseline scan (2-5 min)
 │   ├── zap-full-scan.py          # Full scan (15-30 min)
 │   └── zap-api-scan.py           # API security scan
-├── tests/                        # Pytest security tests (170 tests)
+├── tests/                        # Pytest security tests (182 tests)
 │   ├── conftest.py               # Fixtures for DVWA + Juice Shop
 │   ├── test_xss.py               # XSS vulnerability tests (A03)
 │   ├── test_sqli.py              # SQL injection tests (A03)
@@ -171,19 +176,17 @@ security-testing-demo/
 
 ## CI/CD Integration
 
-The project includes GitHub Actions workflow for automated security scanning:
+The project includes GitHub Actions workflow (`security-scan.yml`) with 5 parallel jobs:
 
-```yaml
-# Triggers
-- Push to main branch
-- Weekly scheduled scan (Sunday 00:00 UTC)
-- Manual workflow dispatch
+| Job | Description | Service |
+|-----|-------------|---------|
+| `security-tests` | DVWA + Phase 7 tests (crypto, components, integrity, logging, SSRF, multi-level, SQLMap) | DVWA |
+| `juice-shop-tests` | Juice Shop API, JWT, NoSQL injection, business logic, SSRF | Juice Shop |
+| `zap-baseline-scan` | OWASP ZAP passive scan with custom rules | DVWA + ZAP |
+| `dependency-scan` | Python dependency vulnerability check (safety) | — |
+| `summary` | Test counts, OWASP Top 10 coverage table | — |
 
-# Actions
-- OWASP ZAP baseline scan
-- Security test execution
-- Report generation and artifact upload
-```
+Triggers: push to main, PR to main, weekly schedule, manual dispatch.
 
 ## Technologies
 
@@ -199,7 +202,7 @@ The project includes GitHub Actions workflow for automated security scanning:
 
 本项目展示专业的安全测试自动化能力，包括：
 - **OWASP ZAP 集成**: 自动化漏洞扫描（基线扫描、全量扫描、API 扫描）
-- **安全测试用例**: 170 个 Pytest 测试，完整覆盖 OWASP Top 10 2021 漏洞 (DVWA, Juice Shop, ZAP, Nessus, OpenVAS, SQLMap)
+- **安全测试用例**: 182 个 Pytest 测试，完整覆盖 OWASP Top 10 2021 漏洞 (DVWA, Juice Shop, ZAP, Nessus, OpenVAS, SQLMap)
 - **多目标应用**: DVWA (PHP/MySQL) 和 Juice Shop (Node.js/Angular)
 - **CI/CD 集成**: GitHub Actions 持续安全测试
 - **Docker 环境**: 完整的测试环境，包含 ZAP 和靶机
@@ -239,6 +242,10 @@ The project includes GitHub Actions workflow for automated security scanning:
 ### 快速开始
 
 ```bash
+# 创建虚拟环境（推荐，venv 不要提交到仓库）
+python3 -m venv venv
+source venv/bin/activate
+
 # 启动环境
 docker compose -f docker/docker-compose.yml up -d
 
