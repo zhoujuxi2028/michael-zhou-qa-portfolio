@@ -10,13 +10,7 @@ from datetime import datetime
 
 import psutil
 from fastapi import FastAPI, Request, Response
-from prometheus_client import (
-    CONTENT_TYPE_LATEST,
-    Counter,
-    Gauge,
-    Histogram,
-    generate_latest,
-)
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

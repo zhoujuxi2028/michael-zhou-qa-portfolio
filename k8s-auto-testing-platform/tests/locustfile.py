@@ -4,7 +4,8 @@ Load testing suite for HPA auto-scaling validation
 """
 
 import random
-from locust import HttpUser, task, between, events
+
+from locust import HttpUser, between, events, task
 from locust.runners import MasterRunner
 
 
