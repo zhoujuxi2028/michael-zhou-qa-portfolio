@@ -12,17 +12,18 @@ name: Docker-Based Tests (Production-Grade)
 # and runs nightly to catch flaky tests and environment drift."
 
 on:
-  # Trigger on push to main branch (after PR is merged)
   push:
-    branches: [ main ]
-
-  # Scheduled nightly regression tests
+    branches: [main]
+    paths:
+      - 'cicd-demo/**'
+      - '.github/workflows/docker-tests.yml'
   schedule:
-    # Runs at 2:00 AM UTC (10:00 AM Beijing time) every day
     - cron: '0 2 * * *'
-
-  # Allow manual trigger from GitHub Actions UI
   workflow_dispatch:
+
+concurrency:
+  group: docker-tests-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read

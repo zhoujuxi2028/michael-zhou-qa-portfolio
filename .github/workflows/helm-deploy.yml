@@ -8,7 +8,7 @@ name: Helm Deploy
 
 on:
   push:
-    branches: [main, feature/devops-platform]
+    branches: [main]
     paths:
       - 'cicd-demo/helm/**'
       - 'cicd-demo/k8s/**'
@@ -16,6 +16,11 @@ on:
     branches: [main]
     paths:
       - 'cicd-demo/helm/**'
+  workflow_dispatch:
+
+concurrency:
+  group: helm-deploy-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   # Stage 1: Lint and validate the Helm chart

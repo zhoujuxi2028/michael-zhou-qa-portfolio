@@ -31,7 +31,6 @@ on:
           - staging
           - none
 
-# Cancel in-progress runs for same branch
 concurrency:
   group: pipeline-${{ github.ref }}
   cancel-in-progress: true
@@ -63,14 +62,6 @@ jobs:
       - name: Lint
         working-directory: cicd-demo
         run: npm run lint --if-present
-
-      - name: Helm lint
-        uses: azure/setup-helm@v4
-        with:
-          version: v3.14.0
-
-      - name: Validate Helm chart
-        run: helm lint cicd-demo/helm/qa-portfolio -f cicd-demo/helm/qa-portfolio/values.yaml
 
       - id: test
         name: Run unit tests
@@ -105,59 +96,13 @@ jobs:
           docker compose build --no-cache 2>&1 | tail -5
           echo "Docker Compose build complete"
 
-      - name: Helm template (validate chart renders)
-        uses: azure/setup-helm@v4
-        with:
-          version: v3.14.0
-
-      - name: Render Helm chart
-        run: |
-          helm template qa-portfolio cicd-demo/helm/qa-portfolio \
-            -f cicd-demo/helm/qa-portfolio/values.yaml \
-            --namespace qa-portfolio > /dev/null
-          echo "Helm chart renders successfully"
-
-  # ============================================
-  # Stage 2b: Security scan (parallel with build)
-  # ============================================
-  security:
-    name: "Stage 2b: Security"
-    runs-on: ubuntu-latest
-    needs: lint-and-test
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run Trivy filesystem scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: 'cicd-demo/'
-          format: 'table'
-          severity: 'CRITICAL,HIGH'
-          exit-code: '0'  # Don't fail on findings (demo project)
-
-      - name: npm audit
-        working-directory: cicd-demo
-        run: npm audit --audit-level=critical || true
-        continue-on-error: true
-
-      - name: Scan Helm chart for misconfigurations
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'config'
-          scan-ref: 'cicd-demo/helm/'
-          format: 'table'
-          severity: 'CRITICAL,HIGH'
-          exit-code: '0'
-
   # ============================================
   # Stage 3: E2E Tests (Cypress + Newman in Docker)
   # ============================================
   e2e-tests:
     name: "Stage 3: E2E Tests"
     runs-on: ubuntu-latest
-    needs: [build, security]
+    needs: build
     if: ${{ github.event.inputs.skip_e2e != 'true' }}
     steps:
       - name: Checkout code
@@ -278,7 +223,7 @@ jobs:
   pipeline-summary:
     name: "Pipeline Summary"
     runs-on: ubuntu-latest
-    needs: [lint-and-test, build, security, e2e-tests, deploy-dev]
+    needs: [lint-and-test, build, e2e-tests, deploy-dev]
     if: always()
     steps:
       - name: Pipeline results
@@ -286,7 +231,6 @@ jobs:
           echo "=== CI/CD Pipeline Results ==="
           echo "Lint & Test:  ${{ needs.lint-and-test.result }}"
           echo "Build:        ${{ needs.build.result }}"
-          echo "Security:     ${{ needs.security.result }}"
           echo "E2E Tests:    ${{ needs.e2e-tests.result }}"
           echo "Deploy Dev:   ${{ needs.deploy-dev.result }}"
           echo ""

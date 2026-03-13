@@ -2,7 +2,7 @@ name: Security Tests
 
 on:
   push:
-    branches: [main, feature/security-testing]
+    branches: [main]
     paths:
       - 'security-testing-demo/**'
   pull_request:
@@ -13,6 +13,10 @@ on:
     # Run weekly on Sunday at 00:00 UTC
     - cron: '0 0 * * 0'
   workflow_dispatch:
+
+concurrency:
+  group: security-tests-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   security-tests:
@@ -204,8 +208,9 @@ jobs:
         run: |
           pip install -r requirements.txt
           mkdir -p reports
-          safety check --json > reports/dependency-scan.json || true
+          safety check --json > reports/dependency-scan.json
           cat reports/dependency-scan.json
+        continue-on-error: true
 
       - name: Upload dependency report
         uses: actions/upload-artifact@v4
