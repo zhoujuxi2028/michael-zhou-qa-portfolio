@@ -2,11 +2,12 @@ name: K8S Auto Testing Platform CI
 
 on:
   push:
-    branches: [k8s-auto-testing-platform, main, portfolio]
+    branches: [main]
     paths:
       - 'k8s-auto-testing-platform/**'
+      - '.github/workflows/k8s-ci.yml'
   pull_request:
-    branches: [k8s-auto-testing-platform, main, portfolio]
+    branches: [main]
     paths:
       - 'k8s-auto-testing-platform/**'
   workflow_dispatch:
@@ -16,6 +17,10 @@ on:
         required: false
         default: 'false'
         type: boolean
+
+concurrency:
+  group: k8s-ci-${{ github.ref }}
+  cancel-in-progress: true
 
 defaults:
   run:
@@ -76,7 +81,7 @@ jobs:
             --max-line-length=120 \
             --fail-under=8.0 \
             --disable=C0114,C0115,C0116,C0415,W1203,R0801,R0902,W0718 \
-            || echo "Pylint score below threshold"
+        continue-on-error: true
 
   unit-tests:
     name: Unit Tests
@@ -117,8 +122,7 @@ jobs:
             --self-contained-html \
             -m "not integration and not slow" \
             --ignore=tests/test_hpa.py \
-            --ignore=tests/test_chaos.py \
-            || true
+            --ignore=tests/test_chaos.py
 
       - name: Generate enhanced reports
         if: always()
@@ -155,16 +159,16 @@ jobs:
             echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
             echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
             python -c "
-import json
-with open('reports/test-results.json') as f:
-    data = json.load(f)
-    s = data['summary']
-    print(f\"| Total Tests | {s['total']} |\")
-    print(f\"| Passed | {s['passed']} |\")
-    print(f\"| Failed | {s['failed']} |\")
-    print(f\"| Skipped | {s['skipped']} |\")
-    print(f\"| Pass Rate | {s['pass_rate']}% |\")
-" >> $GITHUB_STEP_SUMMARY
+          import json
+          with open('reports/test-results.json') as f:
+              data = json.load(f)
+              s = data['summary']
+              print(f'| Total Tests | {s[\"total\"]} |')
+              print(f'| Passed | {s[\"passed\"]} |')
+              print(f'| Failed | {s[\"failed\"]} |')
+              print(f'| Skipped | {s[\"skipped\"]} |')
+              print(f'| Pass Rate | {s[\"pass_rate\"]}% |')
+          " >> $GITHUB_STEP_SUMMARY
           fi
 
   k8s-integration-tests:
