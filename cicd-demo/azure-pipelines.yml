@@ -1,0 +1,271 @@
+# Azure DevOps Pipeline — Full Orchestration
+# Translated from .github/workflows/pipeline.yml to demonstrate cross-platform CI/CD skills.
+#
+# Key differences from GitHub Actions:
+# - Explicit stage → job → step hierarchy (GitHub Actions has flat jobs)
+# - `deployment` jobs unlock Environment features (approvals, exclusive locks)
+# - Variables come from Variable Groups (can integrate with Azure Key Vault)
+# - Approvals & Checks are configured in Azure DevOps portal, not in YAML
+#
+# Interview Talking Point:
+# "I translated our GitHub Actions pipeline 1:1 into Azure Pipelines YAML,
+#  proving the concepts map directly: stages/jobs/steps, environment gates,
+#  artifact publishing, and conditional execution."
+
+# ── Trigger ──────────────────────────────────────────────
+# GitHub Actions equivalent: on.push
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - 'cicd-demo/**'
+
+# No PR trigger (handled by separate pipeline)
+pr: none
+
+# ── Parameters ───────────────────────────────────────────
+# GitHub Actions equivalent: workflow_dispatch.inputs
+# Azure supports richer types: boolean, string with allowed values, number, object
+parameters:
+  - name: skipE2E
+    displayName: 'Skip E2E tests'
+    type: boolean
+    default: false
+  - name: deployEnv
+    displayName: 'Deploy target'
+    type: string
+    default: 'dev'
+    values:
+      - dev
+      - staging
+      - none
+
+# ── Variables ────────────────────────────────────────────
+# GitHub Actions equivalent: GitHub Secrets + env
+# Variable Groups can connect to Azure Key Vault for secret rotation
+variables:
+  - group: cicd-demo-vars          # Linked Variable Group (portal)
+  - name: nodeVersion
+    value: '20'
+  - name: dockerImage
+    value: 'qa-newman-demo'
+
+# ── Stages ───────────────────────────────────────────────
+# GitHub Actions has flat `jobs:`; Azure has explicit `stages: > jobs: > steps:`
+# This gives better pipeline visualization and gating between stages.
+stages:
+
+  # ============================================
+  # Stage 1: Lint + Unit Test (fast gate, <2min)
+  # ============================================
+  - stage: LintAndTest
+    displayName: 'Stage 1: Lint & Test'
+    jobs:
+      - job: LintAndTest
+        displayName: 'Lint & Unit Test'
+        pool:
+          vmImage: 'ubuntu-latest'       # GitHub Actions: runs-on: ubuntu-latest
+        steps:
+          # GitHub Actions: actions/checkout@v4
+          # Azure does implicit checkout, but explicit is clearer
+          - checkout: self
+            clean: true
+
+          # GitHub Actions: actions/setup-node@v4
+          - task: NodeTool@0
+            displayName: 'Setup Node.js'
+            inputs:
+              versionSpec: $(nodeVersion)
+
+          # GitHub Actions: actions/cache (npm)
+          - task: Cache@2
+            displayName: 'Cache npm'
+            inputs:
+              key: 'npm | "$(Agent.OS)" | cicd-demo/package-lock.json'
+              path: $(Pipeline.Workspace)/.npm
+              restoreKeys: |
+                npm | "$(Agent.OS)"
+
+          - script: npm ci
+            displayName: 'Install dependencies'
+            workingDirectory: cicd-demo
+
+          - script: npm run lint --if-present
+            displayName: 'Lint'
+            workingDirectory: cicd-demo
+
+          - script: npm test --if-present
+            displayName: 'Run unit tests'
+            workingDirectory: cicd-demo
+
+  # ============================================
+  # Stage 2: Build Docker images
+  # ============================================
+  # GitHub Actions: needs: lint-and-test → Azure: dependsOn: LintAndTest
+  - stage: Build
+    displayName: 'Stage 2: Build'
+    dependsOn: LintAndTest
+    jobs:
+      - job: BuildDocker
+        displayName: 'Build Docker Images'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+
+          - script: |
+              docker build -f Dockerfile.newman \
+                -t $(dockerImage):$(Build.SourceVersion) .
+              docker tag $(dockerImage):$(Build.SourceVersion) \
+                $(dockerImage):latest
+              echo "Newman image built successfully"
+            displayName: 'Build Newman image'
+            workingDirectory: cicd-demo
+
+          - script: |
+              docker compose build --no-cache 2>&1 | tail -5
+              echo "Docker Compose build complete"
+            displayName: 'Build with Docker Compose'
+            workingDirectory: cicd-demo
+
+  # ============================================
+  # Stage 3: E2E Tests (Cypress + Newman)
+  # ============================================
+  - stage: E2ETests
+    displayName: 'Stage 3: E2E Tests'
+    dependsOn: Build
+    # GitHub Actions: if: ${{ github.event.inputs.skip_e2e != 'true' }}
+    # Azure uses condition with parameters syntax
+    condition: and(succeeded(), ne('${{ parameters.skipE2E }}', true))
+    jobs:
+      - job: E2ETests
+        displayName: 'Run E2E Tests'
+        pool:
+          vmImage: 'ubuntu-latest'
+        timeoutInMinutes: 15           # GitHub Actions: timeout-minutes: 10
+        steps:
+          - checkout: self
+
+          - script: |
+              docker compose up --build --wait --wait-timeout 120
+              echo "E2E tests completed"
+            displayName: 'Run E2E tests in Docker'
+            workingDirectory: cicd-demo
+
+          - script: |
+              mkdir -p test-artifacts
+              docker compose cp cypress:/e2e/cypress/videos test-artifacts/videos 2>/dev/null || true
+              docker compose cp cypress:/e2e/cypress/screenshots test-artifacts/screenshots 2>/dev/null || true
+            displayName: 'Collect test results'
+            workingDirectory: cicd-demo
+            condition: always()          # GitHub Actions: if: always()
+
+          # GitHub Actions: actions/upload-artifact@v4
+          # Azure: PublishPipelineArtifact@1 (modern) vs PublishBuildArtifacts@1 (classic)
+          - task: PublishPipelineArtifact@1
+            displayName: 'Upload test artifacts'
+            condition: always()
+            inputs:
+              targetPath: cicd-demo/test-artifacts
+              artifactName: 'e2e-test-results'
+
+          # Publish JUnit results to Azure Test tab (no GitHub Actions equivalent)
+          # This is an Azure-specific advantage: built-in test result visualization
+          - task: PublishTestResults@2
+            displayName: 'Publish test results'
+            condition: always()
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: 'cicd-demo/test-artifacts/**/*.xml'
+              mergeTestResults: true
+
+          - script: docker compose down -v --remove-orphans 2>/dev/null || true
+            displayName: 'Cleanup Docker'
+            workingDirectory: cicd-demo
+            condition: always()
+
+  # ============================================
+  # Stage 4: Deploy to Dev (auto)
+  # ============================================
+  # Interview Note: `deployment` job (not `job`) is required to use Environments.
+  # Environments in Azure DevOps support: Approvals, Exclusive Locks, Business Hours,
+  # Template Checks — all configured in the portal, not YAML.
+  - stage: DeployDev
+    displayName: 'Stage 4: Deploy Dev'
+    dependsOn: E2ETests
+    condition: and(succeeded(), ne('${{ parameters.deployEnv }}', 'none'))
+    jobs:
+      # `deployment` job unlocks environment features (vs regular `job`)
+      - deployment: DeployDev
+        displayName: 'Deploy to Dev'
+        pool:
+          vmImage: 'ubuntu-latest'
+        environment: 'dev'              # Approvals configured in portal
+        strategy:
+          runOnce:                       # Options: runOnce, rolling, canary
+            deploy:
+              steps:
+                - script: |
+                    echo "=== Dev Deployment ==="
+                    echo "Image: $(dockerImage):$(Build.SourceVersion)"
+                    echo "Commit: $(Build.SourceVersion)"
+                    echo "Branch: $(Build.SourceBranchName)"
+                    echo "Trigger: ArgoCD auto-sync (GitOps)"
+                    echo ""
+                    echo "In production: Helm upgrade + ArgoCD sync"
+                  displayName: 'Deployment summary'
+
+  # ============================================
+  # Stage 5: Deploy to Staging (manual approval)
+  # ============================================
+  # Interview Note: Manual approval is configured on the 'staging' Environment
+  # in Azure DevOps portal → Environments → staging → Approvals & Checks.
+  # This is similar to GitHub's environment protection rules.
+  - stage: DeployStaging
+    displayName: 'Stage 5: Deploy Staging'
+    dependsOn: DeployDev
+    jobs:
+      - deployment: DeployStaging
+        displayName: 'Deploy to Staging'
+        pool:
+          vmImage: 'ubuntu-latest'
+        environment: 'staging'          # Approval gate configured in portal
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - script: |
+                    echo "=== Staging Deployment ==="
+                    echo "Image: $(dockerImage):$(Build.SourceVersion)"
+                    echo "Commit: $(Build.SourceVersion)"
+                    echo "Trigger: Manual approval gate passed"
+                    echo ""
+                    echo "In production: ArgoCD staging app (manual sync, selfHeal: false)"
+                  displayName: 'Deployment summary'
+
+  # ============================================
+  # Pipeline Summary
+  # ============================================
+  - stage: Summary
+    displayName: 'Pipeline Summary'
+    dependsOn:
+      - LintAndTest
+      - Build
+      - E2ETests
+      - DeployDev
+    condition: always()                 # Run even if earlier stages failed
+    jobs:
+      - job: Summary
+        displayName: 'Pipeline Results'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - script: |
+              echo "=== CI/CD Pipeline Results ==="
+              echo "Commit: $(Build.SourceVersion)"
+              echo "Branch: $(Build.SourceBranchName)"
+              echo "Triggered by: $(Build.RequestedFor)"
+              echo "Build: $(Build.BuildNumber)"
+            displayName: 'Print pipeline summary'
