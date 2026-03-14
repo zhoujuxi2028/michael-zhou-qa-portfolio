@@ -1,4 +1,4 @@
-# Azure Pipelines vs GitHub Actions — 面试速查表
+# Azure Pipelines vs GitHub Actions — FAQ
 
 > 基于本项目 `pipeline.yml` → `azure-pipelines.yml` 的实际翻译经验总结。
 
@@ -128,24 +128,24 @@ deploy:                              - stage: Deploy
 | **YAML Templates** | 参数化复用 stage/job/step | Reusable Workflows（较弱） |
 | **Environments 资源** | 追踪 K8s namespace, VM 资源 | 仅记录部署历史 |
 
-## 7. 面试话术
+## 7. FAQ
 
-### Q: 你有 Azure DevOps 经验吗？
+### Q: 两个平台核心概念能 1:1 映射吗？
 
-> "我的 portfolio 主力用 GitHub Actions，但我也做了 Azure Pipelines 的完整翻译（pipeline.yml → azure-pipelines.yml），两个平台核心概念 1:1 映射——stages/jobs/steps、environment gates、artifact publishing——迁移成本很低。"
+> 可以。stages/jobs/steps、environment gates、artifact publishing 都能直接翻译（见本项目 `pipeline.yml` → `azure-pipelines.yml`），迁移成本很低。
 
-### Q: 两个平台你怎么选？
+### Q: 两个平台怎么选？
 
-> "如果团队已经在 Azure 生态（Azure AD、Key Vault、Boards），选 Azure DevOps 可以获得更完整的 ALM 体验。如果是开源项目或 GitHub 原生团队，GitHub Actions 的社区 Action 生态更丰富。"
+> 如果团队已经在 Azure 生态（Azure AD、Key Vault、Boards），选 Azure DevOps 可以获得更完整的 ALM 体验。如果是开源项目或 GitHub 原生团队，GitHub Actions 的社区 Action 生态更丰富。
 
 ### Q: Azure DevOps 有什么 GitHub Actions 没有的？
 
-> "三点：一是 Environments 的 Approvals & Checks 更细粒度，支持工作时间限制、独占锁、模板合规检查；二是 Variable Groups + Key Vault 集成实现密钥自动轮换；三是 YAML Templates 可以参数化复用整个 stage，比 GitHub 的 Reusable Workflows 更灵活。"
+> 三点：一是 Environments 的 Approvals & Checks 更细粒度，支持工作时间限制、独占锁、模板合规检查；二是 Variable Groups + Key Vault 集成实现密钥自动轮换；三是 YAML Templates 可以参数化复用整个 stage，比 GitHub 的 Reusable Workflows 更灵活。
 
-### Q: 你怎么管理 CI/CD 密钥？
+### Q: 怎么管理 CI/CD 密钥？
 
-> "GitHub 用 Repository Secrets + Environment Secrets，Azure 用 Variable Groups 链接 Key Vault。Key Vault 的优势是密钥自动轮换和集中审计，适合企业合规要求。两种方案我都配置过。"
+> GitHub 用 Repository Secrets + Environment Secrets，Azure 用 Variable Groups 链接 Key Vault。Key Vault 的优势是密钥自动轮换和集中审计，适合企业合规要求。
 
 ### Q: 如何从 GitHub Actions 迁移到 Azure Pipelines？
 
-> "核心步骤：trigger 对应 on.push，jobs 包进 stages，needs 改 dependsOn，Action 替换成 Task（checkout→checkout: self，setup-node→NodeTool@0，upload-artifact→PublishPipelineArtifact@1），secrets 迁移到 Variable Groups。我的 repo 里有完整的对照实现。"
+> 核心步骤：`trigger` 对应 `on.push`，`jobs` 包进 `stages`，`needs` 改 `dependsOn`，Action 替换成 Task（`checkout` → `checkout: self`，`setup-node` → `NodeTool@0`，`upload-artifact` → `PublishPipelineArtifact@1`），secrets 迁移到 Variable Groups。
