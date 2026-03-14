@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.mark.deployment
+@pytest.mark.integration
 class TestDeployment:
     """Test Deployment functionality"""
 
@@ -140,6 +141,7 @@ class TestDeployment:
 
 
 @pytest.mark.smoke
+@pytest.mark.integration
 def test_deployment_smoke(apps_v1_api, namespace, deployment_name, wait_helper):
     """TC-DEP-SMK-001: Deployment 冒烟测试"""
     deployment = apps_v1_api.read_namespaced_deployment(name=deployment_name, namespace=namespace)
