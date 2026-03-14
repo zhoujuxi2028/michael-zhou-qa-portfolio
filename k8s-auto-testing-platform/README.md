@@ -1,6 +1,6 @@
 # K8S Auto Testing Platform
 
-[![CI](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/ci.yml)
+[![CI](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/k8s-ci.yml/badge.svg)](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/workflows/k8s-ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-1.25+-326CE5.svg)](https://kubernetes.io/)
 [![Chaos Mesh](https://img.shields.io/badge/Chaos%20Mesh-Ready-orange.svg)](https://chaos-mesh.org/)
@@ -75,10 +75,17 @@ Kubernetes automated testing platform focused on **HPA auto-scaling testing**, *
 - Alert rules configuration (`monitoring/prometheus-rules.yaml`)
 
 **6. CI/CD Integration**
-- GitHub Actions automation
-- Code quality checks (pylint: 9.68/10, flake8: 0 errors)
-- Test report generation (HTML, JUnit XML, JSON)
-- Automated PR validation
+
+GitHub Actions workflow: [`k8s-ci.yml`](../.github/workflows/k8s-ci.yml)
+
+| Stage | Job | Description |
+|-------|-----|-------------|
+| 1 | Code Quality | Black + isort + flake8 + pylint |
+| 2 | Unit Tests | Pytest with coverage (skip integration/slow) |
+| 3 | K8S Integration | Kind cluster + Metrics Server + deploy + test (manual trigger) |
+| 4 | Build Status | Summary gate |
+
+Triggers: push/PR to main (`k8s-auto-testing-platform/**`), manual dispatch.
 
 ## Test Results
 
@@ -238,10 +245,17 @@ Kubernetes 自动化测试平台，专注于 **HPA 自动扩缩容测试**、**�
 - 告警规则配置 (`monitoring/prometheus-rules.yaml`)
 
 **6. CI/CD 集成**
-- GitHub Actions 自动化
-- 代码质量检查 (pylint: 9.68/10, flake8: 0 错误)
-- 测试报告生成 (HTML, JUnit XML, JSON)
-- 自动化 PR 验证
+
+GitHub Actions workflow: [`k8s-ci.yml`](../.github/workflows/k8s-ci.yml)
+
+| 阶段 | 任务 | 说明 |
+|------|------|------|
+| 1 | 代码质量 | Black + isort + flake8 + pylint |
+| 2 | 单元测试 | Pytest 覆盖率（跳过集成/慢速测试） |
+| 3 | K8S 集成 | Kind 集群 + Metrics Server + 部署 + 测试（手动触发） |
+| 4 | 构建状态 | 汇总检查 |
+
+触发条件: push/PR to main (`k8s-auto-testing-platform/**`)，手动触发。
 
 ## 测试结果
 

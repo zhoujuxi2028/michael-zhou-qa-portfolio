@@ -31,6 +31,20 @@ Test automation and DevOps demonstration projects.
 
 ---
 
+## CI/CD Workflows | 持续集成
+
+| Workflow | Project | Trigger | Purpose |
+|----------|---------|---------|---------|
+| `pipeline.yml` | cicd-demo | Push to main, manual | Full pipeline: Lint → Build → E2E → Deploy |
+| `pr-checks.yml` | cicd-demo | PR to main | Fast PR validation (2-3 min) |
+| `docker-tests.yml` | cicd-demo | Nightly, manual | Docker regression tests |
+| `security-scan.yml` | cicd-demo | Push/PR, daily, manual | Trivy + npm audit → SARIF |
+| `helm-deploy.yml` | cicd-demo | Push to main (helm/**), PR | Helm chart validation & deploy |
+| `security-tests.yml` | security-testing-demo | Push/PR, weekly, manual | DVWA + Juice Shop + ZAP + dependency scan |
+| `k8s-ci.yml` | k8s-auto-testing-platform | Push/PR, manual | Code quality + unit tests + K8S integration |
+
+---
+
 ## Quick Start | 快速开始
 
 ```bash
