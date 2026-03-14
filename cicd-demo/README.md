@@ -228,7 +228,7 @@ Total Pods: 30+
 | [QUICKSTART.md](docs/QUICKSTART.md) | 5-minute setup from zero to running cluster |
 | [CI-CD-GUIDE.md](docs/guides/CI-CD-GUIDE.md) | CI/CD pipeline setup and integration |
 | [azure-pipelines.yml](azure-pipelines.yml) | GitHub Actions → Azure Pipelines translation |
-| [Azure vs GitHub Actions](docs/AZURE-VS-GITHUB-ACTIONS.md) | Cross-platform CI/CD interview cheat sheet |
+| [Azure vs GitHub Actions](docs/AZURE-VS-GITHUB-ACTIONS.md) | Cross-platform CI/CD FAQ |
 
 ## FAQ
 

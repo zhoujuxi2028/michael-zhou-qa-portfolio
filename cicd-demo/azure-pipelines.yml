@@ -7,10 +7,10 @@
 # - Variables come from Variable Groups (can integrate with Azure Key Vault)
 # - Approvals & Checks are configured in Azure DevOps portal, not in YAML
 #
-# Interview Talking Point:
-# "I translated our GitHub Actions pipeline 1:1 into Azure Pipelines YAML,
-#  proving the concepts map directly: stages/jobs/steps, environment gates,
-#  artifact publishing, and conditional execution."
+# This is a 1:1 translation of the GitHub Actions pipeline into Azure Pipelines YAML,
+# demonstrating that concepts map directly: stages/jobs/steps, environment gates,
+# artifact publishing, and conditional execution.
+# See docs/AZURE-VS-GITHUB-ACTIONS.md for a full cross-platform comparison.
 
 # ── Trigger ──────────────────────────────────────────────
 # GitHub Actions equivalent: on.push
@@ -189,7 +189,7 @@ stages:
   # ============================================
   # Stage 4: Deploy to Dev (auto)
   # ============================================
-  # Interview Note: `deployment` job (not `job`) is required to use Environments.
+  # Note: `deployment` job (not `job`) is required to use Environments.
   # Environments in Azure DevOps support: Approvals, Exclusive Locks, Business Hours,
   # Template Checks — all configured in the portal, not YAML.
   - stage: DeployDev
@@ -220,7 +220,7 @@ stages:
   # ============================================
   # Stage 5: Deploy to Staging (manual approval)
   # ============================================
-  # Interview Note: Manual approval is configured on the 'staging' Environment
+  # Note: Manual approval is configured on the 'staging' Environment
   # in Azure DevOps portal → Environments → staging → Approvals & Checks.
   # This is similar to GitHub's environment protection rules.
   - stage: DeployStaging
