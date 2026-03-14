@@ -41,9 +41,8 @@ This project demonstrates professional security testing automation capabilities,
 # Clone and navigate
 cd security-testing-demo
 
-# Create virtual environment (recommended, do not commit venv to repo)
-python3 -m venv venv
-source venv/bin/activate
+# Activate virtual environment (create at repo root: python3 -m venv venv)
+source ../venv/bin/activate
 
 # Start environment (ZAP + DVWA)
 docker compose -f docker/docker-compose.yml up -d
@@ -242,9 +241,8 @@ Triggers: push to main, PR to main, weekly schedule, manual dispatch.
 ### 快速开始
 
 ```bash
-# 创建虚拟环境（推荐，venv 不要提交到仓库）
-python3 -m venv venv
-source venv/bin/activate
+# 激活虚拟环境（在仓库根目录创建：python3 -m venv venv）
+source ../venv/bin/activate
 
 # 启动环境
 docker compose -f docker/docker-compose.yml up -d
