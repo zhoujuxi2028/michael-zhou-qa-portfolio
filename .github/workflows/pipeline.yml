@@ -150,21 +150,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Helm
-        uses: azure/setup-helm@v4
-        with:
-          version: v3.14.0
-
-      - name: Validate chart for dev deployment
-        run: |
-          helm template qa-portfolio cicd-demo/helm/qa-portfolio \
-            -f cicd-demo/helm/qa-portfolio/values.yaml \
-            --namespace qa-portfolio > /tmp/dev-manifests.yaml
-
-          RESOURCES=$(grep -c '^kind:' /tmp/dev-manifests.yaml)
-          echo "Dev deployment: $RESOURCES resources"
-          echo "ArgoCD will auto-sync from Git (GitOps)"
-
       - name: Deployment summary
         run: |
           echo "=== Dev Deployment ==="
@@ -174,8 +159,8 @@ jobs:
           echo "Branch: ${{ github.ref_name }}"
           echo "Trigger: ArgoCD auto-sync (GitOps)"
           echo ""
+          echo "Helm validation handled by helm-deploy.yml workflow."
           echo "ArgoCD monitors this repo and auto-syncs Helm chart changes to dev."
-          echo "No manual helm install needed — ArgoCD handles deployment."
 
   # ============================================
   # Stage 5: Deploy to Staging (manual approval)
@@ -191,21 +176,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Helm
-        uses: azure/setup-helm@v4
-        with:
-          version: v3.14.0
-
-      - name: Validate chart for staging deployment
-        run: |
-          helm template qa-portfolio cicd-demo/helm/qa-portfolio \
-            -f cicd-demo/helm/qa-portfolio/values.yaml \
-            -f cicd-demo/helm/qa-portfolio/values-staging.yaml \
-            --namespace qa-portfolio > /tmp/staging-manifests.yaml
-
-          RESOURCES=$(grep -c '^kind:' /tmp/staging-manifests.yaml)
-          echo "Staging deployment: $RESOURCES resources"
-
       - name: Deployment summary
         run: |
           echo "=== Staging Deployment ==="
@@ -214,8 +184,8 @@ jobs:
           echo "Commit: ${{ github.sha }}"
           echo "Trigger: Manual approval gate passed"
           echo ""
+          echo "Helm validation handled by helm-deploy.yml workflow."
           echo "ArgoCD staging app uses manual sync (selfHeal: false)."
-          echo "An operator must manually sync in ArgoCD UI to deploy."
 
   # ============================================
   # Pipeline Summary
