@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.mark.service
+@pytest.mark.integration
 class TestService:
     """Test Service functionality"""
 
@@ -107,6 +108,7 @@ class TestService:
 
 
 @pytest.mark.smoke
+@pytest.mark.integration
 def test_service_smoke(core_v1_api, namespace, service_name):
     """TC-SVC-SMK-001: Service 冒烟测试"""
     service = core_v1_api.read_namespaced_service(name=service_name, namespace=namespace)
