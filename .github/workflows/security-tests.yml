@@ -18,6 +18,9 @@ concurrency:
   group: security-tests-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  PYTHON_VERSION: '3.13'
+
 jobs:
   security-tests:
     runs-on: ubuntu-latest
@@ -42,7 +45,9 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: 'security-testing-demo/requirements.txt'
 
       - name: Install dependencies
         run: |
@@ -107,7 +112,9 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: 'security-testing-demo/requirements.txt'
 
       - name: Install dependencies
         run: |
@@ -199,7 +206,9 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: 'security-testing-demo/requirements.txt'
 
       - name: Install safety
         run: pip install safety

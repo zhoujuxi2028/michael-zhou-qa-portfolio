@@ -122,16 +122,15 @@ jobs:
         with:
           scan-type: 'fs'
           scan-ref: '.'
-          format: 'sarif'
-          output: 'trivy-fs-results.sarif'
+          format: 'json'
+          output: 'trivy-fs-results.json'
           severity: 'CRITICAL,HIGH,MEDIUM'
           exit-code: '0'  # Don't fail on vulnerabilities (report only)
 
-      # Interview Talking Point:
-      # "SARIF (Static Analysis Results Interchange Format) is an industry-standard
-      # format for security findings. Uploading to GitHub Security tab provides a
-      # centralized view of vulnerabilities across all branches, with automatic
-      # deduplication and trend analysis."
+      # Convert JSON to SARIF for GitHub Security tab
+      - name: Convert to SARIF format
+        run: trivy convert --format sarif --output trivy-fs-results.sarif trivy-fs-results.json
+
       - name: Upload Trivy results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
         if: always()
@@ -139,14 +138,9 @@ jobs:
           sarif_file: 'trivy-fs-results.sarif'
           category: 'trivy-filesystem'
 
-      - name: Run Trivy scan (table format for artifacts)
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'table'
-          output: 'trivy-fs-report.txt'
-          severity: 'CRITICAL,HIGH,MEDIUM'
+      # Convert JSON to table for human-readable artifact
+      - name: Convert to table format
+        run: trivy convert --format table --output trivy-fs-report.txt trivy-fs-results.json
 
       - name: Upload Trivy filesystem results
         uses: actions/upload-artifact@v4
@@ -201,10 +195,13 @@ jobs:
         with:
           scan-type: 'image'
           image-ref: ${{ matrix.image.tag }}
-          format: 'sarif'
-          output: 'trivy-docker-${{ matrix.image.name }}-results.sarif'
+          format: 'json'
+          output: 'trivy-docker-${{ matrix.image.name }}-results.json'
           severity: 'CRITICAL,HIGH,MEDIUM'
           exit-code: '0'
+
+      - name: Convert to SARIF format
+        run: trivy convert --format sarif --output trivy-docker-${{ matrix.image.name }}-results.sarif trivy-docker-${{ matrix.image.name }}-results.json
 
       - name: Upload Trivy results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
@@ -213,14 +210,8 @@ jobs:
           sarif_file: 'trivy-docker-${{ matrix.image.name }}-results.sarif'
           category: 'trivy-docker-${{ matrix.image.name }}'
 
-      - name: Run Trivy scan (table format for artifacts)
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'image'
-          image-ref: ${{ matrix.image.tag }}
-          format: 'table'
-          output: 'trivy-docker-${{ matrix.image.name }}-report.txt'
-          severity: 'CRITICAL,HIGH,MEDIUM'
+      - name: Convert to table format
+        run: trivy convert --format table --output trivy-docker-${{ matrix.image.name }}-report.txt trivy-docker-${{ matrix.image.name }}-results.json
 
       - name: Upload Trivy Docker image results
         uses: actions/upload-artifact@v4
@@ -251,9 +242,12 @@ jobs:
         with:
           scan-type: 'config'
           scan-ref: '.'
-          format: 'sarif'
-          output: 'trivy-iac-results.sarif'
+          format: 'json'
+          output: 'trivy-iac-results.json'
           exit-code: '0'
+
+      - name: Convert to SARIF format
+        run: trivy convert --format sarif --output trivy-iac-results.sarif trivy-iac-results.json
 
       - name: Upload Trivy IaC results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
@@ -262,13 +256,8 @@ jobs:
           sarif_file: 'trivy-iac-results.sarif'
           category: 'trivy-iac'
 
-      - name: Run Trivy IaC scan (table format)
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'config'
-          scan-ref: '.'
-          format: 'table'
-          output: 'trivy-iac-report.txt'
+      - name: Convert to table format
+        run: trivy convert --format table --output trivy-iac-report.txt trivy-iac-results.json
 
       - name: Upload Trivy IaC results
         uses: actions/upload-artifact@v4
