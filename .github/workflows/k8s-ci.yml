@@ -111,6 +111,7 @@ jobs:
 
       - name: Run unit tests with coverage
         run: |
+          set +e
           pytest tests/ -v \
             --cov=tests \
             --cov=tools \
@@ -123,6 +124,13 @@ jobs:
             -m "not integration and not slow" \
             --ignore=tests/test_hpa.py \
             --ignore=tests/test_chaos.py
+          exit_code=$?
+          # Exit code 5 = no tests collected (all deselected by markers), treat as success
+          if [ $exit_code -eq 5 ]; then
+            echo "No unit tests collected (all tests are integration/slow) - this is expected"
+            exit 0
+          fi
+          exit $exit_code
 
       - name: Generate enhanced reports
         if: always()
