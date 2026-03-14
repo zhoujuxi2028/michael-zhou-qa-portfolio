@@ -1,0 +1,24 @@
+{
+  "name": "playwright-demo",
+  "version": "1.0.0",
+  "description": "Playwright test automation demo — cross-browser E2E, API, visual, and accessibility testing",
+  "author": "Michael Zhou",
+  "license": "MIT",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:chromium": "npx playwright test --project=chromium",
+    "test:firefox": "npx playwright test --project=firefox",
+    "test:webkit": "npx playwright test --project=webkit",
+    "test:api": "npx playwright test tests/api/",
+    "test:ui": "npx playwright test tests/ui/",
+    "test:visual": "npx playwright test tests/visual/",
+    "test:a11y": "npx playwright test tests/accessibility/",
+    "test:headed": "npx playwright test --headed",
+    "report": "npx playwright show-report"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.1",
+    "@playwright/test": "^1.49.1",
+    "typescript": "^5.7.2"
+  }
+}
