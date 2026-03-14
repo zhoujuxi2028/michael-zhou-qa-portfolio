@@ -20,6 +20,7 @@
     "test:ci": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json -r cli,json --reporter-json-export reports/newman-report.json --bail",
     "test:data-driven": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json -d data/test-orders-data.csv -r cli,htmlextra --reporter-htmlextra-export reports/data-driven-report.html",
     "server": "json-server --watch db.json --port 3001",
+    "server:staging": "json-server --watch db.json --port 3002",
     "db:reset": "git checkout db.json 2>/dev/null || true",
     "test:full": "npm run db:reset && newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json -r cli,htmlextra,json,junit --reporter-htmlextra-export reports/newman-report.html --reporter-json-export reports/newman-report.json --reporter-junit-export reports/newman-report.xml 2>&1 | tee logs/newman-$(date +%Y%m%d_%H%M%S).log; npm run db:reset",
     "test:with-log": "npm run test 2>&1 | tee logs/newman-$(date +%Y%m%d_%H%M%S).log",
