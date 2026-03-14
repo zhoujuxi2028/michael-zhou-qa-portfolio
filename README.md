@@ -52,10 +52,14 @@ Test automation and DevOps demonstration projects.
 git clone https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio.git
 cd michael-zhou-qa-portfolio
 
+# Create virtual environment (for all Python projects)
+python3 -m venv venv
+source venv/bin/activate
+
 # Run any project | 运行任意项目
 cd iwsva-cypress-e2e && npm install && npm test
-cd k8s-auto-testing-platform && pytest tests/ -v
-cd security-testing-demo && pytest tests/ -v
+cd k8s-auto-testing-platform && pip install -r requirements.txt && pytest tests/ -v
+cd security-testing-demo && pip install -r requirements.txt && pytest tests/ -v
 cd cicd-demo && npm install && npm test
 ```
 
