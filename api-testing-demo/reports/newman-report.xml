@@ -1,771 +1,449 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="E-Commerce API Test Suite - Expert Level" tests="65" time="73.501">
-  <testsuite name="01-User Management / 01-Get All Users" id="b167e896-2ab4-4eed-9e25-8ce3737fc2a4" timestamp="2026-03-06T10:25:14.364Z" tests="8" failures="0" errors="0" time="0.600">
-    <testcase name="[Common] Response is valid JSON" time="0.600" classname="01UserManagement01GetAllUsers"/>
-    <testcase name="[Common] Response time logged" time="0.600" classname="01UserManagement01GetAllUsers"/>
-    <testcase name="[Common] Content-Type header present" time="0.600" classname="01UserManagement01GetAllUsers"/>
-    <testcase name="[User] Should return all users" time="0.600" classname="01UserManagement01GetAllUsers"/>
-    <testcase name="[User] Each user should have required fields" time="0.600" classname="01UserManagement01GetAllUsers"/>
-    <testcase name="[User] User email should be valid format" time="0.600" classname="01UserManagement01GetAllUsers"/>
-    <testcase name="[User] Response time should be less than 2s" time="0.600" classname="01UserManagement01GetAllUsers"/>
-    <testcase name="[User] Store first user ID for后续 tests" time="0.600" classname="01UserManagement01GetAllUsers"/>
-  </testsuite>
-  <testsuite name="01-User Management / 02-Get Single User" id="af683d53-c86a-436d-b1b0-2b05d528e814" timestamp="2026-03-06T10:25:14.364Z" tests="7" failures="0" errors="0" time="0.570">
-    <testcase name="[Common] Response is valid JSON" time="0.570" classname="01UserManagement02GetSingleUser"/>
-    <testcase name="[Common] Response time logged" time="0.570" classname="01UserManagement02GetSingleUser"/>
-    <testcase name="[Common] Content-Type header present" time="0.570" classname="01UserManagement02GetSingleUser"/>
-    <testcase name="[User] Should return single user" time="0.570" classname="01UserManagement02GetSingleUser"/>
-    <testcase name="[User] Should have complete user profile" time="0.570" classname="01UserManagement02GetSingleUser"/>
-    <testcase name="[User] Address should be complete" time="0.570" classname="01UserManagement02GetSingleUser"/>
-    <testcase name="[User] Company info should exist" time="0.570" classname="01UserManagement02GetSingleUser"/>
-  </testsuite>
-  <testsuite name="01-User Management / 03-Get User by Username" id="f153b218-b3d5-4166-b9de-c330aa4f9773" timestamp="2026-03-06T10:25:14.364Z" tests="5" failures="0" errors="0" time="0.573">
-    <testcase name="[Common] Response is valid JSON" time="0.573" classname="01UserManagement03GetUserByUsername"/>
-    <testcase name="[Common] Response time logged" time="0.573" classname="01UserManagement03GetUserByUsername"/>
-    <testcase name="[Common] Content-Type header present" time="0.573" classname="01UserManagement03GetUserByUsername"/>
-    <testcase name="[User] Should filter users by username" time="0.573" classname="01UserManagement03GetUserByUsername"/>
-    <testcase name="[User] Returned user should match username" time="0.573" classname="01UserManagement03GetUserByUsername"/>
-  </testsuite>
-  <testsuite name="01-User Management / 04-Create User" id="b355976e-563f-4234-af9b-45bd7d79d82a" timestamp="2026-03-06T10:25:14.364Z" tests="6" failures="1" errors="0" time="0.744">
-    <testcase name="[Common] Response is valid JSON" time="0.744" classname="01UserManagement04CreateUser"/>
-    <testcase name="[Common] Response time logged" time="0.744" classname="01UserManagement04CreateUser"/>
-    <testcase name="[Common] Content-Type header present" time="0.744" classname="01UserManagement04CreateUser"/>
-    <testcase name="[User] Should create new user" time="0.744" classname="01UserManagement04CreateUser">
-      <failure type="AssertionFailure" message="expected undefined to equal 'Test User'">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 01-User Management / 04-Create User.]]>
-        <![CDATA[Test description: [User] Should create new user.]]>
-        <![CDATA[Error message: expected undefined to equal 'Test User'.]]>
-        <![CDATA[Stacktrace: AssertionError: expected undefined to equal 'Test User'
-   at Object.eval sandbox-script.js:1:4).]]>
-      </failure>
-    </testcase>
-    <testcase name="[User] Should return 201 Created" time="0.744" classname="01UserManagement04CreateUser"/>
-    <testcase name="[User] Store created user ID" time="0.744" classname="01UserManagement04CreateUser"/>
-  </testsuite>
-  <testsuite name="01-User Management / 05-Update User (PUT)" id="ecc0f221-8288-4c80-ada8-8cf0f155fac9" timestamp="2026-03-06T10:25:14.364Z" tests="5" failures="1" errors="0" time="0.836">
-    <testcase name="[Common] Response is valid JSON" time="0.836" classname="01UserManagement05UpdateUserPut"/>
-    <testcase name="[Common] Response time logged" time="0.836" classname="01UserManagement05UpdateUserPut"/>
-    <testcase name="[Common] Content-Type header present" time="0.836" classname="01UserManagement05UpdateUserPut"/>
-    <testcase name="[User] Should update existing user" time="0.836" classname="01UserManagement05UpdateUserPut">
-      <failure type="AssertionFailure" message="expected undefined to equal 'Updated User Name'">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 01-User Management / 05-Update User (PUT).]]>
-        <![CDATA[Test description: [User] Should update existing user.]]>
-        <![CDATA[Error message: expected undefined to equal 'Updated User Name'.]]>
-        <![CDATA[Stacktrace: AssertionError: expected undefined to equal 'Updated User Name'
-   at Object.eval sandbox-script.js:1:5).]]>
-      </failure>
-    </testcase>
-    <testcase name="[User] Should preserve user ID" time="0.836" classname="01UserManagement05UpdateUserPut"/>
-  </testsuite>
-  <testsuite name="01-User Management / 06-Update User (PATCH)" id="50ff0741-d251-453f-8d75-4c46917b8192" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.626">
-    <testcase name="[Common] Response is valid JSON" time="0.626" classname="01UserManagement06UpdateUserPatch"/>
-    <testcase name="[Common] Response time logged" time="0.626" classname="01UserManagement06UpdateUserPatch"/>
-    <testcase name="[Common] Content-Type header present" time="0.626" classname="01UserManagement06UpdateUserPatch"/>
-    <testcase name="[User] Should partially update user" time="0.626" classname="01UserManagement06UpdateUserPatch"/>
-  </testsuite>
-  <testsuite name="01-User Management / 07-Delete User" id="29ac2476-a4df-4d12-948e-f4b0cc2e5ab4" timestamp="2026-03-06T10:25:14.364Z" tests="5" failures="0" errors="0" time="0.614">
-    <testcase name="[Common] Response is valid JSON" time="0.614" classname="01UserManagement07DeleteUser"/>
-    <testcase name="[Common] Response time logged" time="0.614" classname="01UserManagement07DeleteUser"/>
-    <testcase name="[Common] Content-Type header present" time="0.614" classname="01UserManagement07DeleteUser"/>
-    <testcase name="[User] Should delete user successfully" time="0.614" classname="01UserManagement07DeleteUser"/>
-    <testcase name="[User] Response body should be empty" time="0.614" classname="01UserManagement07DeleteUser"/>
-  </testsuite>
-  <testsuite name="01-User Management / 08-Get User Posts" id="1179bc9e-7df0-4814-8664-0bfb78a07c07" timestamp="2026-03-06T10:25:14.364Z" tests="6" failures="0" errors="0" time="0.608">
-    <testcase name="[Common] Response is valid JSON" time="0.608" classname="01UserManagement08GetUserPosts"/>
-    <testcase name="[Common] Response time logged" time="0.608" classname="01UserManagement08GetUserPosts"/>
-    <testcase name="[Common] Content-Type header present" time="0.608" classname="01UserManagement08GetUserPosts"/>
-    <testcase name="[User] Should return user posts" time="0.608" classname="01UserManagement08GetUserPosts"/>
-    <testcase name="[User] Each post should belong to user" time="0.608" classname="01UserManagement08GetUserPosts"/>
-    <testcase name="[User] Post should have title and body" time="0.608" classname="01UserManagement08GetUserPosts"/>
-  </testsuite>
-  <testsuite name="02-Product Management / 01-Get All Posts (as Products)" id="9e0857a5-d80d-42a6-a42e-87a72c607393" timestamp="2026-03-06T10:25:14.364Z" tests="6" failures="0" errors="0" time="0.564">
-    <testcase name="[Common] Response is valid JSON" time="0.564" classname="02ProductManagement01GetAllPostsAsProducts"/>
-    <testcase name="[Common] Response time logged" time="0.564" classname="02ProductManagement01GetAllPostsAsProducts"/>
-    <testcase name="[Common] Content-Type header present" time="0.564" classname="02ProductManagement01GetAllPostsAsProducts"/>
-    <testcase name="[Product] Should return all posts" time="0.564" classname="02ProductManagement01GetAllPostsAsProducts"/>
-    <testcase name="[Product] Each post should have required fields" time="0.564" classname="02ProductManagement01GetAllPostsAsProducts"/>
-    <testcase name="[Product] Store first product ID" time="0.564" classname="02ProductManagement01GetAllPostsAsProducts"/>
-  </testsuite>
-  <testsuite name="02-Product Management / 02-Get Single Post (Product)" id="b8d25bb9-4fbf-4fb6-8a44-8e5ce3ff7071" timestamp="2026-03-06T10:25:14.364Z" tests="5" failures="0" errors="0" time="0.564">
-    <testcase name="[Common] Response is valid JSON" time="0.564" classname="02ProductManagement02GetSinglePostProduct"/>
-    <testcase name="[Common] Response time logged" time="0.564" classname="02ProductManagement02GetSinglePostProduct"/>
-    <testcase name="[Common] Content-Type header present" time="0.564" classname="02ProductManagement02GetSinglePostProduct"/>
-    <testcase name="[Product] Should return single post" time="0.564" classname="02ProductManagement02GetSinglePostProduct"/>
-    <testcase name="[Product] ID should match request" time="0.564" classname="02ProductManagement02GetSinglePostProduct"/>
-  </testsuite>
-  <testsuite name="02-Product Management / 03-Get Posts by User" id="9d7db95a-d8dd-4a57-901e-5adc9d82b9d2" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.546">
-    <testcase name="[Common] Response is valid JSON" time="0.546" classname="02ProductManagement03GetPostsByUser"/>
-    <testcase name="[Common] Response time logged" time="0.546" classname="02ProductManagement03GetPostsByUser"/>
-    <testcase name="[Common] Content-Type header present" time="0.546" classname="02ProductManagement03GetPostsByUser"/>
-    <testcase name="[Product] Should filter posts by user" time="0.546" classname="02ProductManagement03GetPostsByUser"/>
-  </testsuite>
-  <testsuite name="02-Product Management / 04-Create Post (Product)" id="99a73f60-8a90-491f-b433-7ec0679e7967" timestamp="2026-03-06T10:25:14.364Z" tests="6" failures="1" errors="0" time="0.639">
-    <testcase name="[Common] Response is valid JSON" time="0.639" classname="02ProductManagement04CreatePostProduct"/>
-    <testcase name="[Common] Response time logged" time="0.639" classname="02ProductManagement04CreatePostProduct"/>
-    <testcase name="[Common] Content-Type header present" time="0.639" classname="02ProductManagement04CreatePostProduct"/>
-    <testcase name="[Product] Should create new post" time="0.639" classname="02ProductManagement04CreatePostProduct">
-      <failure type="AssertionFailure" message="expected undefined to equal 'Test Product Title'">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 02-Product Management / 04-Create Post (Product).]]>
-        <![CDATA[Test description: [Product] Should create new post.]]>
-        <![CDATA[Error message: expected undefined to equal 'Test Product Title'.]]>
-        <![CDATA[Stacktrace: AssertionError: expected undefined to equal 'Test Product Title'
-   at Object.eval sandbox-script.js:1:12).]]>
-      </failure>
-    </testcase>
-    <testcase name="[Product] Should return 201 Created" time="0.639" classname="02ProductManagement04CreatePostProduct"/>
-    <testcase name="[Product] Store created product ID" time="0.639" classname="02ProductManagement04CreatePostProduct"/>
-  </testsuite>
-  <testsuite name="02-Product Management / 05-Update Post (Product)" id="5b4147b7-2393-486a-8ade-1ce2a16a0b3b" timestamp="2026-03-06T10:25:14.364Z" tests="5" failures="2" errors="0" time="0.751">
-    <testcase name="[Common] Response is valid JSON" time="0.751" classname="02ProductManagement05UpdatePostProduct"/>
-    <testcase name="[Common] Response time logged" time="0.751" classname="02ProductManagement05UpdatePostProduct"/>
-    <testcase name="[Common] Content-Type header present" time="0.751" classname="02ProductManagement05UpdatePostProduct"/>
-    <testcase name="[Product] Should update post" time="0.751" classname="02ProductManagement05UpdatePostProduct">
-      <failure type="AssertionFailure" message="expected undefined to equal 'Updated Product Title'">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 02-Product Management / 05-Update Post (Product).]]>
-        <![CDATA[Test description: [Product] Should update post.]]>
-        <![CDATA[Error message: expected undefined to equal 'Updated Product Title'.]]>
-        <![CDATA[Stacktrace: AssertionError: expected undefined to equal 'Updated Product Title'
-   at Object.eval sandbox-script.js:1:13).]]>
-      </failure>
-    </testcase>
-    <testcase name="[Product] Should preserve ID and userId" time="0.751" classname="02ProductManagement05UpdatePostProduct">
-      <failure type="AssertionFailure" message="expected undefined to equal 1">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 02-Product Management / 05-Update Post (Product).]]>
-        <![CDATA[Test description: [Product] Should preserve ID and userId.]]>
-        <![CDATA[Error message: expected undefined to equal 1.]]>
-        <![CDATA[Stacktrace: AssertionError: expected undefined to equal 1
-   at Object.eval sandbox-script.js:2:13).]]>
-      </failure>
-    </testcase>
-  </testsuite>
-  <testsuite name="02-Product Management / 06-Delete Post (Product)" id="c0507a5c-2109-49c0-9922-048e14cf9495" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.635">
-    <testcase name="[Common] Response is valid JSON" time="0.635" classname="02ProductManagement06DeletePostProduct"/>
-    <testcase name="[Common] Response time logged" time="0.635" classname="02ProductManagement06DeletePostProduct"/>
-    <testcase name="[Common] Content-Type header present" time="0.635" classname="02ProductManagement06DeletePostProduct"/>
-    <testcase name="[Product] Should delete post" time="0.635" classname="02ProductManagement06DeletePostProduct"/>
-  </testsuite>
-  <testsuite name="02-Product Management / 07-Get Post Comments" id="aa44f74d-958c-48bc-97da-2cf2bd78b55e" timestamp="2026-03-06T10:25:14.364Z" tests="5" failures="0" errors="0" time="0.569">
-    <testcase name="[Common] Response is valid JSON" time="0.569" classname="02ProductManagement07GetPostComments"/>
-    <testcase name="[Common] Response time logged" time="0.569" classname="02ProductManagement07GetPostComments"/>
-    <testcase name="[Common] Content-Type header present" time="0.569" classname="02ProductManagement07GetPostComments"/>
-    <testcase name="[Product] Should return post comments" time="0.569" classname="02ProductManagement07GetPostComments"/>
-    <testcase name="[Product] Each comment should have email" time="0.569" classname="02ProductManagement07GetPostComments"/>
-  </testsuite>
-  <testsuite name="02-Product Management / 08-Pagination - Get Posts with Limit" id="7902bd02-6eea-4923-a4ab-e7556cadfe36" timestamp="2026-03-06T10:25:14.364Z" tests="5" failures="0" errors="0" time="0.623">
-    <testcase name="[Common] Response is valid JSON" time="0.623" classname="02ProductManagement08PaginationGetPostsWithLimit"/>
-    <testcase name="[Common] Response time logged" time="0.623" classname="02ProductManagement08PaginationGetPostsWithLimit"/>
-    <testcase name="[Common] Content-Type header present" time="0.623" classname="02ProductManagement08PaginationGetPostsWithLimit"/>
-    <testcase name="[Product] Should return limited posts" time="0.623" classname="02ProductManagement08PaginationGetPostsWithLimit"/>
-    <testcase name="[Product] Should support pagination parameters" time="0.623" classname="02ProductManagement08PaginationGetPostsWithLimit"/>
-  </testsuite>
-  <testsuite name="02-Product Management / 09-Pagination - Get Posts with Start" id="b4d76113-3537-43fc-aa93-fd5961634588" timestamp="2026-03-06T10:25:14.364Z" tests="5" failures="0" errors="0" time="0.573">
-    <testcase name="[Common] Response is valid JSON" time="0.573" classname="02ProductManagement09PaginationGetPostsWithStart"/>
-    <testcase name="[Common] Response time logged" time="0.573" classname="02ProductManagement09PaginationGetPostsWithStart"/>
-    <testcase name="[Common] Content-Type header present" time="0.573" classname="02ProductManagement09PaginationGetPostsWithStart"/>
-    <testcase name="[Product] Should return posts with offset" time="0.573" classname="02ProductManagement09PaginationGetPostsWithStart"/>
-    <testcase name="[Product] First post should have correct ID" time="0.573" classname="02ProductManagement09PaginationGetPostsWithStart"/>
-  </testsuite>
-  <testsuite name="02-Product Management / 10-Sort Posts" id="378f5070-1d9a-4fcc-b543-34dc449017bc" timestamp="2026-03-06T10:25:14.364Z" tests="5" failures="0" errors="0" time="1.797">
-    <testcase name="[Common] Response is valid JSON" time="1.797" classname="02ProductManagement10SortPosts"/>
-    <testcase name="[Common] Response time logged" time="1.797" classname="02ProductManagement10SortPosts"/>
-    <testcase name="[Common] Content-Type header present" time="1.797" classname="02ProductManagement10SortPosts"/>
-    <testcase name="[Product] Should sort posts by title" time="1.797" classname="02ProductManagement10SortPosts"/>
-    <testcase name="[Product] Titles should be sorted" time="1.797" classname="02ProductManagement10SortPosts"/>
-  </testsuite>
-  <testsuite name="03-Cart Management / 01-Get All Comments (as Cart Items)" id="5f15a2bc-dcc1-44c9-9811-67923464087b" timestamp="2026-03-06T10:25:14.364Z" tests="6" failures="0" errors="0" time="0.873">
-    <testcase name="[Common] Response is valid JSON" time="0.873" classname="03CartManagement01GetAllCommentsAsCartItems"/>
-    <testcase name="[Common] Response time logged" time="0.873" classname="03CartManagement01GetAllCommentsAsCartItems"/>
-    <testcase name="[Common] Content-Type header present" time="0.873" classname="03CartManagement01GetAllCommentsAsCartItems"/>
-    <testcase name="[Cart] Should return all comments" time="0.873" classname="03CartManagement01GetAllCommentsAsCartItems"/>
-    <testcase name="[Cart] Each comment should have required fields" time="0.873" classname="03CartManagement01GetAllCommentsAsCartItems"/>
-    <testcase name="[Cart] Store first cart item ID" time="0.873" classname="03CartManagement01GetAllCommentsAsCartItems"/>
-  </testsuite>
-  <testsuite name="03-Cart Management / 02-Get Cart Item by ID" id="077d5fd9-6c58-4507-89c6-e8f3bf72face" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.634">
-    <testcase name="[Common] Response is valid JSON" time="0.634" classname="03CartManagement02GetCartItemById"/>
-    <testcase name="[Common] Response time logged" time="0.634" classname="03CartManagement02GetCartItemById"/>
-    <testcase name="[Common] Content-Type header present" time="0.634" classname="03CartManagement02GetCartItemById"/>
-    <testcase name="[Cart] Should return single comment" time="0.634" classname="03CartManagement02GetCartItemById"/>
-  </testsuite>
-  <testsuite name="03-Cart Management / 03-Get Cart Items by Post" id="6ef53dcc-58ae-41f7-85ea-57aa9d88d01c" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.597">
-    <testcase name="[Common] Response is valid JSON" time="0.597" classname="03CartManagement03GetCartItemsByPost"/>
-    <testcase name="[Common] Response time logged" time="0.597" classname="03CartManagement03GetCartItemsByPost"/>
-    <testcase name="[Common] Content-Type header present" time="0.597" classname="03CartManagement03GetCartItemsByPost"/>
-    <testcase name="[Cart] Should filter by post ID" time="0.597" classname="03CartManagement03GetCartItemsByPost"/>
-  </testsuite>
-  <testsuite name="03-Cart Management / 04-Create Cart Item (Comment)" id="9cfa5d63-744d-483e-8d89-09de3b05370a" timestamp="2026-03-06T10:25:14.364Z" tests="5" failures="1" errors="0" time="0.648">
-    <testcase name="[Common] Response is valid JSON" time="0.648" classname="03CartManagement04CreateCartItemComment"/>
-    <testcase name="[Common] Response time logged" time="0.648" classname="03CartManagement04CreateCartItemComment"/>
-    <testcase name="[Common] Content-Type header present" time="0.648" classname="03CartManagement04CreateCartItemComment"/>
-    <testcase name="[Cart] Should create comment" time="0.648" classname="03CartManagement04CreateCartItemComment">
-      <failure type="AssertionFailure" message="expected undefined to equal 'Test Cart Item'">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 03-Cart Management / 04-Create Cart Item (Comment).]]>
-        <![CDATA[Test description: [Cart] Should create comment.]]>
-        <![CDATA[Error message: expected undefined to equal 'Test Cart Item'.]]>
-        <![CDATA[Stacktrace: AssertionError: expected undefined to equal 'Test Cart Item'
-   at Object.eval sandbox-script.js:1:22).]]>
-      </failure>
-    </testcase>
-    <testcase name="[Cart] Store created cart item ID" time="0.648" classname="03CartManagement04CreateCartItemComment"/>
-  </testsuite>
-  <testsuite name="03-Cart Management / 05-Update Cart Item" id="d391f6cd-d106-4d2e-a1d9-227a2a54b87b" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="1" errors="0" time="0.832">
-    <testcase name="[Common] Response is valid JSON" time="0.832" classname="03CartManagement05UpdateCartItem"/>
-    <testcase name="[Common] Response time logged" time="0.832" classname="03CartManagement05UpdateCartItem"/>
-    <testcase name="[Common] Content-Type header present" time="0.832" classname="03CartManagement05UpdateCartItem"/>
-    <testcase name="[Cart] Should update cart item" time="0.832" classname="03CartManagement05UpdateCartItem">
-      <failure type="AssertionFailure" message="expected undefined to equal 'Updated Cart Item'">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 03-Cart Management / 05-Update Cart Item.]]>
-        <![CDATA[Test description: [Cart] Should update cart item.]]>
-        <![CDATA[Error message: expected undefined to equal 'Updated Cart Item'.]]>
-        <![CDATA[Stacktrace: AssertionError: expected undefined to equal 'Updated Cart Item'
-   at Object.eval sandbox-script.js:1:23).]]>
-      </failure>
-    </testcase>
-  </testsuite>
-  <testsuite name="03-Cart Management / 06-Delete Cart Item" id="6752dfc8-f3bb-4885-9d1b-40855380a65f" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.829">
-    <testcase name="[Common] Response is valid JSON" time="0.829" classname="03CartManagement06DeleteCartItem"/>
-    <testcase name="[Common] Response time logged" time="0.829" classname="03CartManagement06DeleteCartItem"/>
-    <testcase name="[Common] Content-Type header present" time="0.829" classname="03CartManagement06DeleteCartItem"/>
-    <testcase name="[Cart] Should delete cart item" time="0.829" classname="03CartManagement06DeleteCartItem"/>
-  </testsuite>
-  <testsuite name="03-Cart Management / 07-Get Multiple Cart Items" id="47625727-c76a-43b4-a942-ad54b61164eb" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.635">
-    <testcase name="[Common] Response is valid JSON" time="0.635" classname="03CartManagement07GetMultipleCartItems"/>
-    <testcase name="[Common] Response time logged" time="0.635" classname="03CartManagement07GetMultipleCartItems"/>
-    <testcase name="[Common] Content-Type header present" time="0.635" classname="03CartManagement07GetMultipleCartItems"/>
-    <testcase name="[Cart] Should filter by multiple post IDs" time="0.635" classname="03CartManagement07GetMultipleCartItems"/>
-  </testsuite>
-  <testsuite name="03-Cart Management / 08-Bulk Cart Operations" id="13a25f1a-b4c8-43f6-9c42-1eff7ffa3bd1" timestamp="2026-03-06T10:25:14.364Z" tests="5" failures="0" errors="0" time="0.580">
-    <testcase name="[Common] Response is valid JSON" time="0.580" classname="03CartManagement08BulkCartOperations"/>
-    <testcase name="[Common] Response time logged" time="0.580" classname="03CartManagement08BulkCartOperations"/>
-    <testcase name="[Common] Content-Type header present" time="0.580" classname="03CartManagement08BulkCartOperations"/>
-    <testcase name="[Cart] Should handle sub-selective queries" time="0.580" classname="03CartManagement08BulkCartOperations"/>
-    <testcase name="[Cart] Should return valid data structure" time="0.580" classname="03CartManagement08BulkCartOperations"/>
-  </testsuite>
-  <testsuite name="04-Order Management / 01-Get All Todos (as Orders)" id="07be55e9-dac4-43b4-ac40-a998a865661d" timestamp="2026-03-06T10:25:14.364Z" tests="6" failures="0" errors="0" time="0.562">
-    <testcase name="[Common] Response is valid JSON" time="0.562" classname="04OrderManagement01GetAllTodosAsOrders"/>
-    <testcase name="[Common] Response time logged" time="0.562" classname="04OrderManagement01GetAllTodosAsOrders"/>
-    <testcase name="[Common] Content-Type header present" time="0.562" classname="04OrderManagement01GetAllTodosAsOrders"/>
-    <testcase name="[Order] Should return all todos" time="0.562" classname="04OrderManagement01GetAllTodosAsOrders"/>
-    <testcase name="[Order] Each todo should have required fields" time="0.562" classname="04OrderManagement01GetAllTodosAsOrders"/>
-    <testcase name="[Order] Store first order ID" time="0.562" classname="04OrderManagement01GetAllTodosAsOrders"/>
-  </testsuite>
-  <testsuite name="04-Order Management / 02-Get Single Order" id="37f8ff9d-87a7-420e-a4e8-593665e2f25a" timestamp="2026-03-06T10:25:14.364Z" tests="5" failures="0" errors="0" time="0.681">
-    <testcase name="[Common] Response is valid JSON" time="0.681" classname="04OrderManagement02GetSingleOrder"/>
-    <testcase name="[Common] Response time logged" time="0.681" classname="04OrderManagement02GetSingleOrder"/>
-    <testcase name="[Common] Content-Type header present" time="0.681" classname="04OrderManagement02GetSingleOrder"/>
-    <testcase name="[Order] Should return single todo" time="0.681" classname="04OrderManagement02GetSingleOrder"/>
-    <testcase name="[Order] ID should match request" time="0.681" classname="04OrderManagement02GetSingleOrder"/>
-  </testsuite>
-  <testsuite name="04-Order Management / 03-Get Orders by User" id="28065a66-bdf3-420c-b87b-25874f5b7cd8" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.566">
-    <testcase name="[Common] Response is valid JSON" time="0.566" classname="04OrderManagement03GetOrdersByUser"/>
-    <testcase name="[Common] Response time logged" time="0.566" classname="04OrderManagement03GetOrdersByUser"/>
-    <testcase name="[Common] Content-Type header present" time="0.566" classname="04OrderManagement03GetOrdersByUser"/>
-    <testcase name="[Order] Should filter todos by user" time="0.566" classname="04OrderManagement03GetOrdersByUser"/>
-  </testsuite>
-  <testsuite name="04-Order Management / 04-Create Order" id="5e6cdb67-312a-44f0-bfe2-97b36b667df3" timestamp="2026-03-06T10:25:14.364Z" tests="5" failures="1" errors="0" time="0.615">
-    <testcase name="[Common] Response is valid JSON" time="0.615" classname="04OrderManagement04CreateOrder"/>
-    <testcase name="[Common] Response time logged" time="0.615" classname="04OrderManagement04CreateOrder"/>
-    <testcase name="[Common] Content-Type header present" time="0.615" classname="04OrderManagement04CreateOrder"/>
-    <testcase name="[Order] Should create new todo" time="0.615" classname="04OrderManagement04CreateOrder">
-      <failure type="AssertionFailure" message="expected undefined to equal 'Test Order Item'">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 04-Order Management / 04-Create Order.]]>
-        <![CDATA[Test description: [Order] Should create new todo.]]>
-        <![CDATA[Error message: expected undefined to equal 'Test Order Item'.]]>
-        <![CDATA[Stacktrace: AssertionError: expected undefined to equal 'Test Order Item'
-   at Object.eval sandbox-script.js:1:30).]]>
-      </failure>
-    </testcase>
-    <testcase name="[Order] Store created order ID" time="0.615" classname="04OrderManagement04CreateOrder"/>
-  </testsuite>
-  <testsuite name="04-Order Management / 05-Update Order" id="d8d5fd94-4be0-45c7-bba1-099e15da84f8" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="1" errors="0" time="0.772">
-    <testcase name="[Common] Response is valid JSON" time="0.772" classname="04OrderManagement05UpdateOrder"/>
-    <testcase name="[Common] Response time logged" time="0.772" classname="04OrderManagement05UpdateOrder"/>
-    <testcase name="[Common] Content-Type header present" time="0.772" classname="04OrderManagement05UpdateOrder"/>
-    <testcase name="[Order] Should update todo" time="0.772" classname="04OrderManagement05UpdateOrder">
-      <failure type="AssertionFailure" message="expected undefined to equal 'Updated Order'">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 04-Order Management / 05-Update Order.]]>
-        <![CDATA[Test description: [Order] Should update todo.]]>
-        <![CDATA[Error message: expected undefined to equal 'Updated Order'.]]>
-        <![CDATA[Stacktrace: AssertionError: expected undefined to equal 'Updated Order'
-   at Object.eval sandbox-script.js:1:31).]]>
-      </failure>
-    </testcase>
-  </testsuite>
-  <testsuite name="04-Order Management / 06-Complete Order (PATCH)" id="1b0f543b-187c-4950-b90a-5ec34dab4dab" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="1" errors="0" time="0.640">
-    <testcase name="[Common] Response is valid JSON" time="0.640" classname="04OrderManagement06CompleteOrderPatch"/>
-    <testcase name="[Common] Response time logged" time="0.640" classname="04OrderManagement06CompleteOrderPatch"/>
-    <testcase name="[Common] Content-Type header present" time="0.640" classname="04OrderManagement06CompleteOrderPatch"/>
-    <testcase name="[Order] Should mark as completed" time="0.640" classname="04OrderManagement06CompleteOrderPatch">
-      <failure type="AssertionFailure" message="expected false to equal true">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 04-Order Management / 06-Complete Order (PATCH).]]>
-        <![CDATA[Test description: [Order] Should mark as completed.]]>
-        <![CDATA[Error message: expected false to equal true.]]>
-        <![CDATA[Stacktrace: AssertionError: expected false to equal true
-   at Object.eval sandbox-script.js:1:32).]]>
-      </failure>
-    </testcase>
-  </testsuite>
-  <testsuite name="04-Order Management / 07-Delete Order" id="034777da-2fee-4592-9854-bd3d0a92a952" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.716">
-    <testcase name="[Common] Response is valid JSON" time="0.716" classname="04OrderManagement07DeleteOrder"/>
-    <testcase name="[Common] Response time logged" time="0.716" classname="04OrderManagement07DeleteOrder"/>
-    <testcase name="[Common] Content-Type header present" time="0.716" classname="04OrderManagement07DeleteOrder"/>
-    <testcase name="[Order] Should delete todo" time="0.716" classname="04OrderManagement07DeleteOrder"/>
-  </testsuite>
-  <testsuite name="04-Order Management / 08-Filter Completed Orders" id="d3beaf12-2ee2-4203-ad8a-714b618b0bfd" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.577">
-    <testcase name="[Common] Response is valid JSON" time="0.577" classname="04OrderManagement08FilterCompletedOrders"/>
-    <testcase name="[Common] Response time logged" time="0.577" classname="04OrderManagement08FilterCompletedOrders"/>
-    <testcase name="[Common] Content-Type header present" time="0.577" classname="04OrderManagement08FilterCompletedOrders"/>
-    <testcase name="[Order] Should filter completed todos" time="0.577" classname="04OrderManagement08FilterCompletedOrders"/>
-  </testsuite>
-  <testsuite name="04-Order Management / 09-Filter Pending Orders" id="8f073a1f-4e48-4fef-bdae-5413b825ec88" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.577">
-    <testcase name="[Common] Response is valid JSON" time="0.577" classname="04OrderManagement09FilterPendingOrders"/>
-    <testcase name="[Common] Response time logged" time="0.577" classname="04OrderManagement09FilterPendingOrders"/>
-    <testcase name="[Common] Content-Type header present" time="0.577" classname="04OrderManagement09FilterPendingOrders"/>
-    <testcase name="[Order] Should filter pending todos" time="0.577" classname="04OrderManagement09FilterPendingOrders"/>
-  </testsuite>
-  <testsuite name="04-Order Management / 10-Get Order Details" id="77d38614-5065-4e03-957f-f3854cd42cb4" timestamp="2026-03-06T10:25:14.364Z" tests="5" failures="0" errors="0" time="0.609">
-    <testcase name="[Common] Response is valid JSON" time="0.609" classname="04OrderManagement10GetOrderDetails"/>
-    <testcase name="[Common] Response time logged" time="0.609" classname="04OrderManagement10GetOrderDetails"/>
-    <testcase name="[Common] Content-Type header present" time="0.609" classname="04OrderManagement10GetOrderDetails"/>
-    <testcase name="[Order] Should return todo with correct ID" time="0.609" classname="04OrderManagement10GetOrderDetails"/>
-    <testcase name="[Order] Title should not be empty" time="0.609" classname="04OrderManagement10GetOrderDetails"/>
-  </testsuite>
-  <testsuite name="04-Order Management / 11-Bulk Order Creation" id="7f6f950f-2af3-4b9e-a84c-16670908d295" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="1" errors="0" time="0.764">
-    <testcase name="[Common] Response is valid JSON" time="0.764" classname="04OrderManagement11BulkOrderCreation"/>
-    <testcase name="[Common] Response time logged" time="0.764" classname="04OrderManagement11BulkOrderCreation"/>
-    <testcase name="[Common] Content-Type header present" time="0.764" classname="04OrderManagement11BulkOrderCreation"/>
-    <testcase name="[Order] Should create multiple todos" time="0.764" classname="04OrderManagement11BulkOrderCreation">
-      <failure type="AssertionFailure" message="expected { id: 201 } to be an array">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 04-Order Management / 11-Bulk Order Creation.]]>
-        <![CDATA[Test description: [Order] Should create multiple todos.]]>
-        <![CDATA[Error message: expected { id: 201 } to be an array.]]>
-        <![CDATA[Stacktrace: AssertionError: expected { id: 201 } to be an array
-   at Object.eval sandbox-script.js:1:37).]]>
-      </failure>
-    </testcase>
-  </testsuite>
-  <testsuite name="04-Order Management / 12-Order Status Transition" id="fbd48319-9c4d-4b44-b170-de8a00a51f9e" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="29.856">
-    <testcase name="[Common] Response is valid JSON" time="29.856" classname="04OrderManagement12OrderStatusTransition"/>
-    <testcase name="[Common] Response time logged" time="29.856" classname="04OrderManagement12OrderStatusTransition"/>
-    <testcase name="[Common] Content-Type header present" time="29.856" classname="04OrderManagement12OrderStatusTransition"/>
-    <testcase name="[Order] Should handle todo update" time="29.856" classname="04OrderManagement12OrderStatusTransition"/>
-  </testsuite>
-  <testsuite name="05-Coupon Management / 01-Get Albums (as Coupon Types)" id="abf9cee6-b327-4856-aeb0-f7caf75f16eb" timestamp="2026-03-06T10:25:14.364Z" tests="5" failures="0" errors="0" time="0.763">
-    <testcase name="[Common] Response is valid JSON" time="0.763" classname="05CouponManagement01GetAlbumsAsCouponTypes"/>
-    <testcase name="[Common] Response time logged" time="0.763" classname="05CouponManagement01GetAlbumsAsCouponTypes"/>
-    <testcase name="[Common] Content-Type header present" time="0.763" classname="05CouponManagement01GetAlbumsAsCouponTypes"/>
-    <testcase name="[Coupon] Should return all albums" time="0.763" classname="05CouponManagement01GetAlbumsAsCouponTypes"/>
-    <testcase name="[Coupon] Store first coupon type ID" time="0.763" classname="05CouponManagement01GetAlbumsAsCouponTypes"/>
-  </testsuite>
-  <testsuite name="05-Coupon Management / 02-Get Single Coupon Type" id="f242f943-1235-4407-b6e9-0ee52331bb53" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.637">
-    <testcase name="[Common] Response is valid JSON" time="0.637" classname="05CouponManagement02GetSingleCouponType"/>
-    <testcase name="[Common] Response time logged" time="0.637" classname="05CouponManagement02GetSingleCouponType"/>
-    <testcase name="[Common] Content-Type header present" time="0.637" classname="05CouponManagement02GetSingleCouponType"/>
-    <testcase name="[Coupon] Should return single album" time="0.637" classname="05CouponManagement02GetSingleCouponType"/>
-  </testsuite>
-  <testsuite name="05-Coupon Management / 03-Get Photos (as Coupons)" id="75299382-a082-4e87-aacf-d8898bbc02a5" timestamp="2026-03-06T10:25:14.364Z" tests="6" failures="0" errors="0" time="1.136">
-    <testcase name="[Common] Response is valid JSON" time="1.136" classname="05CouponManagement03GetPhotosAsCoupons"/>
-    <testcase name="[Common] Response time logged" time="1.136" classname="05CouponManagement03GetPhotosAsCoupons"/>
-    <testcase name="[Common] Content-Type header present" time="1.136" classname="05CouponManagement03GetPhotosAsCoupons"/>
-    <testcase name="[Coupon] Should return photos" time="1.136" classname="05CouponManagement03GetPhotosAsCoupons"/>
-    <testcase name="[Coupon] Each photo should have albumId" time="1.136" classname="05CouponManagement03GetPhotosAsCoupons"/>
-    <testcase name="[Coupon] Store first coupon ID" time="1.136" classname="05CouponManagement03GetPhotosAsCoupons"/>
-  </testsuite>
-  <testsuite name="05-Coupon Management / 04-Create Coupon" id="dbec136e-1e7c-4942-9da8-09d76c6b4f02" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="2" errors="0" time="0.849">
-    <testcase name="[Common] Response is valid JSON" time="0.849" classname="05CouponManagement04CreateCoupon">
-      <failure type="AssertionFailure" message="Response is not valid JSON">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 05-Coupon Management / 04-Create Coupon.]]>
-        <![CDATA[Test description: [Common] Response is valid JSON.]]>
-        <![CDATA[Error message: Response is not valid JSON.]]>
-        <![CDATA[Stacktrace: AssertionError: Response is not valid JSON
-   at Object.eval sandbox-script.js:1:42).]]>
-      </failure>
-    </testcase>
-    <testcase name="[Common] Response time logged" time="0.849" classname="05CouponManagement04CreateCoupon"/>
-    <testcase name="[Common] Content-Type header present" time="0.849" classname="05CouponManagement04CreateCoupon"/>
-    <testcase name="[Coupon] Should create photo" time="0.849" classname="05CouponManagement04CreateCoupon">
-      <failure type="AssertionFailure" message="Unexpected token '&lt;' at 1:1&#xA;&lt;!DOCTYPE html>&#xA;^">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 05-Coupon Management / 04-Create Coupon.]]>
-        <![CDATA[Test description: [Coupon] Should create photo.]]>
-        <![CDATA[Error message: Unexpected token '<' at 1:1
-<!DOCTYPE html>
-^.]]>
-        <![CDATA[Stacktrace: JSONError: Unexpected token '<' at 1:1
-<!DOCTYPE html>
-^
-   at Object.eval sandbox-script.js:1:42).]]>
-      </failure>
-    </testcase>
-  </testsuite>
-  <testsuite name="05-Coupon Management / 05-Update Coupon" id="e879ba53-3759-4431-9034-a63bee6a1863" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="1" errors="0" time="0.766">
-    <testcase name="[Common] Response is valid JSON" time="0.766" classname="05CouponManagement05UpdateCoupon"/>
-    <testcase name="[Common] Response time logged" time="0.766" classname="05CouponManagement05UpdateCoupon"/>
-    <testcase name="[Common] Content-Type header present" time="0.766" classname="05CouponManagement05UpdateCoupon"/>
-    <testcase name="[Coupon] Should update photo" time="0.766" classname="05CouponManagement05UpdateCoupon">
-      <failure type="AssertionFailure" message="expected undefined to equal 'Updated Coupon'">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 05-Coupon Management / 05-Update Coupon.]]>
-        <![CDATA[Test description: [Coupon] Should update photo.]]>
-        <![CDATA[Error message: expected undefined to equal 'Updated Coupon'.]]>
-        <![CDATA[Stacktrace: AssertionError: expected undefined to equal 'Updated Coupon'
-   at Object.eval sandbox-script.js:1:43).]]>
-      </failure>
-    </testcase>
-  </testsuite>
-  <testsuite name="05-Coupon Management / 06-Delete Coupon" id="5c259c11-aad8-4ac6-af5a-34a1aa6d441b" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.627">
-    <testcase name="[Common] Response is valid JSON" time="0.627" classname="05CouponManagement06DeleteCoupon"/>
-    <testcase name="[Common] Response time logged" time="0.627" classname="05CouponManagement06DeleteCoupon"/>
-    <testcase name="[Common] Content-Type header present" time="0.627" classname="05CouponManagement06DeleteCoupon"/>
-    <testcase name="[Coupon] Should delete photo" time="0.627" classname="05CouponManagement06DeleteCoupon"/>
-  </testsuite>
-  <testsuite name="06-Payment / 01-Get Photos (as Payment Methods)" id="126c88d0-b676-4027-9cc0-b376fe37d061" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.633">
-    <testcase name="[Common] Response is valid JSON" time="0.633" classname="06Payment01GetPhotosAsPaymentMethods"/>
-    <testcase name="[Common] Response time logged" time="0.633" classname="06Payment01GetPhotosAsPaymentMethods"/>
-    <testcase name="[Common] Content-Type header present" time="0.633" classname="06Payment01GetPhotosAsPaymentMethods"/>
-    <testcase name="[Payment] Should return photos" time="0.633" classname="06Payment01GetPhotosAsPaymentMethods"/>
-  </testsuite>
-  <testsuite name="06-Payment / 02-Get Single Payment Method" id="402daddb-75c1-477a-9d28-651e5595886d" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.749">
-    <testcase name="[Common] Response is valid JSON" time="0.749" classname="06Payment02GetSinglePaymentMethod"/>
-    <testcase name="[Common] Response time logged" time="0.749" classname="06Payment02GetSinglePaymentMethod"/>
-    <testcase name="[Common] Content-Type header present" time="0.749" classname="06Payment02GetSinglePaymentMethod"/>
-    <testcase name="[Payment] Should return photo" time="0.749" classname="06Payment02GetSinglePaymentMethod"/>
-  </testsuite>
-  <testsuite name="06-Payment / 03-Validate Payment Method URL" id="c7e1db56-7de2-49e9-b9b2-2e78eeb21db5" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.624">
-    <testcase name="[Common] Response is valid JSON" time="0.624" classname="06Payment03ValidatePaymentMethodUrl"/>
-    <testcase name="[Common] Response time logged" time="0.624" classname="06Payment03ValidatePaymentMethodUrl"/>
-    <testcase name="[Common] Content-Type header present" time="0.624" classname="06Payment03ValidatePaymentMethodUrl"/>
-    <testcase name="[Payment] Photo URL should be valid" time="0.624" classname="06Payment03ValidatePaymentMethodUrl"/>
-  </testsuite>
-  <testsuite name="06-Payment / 04-Create Payment Record" id="e7f65e9a-bfcc-4cbc-b507-cca8c26cf70f" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.617">
-    <testcase name="[Common] Response is valid JSON" time="0.617" classname="06Payment04CreatePaymentRecord"/>
-    <testcase name="[Common] Response time logged" time="0.617" classname="06Payment04CreatePaymentRecord"/>
-    <testcase name="[Common] Content-Type header present" time="0.617" classname="06Payment04CreatePaymentRecord"/>
-    <testcase name="[Payment] Should create photo record" time="0.617" classname="06Payment04CreatePaymentRecord"/>
-  </testsuite>
-  <testsuite name="06-Payment / 05-Update Payment Details" id="94e0bf17-7616-481f-bc2e-da225163169e" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.681">
-    <testcase name="[Common] Response is valid JSON" time="0.681" classname="06Payment05UpdatePaymentDetails"/>
-    <testcase name="[Common] Response time logged" time="0.681" classname="06Payment05UpdatePaymentDetails"/>
-    <testcase name="[Common] Content-Type header present" time="0.681" classname="06Payment05UpdatePaymentDetails"/>
-    <testcase name="[Payment] Should update photo details" time="0.681" classname="06Payment05UpdatePaymentDetails"/>
-  </testsuite>
-  <testsuite name="06-Payment / 06-Delete Payment Record" id="83daeda3-563e-4994-99d5-daefbdd48575" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.649">
-    <testcase name="[Common] Response is valid JSON" time="0.649" classname="06Payment06DeletePaymentRecord"/>
-    <testcase name="[Common] Response time logged" time="0.649" classname="06Payment06DeletePaymentRecord"/>
-    <testcase name="[Common] Content-Type header present" time="0.649" classname="06Payment06DeletePaymentRecord"/>
-    <testcase name="[Payment] Should delete payment record" time="0.649" classname="06Payment06DeletePaymentRecord"/>
-  </testsuite>
-  <testsuite name="07-Negative Tests / 01-Get Non-existent User" id="00c96682-84ae-464e-ae70-b30b7caf9f8f" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.563">
-    <testcase name="[Common] Response is valid JSON" time="0.563" classname="07NegativeTests01GetNonExistentUser"/>
-    <testcase name="[Common] Response time logged" time="0.563" classname="07NegativeTests01GetNonExistentUser"/>
-    <testcase name="[Common] Content-Type header present" time="0.563" classname="07NegativeTests01GetNonExistentUser"/>
-    <testcase name="[Negative] Should return empty object for non-existent user" time="0.563" classname="07NegativeTests01GetNonExistentUser"/>
-  </testsuite>
-  <testsuite name="07-Negative Tests / 02-Create User with Invalid Email" id="e9376fa7-8785-40ad-a506-8f8f9ec79f2a" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.719">
-    <testcase name="[Common] Response is valid JSON" time="0.719" classname="07NegativeTests02CreateUserWithInvalidEmail"/>
-    <testcase name="[Common] Response time logged" time="0.719" classname="07NegativeTests02CreateUserWithInvalidEmail"/>
-    <testcase name="[Common] Content-Type header present" time="0.719" classname="07NegativeTests02CreateUserWithInvalidEmail"/>
-    <testcase name="[Negative] Should still create user (API accepts any)" time="0.719" classname="07NegativeTests02CreateUserWithInvalidEmail"/>
-  </testsuite>
-  <testsuite name="07-Negative Tests / 03-Get User with Invalid ID Format" id="7159331a-3f58-4d58-af6c-e5157ba454fa" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.568">
-    <testcase name="[Common] Response is valid JSON" time="0.568" classname="07NegativeTests03GetUserWithInvalidIdFormat"/>
-    <testcase name="[Common] Response time logged" time="0.568" classname="07NegativeTests03GetUserWithInvalidIdFormat"/>
-    <testcase name="[Common] Content-Type header present" time="0.568" classname="07NegativeTests03GetUserWithInvalidIdFormat"/>
-    <testcase name="[Negative] Should handle invalid ID gracefully" time="0.568" classname="07NegativeTests03GetUserWithInvalidIdFormat"/>
-  </testsuite>
-  <testsuite name="07-Negative Tests / 04-Create Post with Missing Required Fields" id="13ec69e3-9613-41b2-940a-2e9e0781237a" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.756">
-    <testcase name="[Common] Response is valid JSON" time="0.756" classname="07NegativeTests04CreatePostWithMissingRequiredFields"/>
-    <testcase name="[Common] Response time logged" time="0.756" classname="07NegativeTests04CreatePostWithMissingRequiredFields"/>
-    <testcase name="[Common] Content-Type header present" time="0.756" classname="07NegativeTests04CreatePostWithMissingRequiredFields"/>
-    <testcase name="[Negative] Should create with defaults when required fields missing" time="0.756" classname="07NegativeTests04CreatePostWithMissingRequiredFields"/>
-  </testsuite>
-  <testsuite name="07-Negative Tests / 05-Update Non-existent Resource" id="612f0abd-deb3-4000-8e8c-4f9cd34bbceb" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="2" errors="0" time="0.751">
-    <testcase name="[Common] Response is valid JSON" time="0.751" classname="07NegativeTests05UpdateNonExistentResource">
-      <failure type="AssertionFailure" message="Response is not valid JSON">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 07-Negative Tests / 05-Update Non-existent Resource.]]>
-        <![CDATA[Test description: [Common] Response is valid JSON.]]>
-        <![CDATA[Error message: Response is not valid JSON.]]>
-        <![CDATA[Stacktrace: AssertionError: Response is not valid JSON
-   at Object.eval sandbox-script.js:1:55).]]>
-      </failure>
-    </testcase>
-    <testcase name="[Common] Response time logged" time="0.751" classname="07NegativeTests05UpdateNonExistentResource"/>
-    <testcase name="[Common] Content-Type header present" time="0.751" classname="07NegativeTests05UpdateNonExistentResource"/>
-    <testcase name="[Negative] Should handle update of non-existent resource" time="0.751" classname="07NegativeTests05UpdateNonExistentResource">
-      <failure type="AssertionFailure" message="Unexpected token 'T' at 1:1&#xA;TypeError: Cannot read properties of undefined (reading 'id')&#xA;^">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 07-Negative Tests / 05-Update Non-existent Resource.]]>
-        <![CDATA[Test description: [Negative] Should handle update of non-existent resource.]]>
-        <![CDATA[Error message: Unexpected token 'T' at 1:1
-TypeError: Cannot read properties of undefined (reading 'id')
-^.]]>
-        <![CDATA[Stacktrace: JSONError: Unexpected token 'T' at 1:1
-TypeError: Cannot read properties of undefined (reading 'id')
-^
-   at Object.eval sandbox-script.js:1:55).]]>
-      </failure>
-    </testcase>
-  </testsuite>
-  <testsuite name="07-Negative Tests / 06-Delete Non-existent Resource" id="127155eb-c5c2-4ef2-886b-0af470e85e15" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.630">
-    <testcase name="[Common] Response is valid JSON" time="0.630" classname="07NegativeTests06DeleteNonExistentResource"/>
-    <testcase name="[Common] Response time logged" time="0.630" classname="07NegativeTests06DeleteNonExistentResource"/>
-    <testcase name="[Common] Content-Type header present" time="0.630" classname="07NegativeTests06DeleteNonExistentResource"/>
-    <testcase name="[Negative] Should return success for non-existent delete" time="0.630" classname="07NegativeTests06DeleteNonExistentResource"/>
-  </testsuite>
-  <testsuite name="07-Negative Tests / 07-Query with Invalid Parameters" id="04aa535b-4b56-4ba2-98f7-30a4b96d844a" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.556">
-    <testcase name="[Common] Response is valid JSON" time="0.556" classname="07NegativeTests07QueryWithInvalidParameters"/>
-    <testcase name="[Common] Response time logged" time="0.556" classname="07NegativeTests07QueryWithInvalidParameters"/>
-    <testcase name="[Common] Content-Type header present" time="0.556" classname="07NegativeTests07QueryWithInvalidParameters"/>
-    <testcase name="[Negative] Should handle invalid query gracefully" time="0.556" classname="07NegativeTests07QueryWithInvalidParameters"/>
-  </testsuite>
-  <testsuite name="07-Negative Tests / 08-Post with Very Long Title" id="2433f265-55fe-4b69-b175-7a1984952974" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.629">
-    <testcase name="[Common] Response is valid JSON" time="0.629" classname="07NegativeTests08PostWithVeryLongTitle"/>
-    <testcase name="[Common] Response time logged" time="0.629" classname="07NegativeTests08PostWithVeryLongTitle"/>
-    <testcase name="[Common] Content-Type header present" time="0.629" classname="07NegativeTests08PostWithVeryLongTitle"/>
-    <testcase name="[Negative] Should handle long content" time="0.629" classname="07NegativeTests08PostWithVeryLongTitle"/>
-  </testsuite>
-  <testsuite name="07-Negative Tests / 09-Get with Negative ID" id="2cbec5da-fc93-420b-9a4d-3d8d05dd87f1" timestamp="2026-03-06T10:25:14.364Z" tests="4" failures="0" errors="0" time="0.856">
-    <testcase name="[Common] Response is valid JSON" time="0.856" classname="07NegativeTests09GetWithNegativeId"/>
-    <testcase name="[Common] Response time logged" time="0.856" classname="07NegativeTests09GetWithNegativeId"/>
-    <testcase name="[Common] Content-Type header present" time="0.856" classname="07NegativeTests09GetWithNegativeId"/>
-    <testcase name="[Negative] Should handle negative ID" time="0.856" classname="07NegativeTests09GetWithNegativeId"/>
-  </testsuite>
-  <testsuite name="07-Negative Tests / 10-Concurrent Request Simulation" id="54821abb-28df-4fc1-8793-2798e43061ed" timestamp="2026-03-06T10:25:14.364Z" tests="5" failures="0" errors="0" time="0.565">
-    <testcase name="[Common] Response is valid JSON" time="0.565" classname="07NegativeTests10ConcurrentRequestSimulation"/>
-    <testcase name="[Common] Response time logged" time="0.565" classname="07NegativeTests10ConcurrentRequestSimulation"/>
-    <testcase name="[Common] Content-Type header present" time="0.565" classname="07NegativeTests10ConcurrentRequestSimulation"/>
-    <testcase name="[Negative] Should handle rapid sequential requests" time="0.565" classname="07NegativeTests10ConcurrentRequestSimulation"/>
-    <testcase name="[Negative] Response time should be acceptable" time="0.565" classname="07NegativeTests10ConcurrentRequestSimulation"/>
-  </testsuite>
-  <testsuite name="08-Enhanced Testing (Data-Driven &amp; Correlation) / 01-Data-Driven User Creation" id="5323760c-0f58-487b-b926-21f651633037" timestamp="2026-03-06T10:25:14.364Z" tests="8" failures="2" errors="0" time="0.687">
-    <testcase name="[Common] Response is valid JSON" time="0.687" classname="08EnhancedTestingDataDrivenAmpCorrelation01DataDrivenUserCreation"/>
-    <testcase name="[Common] Response time logged" time="0.687" classname="08EnhancedTestingDataDrivenAmpCorrelation01DataDrivenUserCreation"/>
-    <testcase name="[Common] Content-Type header present" time="0.687" classname="08EnhancedTestingDataDrivenAmpCorrelation01DataDrivenUserCreation"/>
-    <testcase name="[Enhanced-001] User should be created successfully" time="0.687" classname="08EnhancedTestingDataDrivenAmpCorrelation01DataDrivenUserCreation"/>
-    <testcase name="[Enhanced-002] Response should contain user ID" time="0.687" classname="08EnhancedTestingDataDrivenAmpCorrelation01DataDrivenUserCreation"/>
-    <testcase name="[Enhanced-003] User name should match request" time="0.687" classname="08EnhancedTestingDataDrivenAmpCorrelation01DataDrivenUserCreation">
-      <failure type="AssertionFailure" message="Created user name does not match request. Expected: TestUser_1772792787669, Got: undefined: expected undefined to equal 'TestUser_1772792787669'">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 08-Enhanced Testing (Data-Driven & Correlation) / 01-Data-Driven User Creation.]]>
-        <![CDATA[Test description: [Enhanced-003] User name should match request.]]>
-        <![CDATA[Error message: Created user name does not match request. Expected: TestUser_1772792787669, Got: undefined: expected undefined to equal 'TestUser_1772792787669'.]]>
-        <![CDATA[Stacktrace: AssertionError: Created user name does not match request. Expected: TestUser_1772792787669, Got: undefined: expected undefined to equal 'TestUser_1772792787669'
-   at Object.eval sandbox-script.js:3:61).]]>
-      </failure>
-    </testcase>
-    <testcase name="[Enhanced-004] User email should be valid format" time="0.687" classname="08EnhancedTestingDataDrivenAmpCorrelation01DataDrivenUserCreation">
-      <failure type="AssertionFailure" message="Invalid email format: undefined: expected false to be true">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 08-Enhanced Testing (Data-Driven & Correlation) / 01-Data-Driven User Creation.]]>
-        <![CDATA[Test description: [Enhanced-004] User email should be valid format.]]>
-        <![CDATA[Error message: Invalid email format: undefined: expected false to be true.]]>
-        <![CDATA[Stacktrace: AssertionError: Invalid email format: undefined: expected false to be true
-   at Object.eval sandbox-script.js:4:61).]]>
-      </failure>
-    </testcase>
-    <testcase name="[Enhanced-005] Response time should be acceptable" time="0.687" classname="08EnhancedTestingDataDrivenAmpCorrelation01DataDrivenUserCreation"/>
-  </testsuite>
-  <testsuite name="08-Enhanced Testing (Data-Driven &amp; Correlation) / 02-Get Created User (Correlation)" id="a8ee611e-cc14-4add-bcd6-cd608c89bcc6" timestamp="2026-03-06T10:25:14.364Z" tests="5" failures="0" errors="0" time="0.694">
-    <testcase name="[Common] Response is valid JSON" time="0.694" classname="08EnhancedTestingDataDrivenAmpCorrelation02GetCreatedUserCorrelation"/>
-    <testcase name="[Common] Response time logged" time="0.694" classname="08EnhancedTestingDataDrivenAmpCorrelation02GetCreatedUserCorrelation"/>
-    <testcase name="[Common] Content-Type header present" time="0.694" classname="08EnhancedTestingDataDrivenAmpCorrelation02GetCreatedUserCorrelation"/>
-    <testcase name="[Enhanced-006] Should retrieve user or handle mock API limitation" time="0.694" classname="08EnhancedTestingDataDrivenAmpCorrelation02GetCreatedUserCorrelation"/>
-    <testcase name="[Enhanced-010] Response time should be optimal" time="0.694" classname="08EnhancedTestingDataDrivenAmpCorrelation02GetCreatedUserCorrelation"/>
-  </testsuite>
-  <testsuite name="08-Enhanced Testing (Data-Driven &amp; Correlation) / 03-Update User with Validation" id="2be5ed81-ffb7-4fff-9f5d-5fa973bb01fe" timestamp="2026-03-06T10:25:14.364Z" tests="9" failures="7" errors="0" time="0.617">
-    <testcase name="[Common] Response is valid JSON" time="0.617" classname="08EnhancedTestingDataDrivenAmpCorrelation03UpdateUserWithValidation">
-      <failure type="AssertionFailure" message="Response is not valid JSON">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 08-Enhanced Testing (Data-Driven & Correlation) / 03-Update User with Validation.]]>
-        <![CDATA[Test description: [Common] Response is valid JSON.]]>
-        <![CDATA[Error message: Response is not valid JSON.]]>
-        <![CDATA[Stacktrace: AssertionError: Response is not valid JSON
-   at Object.eval sandbox-script.js:1:63).]]>
-      </failure>
-    </testcase>
-    <testcase name="[Common] Response time logged" time="0.617" classname="08EnhancedTestingDataDrivenAmpCorrelation03UpdateUserWithValidation"/>
-    <testcase name="[Common] Content-Type header present" time="0.617" classname="08EnhancedTestingDataDrivenAmpCorrelation03UpdateUserWithValidation"/>
-    <testcase name="[Enhanced-011] User should be updated successfully" time="0.617" classname="08EnhancedTestingDataDrivenAmpCorrelation03UpdateUserWithValidation">
-      <failure type="AssertionFailure" message="User update failed. Expected 200, got 500. Possible causes: invalid user ID, server error, or permission issue.: expected 500 to equal 200">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 08-Enhanced Testing (Data-Driven & Correlation) / 03-Update User with Validation.]]>
-        <![CDATA[Test description: [Enhanced-011] User should be updated successfully.]]>
-        <![CDATA[Error message: User update failed. Expected 200, got 500. Possible causes: invalid user ID, server error, or permission issue.: expected 500 to equal 200.]]>
-        <![CDATA[Stacktrace: AssertionError: User update failed. Expected 200, got 500. Possible causes: invalid user ID, server error, or permission issue.: expected 500 to equal 200
-   at Object.eval sandbox-script.js:1:63).]]>
-      </failure>
-    </testcase>
-    <testcase name="[Enhanced-012] Response should contain all updated fields" time="0.617" classname="08EnhancedTestingDataDrivenAmpCorrelation03UpdateUserWithValidation">
-      <failure type="AssertionFailure" message="Unexpected token 'T' at 1:1&#xA;TypeError: Cannot read properties of undefined (reading 'id')&#xA;^">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 08-Enhanced Testing (Data-Driven & Correlation) / 03-Update User with Validation.]]>
-        <![CDATA[Test description: [Enhanced-012] Response should contain all updated fields.]]>
-        <![CDATA[Error message: Unexpected token 'T' at 1:1
-TypeError: Cannot read properties of undefined (reading 'id')
-^.]]>
-        <![CDATA[Stacktrace: JSONError: Unexpected token 'T' at 1:1
-TypeError: Cannot read properties of undefined (reading 'id')
-^
-   at Object.eval sandbox-script.js:2:63).]]>
-      </failure>
-    </testcase>
-    <testcase name="[Enhanced-013] User ID should remain unchanged" time="0.617" classname="08EnhancedTestingDataDrivenAmpCorrelation03UpdateUserWithValidation">
-      <failure type="AssertionFailure" message="Unexpected token 'T' at 1:1&#xA;TypeError: Cannot read properties of undefined (reading 'id')&#xA;^">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 08-Enhanced Testing (Data-Driven & Correlation) / 03-Update User with Validation.]]>
-        <![CDATA[Test description: [Enhanced-013] User ID should remain unchanged.]]>
-        <![CDATA[Error message: Unexpected token 'T' at 1:1
-TypeError: Cannot read properties of undefined (reading 'id')
-^.]]>
-        <![CDATA[Stacktrace: JSONError: Unexpected token 'T' at 1:1
-TypeError: Cannot read properties of undefined (reading 'id')
-^
-   at Object.eval sandbox-script.js:3:63).]]>
-      </failure>
-    </testcase>
-    <testcase name="[Enhanced-014] Response should indicate update" time="0.617" classname="08EnhancedTestingDataDrivenAmpCorrelation03UpdateUserWithValidation">
-      <failure type="AssertionFailure" message="Unexpected token 'T' at 1:1&#xA;TypeError: Cannot read properties of undefined (reading 'id')&#xA;^">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 08-Enhanced Testing (Data-Driven & Correlation) / 03-Update User with Validation.]]>
-        <![CDATA[Test description: [Enhanced-014] Response should indicate update.]]>
-        <![CDATA[Error message: Unexpected token 'T' at 1:1
-TypeError: Cannot read properties of undefined (reading 'id')
-^.]]>
-        <![CDATA[Stacktrace: JSONError: Unexpected token 'T' at 1:1
-TypeError: Cannot read properties of undefined (reading 'id')
-^
-   at Object.eval sandbox-script.js:4:63).]]>
-      </failure>
-    </testcase>
-    <testcase name="[Enhanced-015] Data should be consistent after update" time="0.617" classname="08EnhancedTestingDataDrivenAmpCorrelation03UpdateUserWithValidation">
-      <failure type="AssertionFailure" message="Unexpected token 'T' at 1:1&#xA;TypeError: Cannot read properties of undefined (reading 'id')&#xA;^">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 08-Enhanced Testing (Data-Driven & Correlation) / 03-Update User with Validation.]]>
-        <![CDATA[Test description: [Enhanced-015] Data should be consistent after update.]]>
-        <![CDATA[Error message: Unexpected token 'T' at 1:1
-TypeError: Cannot read properties of undefined (reading 'id')
-^.]]>
-        <![CDATA[Stacktrace: JSONError: Unexpected token 'T' at 1:1
-TypeError: Cannot read properties of undefined (reading 'id')
-^
-   at Object.eval sandbox-script.js:5:63).]]>
-      </failure>
-    </testcase>
-    <testcase name="[Enhanced-016] No validation errors in response" time="0.617" classname="08EnhancedTestingDataDrivenAmpCorrelation03UpdateUserWithValidation">
-      <failure type="AssertionFailure" message="Unexpected token 'T' at 1:1&#xA;TypeError: Cannot read properties of undefined (reading 'id')&#xA;^">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 08-Enhanced Testing (Data-Driven & Correlation) / 03-Update User with Validation.]]>
-        <![CDATA[Test description: [Enhanced-016] No validation errors in response.]]>
-        <![CDATA[Error message: Unexpected token 'T' at 1:1
-TypeError: Cannot read properties of undefined (reading 'id')
-^.]]>
-        <![CDATA[Stacktrace: JSONError: Unexpected token 'T' at 1:1
-TypeError: Cannot read properties of undefined (reading 'id')
-^
-   at Object.eval sandbox-script.js:6:63).]]>
-      </failure>
-    </testcase>
-  </testsuite>
-  <testsuite name="08-Enhanced Testing (Data-Driven &amp; Correlation) / 04-Data-Driven Product Search" id="e93b52bf-07b2-42e1-8dd9-77b2713544eb" timestamp="2026-03-06T10:25:14.364Z" tests="8" failures="0" errors="0" time="0.612">
-    <testcase name="[Common] Response is valid JSON" time="0.612" classname="08EnhancedTestingDataDrivenAmpCorrelation04DataDrivenProductSearch"/>
-    <testcase name="[Common] Response time logged" time="0.612" classname="08EnhancedTestingDataDrivenAmpCorrelation04DataDrivenProductSearch"/>
-    <testcase name="[Common] Content-Type header present" time="0.612" classname="08EnhancedTestingDataDrivenAmpCorrelation04DataDrivenProductSearch"/>
-    <testcase name="[Enhanced-017] Should return search results" time="0.612" classname="08EnhancedTestingDataDrivenAmpCorrelation04DataDrivenProductSearch"/>
-    <testcase name="[Enhanced-018] Response should be an array" time="0.612" classname="08EnhancedTestingDataDrivenAmpCorrelation04DataDrivenProductSearch"/>
-    <testcase name="[Enhanced-019] Results should respect pagination limit" time="0.612" classname="08EnhancedTestingDataDrivenAmpCorrelation04DataDrivenProductSearch"/>
-    <testcase name="[Enhanced-020] Each result should have required fields" time="0.612" classname="08EnhancedTestingDataDrivenAmpCorrelation04DataDrivenProductSearch"/>
-    <testcase name="[Enhanced-021] Results should contain search term" time="0.612" classname="08EnhancedTestingDataDrivenAmpCorrelation04DataDrivenProductSearch"/>
-  </testsuite>
-  <testsuite name="08-Enhanced Testing (Data-Driven &amp; Correlation) / 05-Workflow Test (Full User Journey)" id="585e31d8-e8b2-41fe-88f9-246f766c74a5" timestamp="2026-03-06T10:25:14.364Z" tests="6" failures="2" errors="0" time="0.572">
-    <testcase name="[Common] Response is valid JSON" time="0.572" classname="08EnhancedTestingDataDrivenAmpCorrelation05WorkflowTestFullUserJourney"/>
-    <testcase name="[Common] Response time logged" time="0.572" classname="08EnhancedTestingDataDrivenAmpCorrelation05WorkflowTestFullUserJourney"/>
-    <testcase name="[Common] Content-Type header present" time="0.572" classname="08EnhancedTestingDataDrivenAmpCorrelation05WorkflowTestFullUserJourney"/>
-    <testcase name="[Workflow-001] Workflow should maintain state" time="0.572" classname="08EnhancedTestingDataDrivenAmpCorrelation05WorkflowTestFullUserJourney">
-      <failure type="AssertionFailure" message="Last user name not found in workflow state: expected undefined not to be undefined">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 08-Enhanced Testing (Data-Driven & Correlation) / 05-Workflow Test (Full User Journey).]]>
-        <![CDATA[Test description: [Workflow-001] Workflow should maintain state.]]>
-        <![CDATA[Error message: Last user name not found in workflow state: expected undefined not to be undefined.]]>
-        <![CDATA[Stacktrace: AssertionError: Last user name not found in workflow state: expected undefined not to be undefined
-   at Object.eval sandbox-script.js:1:65).]]>
-      </failure>
-    </testcase>
-    <testcase name="[Workflow-002] Data should flow through workflow" time="0.572" classname="08EnhancedTestingDataDrivenAmpCorrelation05WorkflowTestFullUserJourney">
-      <failure type="AssertionFailure" message="Email should contain @ for valid data: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: ecommerce-test-suite-001.]]>
-        <![CDATA[Collection name: E-Commerce API Test Suite - Expert Level.]]>
-        <![CDATA[Request name: 08-Enhanced Testing (Data-Driven & Correlation) / 05-Workflow Test (Full User Journey).]]>
-        <![CDATA[Test description: [Workflow-002] Data should flow through workflow.]]>
-        <![CDATA[Error message: Email should contain @ for valid data: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string.]]>
-        <![CDATA[Stacktrace: AssertionError: Email should contain @ for valid data: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
-   at Object.eval sandbox-script.js:2:65).]]>
-      </failure>
-    </testcase>
-    <testcase name="[Workflow-003] Cumulative performance should be acceptable" time="0.572" classname="08EnhancedTestingDataDrivenAmpCorrelation05WorkflowTestFullUserJourney"/>
+<testsuites name="E-Commerce API Test Suite - Expert Level" tests="65" time="0.653">
+  <testsuite name="01-User Management / 01-Get All Users" id="1a1ed614-da2a-47c2-a051-a3a2f520c5a5" timestamp="2026-03-14T11:00:14.479Z" tests="8" failures="0" errors="0" time="0.097">
+    <testcase name="[Common] Response is valid JSON" time="0.097" classname="01UserManagement01GetAllUsers"/>
+    <testcase name="[Common] Response time logged" time="0.097" classname="01UserManagement01GetAllUsers"/>
+    <testcase name="[Common] Content-Type header present" time="0.097" classname="01UserManagement01GetAllUsers"/>
+    <testcase name="[User] Should return all users" time="0.097" classname="01UserManagement01GetAllUsers"/>
+    <testcase name="[User] Each user should have required fields" time="0.097" classname="01UserManagement01GetAllUsers"/>
+    <testcase name="[User] User email should be valid format" time="0.097" classname="01UserManagement01GetAllUsers"/>
+    <testcase name="[User] Response time should be less than 2s" time="0.097" classname="01UserManagement01GetAllUsers"/>
+    <testcase name="[User] Store first user ID for后续 tests" time="0.097" classname="01UserManagement01GetAllUsers"/>
+  </testsuite>
+  <testsuite name="01-User Management / 02-Get Single User" id="859cc02e-f159-4ce2-9eff-7cead6c4f136" timestamp="2026-03-14T11:00:14.479Z" tests="7" failures="0" errors="0" time="0.013">
+    <testcase name="[Common] Response is valid JSON" time="0.013" classname="01UserManagement02GetSingleUser"/>
+    <testcase name="[Common] Response time logged" time="0.013" classname="01UserManagement02GetSingleUser"/>
+    <testcase name="[Common] Content-Type header present" time="0.013" classname="01UserManagement02GetSingleUser"/>
+    <testcase name="[User] Should return single user" time="0.013" classname="01UserManagement02GetSingleUser"/>
+    <testcase name="[User] Should have complete user profile" time="0.013" classname="01UserManagement02GetSingleUser"/>
+    <testcase name="[User] Address should be complete" time="0.013" classname="01UserManagement02GetSingleUser"/>
+    <testcase name="[User] Company info should exist" time="0.013" classname="01UserManagement02GetSingleUser"/>
+  </testsuite>
+  <testsuite name="01-User Management / 03-Get User by Username" id="e9c3999d-ba39-4027-9c6a-e7344c65247f" timestamp="2026-03-14T11:00:14.479Z" tests="5" failures="0" errors="0" time="0.010">
+    <testcase name="[Common] Response is valid JSON" time="0.010" classname="01UserManagement03GetUserByUsername"/>
+    <testcase name="[Common] Response time logged" time="0.010" classname="01UserManagement03GetUserByUsername"/>
+    <testcase name="[Common] Content-Type header present" time="0.010" classname="01UserManagement03GetUserByUsername"/>
+    <testcase name="[User] Should filter users by username" time="0.010" classname="01UserManagement03GetUserByUsername"/>
+    <testcase name="[User] Returned user should match username" time="0.010" classname="01UserManagement03GetUserByUsername"/>
+  </testsuite>
+  <testsuite name="01-User Management / 04-Create User" id="ec1a401d-bcff-4580-be0f-e3d2d864f4a9" timestamp="2026-03-14T11:00:14.479Z" tests="6" failures="0" errors="0" time="0.034">
+    <testcase name="[Common] Response is valid JSON" time="0.034" classname="01UserManagement04CreateUser"/>
+    <testcase name="[Common] Response time logged" time="0.034" classname="01UserManagement04CreateUser"/>
+    <testcase name="[Common] Content-Type header present" time="0.034" classname="01UserManagement04CreateUser"/>
+    <testcase name="[User] Should create new user" time="0.034" classname="01UserManagement04CreateUser"/>
+    <testcase name="[User] Should return 201 Created" time="0.034" classname="01UserManagement04CreateUser"/>
+    <testcase name="[User] Store created user ID" time="0.034" classname="01UserManagement04CreateUser"/>
+  </testsuite>
+  <testsuite name="01-User Management / 05-Update User (PUT)" id="e1eaafbf-c56b-4e5c-a884-8b7b9086dc97" timestamp="2026-03-14T11:00:14.479Z" tests="5" failures="0" errors="0" time="0.008">
+    <testcase name="[Common] Response is valid JSON" time="0.008" classname="01UserManagement05UpdateUserPut"/>
+    <testcase name="[Common] Response time logged" time="0.008" classname="01UserManagement05UpdateUserPut"/>
+    <testcase name="[Common] Content-Type header present" time="0.008" classname="01UserManagement05UpdateUserPut"/>
+    <testcase name="[User] Should update existing user" time="0.008" classname="01UserManagement05UpdateUserPut"/>
+    <testcase name="[User] Should preserve user ID" time="0.008" classname="01UserManagement05UpdateUserPut"/>
+  </testsuite>
+  <testsuite name="01-User Management / 06-Update User (PATCH)" id="0aeb5ee4-91a4-4a93-b1b9-a11d5c9af8a1" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.008">
+    <testcase name="[Common] Response is valid JSON" time="0.008" classname="01UserManagement06UpdateUserPatch"/>
+    <testcase name="[Common] Response time logged" time="0.008" classname="01UserManagement06UpdateUserPatch"/>
+    <testcase name="[Common] Content-Type header present" time="0.008" classname="01UserManagement06UpdateUserPatch"/>
+    <testcase name="[User] Should partially update user" time="0.008" classname="01UserManagement06UpdateUserPatch"/>
+  </testsuite>
+  <testsuite name="01-User Management / 07-Delete User" id="80e21882-dad8-415f-a30c-d9cf8102e48d" timestamp="2026-03-14T11:00:14.479Z" tests="5" failures="0" errors="0" time="0.010">
+    <testcase name="[Common] Response is valid JSON" time="0.010" classname="01UserManagement07DeleteUser"/>
+    <testcase name="[Common] Response time logged" time="0.010" classname="01UserManagement07DeleteUser"/>
+    <testcase name="[Common] Content-Type header present" time="0.010" classname="01UserManagement07DeleteUser"/>
+    <testcase name="[User] Should delete user successfully" time="0.010" classname="01UserManagement07DeleteUser"/>
+    <testcase name="[User] Response body should be empty" time="0.010" classname="01UserManagement07DeleteUser"/>
+  </testsuite>
+  <testsuite name="01-User Management / 08-Get User Posts" id="ad662fd0-ccdf-4c21-b98f-d18d683eecaa" timestamp="2026-03-14T11:00:14.479Z" tests="6" failures="0" errors="0" time="0.006">
+    <testcase name="[Common] Response is valid JSON" time="0.006" classname="01UserManagement08GetUserPosts"/>
+    <testcase name="[Common] Response time logged" time="0.006" classname="01UserManagement08GetUserPosts"/>
+    <testcase name="[Common] Content-Type header present" time="0.006" classname="01UserManagement08GetUserPosts"/>
+    <testcase name="[User] Should return user posts" time="0.006" classname="01UserManagement08GetUserPosts"/>
+    <testcase name="[User] Each post should belong to user" time="0.006" classname="01UserManagement08GetUserPosts"/>
+    <testcase name="[User] Post should have title and body" time="0.006" classname="01UserManagement08GetUserPosts"/>
+  </testsuite>
+  <testsuite name="02-Product Management / 01-Get All Posts (as Products)" id="2badfbb4-79a4-4260-9b74-c0790aa28c42" timestamp="2026-03-14T11:00:14.479Z" tests="6" failures="0" errors="0" time="0.010">
+    <testcase name="[Common] Response is valid JSON" time="0.010" classname="02ProductManagement01GetAllPostsAsProducts"/>
+    <testcase name="[Common] Response time logged" time="0.010" classname="02ProductManagement01GetAllPostsAsProducts"/>
+    <testcase name="[Common] Content-Type header present" time="0.010" classname="02ProductManagement01GetAllPostsAsProducts"/>
+    <testcase name="[Product] Should return all posts" time="0.010" classname="02ProductManagement01GetAllPostsAsProducts"/>
+    <testcase name="[Product] Each post should have required fields" time="0.010" classname="02ProductManagement01GetAllPostsAsProducts"/>
+    <testcase name="[Product] Store first product ID" time="0.010" classname="02ProductManagement01GetAllPostsAsProducts"/>
+  </testsuite>
+  <testsuite name="02-Product Management / 02-Get Single Post (Product)" id="5fcf1db2-3f2a-4101-9691-3ebc8ab09a67" timestamp="2026-03-14T11:00:14.479Z" tests="5" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="02ProductManagement02GetSinglePostProduct"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="02ProductManagement02GetSinglePostProduct"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="02ProductManagement02GetSinglePostProduct"/>
+    <testcase name="[Product] Should return single post" time="0.007" classname="02ProductManagement02GetSinglePostProduct"/>
+    <testcase name="[Product] ID should match request" time="0.007" classname="02ProductManagement02GetSinglePostProduct"/>
+  </testsuite>
+  <testsuite name="02-Product Management / 03-Get Posts by User" id="e9097621-e0d9-4fe0-9d06-a3c25dac925c" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.005">
+    <testcase name="[Common] Response is valid JSON" time="0.005" classname="02ProductManagement03GetPostsByUser"/>
+    <testcase name="[Common] Response time logged" time="0.005" classname="02ProductManagement03GetPostsByUser"/>
+    <testcase name="[Common] Content-Type header present" time="0.005" classname="02ProductManagement03GetPostsByUser"/>
+    <testcase name="[Product] Should filter posts by user" time="0.005" classname="02ProductManagement03GetPostsByUser"/>
+  </testsuite>
+  <testsuite name="02-Product Management / 04-Create Post (Product)" id="c6687fa9-ba8c-4489-8eca-bfda969b2b06" timestamp="2026-03-14T11:00:14.479Z" tests="6" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="02ProductManagement04CreatePostProduct"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="02ProductManagement04CreatePostProduct"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="02ProductManagement04CreatePostProduct"/>
+    <testcase name="[Product] Should create new post" time="0.007" classname="02ProductManagement04CreatePostProduct"/>
+    <testcase name="[Product] Should return 201 Created" time="0.007" classname="02ProductManagement04CreatePostProduct"/>
+    <testcase name="[Product] Store created product ID" time="0.007" classname="02ProductManagement04CreatePostProduct"/>
+  </testsuite>
+  <testsuite name="02-Product Management / 05-Update Post (Product)" id="49ecdbcd-b0dd-456f-950c-8185c62fbb91" timestamp="2026-03-14T11:00:14.479Z" tests="5" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="02ProductManagement05UpdatePostProduct"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="02ProductManagement05UpdatePostProduct"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="02ProductManagement05UpdatePostProduct"/>
+    <testcase name="[Product] Should update post" time="0.007" classname="02ProductManagement05UpdatePostProduct"/>
+    <testcase name="[Product] Should preserve ID and userId" time="0.007" classname="02ProductManagement05UpdatePostProduct"/>
+  </testsuite>
+  <testsuite name="02-Product Management / 06-Delete Post (Product)" id="a54ff2a8-2d2e-4191-b5b1-b1027a63691f" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.009">
+    <testcase name="[Common] Response is valid JSON" time="0.009" classname="02ProductManagement06DeletePostProduct"/>
+    <testcase name="[Common] Response time logged" time="0.009" classname="02ProductManagement06DeletePostProduct"/>
+    <testcase name="[Common] Content-Type header present" time="0.009" classname="02ProductManagement06DeletePostProduct"/>
+    <testcase name="[Product] Should delete post" time="0.009" classname="02ProductManagement06DeletePostProduct"/>
+  </testsuite>
+  <testsuite name="02-Product Management / 07-Get Post Comments" id="5120ffc1-e94d-45d2-be8f-5297670ec6ee" timestamp="2026-03-14T11:00:14.479Z" tests="5" failures="0" errors="0" time="0.005">
+    <testcase name="[Common] Response is valid JSON" time="0.005" classname="02ProductManagement07GetPostComments"/>
+    <testcase name="[Common] Response time logged" time="0.005" classname="02ProductManagement07GetPostComments"/>
+    <testcase name="[Common] Content-Type header present" time="0.005" classname="02ProductManagement07GetPostComments"/>
+    <testcase name="[Product] Should return post comments" time="0.005" classname="02ProductManagement07GetPostComments"/>
+    <testcase name="[Product] Each comment should have email" time="0.005" classname="02ProductManagement07GetPostComments"/>
+  </testsuite>
+  <testsuite name="02-Product Management / 08-Pagination - Get Posts with Limit" id="1d677e31-fe41-42cb-8cd0-dabd8019cfad" timestamp="2026-03-14T11:00:14.479Z" tests="5" failures="0" errors="0" time="0.012">
+    <testcase name="[Common] Response is valid JSON" time="0.012" classname="02ProductManagement08PaginationGetPostsWithLimit"/>
+    <testcase name="[Common] Response time logged" time="0.012" classname="02ProductManagement08PaginationGetPostsWithLimit"/>
+    <testcase name="[Common] Content-Type header present" time="0.012" classname="02ProductManagement08PaginationGetPostsWithLimit"/>
+    <testcase name="[Product] Should return limited posts" time="0.012" classname="02ProductManagement08PaginationGetPostsWithLimit"/>
+    <testcase name="[Product] Should support pagination parameters" time="0.012" classname="02ProductManagement08PaginationGetPostsWithLimit"/>
+  </testsuite>
+  <testsuite name="02-Product Management / 09-Pagination - Get Posts with Start" id="f7c7c9f1-1435-4c0e-b2f4-20769fa39685" timestamp="2026-03-14T11:00:14.479Z" tests="5" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="02ProductManagement09PaginationGetPostsWithStart"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="02ProductManagement09PaginationGetPostsWithStart"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="02ProductManagement09PaginationGetPostsWithStart"/>
+    <testcase name="[Product] Should return posts with offset" time="0.007" classname="02ProductManagement09PaginationGetPostsWithStart"/>
+    <testcase name="[Product] First post should have correct ID" time="0.007" classname="02ProductManagement09PaginationGetPostsWithStart"/>
+  </testsuite>
+  <testsuite name="02-Product Management / 10-Sort Posts" id="2cf5ec30-949b-4e69-9fc6-e43a2c3b1d80" timestamp="2026-03-14T11:00:14.479Z" tests="5" failures="0" errors="0" time="0.011">
+    <testcase name="[Common] Response is valid JSON" time="0.011" classname="02ProductManagement10SortPosts"/>
+    <testcase name="[Common] Response time logged" time="0.011" classname="02ProductManagement10SortPosts"/>
+    <testcase name="[Common] Content-Type header present" time="0.011" classname="02ProductManagement10SortPosts"/>
+    <testcase name="[Product] Should sort posts by title" time="0.011" classname="02ProductManagement10SortPosts"/>
+    <testcase name="[Product] Titles should be sorted" time="0.011" classname="02ProductManagement10SortPosts"/>
+  </testsuite>
+  <testsuite name="03-Cart Management / 01-Get All Comments (as Cart Items)" id="13c2ff15-45fa-4ef8-bb92-164b4b3a5161" timestamp="2026-03-14T11:00:14.479Z" tests="6" failures="0" errors="0" time="0.006">
+    <testcase name="[Common] Response is valid JSON" time="0.006" classname="03CartManagement01GetAllCommentsAsCartItems"/>
+    <testcase name="[Common] Response time logged" time="0.006" classname="03CartManagement01GetAllCommentsAsCartItems"/>
+    <testcase name="[Common] Content-Type header present" time="0.006" classname="03CartManagement01GetAllCommentsAsCartItems"/>
+    <testcase name="[Cart] Should return all comments" time="0.006" classname="03CartManagement01GetAllCommentsAsCartItems"/>
+    <testcase name="[Cart] Each comment should have required fields" time="0.006" classname="03CartManagement01GetAllCommentsAsCartItems"/>
+    <testcase name="[Cart] Store first cart item ID" time="0.006" classname="03CartManagement01GetAllCommentsAsCartItems"/>
+  </testsuite>
+  <testsuite name="03-Cart Management / 02-Get Cart Item by ID" id="b911311e-daba-4eaa-a539-557e18e2d3ca" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="03CartManagement02GetCartItemById"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="03CartManagement02GetCartItemById"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="03CartManagement02GetCartItemById"/>
+    <testcase name="[Cart] Should return single comment" time="0.007" classname="03CartManagement02GetCartItemById"/>
+  </testsuite>
+  <testsuite name="03-Cart Management / 03-Get Cart Items by Post" id="562ed47d-e497-4b80-9a95-c1b04af58735" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.005">
+    <testcase name="[Common] Response is valid JSON" time="0.005" classname="03CartManagement03GetCartItemsByPost"/>
+    <testcase name="[Common] Response time logged" time="0.005" classname="03CartManagement03GetCartItemsByPost"/>
+    <testcase name="[Common] Content-Type header present" time="0.005" classname="03CartManagement03GetCartItemsByPost"/>
+    <testcase name="[Cart] Should filter by post ID" time="0.005" classname="03CartManagement03GetCartItemsByPost"/>
+  </testsuite>
+  <testsuite name="03-Cart Management / 04-Create Cart Item (Comment)" id="d4bf4c91-8ea5-4957-aaea-44a6856df509" timestamp="2026-03-14T11:00:14.479Z" tests="5" failures="0" errors="0" time="0.006">
+    <testcase name="[Common] Response is valid JSON" time="0.006" classname="03CartManagement04CreateCartItemComment"/>
+    <testcase name="[Common] Response time logged" time="0.006" classname="03CartManagement04CreateCartItemComment"/>
+    <testcase name="[Common] Content-Type header present" time="0.006" classname="03CartManagement04CreateCartItemComment"/>
+    <testcase name="[Cart] Should create comment" time="0.006" classname="03CartManagement04CreateCartItemComment"/>
+    <testcase name="[Cart] Store created cart item ID" time="0.006" classname="03CartManagement04CreateCartItemComment"/>
+  </testsuite>
+  <testsuite name="03-Cart Management / 05-Update Cart Item" id="8b8852cf-ae44-4da5-a0fa-3621b827f192" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.006">
+    <testcase name="[Common] Response is valid JSON" time="0.006" classname="03CartManagement05UpdateCartItem"/>
+    <testcase name="[Common] Response time logged" time="0.006" classname="03CartManagement05UpdateCartItem"/>
+    <testcase name="[Common] Content-Type header present" time="0.006" classname="03CartManagement05UpdateCartItem"/>
+    <testcase name="[Cart] Should update cart item" time="0.006" classname="03CartManagement05UpdateCartItem"/>
+  </testsuite>
+  <testsuite name="03-Cart Management / 06-Delete Cart Item" id="b911ec2b-ccec-46a1-a4b2-786c26007b6b" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.005">
+    <testcase name="[Common] Response is valid JSON" time="0.005" classname="03CartManagement06DeleteCartItem"/>
+    <testcase name="[Common] Response time logged" time="0.005" classname="03CartManagement06DeleteCartItem"/>
+    <testcase name="[Common] Content-Type header present" time="0.005" classname="03CartManagement06DeleteCartItem"/>
+    <testcase name="[Cart] Should delete cart item" time="0.005" classname="03CartManagement06DeleteCartItem"/>
+  </testsuite>
+  <testsuite name="03-Cart Management / 07-Get Multiple Cart Items" id="753f6c3d-bdf8-43e5-9ec0-9fb3a5929d5b" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.013">
+    <testcase name="[Common] Response is valid JSON" time="0.013" classname="03CartManagement07GetMultipleCartItems"/>
+    <testcase name="[Common] Response time logged" time="0.013" classname="03CartManagement07GetMultipleCartItems"/>
+    <testcase name="[Common] Content-Type header present" time="0.013" classname="03CartManagement07GetMultipleCartItems"/>
+    <testcase name="[Cart] Should filter by multiple post IDs" time="0.013" classname="03CartManagement07GetMultipleCartItems"/>
+  </testsuite>
+  <testsuite name="03-Cart Management / 08-Bulk Cart Operations" id="c93db1e3-34ce-45dd-a2cb-0b18baae3061" timestamp="2026-03-14T11:00:14.479Z" tests="5" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="03CartManagement08BulkCartOperations"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="03CartManagement08BulkCartOperations"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="03CartManagement08BulkCartOperations"/>
+    <testcase name="[Cart] Should handle sub-selective queries" time="0.007" classname="03CartManagement08BulkCartOperations"/>
+    <testcase name="[Cart] Should return valid data structure" time="0.007" classname="03CartManagement08BulkCartOperations"/>
+  </testsuite>
+  <testsuite name="04-Order Management / 01-Get All Todos (as Orders)" id="e09d1567-6b4a-436b-98e2-c4c8ca58bb3b" timestamp="2026-03-14T11:00:14.479Z" tests="6" failures="0" errors="0" time="0.006">
+    <testcase name="[Common] Response is valid JSON" time="0.006" classname="04OrderManagement01GetAllTodosAsOrders"/>
+    <testcase name="[Common] Response time logged" time="0.006" classname="04OrderManagement01GetAllTodosAsOrders"/>
+    <testcase name="[Common] Content-Type header present" time="0.006" classname="04OrderManagement01GetAllTodosAsOrders"/>
+    <testcase name="[Order] Should return all todos" time="0.006" classname="04OrderManagement01GetAllTodosAsOrders"/>
+    <testcase name="[Order] Each todo should have required fields" time="0.006" classname="04OrderManagement01GetAllTodosAsOrders"/>
+    <testcase name="[Order] Store first order ID" time="0.006" classname="04OrderManagement01GetAllTodosAsOrders"/>
+  </testsuite>
+  <testsuite name="04-Order Management / 02-Get Single Order" id="de002e14-6767-401b-b13b-49bdf62c785c" timestamp="2026-03-14T11:00:14.479Z" tests="5" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="04OrderManagement02GetSingleOrder"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="04OrderManagement02GetSingleOrder"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="04OrderManagement02GetSingleOrder"/>
+    <testcase name="[Order] Should return single todo" time="0.007" classname="04OrderManagement02GetSingleOrder"/>
+    <testcase name="[Order] ID should match request" time="0.007" classname="04OrderManagement02GetSingleOrder"/>
+  </testsuite>
+  <testsuite name="04-Order Management / 03-Get Orders by User" id="869a28cb-62fd-4d6f-bb0f-db103ecce80d" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.005">
+    <testcase name="[Common] Response is valid JSON" time="0.005" classname="04OrderManagement03GetOrdersByUser"/>
+    <testcase name="[Common] Response time logged" time="0.005" classname="04OrderManagement03GetOrdersByUser"/>
+    <testcase name="[Common] Content-Type header present" time="0.005" classname="04OrderManagement03GetOrdersByUser"/>
+    <testcase name="[Order] Should filter todos by user" time="0.005" classname="04OrderManagement03GetOrdersByUser"/>
+  </testsuite>
+  <testsuite name="04-Order Management / 04-Create Order" id="f373b4f6-d4ab-4712-b42b-db8573cdc508" timestamp="2026-03-14T11:00:14.479Z" tests="5" failures="0" errors="0" time="0.006">
+    <testcase name="[Common] Response is valid JSON" time="0.006" classname="04OrderManagement04CreateOrder"/>
+    <testcase name="[Common] Response time logged" time="0.006" classname="04OrderManagement04CreateOrder"/>
+    <testcase name="[Common] Content-Type header present" time="0.006" classname="04OrderManagement04CreateOrder"/>
+    <testcase name="[Order] Should create new todo" time="0.006" classname="04OrderManagement04CreateOrder"/>
+    <testcase name="[Order] Store created order ID" time="0.006" classname="04OrderManagement04CreateOrder"/>
+  </testsuite>
+  <testsuite name="04-Order Management / 05-Update Order" id="0227beb8-0aad-4c51-85b8-6536ae5480d5" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.006">
+    <testcase name="[Common] Response is valid JSON" time="0.006" classname="04OrderManagement05UpdateOrder"/>
+    <testcase name="[Common] Response time logged" time="0.006" classname="04OrderManagement05UpdateOrder"/>
+    <testcase name="[Common] Content-Type header present" time="0.006" classname="04OrderManagement05UpdateOrder"/>
+    <testcase name="[Order] Should update todo" time="0.006" classname="04OrderManagement05UpdateOrder"/>
+  </testsuite>
+  <testsuite name="04-Order Management / 06-Complete Order (PATCH)" id="8feaca55-fe48-4342-a3fc-022c221a6bfb" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.008">
+    <testcase name="[Common] Response is valid JSON" time="0.008" classname="04OrderManagement06CompleteOrderPatch"/>
+    <testcase name="[Common] Response time logged" time="0.008" classname="04OrderManagement06CompleteOrderPatch"/>
+    <testcase name="[Common] Content-Type header present" time="0.008" classname="04OrderManagement06CompleteOrderPatch"/>
+    <testcase name="[Order] Should mark as completed" time="0.008" classname="04OrderManagement06CompleteOrderPatch"/>
+  </testsuite>
+  <testsuite name="04-Order Management / 07-Delete Order" id="a8606458-027e-438f-8b0d-8ab1b7fa08fa" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.006">
+    <testcase name="[Common] Response is valid JSON" time="0.006" classname="04OrderManagement07DeleteOrder"/>
+    <testcase name="[Common] Response time logged" time="0.006" classname="04OrderManagement07DeleteOrder"/>
+    <testcase name="[Common] Content-Type header present" time="0.006" classname="04OrderManagement07DeleteOrder"/>
+    <testcase name="[Order] Should delete todo" time="0.006" classname="04OrderManagement07DeleteOrder"/>
+  </testsuite>
+  <testsuite name="04-Order Management / 08-Filter Completed Orders" id="0f08ac82-a9b5-46ad-8eb6-6733c7987970" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="04OrderManagement08FilterCompletedOrders"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="04OrderManagement08FilterCompletedOrders"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="04OrderManagement08FilterCompletedOrders"/>
+    <testcase name="[Order] Should filter completed todos" time="0.007" classname="04OrderManagement08FilterCompletedOrders"/>
+  </testsuite>
+  <testsuite name="04-Order Management / 09-Filter Pending Orders" id="dede734e-0bd8-4db0-9a6c-6e13c0e27f84" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="04OrderManagement09FilterPendingOrders"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="04OrderManagement09FilterPendingOrders"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="04OrderManagement09FilterPendingOrders"/>
+    <testcase name="[Order] Should filter pending todos" time="0.007" classname="04OrderManagement09FilterPendingOrders"/>
+  </testsuite>
+  <testsuite name="04-Order Management / 10-Get Order Details" id="1ae528b3-579c-4ec6-b25f-6120baffcdf6" timestamp="2026-03-14T11:00:14.479Z" tests="5" failures="0" errors="0" time="0.005">
+    <testcase name="[Common] Response is valid JSON" time="0.005" classname="04OrderManagement10GetOrderDetails"/>
+    <testcase name="[Common] Response time logged" time="0.005" classname="04OrderManagement10GetOrderDetails"/>
+    <testcase name="[Common] Content-Type header present" time="0.005" classname="04OrderManagement10GetOrderDetails"/>
+    <testcase name="[Order] Should return todo with correct ID" time="0.005" classname="04OrderManagement10GetOrderDetails"/>
+    <testcase name="[Order] Title should not be empty" time="0.005" classname="04OrderManagement10GetOrderDetails"/>
+  </testsuite>
+  <testsuite name="04-Order Management / 11-Bulk Order Creation" id="6d4327e5-a621-4534-9d2a-9824096f2512" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.006">
+    <testcase name="[Common] Response is valid JSON" time="0.006" classname="04OrderManagement11BulkOrderCreation"/>
+    <testcase name="[Common] Response time logged" time="0.006" classname="04OrderManagement11BulkOrderCreation"/>
+    <testcase name="[Common] Content-Type header present" time="0.006" classname="04OrderManagement11BulkOrderCreation"/>
+    <testcase name="[Order] Should create multiple todos" time="0.006" classname="04OrderManagement11BulkOrderCreation"/>
+  </testsuite>
+  <testsuite name="04-Order Management / 12-Order Status Transition" id="873ee9a9-1510-4cad-9919-227fe78984ce" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.006">
+    <testcase name="[Common] Response is valid JSON" time="0.006" classname="04OrderManagement12OrderStatusTransition"/>
+    <testcase name="[Common] Response time logged" time="0.006" classname="04OrderManagement12OrderStatusTransition"/>
+    <testcase name="[Common] Content-Type header present" time="0.006" classname="04OrderManagement12OrderStatusTransition"/>
+    <testcase name="[Order] Should handle todo update" time="0.006" classname="04OrderManagement12OrderStatusTransition"/>
+  </testsuite>
+  <testsuite name="05-Coupon Management / 01-Get Albums (as Coupon Types)" id="c90b24a9-ce92-427e-a472-a620672dea06" timestamp="2026-03-14T11:00:14.479Z" tests="5" failures="0" errors="0" time="0.008">
+    <testcase name="[Common] Response is valid JSON" time="0.008" classname="05CouponManagement01GetAlbumsAsCouponTypes"/>
+    <testcase name="[Common] Response time logged" time="0.008" classname="05CouponManagement01GetAlbumsAsCouponTypes"/>
+    <testcase name="[Common] Content-Type header present" time="0.008" classname="05CouponManagement01GetAlbumsAsCouponTypes"/>
+    <testcase name="[Coupon] Should return all albums" time="0.008" classname="05CouponManagement01GetAlbumsAsCouponTypes"/>
+    <testcase name="[Coupon] Store first coupon type ID" time="0.008" classname="05CouponManagement01GetAlbumsAsCouponTypes"/>
+  </testsuite>
+  <testsuite name="05-Coupon Management / 02-Get Single Coupon Type" id="d24ae138-d6dc-46ef-abbd-b8469f9202ee" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="05CouponManagement02GetSingleCouponType"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="05CouponManagement02GetSingleCouponType"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="05CouponManagement02GetSingleCouponType"/>
+    <testcase name="[Coupon] Should return single album" time="0.007" classname="05CouponManagement02GetSingleCouponType"/>
+  </testsuite>
+  <testsuite name="05-Coupon Management / 03-Get Photos (as Coupons)" id="86bc02b9-1a3d-41b3-8482-af0d65764cbe" timestamp="2026-03-14T11:00:14.479Z" tests="6" failures="0" errors="0" time="0.008">
+    <testcase name="[Common] Response is valid JSON" time="0.008" classname="05CouponManagement03GetPhotosAsCoupons"/>
+    <testcase name="[Common] Response time logged" time="0.008" classname="05CouponManagement03GetPhotosAsCoupons"/>
+    <testcase name="[Common] Content-Type header present" time="0.008" classname="05CouponManagement03GetPhotosAsCoupons"/>
+    <testcase name="[Coupon] Should return photos" time="0.008" classname="05CouponManagement03GetPhotosAsCoupons"/>
+    <testcase name="[Coupon] Each photo should have albumId" time="0.008" classname="05CouponManagement03GetPhotosAsCoupons"/>
+    <testcase name="[Coupon] Store first coupon ID" time="0.008" classname="05CouponManagement03GetPhotosAsCoupons"/>
+  </testsuite>
+  <testsuite name="05-Coupon Management / 04-Create Coupon" id="8320e5d0-1092-4efb-bed6-c4811cab094a" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.008">
+    <testcase name="[Common] Response is valid JSON" time="0.008" classname="05CouponManagement04CreateCoupon"/>
+    <testcase name="[Common] Response time logged" time="0.008" classname="05CouponManagement04CreateCoupon"/>
+    <testcase name="[Common] Content-Type header present" time="0.008" classname="05CouponManagement04CreateCoupon"/>
+    <testcase name="[Coupon] Should create photo" time="0.008" classname="05CouponManagement04CreateCoupon"/>
+  </testsuite>
+  <testsuite name="05-Coupon Management / 05-Update Coupon" id="5d99dadd-da50-4894-92f6-fadfc68597d9" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.006">
+    <testcase name="[Common] Response is valid JSON" time="0.006" classname="05CouponManagement05UpdateCoupon"/>
+    <testcase name="[Common] Response time logged" time="0.006" classname="05CouponManagement05UpdateCoupon"/>
+    <testcase name="[Common] Content-Type header present" time="0.006" classname="05CouponManagement05UpdateCoupon"/>
+    <testcase name="[Coupon] Should update photo" time="0.006" classname="05CouponManagement05UpdateCoupon"/>
+  </testsuite>
+  <testsuite name="05-Coupon Management / 06-Delete Coupon" id="8d24b4b8-2980-4d99-9729-728f3c8c64fd" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="05CouponManagement06DeleteCoupon"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="05CouponManagement06DeleteCoupon"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="05CouponManagement06DeleteCoupon"/>
+    <testcase name="[Coupon] Should delete photo" time="0.007" classname="05CouponManagement06DeleteCoupon"/>
+  </testsuite>
+  <testsuite name="06-Payment / 01-Get Photos (as Payment Methods)" id="d3e281e0-16db-446b-b469-4acb64914809" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.009">
+    <testcase name="[Common] Response is valid JSON" time="0.009" classname="06Payment01GetPhotosAsPaymentMethods"/>
+    <testcase name="[Common] Response time logged" time="0.009" classname="06Payment01GetPhotosAsPaymentMethods"/>
+    <testcase name="[Common] Content-Type header present" time="0.009" classname="06Payment01GetPhotosAsPaymentMethods"/>
+    <testcase name="[Payment] Should return photos" time="0.009" classname="06Payment01GetPhotosAsPaymentMethods"/>
+  </testsuite>
+  <testsuite name="06-Payment / 02-Get Single Payment Method" id="4402fb8b-b3d7-4ef8-b3bd-965b066c1fa7" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="06Payment02GetSinglePaymentMethod"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="06Payment02GetSinglePaymentMethod"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="06Payment02GetSinglePaymentMethod"/>
+    <testcase name="[Payment] Should return photo" time="0.007" classname="06Payment02GetSinglePaymentMethod"/>
+  </testsuite>
+  <testsuite name="06-Payment / 03-Validate Payment Method URL" id="c6225262-1fe2-4967-824a-5046bb183b3e" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.019">
+    <testcase name="[Common] Response is valid JSON" time="0.019" classname="06Payment03ValidatePaymentMethodUrl"/>
+    <testcase name="[Common] Response time logged" time="0.019" classname="06Payment03ValidatePaymentMethodUrl"/>
+    <testcase name="[Common] Content-Type header present" time="0.019" classname="06Payment03ValidatePaymentMethodUrl"/>
+    <testcase name="[Payment] Photo URL should be valid" time="0.019" classname="06Payment03ValidatePaymentMethodUrl"/>
+  </testsuite>
+  <testsuite name="06-Payment / 04-Create Payment Record" id="4fa3e990-e79c-430d-98ac-fdd9164a2c0f" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="06Payment04CreatePaymentRecord"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="06Payment04CreatePaymentRecord"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="06Payment04CreatePaymentRecord"/>
+    <testcase name="[Payment] Should create photo record" time="0.007" classname="06Payment04CreatePaymentRecord"/>
+  </testsuite>
+  <testsuite name="06-Payment / 05-Update Payment Details" id="5f2a37aa-4292-41bc-990a-dbb56d919e7a" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.008">
+    <testcase name="[Common] Response is valid JSON" time="0.008" classname="06Payment05UpdatePaymentDetails"/>
+    <testcase name="[Common] Response time logged" time="0.008" classname="06Payment05UpdatePaymentDetails"/>
+    <testcase name="[Common] Content-Type header present" time="0.008" classname="06Payment05UpdatePaymentDetails"/>
+    <testcase name="[Payment] Should update photo details" time="0.008" classname="06Payment05UpdatePaymentDetails"/>
+  </testsuite>
+  <testsuite name="06-Payment / 06-Delete Payment Record" id="8a980420-b77a-40ff-991a-7ddca8c526f3" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="06Payment06DeletePaymentRecord"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="06Payment06DeletePaymentRecord"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="06Payment06DeletePaymentRecord"/>
+    <testcase name="[Payment] Should delete payment record" time="0.007" classname="06Payment06DeletePaymentRecord"/>
+  </testsuite>
+  <testsuite name="07-Negative Tests / 01-Get Non-existent User" id="524869c6-99c3-4b1a-ae01-56632b474a13" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.010">
+    <testcase name="[Common] Response is valid JSON" time="0.010" classname="07NegativeTests01GetNonExistentUser"/>
+    <testcase name="[Common] Response time logged" time="0.010" classname="07NegativeTests01GetNonExistentUser"/>
+    <testcase name="[Common] Content-Type header present" time="0.010" classname="07NegativeTests01GetNonExistentUser"/>
+    <testcase name="[Negative] Should return empty object for non-existent user" time="0.010" classname="07NegativeTests01GetNonExistentUser"/>
+  </testsuite>
+  <testsuite name="07-Negative Tests / 02-Create User with Invalid Email" id="774a07bd-da92-4fa2-bcfb-05e74591e6d0" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.008">
+    <testcase name="[Common] Response is valid JSON" time="0.008" classname="07NegativeTests02CreateUserWithInvalidEmail"/>
+    <testcase name="[Common] Response time logged" time="0.008" classname="07NegativeTests02CreateUserWithInvalidEmail"/>
+    <testcase name="[Common] Content-Type header present" time="0.008" classname="07NegativeTests02CreateUserWithInvalidEmail"/>
+    <testcase name="[Negative] Should still create user (API accepts any)" time="0.008" classname="07NegativeTests02CreateUserWithInvalidEmail"/>
+  </testsuite>
+  <testsuite name="07-Negative Tests / 03-Get User with Invalid ID Format" id="376d5f1f-7531-45f2-9d0b-241ab053d639" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="07NegativeTests03GetUserWithInvalidIdFormat"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="07NegativeTests03GetUserWithInvalidIdFormat"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="07NegativeTests03GetUserWithInvalidIdFormat"/>
+    <testcase name="[Negative] Should handle invalid ID gracefully" time="0.007" classname="07NegativeTests03GetUserWithInvalidIdFormat"/>
+  </testsuite>
+  <testsuite name="07-Negative Tests / 04-Create Post with Missing Required Fields" id="027c3c64-ac3b-423a-9a21-7a5a2bf4e700" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.023">
+    <testcase name="[Common] Response is valid JSON" time="0.023" classname="07NegativeTests04CreatePostWithMissingRequiredFields"/>
+    <testcase name="[Common] Response time logged" time="0.023" classname="07NegativeTests04CreatePostWithMissingRequiredFields"/>
+    <testcase name="[Common] Content-Type header present" time="0.023" classname="07NegativeTests04CreatePostWithMissingRequiredFields"/>
+    <testcase name="[Negative] Should create with defaults when required fields missing" time="0.023" classname="07NegativeTests04CreatePostWithMissingRequiredFields"/>
+  </testsuite>
+  <testsuite name="07-Negative Tests / 05-Update Non-existent Resource" id="cf1e7101-41fd-4377-b161-72cabffafec2" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="07NegativeTests05UpdateNonExistentResource"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="07NegativeTests05UpdateNonExistentResource"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="07NegativeTests05UpdateNonExistentResource"/>
+    <testcase name="[Negative] Should handle update of non-existent resource" time="0.007" classname="07NegativeTests05UpdateNonExistentResource"/>
+  </testsuite>
+  <testsuite name="07-Negative Tests / 06-Delete Non-existent Resource" id="83b511cb-104d-4858-a5e8-d383899c1d51" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.006">
+    <testcase name="[Common] Response is valid JSON" time="0.006" classname="07NegativeTests06DeleteNonExistentResource"/>
+    <testcase name="[Common] Response time logged" time="0.006" classname="07NegativeTests06DeleteNonExistentResource"/>
+    <testcase name="[Common] Content-Type header present" time="0.006" classname="07NegativeTests06DeleteNonExistentResource"/>
+    <testcase name="[Negative] Should return success for non-existent delete" time="0.006" classname="07NegativeTests06DeleteNonExistentResource"/>
+  </testsuite>
+  <testsuite name="07-Negative Tests / 07-Query with Invalid Parameters" id="fcccfac0-b7dc-4880-80c8-c4c3d1e133e5" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.011">
+    <testcase name="[Common] Response is valid JSON" time="0.011" classname="07NegativeTests07QueryWithInvalidParameters"/>
+    <testcase name="[Common] Response time logged" time="0.011" classname="07NegativeTests07QueryWithInvalidParameters"/>
+    <testcase name="[Common] Content-Type header present" time="0.011" classname="07NegativeTests07QueryWithInvalidParameters"/>
+    <testcase name="[Negative] Should handle invalid query gracefully" time="0.011" classname="07NegativeTests07QueryWithInvalidParameters"/>
+  </testsuite>
+  <testsuite name="07-Negative Tests / 08-Post with Very Long Title" id="715aef58-0ede-4558-99e8-caff4e064aeb" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.009">
+    <testcase name="[Common] Response is valid JSON" time="0.009" classname="07NegativeTests08PostWithVeryLongTitle"/>
+    <testcase name="[Common] Response time logged" time="0.009" classname="07NegativeTests08PostWithVeryLongTitle"/>
+    <testcase name="[Common] Content-Type header present" time="0.009" classname="07NegativeTests08PostWithVeryLongTitle"/>
+    <testcase name="[Negative] Should handle long content" time="0.009" classname="07NegativeTests08PostWithVeryLongTitle"/>
+  </testsuite>
+  <testsuite name="07-Negative Tests / 09-Get with Negative ID" id="99fadb56-8d6a-40de-bf35-c8f657b15406" timestamp="2026-03-14T11:00:14.479Z" tests="4" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="07NegativeTests09GetWithNegativeId"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="07NegativeTests09GetWithNegativeId"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="07NegativeTests09GetWithNegativeId"/>
+    <testcase name="[Negative] Should handle negative ID" time="0.007" classname="07NegativeTests09GetWithNegativeId"/>
+  </testsuite>
+  <testsuite name="07-Negative Tests / 10-Concurrent Request Simulation" id="04517deb-7d69-46b7-9299-3c4bd86860f4" timestamp="2026-03-14T11:00:14.479Z" tests="5" failures="0" errors="0" time="0.012">
+    <testcase name="[Common] Response is valid JSON" time="0.012" classname="07NegativeTests10ConcurrentRequestSimulation"/>
+    <testcase name="[Common] Response time logged" time="0.012" classname="07NegativeTests10ConcurrentRequestSimulation"/>
+    <testcase name="[Common] Content-Type header present" time="0.012" classname="07NegativeTests10ConcurrentRequestSimulation"/>
+    <testcase name="[Negative] Should handle rapid sequential requests" time="0.012" classname="07NegativeTests10ConcurrentRequestSimulation"/>
+    <testcase name="[Negative] Response time should be acceptable" time="0.012" classname="07NegativeTests10ConcurrentRequestSimulation"/>
+  </testsuite>
+  <testsuite name="08-Enhanced Testing (Data-Driven &amp; Correlation) / 01-Data-Driven User Creation" id="574923d5-1f82-4c58-bc7c-7a00eb67d6b5" timestamp="2026-03-14T11:00:14.479Z" tests="8" failures="0" errors="0" time="0.010">
+    <testcase name="[Common] Response is valid JSON" time="0.010" classname="08EnhancedTestingDataDrivenAmpCorrelation01DataDrivenUserCreation"/>
+    <testcase name="[Common] Response time logged" time="0.010" classname="08EnhancedTestingDataDrivenAmpCorrelation01DataDrivenUserCreation"/>
+    <testcase name="[Common] Content-Type header present" time="0.010" classname="08EnhancedTestingDataDrivenAmpCorrelation01DataDrivenUserCreation"/>
+    <testcase name="[Enhanced-001] User should be created successfully" time="0.010" classname="08EnhancedTestingDataDrivenAmpCorrelation01DataDrivenUserCreation"/>
+    <testcase name="[Enhanced-002] Response should contain user ID" time="0.010" classname="08EnhancedTestingDataDrivenAmpCorrelation01DataDrivenUserCreation"/>
+    <testcase name="[Enhanced-003] User name should match request" time="0.010" classname="08EnhancedTestingDataDrivenAmpCorrelation01DataDrivenUserCreation"/>
+    <testcase name="[Enhanced-004] User email should be valid format" time="0.010" classname="08EnhancedTestingDataDrivenAmpCorrelation01DataDrivenUserCreation"/>
+    <testcase name="[Enhanced-005] Response time should be acceptable" time="0.010" classname="08EnhancedTestingDataDrivenAmpCorrelation01DataDrivenUserCreation"/>
+  </testsuite>
+  <testsuite name="08-Enhanced Testing (Data-Driven &amp; Correlation) / 02-Get Created User (Correlation)" id="ccc9749a-a02f-47c8-9ad9-cb16acf752d9" timestamp="2026-03-14T11:00:14.479Z" tests="8" failures="0" errors="0" time="0.008">
+    <testcase name="[Common] Response is valid JSON" time="0.008" classname="08EnhancedTestingDataDrivenAmpCorrelation02GetCreatedUserCorrelation"/>
+    <testcase name="[Common] Response time logged" time="0.008" classname="08EnhancedTestingDataDrivenAmpCorrelation02GetCreatedUserCorrelation"/>
+    <testcase name="[Common] Content-Type header present" time="0.008" classname="08EnhancedTestingDataDrivenAmpCorrelation02GetCreatedUserCorrelation"/>
+    <testcase name="[Enhanced-006] Should retrieve user or handle mock API limitation" time="0.008" classname="08EnhancedTestingDataDrivenAmpCorrelation02GetCreatedUserCorrelation"/>
+    <testcase name="[Enhanced-007] User data should be complete" time="0.008" classname="08EnhancedTestingDataDrivenAmpCorrelation02GetCreatedUserCorrelation"/>
+    <testcase name="[Enhanced-008] Correlated user ID should match" time="0.008" classname="08EnhancedTestingDataDrivenAmpCorrelation02GetCreatedUserCorrelation"/>
+    <testcase name="[Enhanced-009] User address should be present" time="0.008" classname="08EnhancedTestingDataDrivenAmpCorrelation02GetCreatedUserCorrelation"/>
+    <testcase name="[Enhanced-010] Response time should be optimal" time="0.008" classname="08EnhancedTestingDataDrivenAmpCorrelation02GetCreatedUserCorrelation"/>
+  </testsuite>
+  <testsuite name="08-Enhanced Testing (Data-Driven &amp; Correlation) / 03-Update User with Validation" id="34e7c833-2bfd-4532-b82b-52256ef22218" timestamp="2026-03-14T11:00:14.479Z" tests="9" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="08EnhancedTestingDataDrivenAmpCorrelation03UpdateUserWithValidation"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="08EnhancedTestingDataDrivenAmpCorrelation03UpdateUserWithValidation"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="08EnhancedTestingDataDrivenAmpCorrelation03UpdateUserWithValidation"/>
+    <testcase name="[Enhanced-011] User should be updated successfully" time="0.007" classname="08EnhancedTestingDataDrivenAmpCorrelation03UpdateUserWithValidation"/>
+    <testcase name="[Enhanced-012] Response should contain all updated fields" time="0.007" classname="08EnhancedTestingDataDrivenAmpCorrelation03UpdateUserWithValidation"/>
+    <testcase name="[Enhanced-013] User ID should remain unchanged" time="0.007" classname="08EnhancedTestingDataDrivenAmpCorrelation03UpdateUserWithValidation"/>
+    <testcase name="[Enhanced-014] Response should indicate update" time="0.007" classname="08EnhancedTestingDataDrivenAmpCorrelation03UpdateUserWithValidation"/>
+    <testcase name="[Enhanced-015] Data should be consistent after update" time="0.007" classname="08EnhancedTestingDataDrivenAmpCorrelation03UpdateUserWithValidation"/>
+    <testcase name="[Enhanced-016] No validation errors in response" time="0.007" classname="08EnhancedTestingDataDrivenAmpCorrelation03UpdateUserWithValidation"/>
+  </testsuite>
+  <testsuite name="08-Enhanced Testing (Data-Driven &amp; Correlation) / 04-Data-Driven Product Search" id="809febbb-974d-4267-b8a2-056e7ca15346" timestamp="2026-03-14T11:00:14.479Z" tests="8" failures="0" errors="0" time="0.007">
+    <testcase name="[Common] Response is valid JSON" time="0.007" classname="08EnhancedTestingDataDrivenAmpCorrelation04DataDrivenProductSearch"/>
+    <testcase name="[Common] Response time logged" time="0.007" classname="08EnhancedTestingDataDrivenAmpCorrelation04DataDrivenProductSearch"/>
+    <testcase name="[Common] Content-Type header present" time="0.007" classname="08EnhancedTestingDataDrivenAmpCorrelation04DataDrivenProductSearch"/>
+    <testcase name="[Enhanced-017] Should return search results" time="0.007" classname="08EnhancedTestingDataDrivenAmpCorrelation04DataDrivenProductSearch"/>
+    <testcase name="[Enhanced-018] Response should be an array" time="0.007" classname="08EnhancedTestingDataDrivenAmpCorrelation04DataDrivenProductSearch"/>
+    <testcase name="[Enhanced-019] Results should respect pagination limit" time="0.007" classname="08EnhancedTestingDataDrivenAmpCorrelation04DataDrivenProductSearch"/>
+    <testcase name="[Enhanced-020] Each result should have required fields" time="0.007" classname="08EnhancedTestingDataDrivenAmpCorrelation04DataDrivenProductSearch"/>
+    <testcase name="[Enhanced-021] Results should contain search term" time="0.007" classname="08EnhancedTestingDataDrivenAmpCorrelation04DataDrivenProductSearch"/>
+  </testsuite>
+  <testsuite name="08-Enhanced Testing (Data-Driven &amp; Correlation) / 05-Workflow Test (Full User Journey)" id="533a365c-0d9d-46e6-ad2b-e51eedc0d7aa" timestamp="2026-03-14T11:00:14.479Z" tests="6" failures="0" errors="0" time="0.024">
+    <testcase name="[Common] Response is valid JSON" time="0.024" classname="08EnhancedTestingDataDrivenAmpCorrelation05WorkflowTestFullUserJourney"/>
+    <testcase name="[Common] Response time logged" time="0.024" classname="08EnhancedTestingDataDrivenAmpCorrelation05WorkflowTestFullUserJourney"/>
+    <testcase name="[Common] Content-Type header present" time="0.024" classname="08EnhancedTestingDataDrivenAmpCorrelation05WorkflowTestFullUserJourney"/>
+    <testcase name="[Workflow-001] Workflow should maintain state" time="0.024" classname="08EnhancedTestingDataDrivenAmpCorrelation05WorkflowTestFullUserJourney"/>
+    <testcase name="[Workflow-002] Data should flow through workflow" time="0.024" classname="08EnhancedTestingDataDrivenAmpCorrelation05WorkflowTestFullUserJourney"/>
+    <testcase name="[Workflow-003] Cumulative performance should be acceptable" time="0.024" classname="08EnhancedTestingDataDrivenAmpCorrelation05WorkflowTestFullUserJourney"/>
   </testsuite>
 </testsuites>

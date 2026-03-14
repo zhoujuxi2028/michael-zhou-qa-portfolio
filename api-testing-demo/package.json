@@ -19,7 +19,9 @@
     "test:smoke": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json --folder \"01-User Management\" -r cli",
     "test:ci": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json -r cli,json --reporter-json-export reports/newman-report.json --bail",
     "test:data-driven": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json -d data/test-orders-data.csv -r cli,htmlextra --reporter-htmlextra-export reports/data-driven-report.html",
-    "test:full": "newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/jsonplaceholder.postman_environment.json -r cli,htmlextra,json,junit --reporter-htmlextra-export reports/newman-report.html --reporter-json-export reports/newman-report.json --reporter-junit-export reports/newman-report.xml 2>&1 | tee logs/newman-$(date +%Y%m%d_%H%M%S).log",
+    "server": "json-server --watch db.json --port 3001",
+    "db:reset": "git checkout db.json 2>/dev/null || true",
+    "test:full": "npm run db:reset && newman run collections/E-Commerce-API-Test-Suite.postman_collection.json -e environments/dev.postman_environment.json -r cli,htmlextra,json,junit --reporter-htmlextra-export reports/newman-report.html --reporter-json-export reports/newman-report.json --reporter-junit-export reports/newman-report.xml 2>&1 | tee logs/newman-$(date +%Y%m%d_%H%M%S).log; npm run db:reset",
     "test:with-log": "npm run test 2>&1 | tee logs/newman-$(date +%Y%m%d_%H%M%S).log",
     "validate": "node scripts/validate-collection.js && node scripts/validate-environment.js",
     "validate:collection": "node scripts/validate-collection.js",
@@ -30,6 +32,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
+    "json-server": "^0.17.4",
     "newman": "^6.1.0",
     "newman-reporter-htmlextra": "^1.23.1",
     "husky": "^9.0.0",
