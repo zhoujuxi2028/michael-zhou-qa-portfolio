@@ -121,7 +121,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
-          scan-ref: '.'
+          scan-ref: 'cicd-demo'
           format: 'json'
           output: 'trivy-fs-results.json'
           severity: 'CRITICAL,HIGH,MEDIUM'
@@ -241,7 +241,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'config'
-          scan-ref: '.'
+          scan-ref: 'cicd-demo'
           format: 'json'
           output: 'trivy-iac-results.json'
           exit-code: '0'
