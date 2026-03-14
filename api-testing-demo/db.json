@@ -1,0 +1,418 @@
+{
+  "users": [
+    {
+      "id": 2,
+      "name": "Ervin Howell",
+      "username": "Antonette",
+      "email": "Shanna@melissa.tv",
+      "address": {
+        "street": "Victor Plains",
+        "suite": "Suite 879",
+        "city": "Wisokyburgh",
+        "zipcode": "90566-7771",
+        "geo": {
+          "lat": "-43.9509",
+          "lng": "-34.4618"
+        }
+      },
+      "phone": "010-692-6593 x09125",
+      "website": "anastasia.net",
+      "company": {
+        "name": "Deckow-Crist",
+        "catchPhrase": "Proactive didactic contingency",
+        "bs": "synergize scalable supply-chains"
+      }
+    },
+    {
+      "id": 3,
+      "name": "Clementine Bauch",
+      "username": "Samantha",
+      "email": "Nathan@yesenia.net",
+      "address": {
+        "street": "Douglas Extension",
+        "suite": "Suite 847",
+        "city": "McKenziehaven",
+        "zipcode": "59590-4157",
+        "geo": {
+          "lat": "-68.6102",
+          "lng": "-47.0653"
+        }
+      },
+      "phone": "1-463-123-4447",
+      "website": "ramiro.info",
+      "company": {
+        "name": "Romaguera-Jacobson",
+        "catchPhrase": "Face to face bifurcated interface",
+        "bs": "e-enable strategic applications"
+      }
+    },
+    {
+      "id": 4,
+      "name": "Patricia Lebsack",
+      "username": "Karianne",
+      "email": "Julianne.OConner@kory.org",
+      "address": {
+        "street": "Hoeger Mall",
+        "suite": "Apt. 692",
+        "city": "South Elvis",
+        "zipcode": "53919-4257",
+        "geo": {
+          "lat": "29.4572",
+          "lng": "-164.2990"
+        }
+      },
+      "phone": "493-170-9623 x156",
+      "website": "kale.biz",
+      "company": {
+        "name": "Robel-Corkery",
+        "catchPhrase": "Multi-tiered zero tolerance productivity",
+        "bs": "transition cutting-edge web services"
+      }
+    },
+    {
+      "id": 5,
+      "name": "Chelsey Dietrich",
+      "username": "Kamren",
+      "email": "Lucio_Hettinger@annie.ca",
+      "address": {
+        "street": "Skiles Walks",
+        "suite": "Suite 351",
+        "city": "Roscoeview",
+        "zipcode": "33263",
+        "geo": {
+          "lat": "-31.8129",
+          "lng": "62.5342"
+        }
+      },
+      "phone": "(254)954-1289",
+      "website": "demarco.info",
+      "company": {
+        "name": "Keebler LLC",
+        "catchPhrase": "User-centric fault-tolerant solution",
+        "bs": "revolutionize end-to-end systems"
+      }
+    },
+    {
+      "id": 6,
+      "name": "Mrs. Dennis Schulist",
+      "username": "Leopoldo_Corkery",
+      "email": "Karley_Dach@jasper.info",
+      "address": {
+        "street": "Norberto Crossing",
+        "suite": "Apt. 950",
+        "city": "South Christy",
+        "zipcode": "23505-1337",
+        "geo": {
+          "lat": "-71.4197",
+          "lng": "71.7478"
+        }
+      },
+      "phone": "1-477-935-8478 x6430",
+      "website": "ola.org",
+      "company": {
+        "name": "Considine-Lockman",
+        "catchPhrase": "Synchronised bottom-line interface",
+        "bs": "e-enable innovative applications"
+      }
+    },
+    {
+      "id": 7,
+      "name": "Kurtis Weissnat",
+      "username": "Elwyn.Skiles",
+      "email": "Telly.Hoeger@billy.biz",
+      "address": {
+        "street": "Rex Trail",
+        "suite": "Suite 280",
+        "city": "Howemouth",
+        "zipcode": "58804-1099",
+        "geo": {
+          "lat": "24.8918",
+          "lng": "21.8984"
+        }
+      },
+      "phone": "210.067.6132",
+      "website": "elvis.io",
+      "company": {
+        "name": "Johns Group",
+        "catchPhrase": "Configurable multimedia task-force",
+        "bs": "generate enterprise e-tailers"
+      }
+    },
+    {
+      "id": 8,
+      "name": "Nicholas Runolfsdottir V",
+      "username": "Maxime_Nienow",
+      "email": "Sherwood@rosamond.me",
+      "address": {
+        "street": "Ellsworth Summit",
+        "suite": "Suite 729",
+        "city": "Aliyaview",
+        "zipcode": "45169",
+        "geo": {
+          "lat": "-14.3990",
+          "lng": "-120.7677"
+        }
+      },
+      "phone": "586.493.6943 x140",
+      "website": "jacynthe.com",
+      "company": {
+        "name": "Abernathy Group",
+        "catchPhrase": "Implemented secondary concept",
+        "bs": "e-enable extensible e-tailers"
+      }
+    },
+    {
+      "id": 9,
+      "name": "Glenna Reichert",
+      "username": "Delphine",
+      "email": "Chaim_McDermott@dana.io",
+      "address": {
+        "street": "Dayna Park",
+        "suite": "Suite 449",
+        "city": "Bartholomebury",
+        "zipcode": "76495-3109",
+        "geo": {
+          "lat": "24.6463",
+          "lng": "-168.8889"
+        }
+      },
+      "phone": "(775)976-6794 x41206",
+      "website": "conrad.com",
+      "company": {
+        "name": "Yost and Sons",
+        "catchPhrase": "Switchable contextually-based project",
+        "bs": "aggregate real-time technologies"
+      }
+    },
+    {
+      "id": 10,
+      "name": "Clementina DuBuque",
+      "username": "Moriah.Stanton",
+      "email": "Rey.Padberg@karina.com",
+      "address": {
+        "street": "Kattie Turnpike",
+        "suite": "Suite 198",
+        "city": "Lebsackbury",
+        "zipcode": "31428-2261",
+        "geo": {
+          "lat": "-38.2386",
+          "lng": "57.2232"
+        }
+      },
+      "phone": "024-648-3804",
+      "website": "ambrose.net",
+      "company": {
+        "name": "Hoeger LLC",
+        "catchPhrase": "Centralized empowering task-force",
+        "bs": "target end-to-end models"
+      }
+    },
+    {
+      "name": "Test User",
+      "username": "testuser",
+      "email": "test@example.com",
+      "phone": "1-770-736-8031",
+      "website": "test.com",
+      "id": 11
+    },
+    {
+      "name": "Invalid Email User",
+      "email": "not-an-email",
+      "id": 12
+    },
+    {
+      "id": 13,
+      "name": "Updated Test User",
+      "username": "updatedtestuser",
+      "email": "updated.1773486018683@example.com",
+      "phone": "1-999-999-9999",
+      "website": "updated-test.com"
+    }
+  ],
+  "posts": [
+    {
+      "id": 4,
+      "userId": 2,
+      "title": "eum et est occaecati",
+      "body": "ullam et saepe reiciendis voluptatem adipisci\nsit amet autem assumenda provident rerum culpa\nquis hic commodi nesciunt rem tenetur doloremque ipsam iure"
+    },
+    {
+      "id": 5,
+      "userId": 2,
+      "title": "nesciunt quas odio",
+      "body": "repudiandae veniam quaerat sunt sed\nalias aut fugiat sit autem sed est\nvoluptatem omnis possimus esse voluptatibus quis\nest aut tenetur dolor neque"
+    },
+    {
+      "id": 6,
+      "userId": 3,
+      "title": "dolorem eum magni eos aperiam quia",
+      "body": "ut aspernatur corporis harum nihil quis provident sequi\nmollitia nobis aliquid molestiae"
+    },
+    {
+      "id": 7,
+      "userId": 3,
+      "title": "magnam facilis autem",
+      "body": "dolore placeat quibusdam ea quo vitae\nmagni quis enim qui quis quasi nemo\nnostrum ducimus ratione vel eveniet"
+    },
+    {
+      "id": 8,
+      "userId": 4,
+      "title": "dolorem dolore est ipsam",
+      "body": "dignissimos aperiam dolorem qui eum\nfacilis quibusdam animi sint suscipit qui sint possimus cum\nquaerat magni maiores excepturi\nipsam ut commodi dolor voluptatum modi aut vitae"
+    },
+    {
+      "id": 9,
+      "userId": 5,
+      "title": "nesciunt iure omnis dolorem tempora et accusantium",
+      "body": "consectetur animi nesciunt iure dolore\nenim quia ad\nveniam autem ut quam aut nobis\net est aut quod aut provident voluptas autem voluptas"
+    },
+    {
+      "id": 10,
+      "userId": 5,
+      "title": "optio molestias id quia eum",
+      "body": "quo et expedita modi cum officia vel magni\ndoloribus qui repudiandae\nvero nisi sit\nquos veniam quod sed accusamus veritatis error"
+    },
+    {
+      "id": 11
+    }
+  ],
+  "comments": [
+    {
+      "id": 8,
+      "postId": 4,
+      "name": "et omnis dolorem",
+      "email": "Mallory_Kunze@marie.org",
+      "body": "ut voluptatem corrupti velit\nad voluptatem maiores"
+    },
+    {
+      "id": 9,
+      "postId": 4,
+      "name": "provident id voluptas",
+      "email": "Meghan_Littel@reba.ca",
+      "body": "sapiente assumenda molestiae atque\nadipisci laborum distinctio aperiam et ab ut omnis"
+    },
+    {
+      "id": 10,
+      "postId": 5,
+      "name": "eaque et deleniti atque tenetur ut quo ut",
+      "email": "Carmen@spencer.net",
+      "body": "voluptate iusto quis nobis reprehenderit ipsum amet nulla"
+    }
+  ],
+  "todos": [
+    {
+      "id": 4,
+      "userId": 2,
+      "title": "et porro tempora",
+      "completed": true
+    },
+    {
+      "id": 5,
+      "userId": 2,
+      "title": "laboriosam mollitia et enim quasi adipisci quia provident illum",
+      "completed": false
+    },
+    {
+      "id": 6,
+      "userId": 3,
+      "title": "qui ullam ratione quibusdam voluptatem quia omnis",
+      "completed": false
+    },
+    {
+      "id": 7,
+      "userId": 3,
+      "title": "illo expedita consequatur quia in",
+      "completed": false
+    },
+    {
+      "id": 8,
+      "userId": 4,
+      "title": "quo adipisci enim quam ut ab",
+      "completed": true
+    },
+    {
+      "id": 9,
+      "userId": 5,
+      "title": "molestiae perspiciatis ipsa",
+      "completed": false
+    },
+    {
+      "id": 10,
+      "userId": 5,
+      "title": "illo est ratione doloremque quia maiores aut",
+      "completed": true
+    },
+    [
+      {
+        "userId": 1,
+        "title": "Bulk Order 1",
+        "completed": false
+      },
+      {
+        "userId": 1,
+        "title": "Bulk Order 2",
+        "completed": false
+      }
+    ]
+  ],
+  "albums": [
+    {
+      "id": 4,
+      "userId": 2,
+      "title": "non esse culpa molestiae omnis sed optio"
+    },
+    {
+      "id": 5,
+      "userId": 2,
+      "title": "eaque aut omnis a"
+    },
+    {
+      "id": 6,
+      "userId": 3,
+      "title": "natus impedit quibusdam illo est"
+    },
+    {
+      "id": 7,
+      "userId": 3,
+      "title": "quibusdam autem aliquid et et quia"
+    },
+    {
+      "id": 8,
+      "userId": 4,
+      "title": "qui fuga est a eum"
+    },
+    {
+      "id": 9,
+      "userId": 5,
+      "title": "saepe unde necessitatibus rem"
+    },
+    {
+      "id": 10,
+      "userId": 5,
+      "title": "distinctio laborum qui"
+    }
+  ],
+  "photos": [
+    {
+      "id": 8,
+      "albumId": 4,
+      "title": "aut porro officiis laborum odit ea laudantium corporis",
+      "url": "https://via.placeholder.com/600/54176f",
+      "thumbnailUrl": "https://via.placeholder.com/150/54176f"
+    },
+    {
+      "id": 9,
+      "albumId": 5,
+      "title": "qui eius qui autem sed",
+      "url": "https://via.placeholder.com/600/51aa97",
+      "thumbnailUrl": "https://via.placeholder.com/150/51aa97"
+    },
+    {
+      "id": 10,
+      "albumId": 5,
+      "title": "beatae et provident et ut vel",
+      "url": "https://via.placeholder.com/600/810b14",
+      "thumbnailUrl": "https://via.placeholder.com/150/810b14"
+    }
+  ]
+}
