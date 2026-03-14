@@ -176,7 +176,7 @@ security-testing-demo/
 
 ## CI/CD Integration
 
-The project includes GitHub Actions workflow (`security-scan.yml`) with 5 parallel jobs:
+The project includes GitHub Actions workflow ([`security-tests.yml`](../.github/workflows/security-tests.yml)) with 5 parallel jobs:
 
 | Job | Description | Service |
 |-----|-------------|---------|

@@ -13,7 +13,7 @@ Code Push → GitHub Actions (CI) → Docker Build & Test → Helm Package
 
 | Component | Technology | What It Does |
 |-----------|-----------|--------------|
-| **CI Pipeline** | GitHub Actions | 4 workflows: PR checks, Docker tests, security scan, validation |
+| **CI Pipeline** | GitHub Actions | 5 workflows: pipeline, PR checks, Docker tests, security scan, Helm deploy |
 | **Test Automation** | Cypress + Newman | 16 E2E tests + 18 API assertions, 100% pass rate |
 | **Containerization** | Docker Compose | Cypress + Newman in containers, reproducible test env |
 | **Infrastructure as Code** | Terraform + Localstack | S3, DynamoDB, 3 environment configs (dev/staging/prod) |
@@ -92,10 +92,11 @@ kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-prometheus 909
 ```
 cicd-demo/
 ├── .github/workflows/           # CI/CD pipelines
+│   ├── pipeline.yml             #   Full CI/CD: Lint → Build → E2E → Deploy
 │   ├── pr-checks.yml            #   Fast PR validation (2-3 min)
-│   ├── docker-tests.yml         #   Production Docker tests (5-8 min)
+│   ├── docker-tests.yml         #   Nightly Docker regression tests
 │   ├── security-scan.yml        #   Trivy 4-layer security scanning
-│   └── validation.yml           #   Environment & permission checks
+│   └── helm-deploy.yml          #   Helm chart validation & deploy
 │
 ├── cypress/                     # Cypress E2E tests (16 tests)
 ├── postman/                     # Newman API tests (18 assertions)
@@ -150,9 +151,11 @@ cicd-demo/
 ### Current (Phase 1): CI with Manual CD
 
 ```
+Push to main ──→ pipeline.yml ──→ Lint → Build → E2E → Deploy Dev → Deploy Staging
 PR opened ──→ pr-checks.yml ──→ Lint + Test (2-3 min) ──→ PR status
-Push to main ──→ docker-tests.yml ──→ Docker Build + Test (5-8 min) ──→ Artifacts
-Any push ──→ security-scan.yml ──→ Trivy + npm audit ──→ SARIF → GitHub Security
+Nightly ──→ docker-tests.yml ──→ Docker Build + Test (5-8 min) ──→ Artifacts
+Push/PR/Daily ──→ security-scan.yml ──→ Trivy + npm audit ──→ SARIF → GitHub Security
+Push to main (helm/**) ──→ helm-deploy.yml ──→ Helm lint → template → validate → ArgoCD sync
 ```
 
 ArgoCD watches the Git repo and syncs K8s manifests, but there's no automated CI → CD handoff.
@@ -207,12 +210,13 @@ Total Pods: 30+
 
 ## GitHub Actions Workflows
 
-| Workflow | Trigger | Duration | Purpose |
-|----------|---------|----------|---------|
-| `pr-checks.yml` | PR open/sync | 2-3 min | Fast developer feedback |
-| `docker-tests.yml` | Push to main, nightly | 5-8 min | Production-grade Docker tests |
-| `security-scan.yml` | Push, PR, daily, manual | 10-15 min | 4-layer security scanning |
-| `validation.yml` | Push/PR to main | 1-2 min | Environment validation |
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| `pipeline.yml` | Push to main (`cicd-demo/**`), manual | Full CI/CD: Lint → Build → E2E → Deploy Dev → Deploy Staging |
+| `pr-checks.yml` | PR to main (`cicd-demo/**`) | Fast PR validation: env check + tests + lint (2-3 min) |
+| `docker-tests.yml` | Nightly (02:00 UTC), manual | Docker container regression tests (Cypress + Newman) |
+| `security-scan.yml` | Push/PR to main (`cicd-demo/**`), daily (03:00 UTC), manual | Trivy 4-layer scanning (filesystem, Docker, IaC) + npm audit → SARIF |
+| `helm-deploy.yml` | Push to main (`cicd-demo/helm/**`), PR, manual | Helm chart lint → template → validate → ArgoCD sync |
 
 ## Documentation
 
