@@ -2,19 +2,19 @@ name: Docker-Based Tests (Production-Grade)
 
 # Trigger Configuration:
 # This workflow is triggered by:
-# 1. Push to portfolio branch (after PR merge)
+# 1. Push to main branch (after PR merge)
 # 2. Scheduled runs (nightly at 2:00 AM UTC / 10:00 AM Beijing)
 # 3. Manual trigger via GitHub UI
 #
 # Interview Talking Point:
 # "This workflow uses Docker containers to ensure environment parity between
-# local development, CI, and production. It's triggered on portfolio branch pushes
+# local development, CI, and production. It's triggered on main branch pushes
 # and runs nightly to catch flaky tests and environment drift."
 
 on:
-  # Trigger on push to portfolio branch (after PR is merged)
+  # Trigger on push to main branch (after PR is merged)
   push:
-    branches: [ portfolio ]
+    branches: [ main ]
 
   # Scheduled nightly regression tests
   schedule:

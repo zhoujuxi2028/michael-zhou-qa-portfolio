@@ -15,7 +15,7 @@ name: PR Quick Checks (Node.js)
 on:
   # Automatically trigger on ANY pull request activity
   pull_request:
-    branches: [ portfolio ]
+    branches: [ main ]
     types: [opened, synchronize, reopened]
 
   # Allow manual trigger from GitHub Actions UI
