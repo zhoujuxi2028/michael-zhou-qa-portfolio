@@ -87,7 +87,7 @@ WBS 1.0 (Scaffolding)
 
 | ID | Task | Status |
 |----|------|--------|
-| 8.1 | Run full suite locally across 3 browsers | ⬜ Pending |
+| 8.1 | Run full suite locally across 5 browser projects (190/190 pass) | ✅ Complete |
 | 8.2 | Verify HTML report + trace generation | ⬜ Pending |
 | 8.3 | Review interview comments for accuracy | ✅ Complete |
 | 8.4 | Push branch, open PR, verify CI | ⬜ Pending |
