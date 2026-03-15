@@ -2,11 +2,11 @@ name: K8S Auto Testing Platform CI
 
 on:
   push:
-    branches: [k8s-auto-testing-platform, main, portfolio]
+    branches: [k8s-auto-testing-platform, main]
     paths:
       - 'k8s-auto-testing-platform/**'
   pull_request:
-    branches: [k8s-auto-testing-platform, main, portfolio]
+    branches: [k8s-auto-testing-platform, main]
     paths:
       - 'k8s-auto-testing-platform/**'
   workflow_dispatch:
