@@ -17,7 +17,7 @@ on:
     types: [opened, synchronize, reopened]
 
   push:
-    branches: [ portfolio, feature/playwright-demo ]
+    branches: [ portfolio ]
     paths:
       - 'playwright-demo/**'
       - '.github/workflows/playwright-tests.yml'
