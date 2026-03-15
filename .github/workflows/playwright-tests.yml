@@ -1,7 +1,7 @@
 name: Playwright Tests (Cross-Browser)
 
 # Trigger Configuration:
-# Runs on PRs and pushes to portfolio branch, filtered to playwright-demo changes.
+# Runs on PRs and pushes to main branch, filtered to playwright-demo changes.
 #
 # Interview Talking Point:
 # "We use a browser matrix strategy to run Chromium, Firefox, and WebKit in parallel.
@@ -10,14 +10,14 @@ name: Playwright Tests (Cross-Browser)
 
 on:
   pull_request:
-    branches: [ portfolio ]
+    branches: [ main ]
     paths:
       - 'playwright-demo/**'
       - '.github/workflows/playwright-tests.yml'
     types: [opened, synchronize, reopened]
 
   push:
-    branches: [ portfolio ]
+    branches: [ main ]
     paths:
       - 'playwright-demo/**'
       - '.github/workflows/playwright-tests.yml'
