@@ -1,0 +1,119 @@
+name: Playwright Tests (Cross-Browser)
+
+# Trigger Configuration:
+# Runs on PRs and pushes to portfolio branch, filtered to playwright-demo changes.
+#
+# Interview Talking Point:
+# "We use a browser matrix strategy to run Chromium, Firefox, and WebKit in parallel.
+# fail-fast: false ensures all browsers complete even if one fails — we want full
+# cross-browser results, not just the first failure."
+
+on:
+  pull_request:
+    branches: [ portfolio ]
+    paths:
+      - 'playwright-demo/**'
+      - '.github/workflows/playwright-tests.yml'
+    types: [opened, synchronize, reopened]
+
+  push:
+    branches: [ portfolio ]
+    paths:
+      - 'playwright-demo/**'
+      - '.github/workflows/playwright-tests.yml'
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+defaults:
+  run:
+    working-directory: playwright-demo
+
+jobs:
+  test:
+    name: Tests (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # Interview Talking Point:
+    # "Matrix strategy runs 3 browser jobs in parallel. Each job installs only
+    # its browser binary, keeping install time and disk usage minimal."
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Interview Talking Point:
+      # "We cache npm dependencies and Playwright browser binaries separately.
+      # npm cache is keyed on package-lock.json; browser cache on Playwright version."
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'playwright-demo/package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser (${{ matrix.browser }})
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      # Interview Talking Point:
+      # "We run only the matching browser project. This avoids installing all 3
+      # browsers in each job and keeps execution focused."
+      - name: Run Playwright tests (${{ matrix.browser }})
+        run: npx playwright test --project=${{ matrix.browser }}
+
+      # Upload HTML report and test results on failure
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.browser }}
+          path: playwright-demo/playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.browser }}
+          path: playwright-demo/test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+# =============================================================================
+# Interview Discussion Points
+# =============================================================================
+#
+# 1. Cross-Browser Matrix:
+#    "Playwright supports Chromium, Firefox, and WebKit from a single test suite.
+#    The matrix strategy runs all 3 in parallel, cutting total CI time to the
+#    duration of the slowest browser."
+#
+# 2. Path Filtering:
+#    "We only trigger on playwright-demo/** changes. This prevents running browser
+#    tests when someone edits the Cypress or Selenium projects."
+#
+# 3. Selective Browser Install:
+#    "Each matrix job installs only its target browser. This reduces download time
+#    from ~500MB (all browsers) to ~150MB per job."
+#
+# 4. Artifact Strategy:
+#    "HTML reports and trace files upload per-browser. Developers can download the
+#    failing browser's report and use Playwright's trace viewer for debugging."
+#
+# 5. Comparison to Cypress CI:
+#    "The pr-checks.yml workflow runs Cypress in a single job. This Playwright
+#    workflow uses a matrix for parallel cross-browser testing — a pattern that
+#    Cypress Dashboard charges for but Playwright provides free."
