@@ -1,0 +1,1785 @@
+newman
+
+E-Commerce API Test Suite - Expert Level
+
+❏ 01-User Management
+↳ 01-Get All Users
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 01-Get All Users'
+  │ '📍 URL: {{baseUrl}}/users'
+  │ '🕒 Timestamp: 2026-03-14T10:26:48.293Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/users [200 OK, 6.07kB, 67ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 67ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 5645 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [User] Should return all users
+  ✓  [User] Each user should have required fields
+  ✓  [User] User email should be valid format
+  ✓  [User] Response time should be less than 2s
+  ✓  [User] Store first user ID for后续 tests
+
+↳ 02-Get Single User
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 02-Get Single User'
+  │ '📍 URL: {{baseUrl}}/users/{{firstUserId}}'
+  │ '🕒 Timestamp: 2026-03-14T10:26:48.447Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/users/1 [200 OK, 906B, 7ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 7ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 509 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [User] Should return single user
+  ✓  [User] Should have complete user profile
+  ✓  [User] Address should be complete
+  ✓  [User] Company info should exist
+
+↳ 03-Get User by Username
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 03-Get User by Username'
+  │ '📍 URL: {{baseUrl}}/users?username=Bret'
+  │ '🕒 Timestamp: 2026-03-14T10:26:48.495Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/users?username=Bret [200 OK, 956B, 8ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 8ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 559 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [User] Should filter users by username
+  ✓  [User] Returned user should match username
+
+↳ 04-Create User
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 04-Create User'
+  │ '📍 URL: {{baseUrl}}/users'
+  │ '🕒 Timestamp: 2026-03-14T10:26:48.544Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST http://localhost:3001/users [201 Created, 520B, 11ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 11ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 14 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  1. [User] Should create new user
+  ✓  [User] Should return 201 Created
+  ✓  [User] Store created user ID
+
+↳ 05-Update User (PUT)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 05-Update User (PUT)'
+  │ '📍 URL: {{baseUrl}}/users/1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:48.611Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PUT http://localhost:3001/users/1 [200 OK, 407B, 7ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 7ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 13 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  2. [User] Should update existing user
+  ✓  [User] Should preserve user ID
+
+↳ 06-Update User (PATCH)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 06-Update User (PATCH)'
+  │ '📍 URL: {{baseUrl}}/users/1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:48.654Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PATCH http://localhost:3001/users/1 [200 OK, 407B, 8ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 8ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 13 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  3. [User] Should partially update user
+
+↳ 07-Delete User
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 07-Delete User'
+  │ '📍 URL: {{baseUrl}}/users/1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:48.707Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  DELETE http://localhost:3001/users/1 [200 OK, 395B, 17ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 17ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [User] Should delete user successfully
+  ✓  [User] Response body should be empty
+
+↳ 08-Get User Posts
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 08-Get User Posts'
+  │ '📍 URL: {{baseUrl}}/users/{{firstUserId}}/posts'
+  │ '🕒 Timestamp: 2026-03-14T10:26:48.771Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/users/1/posts [200 OK, 395B, 11ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 11ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [User] Should return user posts
+  ✓  [User] Each post should belong to user
+  ✓  [User] Post should have title and body
+
+❏ 02-Product Management
+↳ 01-Get All Posts (as Products)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 01-Get All Posts (as Products)'
+  │ '📍 URL: {{baseUrl}}/posts'
+  │ '🕒 Timestamp: 2026-03-14T10:26:48.833Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/posts [200 OK, 2.07kB, 10ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 10ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 1647 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Product] Should return all posts
+  ✓  [Product] Each post should have required fields
+  ✓  [Product] Store first product ID
+
+↳ 02-Get Single Post (Product)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 02-Get Single Post (Product)'
+  │ '📍 URL: {{baseUrl}}/posts/{{firstProductId}}'
+  │ '🕒 Timestamp: 2026-03-14T10:26:48.884Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/posts/4 [200 OK, 627B, 8ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 8ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 231 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Product] Should return single post
+  ✓  [Product] ID should match request
+
+↳ 03-Get Posts by User
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 03-Get Posts by User'
+  │ '📍 URL: {{baseUrl}}/posts?userId=1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:48.930Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/posts?userId=1 [200 OK, 395B, 7ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 7ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Product] Should filter posts by user
+
+↳ 04-Create Post (Product)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 04-Create Post (Product)'
+  │ '📍 URL: {{baseUrl}}/posts'
+  │ '🕒 Timestamp: 2026-03-14T10:26:48.973Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST http://localhost:3001/posts [201 Created, 520B, 7ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 7ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 14 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  4. [Product] Should create new post
+  ✓  [Product] Should return 201 Created
+  ✓  [Product] Store created product ID
+
+↳ 05-Update Post (Product)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 05-Update Post (Product)'
+  │ '📍 URL: {{baseUrl}}/posts/1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:49.019Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PUT http://localhost:3001/posts/1 [404 Not Found, 402B, 6ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 6ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  5. [Product] Should update post
+  6. [Product] Should preserve ID and userId
+
+↳ 06-Delete Post (Product)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 06-Delete Post (Product)'
+  │ '📍 URL: {{baseUrl}}/posts/1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:49.059Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  DELETE http://localhost:3001/posts/1 [404 Not Found, 402B, 12ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 12ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  7. [Product] Should delete post
+
+↳ 07-Get Post Comments
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 07-Get Post Comments'
+  │ '📍 URL: {{baseUrl}}/posts/1/comments'
+  │ '🕒 Timestamp: 2026-03-14T10:26:49.117Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/posts/1/comments [200 OK, 395B, 13ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 13ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  8. [Product] Should return post comments
+  ✓  [Product] Each comment should have email
+
+↳ 08-Pagination - Get Posts with Limit
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 08-Pagination - Get Posts with Limit'
+  │ '📍 URL: {{baseUrl}}/posts?_limit=5'
+  │ '🕒 Timestamp: 2026-03-14T10:26:49.173Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/posts?_limit=5 [200 OK, 1.65kB, 11ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 11ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 1156 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Product] Should return limited posts
+  ✓  [Product] Should support pagination parameters
+
+↳ 09-Pagination - Get Posts with Start
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 09-Pagination - Get Posts with Start'
+  │ '📍 URL: {{baseUrl}}/posts?_start=10&_end=15'
+  │ '🕒 Timestamp: 2026-03-14T10:26:49.246Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/posts?_start=10&_end=15 [200 OK, 459B, 8ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 8ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Product] Should return posts with offset
+  ✓  [Product] First post should have correct ID
+
+↳ 10-Sort Posts
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 10-Sort Posts'
+  │ '📍 URL: {{baseUrl}}/posts?_sort=title&_order=asc'
+  │ '🕒 Timestamp: 2026-03-14T10:26:49.306Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/posts?_sort=title&_order=asc [200 OK, 2.1kB, 10ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 10ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 1669 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Product] Should sort posts by title
+  9. [Product] Titles should be sorted
+
+❏ 03-Cart Management
+↳ 01-Get All Comments (as Cart Items)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 01-Get All Comments (as Cart Items)'
+  │ '📍 URL: {{baseUrl}}/comments'
+  │ '🕒 Timestamp: 2026-03-14T10:26:49.369Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/comments [200 OK, 995B, 9ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 9ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 598 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Cart] Should return all comments
+  ✓  [Cart] Each comment should have required fields
+  ✓  [Cart] Store first cart item ID
+
+↳ 02-Get Cart Item by ID
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 02-Get Cart Item by ID'
+  │ '📍 URL: {{baseUrl}}/comments/{{firstCartItemId}}'
+  │ '🕒 Timestamp: 2026-03-14T10:26:49.424Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/comments/8 [200 OK, 557B, 12ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 12ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 161 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Cart] Should return single comment
+
+↳ 03-Get Cart Items by Post
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 03-Get Cart Items by Post'
+  │ '📍 URL: {{baseUrl}}/comments?postId=1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:49.500Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/comments?postId=1 [200 OK, 395B, 11ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 11ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Cart] Should filter by post ID
+
+↳ 04-Create Cart Item (Comment)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 04-Create Cart Item (Comment)'
+  │ '📍 URL: {{baseUrl}}/comments'
+  │ '🕒 Timestamp: 2026-03-14T10:26:49.573Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST http://localhost:3001/comments [201 Created, 523B, 8ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 8ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 14 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 10. [Cart] Should create comment
+  ✓  [Cart] Store created cart item ID
+
+↳ 05-Update Cart Item
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 05-Update Cart Item'
+  │ '📍 URL: {{baseUrl}}/comments/1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:49.621Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PUT http://localhost:3001/comments/1 [404 Not Found, 402B, 8ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 8ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 11. [Cart] Should update cart item
+
+↳ 06-Delete Cart Item
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 06-Delete Cart Item'
+  │ '📍 URL: {{baseUrl}}/comments/1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:49.669Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  DELETE http://localhost:3001/comments/1 [404 Not Found, 402B, 8ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 8ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 12. [Cart] Should delete cart item
+
+↳ 07-Get Multiple Cart Items
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 07-Get Multiple Cart Items'
+  │ '📍 URL: {{baseUrl}}/comments?postId=1,2,3'
+  │ '🕒 Timestamp: 2026-03-14T10:26:49.717Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/comments?postId=1,2,3 [200 OK, 395B, 7ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 7ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Cart] Should filter by multiple post IDs
+
+↳ 08-Bulk Cart Operations
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 08-Bulk Cart Operations'
+  │ '📍 URL: {{baseUrl}}/comments?_page=1&_limit=10'
+  │ '🕒 Timestamp: 2026-03-14T10:26:49.770Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/comments?_page=1&_limit=10 [200 OK, 1.1kB, 8ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 8ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 620 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Cart] Should handle sub-selective queries
+  ✓  [Cart] Should return valid data structure
+
+❏ 04-Order Management
+↳ 01-Get All Todos (as Orders)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 01-Get All Todos (as Orders)'
+  │ '📍 URL: {{baseUrl}}/todos'
+  │ '🕒 Timestamp: 2026-03-14T10:26:49.820Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/todos [200 OK, 1.21kB, 10ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 10ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 813 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Order] Should return all todos
+  ✓  [Order] Each todo should have required fields
+  ✓  [Order] Store first order ID
+
+↳ 02-Get Single Order
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 02-Get Single Order'
+  │ '📍 URL: {{baseUrl}}/todos/{{firstOrderId}}'
+  │ '🕒 Timestamp: 2026-03-14T10:26:49.896Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/todos/4 [200 OK, 475B, 14ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 14ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 80 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Order] Should return single todo
+  ✓  [Order] ID should match request
+
+↳ 03-Get Orders by User
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 03-Get Orders by User'
+  │ '📍 URL: {{baseUrl}}/todos?userId=1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:50.083Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/todos?userId=1 [200 OK, 395B, 9ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 9ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Order] Should filter todos by user
+
+↳ 04-Create Order
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 04-Create Order'
+  │ '📍 URL: {{baseUrl}}/todos'
+  │ '🕒 Timestamp: 2026-03-14T10:26:50.146Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST http://localhost:3001/todos [201 Created, 520B, 8ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 8ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 14 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 13. [Order] Should create new todo
+  ✓  [Order] Store created order ID
+
+↳ 05-Update Order
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 05-Update Order'
+  │ '📍 URL: {{baseUrl}}/todos/1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:50.265Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PUT http://localhost:3001/todos/1 [404 Not Found, 402B, 15ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 15ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 14. [Order] Should update todo
+
+↳ 06-Complete Order (PATCH)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 06-Complete Order (PATCH)'
+  │ '📍 URL: {{baseUrl}}/todos/1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:50.391Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PATCH http://localhost:3001/todos/1 [404 Not Found, 402B, 11ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 11ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 15. [Order] Should mark as completed
+
+↳ 07-Delete Order
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 07-Delete Order'
+  │ '📍 URL: {{baseUrl}}/todos/1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:50.471Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  DELETE http://localhost:3001/todos/1 [404 Not Found, 402B, 7ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 7ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 16. [Order] Should delete todo
+
+↳ 08-Filter Completed Orders
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 08-Filter Completed Orders'
+  │ '📍 URL: {{baseUrl}}/todos?completed=true'
+  │ '🕒 Timestamp: 2026-03-14T10:26:50.525Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/todos?completed=true [200 OK, 722B, 8ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 8ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 325 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Order] Should filter completed todos
+
+↳ 09-Filter Pending Orders
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 09-Filter Pending Orders'
+  │ '📍 URL: {{baseUrl}}/todos?completed=false'
+  │ '🕒 Timestamp: 2026-03-14T10:26:50.583Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/todos?completed=false [200 OK, 887B, 6ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 6ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 490 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Order] Should filter pending todos
+
+↳ 10-Get Order Details
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 10-Get Order Details'
+  │ '📍 URL: {{baseUrl}}/todos/5'
+  │ '🕒 Timestamp: 2026-03-14T10:26:50.637Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/todos/5 [200 OK, 524B, 6ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 6ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 128 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Order] Should return todo with correct ID
+  ✓  [Order] Title should not be empty
+
+↳ 11-Bulk Order Creation
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 11-Bulk Order Creation'
+  │ '📍 URL: {{baseUrl}}/todos'
+  │ '🕒 Timestamp: 2026-03-14T10:26:50.693Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST http://localhost:3001/todos [201 Created, 520B, 8ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 8ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 14 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 17. [Order] Should create multiple todos
+
+↳ 12-Order Status Transition
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 12-Order Status Transition'
+  │ '📍 URL: {{baseUrl}}/todos/10'
+  │ '🕒 Timestamp: 2026-03-14T10:26:50.752Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PATCH http://localhost:3001/todos/10 [200 OK, 505B, 10ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 10ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 109 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Order] Should handle todo update
+
+❏ 05-Coupon Management
+↳ 01-Get Albums (as Coupon Types)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 01-Get Albums (as Coupon Types)'
+  │ '📍 URL: {{baseUrl}}/albums'
+  │ '🕒 Timestamp: 2026-03-14T10:26:50.813Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/albums [200 OK, 977B, 11ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 11ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 580 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Coupon] Should return all albums
+  ✓  [Coupon] Store first coupon type ID
+
+↳ 02-Get Single Coupon Type
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 02-Get Single Coupon Type'
+  │ '📍 URL: {{baseUrl}}/albums/{{firstCouponTypeId}}'
+  │ '🕒 Timestamp: 2026-03-14T10:26:50.891Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/albums/4 [200 OK, 478B, 10ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 10ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 83 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Coupon] Should return single album
+
+↳ 03-Get Photos (as Coupons)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 03-Get Photos (as Coupons)'
+  │ '📍 URL: {{baseUrl}}/photos'
+  │ '🕒 Timestamp: 2026-03-14T10:26:50.972Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/photos [200 OK, 1.02kB, 10ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 10ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 621 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Coupon] Should return photos
+  ✓  [Coupon] Each photo should have albumId
+  ✓  [Coupon] Store first coupon ID
+
+↳ 04-Create Coupon
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 04-Create Coupon'
+  │ '📍 URL: {{baseUrl}}/photos'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.040Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST http://localhost:3001/photos [201 Created, 521B, 20ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 20ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 14 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 18. [Coupon] Should create photo
+
+↳ 05-Update Coupon
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 05-Update Coupon'
+  │ '📍 URL: {{baseUrl}}/photos/1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.132Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PUT http://localhost:3001/photos/1 [404 Not Found, 402B, 11ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 11ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 19. [Coupon] Should update photo
+
+↳ 06-Delete Coupon
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 06-Delete Coupon'
+  │ '📍 URL: {{baseUrl}}/photos/1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.202Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  DELETE http://localhost:3001/photos/1 [404 Not Found, 402B, 10ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 10ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 20. [Coupon] Should delete photo
+
+❏ 06-Payment
+↳ 01-Get Photos (as Payment Methods)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 01-Get Photos (as Payment Methods)'
+  │ '📍 URL: {{baseUrl}}/photos?_limit=5'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.259Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/photos?_limit=5 [200 OK, 1.1kB, 6ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 6ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 643 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Payment] Should return photos
+
+↳ 02-Get Single Payment Method
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 02-Get Single Payment Method'
+  │ '📍 URL: {{baseUrl}}/photos/1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.320Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/photos/1 [404 Not Found, 402B, 19ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 19ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 21. [Payment] Should return photo
+
+↳ 03-Validate Payment Method URL
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 03-Validate Payment Method URL'
+  │ '📍 URL: {{baseUrl}}/photos/5'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.399Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/photos/5 [404 Not Found, 402B, 5ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 5ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 22. [Payment] Photo URL should be valid
+
+↳ 04-Create Payment Record
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 04-Create Payment Record'
+  │ '📍 URL: {{baseUrl}}/photos'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.443Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST http://localhost:3001/photos [201 Created, 521B, 7ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 7ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 14 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Payment] Should create photo record
+
+↳ 05-Update Payment Details
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 05-Update Payment Details'
+  │ '📍 URL: {{baseUrl}}/photos/1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.495Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PATCH http://localhost:3001/photos/1 [404 Not Found, 402B, 6ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 6ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 23. [Payment] Should update photo details
+
+↳ 06-Delete Payment Record
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 06-Delete Payment Record'
+  │ '📍 URL: {{baseUrl}}/photos/1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.546Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  DELETE http://localhost:3001/photos/1 [404 Not Found, 402B, 6ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 6ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 24. [Payment] Should delete payment record
+
+❏ 07-Negative Tests
+↳ 01-Get Non-existent User
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 01-Get Non-existent User'
+  │ '📍 URL: {{baseUrl}}/users/999999'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.601Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/users/999999 [404 Not Found, 402B, 6ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 6ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Negative] Should return empty object for non-existent user
+
+↳ 02-Create User with Invalid Email
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 02-Create User with Invalid Email'
+  │ '📍 URL: {{baseUrl}}/users'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.648Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST http://localhost:3001/users [201 Created, 520B, 6ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 6ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 14 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Negative] Should still create user (API accepts any)
+
+↳ 03-Get User with Invalid ID Format
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 03-Get User with Invalid ID Format'
+  │ '📍 URL: {{baseUrl}}/users/abc'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.694Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/users/abc [404 Not Found, 402B, 6ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 6ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Negative] Should handle invalid ID gracefully
+
+↳ 04-Create Post with Missing Required Fields
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 04-Create Post with Missing Required Fi
+  │ elds'
+  │ '📍 URL: {{baseUrl}}/posts'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.735Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST http://localhost:3001/posts [201 Created, 520B, 6ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 6ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 14 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Negative] Should create with defaults when required fields missing
+
+↳ 05-Update Non-existent Resource
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 05-Update Non-existent Resource'
+  │ '📍 URL: {{baseUrl}}/posts/999999'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.771Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  PUT http://localhost:3001/posts/999999 [404 Not Found, 402B, 6ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 6ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Negative] Should handle update of non-existent resource
+
+↳ 06-Delete Non-existent Resource
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 06-Delete Non-existent Resource'
+  │ '📍 URL: {{baseUrl}}/posts/999999'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.805Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  DELETE http://localhost:3001/posts/999999 [404 Not Found, 402B, 7ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 7ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 25. [Negative] Should return success for non-existent delete
+
+↳ 07-Query with Invalid Parameters
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 07-Query with Invalid Parameters'
+  │ '📍 URL: {{baseUrl}}/posts?invalidparam=invalid'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.844Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/posts?invalidparam=invalid [200 OK, 2.12kB, 6ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 6ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 1691 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Negative] Should handle invalid query gracefully
+
+↳ 08-Post with Very Long Title
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 08-Post with Very Long Title'
+  │ '📍 URL: {{baseUrl}}/posts'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.881Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  POST http://localhost:3001/posts [201 Created, 520B, 6ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 6ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 14 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Negative] Should handle long content
+
+↳ 09-Get with Negative ID
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 09-Get with Negative ID'
+  │ '📍 URL: {{baseUrl}}/posts/-1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.916Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/posts/-1 [404 Not Found, 402B, 6ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 6ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  ✓  [Negative] Should handle negative ID
+
+↳ 10-Concurrent Request Simulation
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 10-Concurrent Request Simulation'
+  │ '📍 URL: {{baseUrl}}/posts/1'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.955Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/posts/1 [404 Not Found, 402B, 6ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 6ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 404 Not Found'
+  │ '📊 Response Size: 2 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+ 26. [Negative] Should handle rapid sequential requests
+  ✓  [Negative] Response time should be acceptable
+
+❏ 08-Enhanced Testing (Data-Driven & Correlation)
+↳ 01-Data-Driven User Creation
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 01-Data-Driven User Creation'
+  │ '📍 URL: {{baseUrl}}/users'
+  │ '🕒 Timestamp: 2026-03-14T10:26:51.994Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  │ '📝 [REQ] Data-Driven User Creation'
+  │ '─────────────────────────────────────────────────────
+  │ ──'
+  │ '🔧 Environment:', undefined
+  │ '🔢 Iteration:', 0
+  │ '📧 Generated Email:', 'testuser.624@example.com'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  └
+  POST http://localhost:3001/users [201 Created, 520B, 4ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 4ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 201 Created'
+  │ '📊 Response Size: 14 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  │ '✅ [TEST] Data-Driven User Creation Results'
+  └
+  ✓  [Enhanced-001] User should be created successfully
+  ┌
+  │ '💾 Stored user ID:', 13
+  └
+  ✓  [Enhanced-002] Response should contain user ID
+ 27. [Enhanced-003] User name should match request
+ 28. [Enhanced-004] User email should be valid format
+  ✓  [Enhanced-005] Response time should be acceptable
+  ┌
+  │ '📊 Success count:', '1'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  └
+
+↳ 02-Get Created User (Correlation)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 02-Get Created User (Correlation)'
+  │ '📍 URL: {{baseUrl}}/users/{{createdUserId}}'
+  │ '🕒 Timestamp: 2026-03-14T10:26:52.045Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  │ '📝 [REQ] Get Created User (Cross-Request Correlation)
+  │ '
+  │ '─────────────────────────────────────────────────────
+  │ ──'
+  │ '🔗 Using correlated user ID:', '13'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  └
+  GET http://localhost:3001/users/13 [200 OK, 408B, 5ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 5ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 14 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  │ '✅ [TEST] Get Created User Results'
+  └
+  ✓  [Enhanced-006] Should retrieve user or handle mock API limitation
+ 29. [Enhanced-007] User data should be complete
+  ✓  [Enhanced-008] Correlated user ID should match
+ 30. [Enhanced-009] User address should be present
+  ✓  [Enhanced-010] Response time should be optimal
+  ┌
+  │ '💾 Stored for correlation - Name:', undefined
+  │ '📊 Response time:', '5ms'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  └
+
+↳ 03-Update User with Validation
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 03-Update User with Validation'
+  │ '📍 URL: {{baseUrl}}/users/{{createdUserId}}'
+  │ '🕒 Timestamp: 2026-03-14T10:26:52.092Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  │ '📝 [REQ] Update User with Full Validation'
+  │ '─────────────────────────────────────────────────────
+  │ ──'
+  │ '📋 Previous user name:', null
+  │ '📋 Previous user email:', null
+  │ '📧 New email:', 'updated.1773484012103@example.com'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  └
+  PUT http://localhost:3001/users/13 [200 OK, 408B, 7ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 7ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 14 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  │ '✅ [TEST] Update User Validation Results'
+  └
+  ✓  [Enhanced-011] User should be updated successfully
+ 31. [Enhanced-012] Response should contain all updated fields
+  ✓  [Enhanced-013] User ID should remain unchanged
+  ┌
+  │ '📝 Update indicator present:', false
+  └
+  ✓  [Enhanced-014] Response should indicate update
+ 32. [Enhanced-015] Data should be consistent after update
+  ✓  [Enhanced-016] No validation errors in response
+  ┌
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  └
+
+↳ 04-Data-Driven Product Search
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 04-Data-Driven Product Search'
+  │ '📍 URL: {{baseUrl}}/posts?q={{searchTerm}}&_limit={{s
+  │ earchLimit}}'
+  │ '🕒 Timestamp: 2026-03-14T10:26:52.163Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  │ '📝 [REQ] Data-Driven Product Search'
+  │ '─────────────────────────────────────────────────────
+  │ ──'
+  │ '🔍 Search term:', 'lorem'
+  │ '📄 Results limit:', '10'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  └
+  GET http://localhost:3001/posts?q=lorem&_limit=10 [200 OK, 1.44kB, 6ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 6ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 975 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  │ '✅ [TEST] Data-Driven Product Search Results'
+  │ '🔍 Testing search for:', 'lorem'
+  └
+  ✓  [Enhanced-017] Should return search results
+  ✓  [Enhanced-018] Response should be an array
+  ✓  [Enhanced-019] Results should respect pagination limit
+  ✓  [Enhanced-020] Each result should have required fields
+  ┌
+  │ '🔍 Search relevance:', true
+  └
+  ✓  [Enhanced-021] Results should contain search term
+  ┌
+  │ '📊 Results count:', 4
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  └
+
+↳ 05-Workflow Test (Full User Journey)
+  ┌
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '🚀 Executing: 05-Workflow Test (Full User Journey)'
+  │ '📍 URL: {{baseUrl}}/users/{{createdUserId}}'
+  │ '🕒 Timestamp: 2026-03-14T10:26:52.217Z'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  └
+  GET http://localhost:3001/users/13 [200 OK, 408B, 6ms]
+  ✓  [Common] Response is valid JSON
+  ┌
+  │ '⏱️  Response Time: 6ms'
+  └
+  ✓  [Common] Response time logged
+  ✓  [Common] Content-Type header present
+  ┌
+  │ '✅ Status: 200 OK'
+  │ '📊 Response Size: 14 bytes'
+  │ '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  │ '🔄 [WORKFLOW] Full User Journey Test'
+  │ '─────────────────────────────────────────────────────
+  │ ──'
+  │ '📊 Total requests in workflow:', '1'
+  │ '✅ Workflow state verified'
+  │ '   - Created User ID:', '13'
+  │ '   - Last User Name:', null
+  │ '   - Last User Email:', null
+  └
+  ✓  [Workflow-001] Workflow should maintain state
+ 33. [Workflow-002] Data should flow through workflow
+  ┌
+  │ '📈 Performance summary:'
+  │ '   - Current request time:', '6ms'
+  │ '   - Total workflow requests:', 1
+  └
+  ✓  [Workflow-003] Cumulative performance should be acceptable
+  ┌
+  │ '═════════════════════════════════════════════════════
+  │ ══'
+  └
+
+┌─────────────────────────┬─────────────────┬─────────────────┐
+│                         │        executed │          failed │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              iterations │               1 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│                requests │              65 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│            test-scripts │             130 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│      prerequest-scripts │              69 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              assertions │             316 │              33 │
+├─────────────────────────┴─────────────────┴─────────────────┤
+│ total run duration: 3.9s                                    │
+├─────────────────────────────────────────────────────────────┤
+│ total data received: 19.61kB (approx)                       │
+├─────────────────────────────────────────────────────────────┤
+│ average response time: 9ms [min: 4ms, max: 67ms, s.d.: 7ms] │
+└─────────────────────────────────────────────────────────────┘
+
+[31m   # [39m[31m failure        [39m[31m detail                                                                                                                                           [39m
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 01.  AssertionError  [User] Should create new user                                                                                                                    
+                      expected undefined to equal 'Test User'                                                                                                          
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "01-User Management / 04-Create User"                                                                                                     
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 02.  AssertionError  [User] Should update existing user                                                                                                               
+                      expected undefined to equal 'Updated User Name'                                                                                                  
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "01-User Management / 05-Update User (PUT)"                                                                                               
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 03.  AssertionError  [User] Should partially update user                                                                                                              
+                      expected { id: 1 } to have property 'name'                                                                                                       
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "01-User Management / 06-Update User (PATCH)"                                                                                             
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 04.  AssertionError  [Product] Should create new post                                                                                                                 
+                      expected undefined to equal 'Test Product Title'                                                                                                 
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "02-Product Management / 04-Create Post (Product)"                                                                                        
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 05.  AssertionError  [Product] Should update post                                                                                                                     
+                      expected undefined to equal 'Updated Product Title'                                                                                              
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "02-Product Management / 05-Update Post (Product)"                                                                                        
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 06.  AssertionError  [Product] Should preserve ID and userId                                                                                                          
+                      expected undefined to equal 1                                                                                                                    
+                      at assertion:1 in test-script                                                                                                                    
+                      inside "02-Product Management / 05-Update Post (Product)"                                                                                        
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 07.  AssertionError  [Product] Should delete post                                                                                                                     
+                      expected 404 to equal 200                                                                                                                        
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "02-Product Management / 06-Delete Post (Product)"                                                                                        
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 08.  AssertionError  [Product] Should return post comments                                                                                                            
+                      expected +0 to be above +0                                                                                                                       
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "02-Product Management / 07-Get Post Comments"                                                                                            
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 09.  TypeError       [Product] Titles should be sorted                                                                                                                
+                      Cannot read properties of undefined (reading 'toLowerCase')                                                                                      
+                      at assertion:1 in test-script                                                                                                                    
+                      inside "02-Product Management / 10-Sort Posts"                                                                                                   
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 10.  AssertionError  [Cart] Should create comment                                                                                                                     
+                      expected undefined to equal 'Test Cart Item'                                                                                                     
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "03-Cart Management / 04-Create Cart Item (Comment)"                                                                                      
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 11.  AssertionError  [Cart] Should update cart item                                                                                                                   
+                      expected undefined to equal 'Updated Cart Item'                                                                                                  
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "03-Cart Management / 05-Update Cart Item"                                                                                                
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 12.  AssertionError  [Cart] Should delete cart item                                                                                                                   
+                      expected 404 to equal 200                                                                                                                        
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "03-Cart Management / 06-Delete Cart Item"                                                                                                
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 13.  AssertionError  [Order] Should create new todo                                                                                                                   
+                      expected undefined to equal 'Test Order Item'                                                                                                    
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "04-Order Management / 04-Create Order"                                                                                                   
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 14.  AssertionError  [Order] Should update todo                                                                                                                       
+                      expected undefined to equal 'Updated Order'                                                                                                      
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "04-Order Management / 05-Update Order"                                                                                                   
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 15.  AssertionError  [Order] Should mark as completed                                                                                                                 
+                      expected undefined to equal true                                                                                                                 
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "04-Order Management / 06-Complete Order (PATCH)"                                                                                         
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 16.  AssertionError  [Order] Should delete todo                                                                                                                       
+                      expected 404 to equal 200                                                                                                                        
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "04-Order Management / 07-Delete Order"                                                                                                   
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 17.  AssertionError  [Order] Should create multiple todos                                                                                                             
+                      expected { id: 12 } to be an array                                                                                                               
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "04-Order Management / 11-Bulk Order Creation"                                                                                            
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 18.  AssertionError  [Coupon] Should create photo                                                                                                                     
+                      expected undefined to equal 'Test Coupon Photo'                                                                                                  
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "05-Coupon Management / 04-Create Coupon"                                                                                                 
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 19.  AssertionError  [Coupon] Should update photo                                                                                                                     
+                      expected undefined to equal 'Updated Coupon'                                                                                                     
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "05-Coupon Management / 05-Update Coupon"                                                                                                 
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 20.  AssertionError  [Coupon] Should delete photo                                                                                                                     
+                      expected 404 to equal 200                                                                                                                        
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "05-Coupon Management / 06-Delete Coupon"                                                                                                 
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 21.  AssertionError  [Payment] Should return photo                                                                                                                    
+                      expected {} to have property 'id'                                                                                                                
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "06-Payment / 02-Get Single Payment Method"                                                                                               
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 22.  AssertionError  [Payment] Photo URL should be valid                                                                                                              
+                      expected false to be true                                                                                                                        
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "06-Payment / 03-Validate Payment Method URL"                                                                                             
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 23.  AssertionError  [Payment] Should update photo details                                                                                                            
+                      expected {} to have property 'title'                                                                                                             
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "06-Payment / 05-Update Payment Details"                                                                                                  
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 24.  AssertionError  [Payment] Should delete payment record                                                                                                           
+                      expected 404 to equal 200                                                                                                                        
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "06-Payment / 06-Delete Payment Record"                                                                                                   
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 25.  AssertionError  [Negative] Should return success for non-existent delete                                                                                         
+                      expected 404 to equal 200                                                                                                                        
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "07-Negative Tests / 06-Delete Non-existent Resource"                                                                                     
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 26.  AssertionError  [Negative] Should handle rapid sequential requests                                                                                               
+                      expected 404 to equal 200                                                                                                                        
+                      at assertion:0 in test-script                                                                                                                    
+                      inside "07-Negative Tests / 10-Concurrent Request Simulation"                                                                                    
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 27.  AssertionError  [Enhanced-003] User name should match request                                                                                                    
+                      Created user name does not match request. Expected: TestUser_1773484012001, Got: undefined: expected undefined to equal 'TestUser_1773484012001' 
+                      at assertion:2 in test-script                                                                                                                    
+                      inside "08-Enhanced Testing (Data-Driven & Correlation) / 01-Data-Driven User Creation"                                                          
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 28.  AssertionError  [Enhanced-004] User email should be valid format                                                                                                 
+                      Invalid email format: undefined: expected false to be true                                                                                       
+                      at assertion:3 in test-script                                                                                                                    
+                      inside "08-Enhanced Testing (Data-Driven & Correlation) / 01-Data-Driven User Creation"                                                          
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 29.  AssertionError  [Enhanced-007] User data should be complete                                                                                                      
+                      Missing required field: name: expected { id: 13 } to have property 'name'                                                                        
+                      at assertion:1 in test-script                                                                                                                    
+                      inside "08-Enhanced Testing (Data-Driven & Correlation) / 02-Get Created User (Correlation)"                                                     
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 30.  AssertionError  [Enhanced-009] User address should be present                                                                                                    
+                      Address should be an object: expected undefined to be an object                                                                                  
+                      at assertion:3 in test-script                                                                                                                    
+                      inside "08-Enhanced Testing (Data-Driven & Correlation) / 02-Get Created User (Correlation)"                                                     
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 31.  AssertionError  [Enhanced-012] Response should contain all updated fields                                                                                        
+                      Missing fields in response: name, email, phone, website: expected [ 'name', 'email', 'phone', 'website' ] to be empty                            
+                      at assertion:1 in test-script                                                                                                                    
+                      inside "08-Enhanced Testing (Data-Driven & Correlation) / 03-Update User with Validation"                                                        
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 32.  AssertionError  [Enhanced-015] Data should be consistent after update                                                                                            
+                      Updated email is invalid: undefined: expected false to be true                                                                                   
+                      at assertion:4 in test-script                                                                                                                    
+                      inside "08-Enhanced Testing (Data-Driven & Correlation) / 03-Update User with Validation"                                                        
+[90m     [39m[90m                [39m[90m                                                                                                                                                  [39m
+ 33.  TypeError       [Workflow-002] Data should flow through workflow                                                                                                 
+                      this.skip is not a function                                                                                                                      
+                      at assertion:1 in test-script                                                                                                                    
+                      inside "08-Enhanced Testing (Data-Driven & Correlation) / 05-Workflow Test (Full User Journey)"                                                  
