@@ -26,7 +26,8 @@
       "Bash(ls:*)",
       "Bash(xargs ls:*)",
       "Bash(git checkout:*)",
-      "Bash(sed -n:*)"
+      "Bash(sed -n:*)",
+      "Bash(git cherry-pick:*)"
     ]
   }
 }
