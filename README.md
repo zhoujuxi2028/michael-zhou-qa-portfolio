@@ -16,13 +16,14 @@ Test automation and DevOps demonstration projects.
 | [security-testing-demo](./security-testing-demo/)         | DAST Security Testing (170 tests, OWASP Top 10 2021) | OWASP ZAP, Nessus, SQLMap, Pytest |
 | [cicd-demo](./cicd-demo/)                                 | CI/CD Pipeline Demo                                  | GitHub Actions, Docker            |
 | [api-testing-demo](./api-testing-demo/)                   | API Testing                                          | Newman, Postman                   |
+| [playwright-demo](./playwright-demo/)                     | Cross-Browser E2E Testing (32 tests)                 | Playwright, TypeScript            |
 | [selenium-demo](./selenium-demo/)                         | Browser Automation                                   | Selenium, Python                  |
 
 ---
 
 ## Skills Demonstrated | 技能展示
 
-- **Test Automation | 测试自动化**: Cypress, Selenium, Pytest
+- **Test Automation | 测试自动化**: Cypress, Playwright, Selenium, Pytest
 - **API Testing | API测试**: Postman, Newman
 - **Security Testing | 安全测试**: OWASP ZAP, Nessus, DAST, OWASP Top 10 2021
 - **CI/CD**: GitHub Actions, Docker
@@ -42,6 +43,7 @@ Test automation and DevOps demonstration projects.
 | `helm-deploy.yml` | cicd-demo | Push to main (helm/**), PR | Helm chart validation & deploy |
 | `security-tests.yml` | security-testing-demo | Push/PR, weekly, manual | DVWA + Juice Shop + ZAP + dependency scan |
 | `k8s-ci.yml` | k8s-auto-testing-platform | Push/PR, manual | Code quality + unit tests + K8S integration |
+| `playwright-tests.yml` | playwright-demo | Push/PR to main | Cross-browser E2E (Chromium, Firefox, WebKit) |
 
 ---
 
@@ -61,6 +63,7 @@ cd iwsva-cypress-e2e && npm install && npm test
 cd k8s-auto-testing-platform && pip install -r requirements.txt && pytest tests/ -v
 cd security-testing-demo && pip install -r requirements.txt && pytest tests/ -v
 cd cicd-demo && npm install && npm test
+cd playwright-demo && npm install && npx playwright install && npm test
 ```
 
 ---
