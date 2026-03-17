@@ -9,15 +9,16 @@ Test automation and DevOps demonstration projects.
 
 ## Projects | 项目
 
-| Project                                                   | Description                                          | Tech Stack                        |
-| --------------------------------------------------------- | ---------------------------------------------------- | --------------------------------- |
+| Project                                                   | Description                                                         | Tech Stack                        |
+| --------------------------------------------------------- | ------------------------------------------------------------------- | --------------------------------- |
 | [iwsva-cypress-e2e](./iwsva-cypress-e2e/)                 | IWSVA E2E Testing (77 tests) ([setup notes](./docs/iwsva-setup.md)) | Cypress, JavaScript               |
-| [k8s-auto-testing-platform](./k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests)               | Python, Pytest, Chaos Mesh        |
-| [security-testing-demo](./security-testing-demo/)         | DAST Security Testing (170 tests, OWASP Top 10 2021) | OWASP ZAP, Nessus, SQLMap, Pytest |
-| [cicd-demo](./cicd-demo/)                                 | CI/CD Pipeline Demo                                  | GitHub Actions, Docker            |
-| [api-testing-demo](./api-testing-demo/)                   | API Testing                                          | Newman, Postman                   |
-| [playwright-demo](./playwright-demo/)                     | Cross-Browser E2E Testing (32 tests)                 | Playwright, TypeScript            |
-| [selenium-demo](./selenium-demo/)                         | Browser Automation                                   | Selenium, Python                  |
+| [k8s-auto-testing-platform](./k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests)                              | Python, Pytest, Chaos Mesh        |
+| [security-testing-demo](./security-testing-demo/)         | DAST Security Testing (170 tests, OWASP Top 10 2021)                | OWASP ZAP, Nessus, SQLMap, Pytest |
+| [cicd-demo](./cicd-demo/)                                 | CI/CD Pipeline Demo                                                 | GitHub Actions, Docker            |
+| [api-testing-demo](./api-testing-demo/)                   | API Testing                                                         | Newman, Postman                   |
+| [playwright-demo](./playwright-demo/)                     | Cross-Browser E2E Testing (32 tests)                                | Playwright, TypeScript            |
+| [selenium-demo](./selenium-demo/)                         | Browser Automation                                                  | Selenium, Python                  |
+| [sid-iam-testing-platform](./sid-iam-testing-platform/)   | IAM + Data Platform + AI Agent Testing (138 tests)                  | Python, Pytest, FastAPI, networkx |
 
 ---
 
@@ -44,6 +45,7 @@ Test automation and DevOps demonstration projects.
 | `security-tests.yml` | security-testing-demo | Push/PR, weekly, manual | DVWA + Juice Shop + ZAP + dependency scan |
 | `k8s-ci.yml` | k8s-auto-testing-platform | Push/PR, manual | Code quality + unit tests + K8S integration |
 | `playwright-tests.yml` | playwright-demo | Push/PR to main | Cross-browser E2E (Chromium, Firefox, WebKit) |
+| `sid-iam-ci.yml` | sid-iam-testing-platform | Push/PR, manual | Code quality + unit tests + integration (138 tests) |
 
 ---
 
@@ -64,6 +66,7 @@ cd k8s-auto-testing-platform && pip install -r requirements.txt && pytest tests/
 cd security-testing-demo && pip install -r requirements.txt && pytest tests/ -v
 cd cicd-demo && npm install && npm test
 cd playwright-demo && npm install && npx playwright install && npm test
+cd sid-iam-testing-platform && pip install -r requirements.txt && pytest tests/ -v
 ```
 
 ---
