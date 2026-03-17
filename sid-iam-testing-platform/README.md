@@ -67,7 +67,13 @@
 ```bash
 # 克隆仓库
 git clone https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio.git
-cd michael-zhou-qa-portfolio/sid-iam-testing-platform
+cd michael-zhou-qa-portfolio
+
+# 激活虚拟环境
+python3 -m venv venv
+source venv/bin/activate
+
+cd sid-iam-testing-platform
 
 # 安装依赖
 pip install -r requirements.txt
@@ -134,8 +140,9 @@ sid-iam-testing-platform/
 ├── docs/                               # 项目文档
 │   ├── REQUIREMENTS.md                # 需求文档
 │   ├── WBS.md                         # 工作分解结构
-│   ├── ARCHITECTURE.md                # 架构设计（待完成）
-│   ├── TEST-CASES.md                  # 测试用例目录（待完成）
+│   ├── ARCHITECTURE.md                # 架构设计
+│   ├── TEST-CASES.md                  # 测试用例目录
+│   ├── DESIGN-DECISIONS.md            # 设计决策
 │   ├── TEST-REPORT.md                 # 测试报告（待完成）
 │   └── FAQ.md                         # 常见问题（待完成）
 ├── scripts/                            # 运行脚本
@@ -176,8 +183,9 @@ sid-iam-testing-platform/
 
 - [需求文档](docs/REQUIREMENTS.md) — 功能与非功能需求
 - [WBS](docs/WBS.md) — 工作分解结构
-- 架构设计（待完成）
-- 测试用例目录（待完成）
+- [架构设计](docs/ARCHITECTURE.md) — 分层架构、Mock 服务、Fixture 层级
+- [测试用例目录](docs/TEST-CASES.md) — 138 个用例详细定义
+- [设计决策](docs/DESIGN-DECISIONS.md) — 10 个关键设计决策
 - 测试报告（待完成）
 
 ---
@@ -188,4 +196,4 @@ sid-iam-testing-platform/
 
 ---
 
-*阶段: 需求 | License: MIT*
+*阶段: 设计 | License: MIT*
