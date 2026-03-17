@@ -89,7 +89,7 @@ class MFAProvider:
         msg = struct.pack(">Q", counter)
         h = hmac.new(key, msg, hashlib.sha1).digest()
         offset = h[-1] & 0x0F
-        code = struct.unpack(">I", h[offset:offset + 4])[0] & 0x7FFFFFFF
+        code = struct.unpack(">I", h[offset : offset + 4])[0] & 0x7FFFFFFF
         return str(code % 10**6).zfill(6)
 
     def is_registered(self, user_id):

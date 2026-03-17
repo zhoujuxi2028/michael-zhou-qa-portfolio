@@ -6,7 +6,15 @@ logger = logging.getLogger(__name__)
 
 
 class AuthClient:
-    def __init__(self, sso_client=None, ldap_server=None, kerberos_kdc=None, zero_trust_engine=None, session_manager=None, mfa_provider=None):
+    def __init__(
+        self,
+        sso_client=None,
+        ldap_server=None,
+        kerberos_kdc=None,
+        zero_trust_engine=None,
+        session_manager=None,
+        mfa_provider=None,
+    ):
         self.sso = sso_client
         self.ldap = ldap_server
         self.kdc = kerberos_kdc
@@ -16,31 +24,52 @@ class AuthClient:
 
     # --- SSO ---
     def saml_login(self, username, password, sp_entity_id="https://sp.university.edu", tenant="default"):
-        resp = self.sso.post("/saml/sso", json={
-            "username": username,
-            "password": password,
-            "sp_entity_id": sp_entity_id,
-            "tenant": tenant,
-        })
-        return resp.json() if resp.status_code == 200 else {"status": "error", "code": resp.status_code, "detail": resp.json().get("detail", "")}
+        resp = self.sso.post(
+            "/saml/sso",
+            json={
+                "username": username,
+                "password": password,
+                "sp_entity_id": sp_entity_id,
+                "tenant": tenant,
+            },
+        )
+        return (
+            resp.json()
+            if resp.status_code == 200
+            else {"status": "error", "code": resp.status_code, "detail": resp.json().get("detail", "")}
+        )
 
     def oidc_login(self, username, password, client_id="test-client", tenant="default"):
-        resp = self.sso.post("/oidc/token", json={
-            "grant_type": "authorization_code",
-            "username": username,
-            "password": password,
-            "client_id": client_id,
-            "tenant": tenant,
-        })
-        return resp.json() if resp.status_code == 200 else {"status": "error", "code": resp.status_code, "detail": resp.json().get("detail", "")}
+        resp = self.sso.post(
+            "/oidc/token",
+            json={
+                "grant_type": "authorization_code",
+                "username": username,
+                "password": password,
+                "client_id": client_id,
+                "tenant": tenant,
+            },
+        )
+        return (
+            resp.json()
+            if resp.status_code == 200
+            else {"status": "error", "code": resp.status_code, "detail": resp.json().get("detail", "")}
+        )
 
     def oidc_refresh(self, refresh_token, client_id="test-client"):
-        resp = self.sso.post("/oidc/refresh", json={
-            "grant_type": "refresh_token",
-            "refresh_token": refresh_token,
-            "client_id": client_id,
-        })
-        return resp.json() if resp.status_code == 200 else {"status": "error", "code": resp.status_code, "detail": resp.json().get("detail", "")}
+        resp = self.sso.post(
+            "/oidc/refresh",
+            json={
+                "grant_type": "refresh_token",
+                "refresh_token": refresh_token,
+                "client_id": client_id,
+            },
+        )
+        return (
+            resp.json()
+            if resp.status_code == 200
+            else {"status": "error", "code": resp.status_code, "detail": resp.json().get("detail", "")}
+        )
 
     def saml_logout(self, username, session_id=""):
         resp = self.sso.post("/saml/slo", json={"username": username, "session_id": session_id})

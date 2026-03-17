@@ -58,9 +58,9 @@ WBS 1.0 (需求阶段)
 
 | ID | 任务 | 文件 | 状态 |
 |----|------|------|------|
-| 4.1 | CI/CD 工作流 | .github/workflows/sid-iam-ci.yml | ⬜ 待开始 |
-| 4.2 | 代码质量（black/flake8/pylint） | — | ⬜ 待开始 |
-| 4.3 | 测试报告 | docs/TEST-REPORT.md | ⬜ 待开始 |
-| 4.4 | FAQ 文档 | docs/FAQ.md | ⬜ 待开始 |
-| 4.5 | Demo 脚本 | scripts/ | ⬜ 待开始 |
+| 4.1 | CI/CD 工作流 | .github/workflows/sid-iam-ci.yml | ✅ 完成 |
+| 4.2 | 代码质量（black/flake8/isort） | — | ✅ 完成 |
+| 4.3 | 测试报告 | docs/TEST-REPORT.md | ✅ 完成 |
+| 4.4 | FAQ 文档 | docs/FAQ.md | ✅ 完成 |
+| 4.5 | Demo 脚本 | scripts/run-tests.sh | ✅ 完成 |
 | 4.6 | 最终验证 & PR | — | ⬜ 待开始 |

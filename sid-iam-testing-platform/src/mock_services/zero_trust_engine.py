@@ -5,16 +5,41 @@ from datetime import datetime, timezone
 logger = logging.getLogger(__name__)
 
 DEFAULT_POLICIES = [
-    {"id": "pol-001", "name": "compliant_device", "priority": 10, "action": "allow",
-     "condition": lambda ctx: ctx.get("device", {}).get("compliant", False)},
-    {"id": "pol-002", "name": "block_non_compliant", "priority": 20, "action": "deny",
-     "condition": lambda ctx: not ctx.get("device", {}).get("compliant", True)},
-    {"id": "pol-003", "name": "geo_anomaly", "priority": 5, "action": "deny",
-     "condition": lambda ctx: ctx.get("geo_anomaly", False)},
-    {"id": "pol-004", "name": "business_hours", "priority": 30, "action": "allow",
-     "condition": lambda ctx: 8 <= ctx.get("hour", 12) <= 18},
-    {"id": "pol-005", "name": "block_after_hours", "priority": 31, "action": "deny",
-     "condition": lambda ctx: ctx.get("hour", 12) < 8 or ctx.get("hour", 12) > 18},
+    {
+        "id": "pol-001",
+        "name": "compliant_device",
+        "priority": 10,
+        "action": "allow",
+        "condition": lambda ctx: ctx.get("device", {}).get("compliant", False),
+    },
+    {
+        "id": "pol-002",
+        "name": "block_non_compliant",
+        "priority": 20,
+        "action": "deny",
+        "condition": lambda ctx: not ctx.get("device", {}).get("compliant", True),
+    },
+    {
+        "id": "pol-003",
+        "name": "geo_anomaly",
+        "priority": 5,
+        "action": "deny",
+        "condition": lambda ctx: ctx.get("geo_anomaly", False),
+    },
+    {
+        "id": "pol-004",
+        "name": "business_hours",
+        "priority": 30,
+        "action": "allow",
+        "condition": lambda ctx: 8 <= ctx.get("hour", 12) <= 18,
+    },
+    {
+        "id": "pol-005",
+        "name": "block_after_hours",
+        "priority": 31,
+        "action": "deny",
+        "condition": lambda ctx: ctx.get("hour", 12) < 8 or ctx.get("hour", 12) > 18,
+    },
 ]
 
 
@@ -99,7 +124,11 @@ class ZeroTrustEngine:
         return {"allowed": True, "segment": required_segment, "ip": ip_address}
 
     def start_continuous_validation(self, session_id, context):
-        self._sessions[session_id] = {"context": context, "created_at": datetime.now(timezone.utc).isoformat(), "valid": True}
+        self._sessions[session_id] = {
+            "context": context,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "valid": True,
+        }
         return True
 
     def re_evaluate_session(self, session_id, updated_context):
@@ -113,10 +142,15 @@ class ZeroTrustEngine:
 
     def add_policy(self, policy_id, name, priority, action, condition):
         with self._lock:
-            self._policies.append({
-                "id": policy_id, "name": name, "priority": priority,
-                "action": action, "condition": condition,
-            })
+            self._policies.append(
+                {
+                    "id": policy_id,
+                    "name": name,
+                    "priority": priority,
+                    "action": action,
+                    "condition": condition,
+                }
+            )
 
     def remove_policy(self, policy_id):
         with self._lock:

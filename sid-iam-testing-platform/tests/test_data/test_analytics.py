@@ -14,9 +14,13 @@ class TestAnalyticsDashboard:
     def test_dashboard_api(self, analytics_engine, sample_schema):
         """TC-DATA-ANA-001: 仪表板 API 调用"""
         logger.info("TC-DATA-ANA-001: Testing dashboard API call")
-        analytics_engine.create_dashboard("dash-001", "Student Dashboard", {
-            "total_students": "SELECT COUNT(*) as cnt FROM students",
-        })
+        analytics_engine.create_dashboard(
+            "dash-001",
+            "Student Dashboard",
+            {
+                "total_students": "SELECT COUNT(*) as cnt FROM students",
+            },
+        )
         result = analytics_engine.get_dashboard("dash-001")
         assert result["dashboard"]["title"] == "Student Dashboard"
         assert "total_students" in result["results"]

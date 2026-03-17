@@ -78,7 +78,7 @@ class TestAgentSafety:
         ai_agent.transition_state("saf-006", "running")
         ai_agent.query_data("saf-006", "test query", data_source={})
         logs = ai_agent.get_audit_log("saf-006")
-        actions = [l["action"] for l in logs]
+        actions = [entry["action"] for entry in logs]
         assert "create_agent" in actions
         assert "inherit_auth" in actions
         assert "state_transition" in actions

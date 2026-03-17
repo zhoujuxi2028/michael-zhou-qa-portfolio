@@ -35,29 +35,41 @@ def sample_pipeline(pipeline_engine):
 @pytest.fixture
 def sample_schema(data_warehouse):
     data_warehouse.reset()
-    data_warehouse.create_table("students", [
-        {"name": "id", "type": "TEXT"},
-        {"name": "name", "type": "TEXT"},
-        {"name": "gpa", "type": "REAL"},
-        {"name": "tenant_id", "type": "TEXT"},
-    ])
-    data_warehouse.create_table("grades", [
-        {"name": "student_id", "type": "TEXT"},
-        {"name": "course", "type": "TEXT"},
-        {"name": "score", "type": "INTEGER"},
-        {"name": "tenant_id", "type": "TEXT"},
-    ])
-    data_warehouse.insert("students", [
-        {"id": "s001", "name": "Alice", "gpa": 3.8, "tenant_id": "tenant_a"},
-        {"id": "s002", "name": "Bob", "gpa": 3.5, "tenant_id": "tenant_a"},
-        {"id": "s003", "name": "Carol", "gpa": 3.9, "tenant_id": "tenant_b"},
-    ])
-    data_warehouse.insert("grades", [
-        {"student_id": "s001", "course": "CS101", "score": 95, "tenant_id": "tenant_a"},
-        {"student_id": "s001", "course": "MATH201", "score": 88, "tenant_id": "tenant_a"},
-        {"student_id": "s002", "course": "CS101", "score": 82, "tenant_id": "tenant_a"},
-        {"student_id": "s003", "course": "CS101", "score": 97, "tenant_id": "tenant_b"},
-    ])
+    data_warehouse.create_table(
+        "students",
+        [
+            {"name": "id", "type": "TEXT"},
+            {"name": "name", "type": "TEXT"},
+            {"name": "gpa", "type": "REAL"},
+            {"name": "tenant_id", "type": "TEXT"},
+        ],
+    )
+    data_warehouse.create_table(
+        "grades",
+        [
+            {"name": "student_id", "type": "TEXT"},
+            {"name": "course", "type": "TEXT"},
+            {"name": "score", "type": "INTEGER"},
+            {"name": "tenant_id", "type": "TEXT"},
+        ],
+    )
+    data_warehouse.insert(
+        "students",
+        [
+            {"id": "s001", "name": "Alice", "gpa": 3.8, "tenant_id": "tenant_a"},
+            {"id": "s002", "name": "Bob", "gpa": 3.5, "tenant_id": "tenant_a"},
+            {"id": "s003", "name": "Carol", "gpa": 3.9, "tenant_id": "tenant_b"},
+        ],
+    )
+    data_warehouse.insert(
+        "grades",
+        [
+            {"student_id": "s001", "course": "CS101", "score": 95, "tenant_id": "tenant_a"},
+            {"student_id": "s001", "course": "MATH201", "score": 88, "tenant_id": "tenant_a"},
+            {"student_id": "s002", "course": "CS101", "score": 82, "tenant_id": "tenant_a"},
+            {"student_id": "s003", "course": "CS101", "score": 97, "tenant_id": "tenant_b"},
+        ],
+    )
     return data_warehouse
 
 

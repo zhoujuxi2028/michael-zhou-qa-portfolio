@@ -32,11 +32,13 @@ class TestPipelineExecution:
         """TC-DATA-PIP-003: 任务失败重试"""
         logger.info("TC-DATA-PIP-003: Testing task failure retry")
         call_count = {"n": 0}
+
         def flaky_handler():
             call_count["n"] += 1
             if call_count["n"] < 2:
                 raise Exception("Transient error")
             return {"ok": True}
+
         tasks = [{"id": "flaky", "handler": flaky_handler, "retry": 2}]
         pipeline_engine.create_pipeline("retry_test", tasks)
         result = pipeline_engine.execute_pipeline("retry_test")
@@ -94,9 +96,11 @@ class TestPipelineExecution:
         """TC-DATA-PIP-008: 任务超时处理"""
         logger.info("TC-DATA-PIP-008: Testing task timeout handling")
         import time
+
         def slow_handler():
             time.sleep(0.1)
             return {"done": True}
+
         tasks = [{"id": "slow", "handler": slow_handler, "timeout": 0.01}]
         pipeline_engine.create_pipeline("timeout_test", tasks)
         result = pipeline_engine.execute_pipeline("timeout_test")

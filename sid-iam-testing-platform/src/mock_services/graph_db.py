@@ -1,4 +1,3 @@
-import copy
 import logging
 
 import networkx as nx

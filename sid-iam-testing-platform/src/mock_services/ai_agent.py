@@ -229,13 +229,13 @@ class MockAIAgent:
     def get_audit_log(self, agent_id=None, action=None):
         logs = self._audit_log
         if agent_id:
-            logs = [l for l in logs if l["agent_id"] == agent_id]
+            logs = [entry for entry in logs if entry["agent_id"] == agent_id]
         if action:
-            logs = [l for l in logs if l["action"] == action]
+            logs = [entry for entry in logs if entry["action"] == action]
         return logs
 
     def get_security_alerts(self):
-        return [l for l in self._audit_log if l["action"] == "security_alert"]
+        return [entry for entry in self._audit_log if entry["action"] == "security_alert"]
 
     def _get_agent(self, agent_id):
         agent = self._agents.get(agent_id)
@@ -244,13 +244,15 @@ class MockAIAgent:
         return agent
 
     def _log(self, action, agent_id, user_id, detail):
-        self._audit_log.append({
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "action": action,
-            "agent_id": agent_id,
-            "user_id": user_id,
-            "detail": detail,
-        })
+        self._audit_log.append(
+            {
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "action": action,
+                "agent_id": agent_id,
+                "user_id": user_id,
+                "detail": detail,
+            }
+        )
 
     def _check_rate_limit(self, agent_id):
         now = time.time()

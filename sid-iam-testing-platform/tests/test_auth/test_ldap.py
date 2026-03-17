@@ -14,9 +14,7 @@ class TestLDAPBind:
     def test_simple_bind_success(self, ldap_server):
         """TC-AUTH-LDAP-001: Simple Bind 认证成功"""
         logger.info("TC-AUTH-LDAP-001: Testing simple bind authentication")
-        conn_id = ldap_server.bind(
-            f"uid=student001,ou=students,{settings.ldap_base_dn}", "pass123"
-        )
+        conn_id = ldap_server.bind(f"uid=student001,ou=students,{settings.ldap_base_dn}", "pass123")
         assert conn_id is not None
 
     @pytest.mark.P0
@@ -24,9 +22,7 @@ class TestLDAPBind:
         """TC-AUTH-LDAP-002: 无效凭据 Bind 拒绝"""
         logger.info("TC-AUTH-LDAP-002: Testing invalid credentials rejection")
         with pytest.raises(LDAPAuthError):
-            ldap_server.bind(
-                f"uid=student001,ou=students,{settings.ldap_base_dn}", "wrongpass"
-            )
+            ldap_server.bind(f"uid=student001,ou=students,{settings.ldap_base_dn}", "wrongpass")
 
     @pytest.mark.P0
     def test_ldap_injection_defense(self, ldap_server, ldap_connection):
@@ -48,9 +44,7 @@ class TestLDAPSearch:
     def test_user_search_by_uid(self, ldap_server, ldap_connection):
         """TC-AUTH-LDAP-003: 用户搜索（按 UID/邮箱）"""
         logger.info("TC-AUTH-LDAP-003: Testing user search by UID")
-        result = ldap_server.search(
-            ldap_connection, settings.ldap_base_dn, "uid=student001"
-        )
+        result = ldap_server.search(ldap_connection, settings.ldap_base_dn, "uid=student001")
         assert result["total"] >= 1
         found = result["results"][0]
         assert found["attributes"]["uid"] == "student001"
@@ -85,15 +79,16 @@ class TestLDAPSearch:
     def test_paged_search(self, ldap_server, ldap_connection):
         """TC-AUTH-LDAP-007: 分页查询（大结果集）"""
         logger.info("TC-AUTH-LDAP-007: Testing paged search")
-        result = ldap_server.search(
-            ldap_connection, settings.ldap_base_dn, "objectClass=top", page_size=2
-        )
+        result = ldap_server.search(ldap_connection, settings.ldap_base_dn, "objectClass=top", page_size=2)
         assert len(result["results"]) <= 2
         assert result["total"] > 2
         if result["cookie"]:
             page2 = ldap_server.search(
-                ldap_connection, settings.ldap_base_dn, "objectClass=top",
-                page_size=2, page_cookie=result["cookie"],
+                ldap_connection,
+                settings.ldap_base_dn,
+                "objectClass=top",
+                page_size=2,
+                page_cookie=result["cookie"],
             )
             assert len(page2["results"]) >= 1
 

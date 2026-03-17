@@ -62,6 +62,7 @@ class TestMFA:
         """TC-AUTH-MFA-006: TOTP 时间窗口容忍"""
         logger.info("TC-AUTH-MFA-006: Testing TOTP time window tolerance")
         import time
+
         secret = mfa_secret["secret"]
         current_code = mfa_provider.generate_totp(secret, time.time())
         result = mfa_provider.verify("student001", current_code)
