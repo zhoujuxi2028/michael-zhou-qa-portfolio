@@ -18,6 +18,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | `cicd-demo/` | CI/CD pipeline demonstration | GitHub Actions, Docker |
 | `api-testing-demo/` | API testing demonstration | Newman, Postman |
 | `selenium-demo/` | Browser automation | Selenium, Python |
+| `sid-iam-testing-platform/` | IAM + Data Platform + AI Agent testing (138 tests) | Python, Pytest, FastAPI, networkx |
 
 ## Project CLAUDE.md Files
 
@@ -27,6 +28,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | K8S Testing Platform | `k8s-auto-testing-platform/CLAUDE.md` |
 | Security Testing Demo | `security-testing-demo/CLAUDE.md` |
 | CI/CD Demo | `cicd-demo/CLAUDE.md` |
+| SID IAM Testing | `sid-iam-testing-platform/CLAUDE.md` |
 
 ## Virtual Environment
 
@@ -87,6 +89,16 @@ pip install -r requirements.txt
 pytest tests/ -v            # Run Selenium tests
 ```
 
+### sid-iam-testing-platform
+```bash
+cd sid-iam-testing-platform
+pip install -r requirements.txt
+pytest tests/ -v            # Run all 138 tests
+pytest tests/test_auth/ -v  # Auth domain only (54 tests)
+pytest tests/test_data/ -v  # Data platform only (44 tests)
+pytest tests/test_ai/ -v    # AI Agent only (40 tests)
+```
+
 ## Git Workflow
 
 - **Default branch**: `main`
@@ -103,6 +115,7 @@ pytest tests/ -v            # Run Selenium tests
 | `feature/selenium` | Selenium automation | In development |
 | `feature/robot-framework-demo` | Robot Framework demo | In development |
 | `fix/api-testing-defects` | API testing bug fixes | In development |
+| `feature/sid-iam-testing` | SID IAM + Data Platform + AI Agent testing (138 tests) | In development |
 
 ## GitHub Actions
 
@@ -117,6 +130,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `helm-deploy.yml` | cicd-demo | Helm chart validation & deploy |
 | `security-tests.yml` | security-testing-demo | Security tests (DVWA, Juice Shop, ZAP, OWASP Top 10) |
 | `k8s-ci.yml` | k8s-auto-testing-platform | K8S CI (code quality, unit tests, integration) |
+| `sid-iam-ci.yml` | sid-iam-testing-platform | SID IAM CI (code quality, unit tests, integration) |
 
 ## Security
 
