@@ -68,7 +68,6 @@ class MockPipelineEngine:
             handler = task_data.get("handler")
             timeout = task_data.get("timeout", 30)
             retry_count = task_data.get("retry", 0)
-            success = False
             for attempt in range(retry_count + 1):
                 try:
                     if handler:
@@ -82,7 +81,6 @@ class MockPipelineEngine:
                     results[task_id] = {"status": "completed", "result": result, "attempt": attempt + 1}
                     input_sources = list(pipeline["dag"].predecessors(task_id))
                     self._lineage[task_id].extend(input_sources)
-                    success = True
                     break
                 except Exception as e:
                     if attempt == retry_count:

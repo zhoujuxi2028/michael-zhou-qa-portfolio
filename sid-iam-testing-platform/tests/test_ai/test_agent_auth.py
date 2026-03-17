@@ -2,7 +2,6 @@ import logging
 
 import pytest
 
-from src.helpers.token_factory import create_expired_jwt
 from src.mock_services.ai_agent import AgentError
 
 logger = logging.getLogger(__name__)

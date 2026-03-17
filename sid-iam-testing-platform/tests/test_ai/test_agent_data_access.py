@@ -2,8 +2,6 @@ import logging
 
 import pytest
 
-from src.mock_services.ai_agent import AgentError
-
 logger = logging.getLogger(__name__)
 
 
@@ -26,7 +24,11 @@ class TestAgentDataAccess:
         logger.info("TC-AI-DAT-002: Testing unauthorized query rejection")
         ai_agent.reset()
         ai_agent.create_agent("dat-002")
-        assert ai_agent.check_permission("dat-002", "read:all_grades") is False if ai_agent._agents["dat-002"].get("auth_context") else True
+        assert (
+            ai_agent.check_permission("dat-002", "read:all_grades") is False
+            if ai_agent._agents["dat-002"].get("auth_context")
+            else True
+        )
         ai_agent.inherit_auth("dat-002", user_context["token"], user_context["permissions"])
         assert ai_agent.check_permission("dat-002", "read:all_grades") is False
 

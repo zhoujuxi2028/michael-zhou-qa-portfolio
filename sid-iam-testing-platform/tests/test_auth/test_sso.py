@@ -5,7 +5,7 @@ import pytest
 
 from src.config import settings
 from src.helpers.assertion_helpers import assert_valid_jwt
-from src.helpers.token_factory import create_expired_jwt, verify_jwt, verify_saml_assertion
+from src.helpers.token_factory import create_expired_jwt, verify_saml_assertion
 
 logger = logging.getLogger(__name__)
 

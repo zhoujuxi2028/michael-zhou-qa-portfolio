@@ -80,8 +80,7 @@ class TestWarehouseAdvanced:
         """TC-DATA-WH-007: 多表联查（JOIN）"""
         logger.info("TC-DATA-WH-007: Testing JOIN queries")
         result = sample_schema.query(
-            "SELECT s.name, g.course, g.score FROM students s "
-            "INNER JOIN grades g ON s.id = g.student_id"
+            "SELECT s.name, g.course, g.score FROM students s " "INNER JOIN grades g ON s.id = g.student_id"
         )
         assert len(result) >= 3
         alice_grades = [r for r in result if r["name"] == "Alice"]

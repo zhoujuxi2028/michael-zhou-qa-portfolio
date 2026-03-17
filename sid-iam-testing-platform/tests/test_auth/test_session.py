@@ -27,6 +27,7 @@ class TestSessionLifecycle:
         validated = mgr.validate_session(session["session_id"])
         assert validated["valid"] is True
         import time
+
         time.sleep(1.1)
         with pytest.raises(SessionError, match="expired"):
             mgr.validate_session(session["session_id"])
@@ -70,8 +71,8 @@ class TestSessionSecurity:
     def test_cross_device_session(self, session_store):
         """TC-AUTH-SES-006: 跨设备会话管理"""
         logger.info("TC-AUTH-SES-006: Testing cross-device session management")
-        s1 = session_store.create_session("user006", {"device": "laptop"})
-        s2 = session_store.create_session("user006", {"device": "mobile"})
+        session_store.create_session("user006", {"device": "laptop"})
+        session_store.create_session("user006", {"device": "mobile"})
         sessions = session_store.get_user_sessions("user006")
         assert len(sessions) >= 2
         devices = {s["device"] for s in sessions}
@@ -95,6 +96,7 @@ class TestSessionSecurity:
         session = session_store.create_session("user008")
         old_expires = session["expires_at"]
         import time
+
         time.sleep(0.1)
         renewed = session_store.renew_session(session["session_id"])
         assert renewed["expires_at"] >= old_expires

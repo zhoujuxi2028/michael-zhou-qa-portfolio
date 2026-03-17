@@ -6,7 +6,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from src.config import settings
-from src.helpers.token_factory import create_jwt, create_saml_assertion, verify_jwt, verify_saml_assertion
+from src.helpers.token_factory import create_jwt, create_saml_assertion, verify_jwt
 
 logger = logging.getLogger(__name__)
 
@@ -145,16 +145,20 @@ def oidc_token(req: OIDCTokenRequest):
             raise HTTPException(status_code=401, detail="Invalid credentials")
         if req.tenant != "default" and user.get("tenant") != req.tenant:
             raise HTTPException(status_code=403, detail="Tenant mismatch")
-        id_token = create_jwt({
-            "sub": user["uid"],
-            "email": user["email"],
-            "name": user["display_name"],
-            "roles": user["roles"],
-            "tenant": user.get("tenant", "default"),
-            "iss": f"https://idp.university.edu",
-            "aud": req.client_id,
-        })
-        access_token = create_jwt({"sub": user["uid"], "scope": "openid profile email", "tenant": user.get("tenant", "default")})
+        id_token = create_jwt(
+            {
+                "sub": user["uid"],
+                "email": user["email"],
+                "name": user["display_name"],
+                "roles": user["roles"],
+                "tenant": user.get("tenant", "default"),
+                "iss": "https://idp.university.edu",
+                "aud": req.client_id,
+            }
+        )
+        access_token = create_jwt(
+            {"sub": user["uid"], "scope": "openid profile email", "tenant": user.get("tenant", "default")}
+        )
         refresh_token = str(uuid.uuid4())
         _refresh_tokens[refresh_token] = {
             "user": user,
@@ -177,7 +181,7 @@ def oidc_token(req: OIDCTokenRequest):
 
 @app.post("/oidc/refresh")
 def oidc_refresh(req: OIDCRefreshRequest):
-    logger.info(f"OIDC refresh request")
+    logger.info("OIDC refresh request")
     rt_data = _refresh_tokens.get(req.refresh_token)
     if not rt_data:
         raise HTTPException(status_code=401, detail="Invalid refresh token")
@@ -186,16 +190,20 @@ def oidc_refresh(req: OIDCRefreshRequest):
         _refresh_tokens.pop(req.refresh_token, None)
         raise HTTPException(status_code=401, detail="Refresh token expired")
     user = rt_data["user"]
-    new_access = create_jwt({"sub": user["uid"], "scope": "openid profile email", "tenant": user.get("tenant", "default")})
-    new_id = create_jwt({
-        "sub": user["uid"],
-        "email": user["email"],
-        "name": user["display_name"],
-        "roles": user["roles"],
-        "tenant": user.get("tenant", "default"),
-        "iss": "https://idp.university.edu",
-        "aud": req.client_id,
-    })
+    new_access = create_jwt(
+        {"sub": user["uid"], "scope": "openid profile email", "tenant": user.get("tenant", "default")}
+    )
+    new_id = create_jwt(
+        {
+            "sub": user["uid"],
+            "email": user["email"],
+            "name": user["display_name"],
+            "roles": user["roles"],
+            "tenant": user.get("tenant", "default"),
+            "iss": "https://idp.university.edu",
+            "aud": req.client_id,
+        }
+    )
     new_refresh = str(uuid.uuid4())
     _refresh_tokens.pop(req.refresh_token)
     _refresh_tokens[new_refresh] = {

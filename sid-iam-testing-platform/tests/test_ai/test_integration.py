@@ -2,9 +2,8 @@ import logging
 
 import pytest
 
-from src.mock_services.ai_agent import AgentError, AgentState
+from src.mock_services.ai_agent import AgentError
 from src.mock_services.data_warehouse import MockDataWarehouse
-from src.helpers.token_factory import create_jwt
 
 logger = logging.getLogger(__name__)
 
@@ -17,14 +16,18 @@ class TestE2EIntegration:
         """TC-AI-INT-001: 完整链路：登录→Agent→查询→响应"""
         logger.info("TC-AI-INT-001: Testing full chain: login -> agent -> query -> response")
         ai_agent.reset()
-        login_resp = sso_provider.post("/oidc/token", json={
-            "grant_type": "authorization_code",
-            "username": "student001", "password": "pass123",
-            "client_id": "test-client",
-        })
+        login_resp = sso_provider.post(
+            "/oidc/token",
+            json={
+                "grant_type": "authorization_code",
+                "username": "student001",
+                "password": "pass123",
+                "client_id": "test-client",
+            },
+        )
         assert login_resp.status_code == 200
         token = login_resp.json()["access_token"]
-        agent = ai_agent.create_agent("int-001")
+        ai_agent.create_agent("int-001")
         ai_agent.inherit_auth("int-001", token, {"read:own_grades", "query:courses"})
         ai_agent.transition_state("int-001", "running")
         result = ai_agent.query_data("int-001", "my grades", data_source={"grades": [95]})
@@ -38,16 +41,22 @@ class TestE2EIntegration:
         logger.info("TC-AI-INT-002: Testing student grade query E2E")
         ai_agent.reset()
         wh = MockDataWarehouse()
-        wh.create_table("grades", [
-            {"name": "student_id", "type": "TEXT"},
-            {"name": "course", "type": "TEXT"},
-            {"name": "score", "type": "INTEGER"},
-            {"name": "tenant_id", "type": "TEXT"},
-        ])
-        wh.insert("grades", [
-            {"student_id": "s001", "course": "CS101", "score": 95, "tenant_id": "tenant_a"},
-            {"student_id": "s002", "course": "CS101", "score": 82, "tenant_id": "tenant_b"},
-        ])
+        wh.create_table(
+            "grades",
+            [
+                {"name": "student_id", "type": "TEXT"},
+                {"name": "course", "type": "TEXT"},
+                {"name": "score", "type": "INTEGER"},
+                {"name": "tenant_id", "type": "TEXT"},
+            ],
+        )
+        wh.insert(
+            "grades",
+            [
+                {"student_id": "s001", "course": "CS101", "score": 95, "tenant_id": "tenant_a"},
+                {"student_id": "s002", "course": "CS101", "score": 82, "tenant_id": "tenant_b"},
+            ],
+        )
         ai_agent.create_agent("int-002")
         ai_agent.inherit_auth("int-002", user_context["token"], user_context["permissions"])
         ai_agent.transition_state("int-002", "running")
@@ -61,16 +70,22 @@ class TestE2EIntegration:
         logger.info("TC-AI-INT-003: Testing teacher class data E2E with row security")
         ai_agent.reset()
         wh = MockDataWarehouse()
-        wh.create_table("class_grades", [
-            {"name": "student_id", "type": "TEXT"},
-            {"name": "score", "type": "INTEGER"},
-            {"name": "tenant_id", "type": "TEXT"},
-        ])
-        wh.insert("class_grades", [
-            {"student_id": "s001", "score": 95, "tenant_id": "tenant_a"},
-            {"student_id": "s002", "score": 88, "tenant_id": "tenant_a"},
-            {"student_id": "s003", "score": 92, "tenant_id": "tenant_b"},
-        ])
+        wh.create_table(
+            "class_grades",
+            [
+                {"name": "student_id", "type": "TEXT"},
+                {"name": "score", "type": "INTEGER"},
+                {"name": "tenant_id", "type": "TEXT"},
+            ],
+        )
+        wh.insert(
+            "class_grades",
+            [
+                {"student_id": "s001", "score": 95, "tenant_id": "tenant_a"},
+                {"student_id": "s002", "score": 88, "tenant_id": "tenant_a"},
+                {"student_id": "s003", "score": 92, "tenant_id": "tenant_b"},
+            ],
+        )
         ai_agent.create_agent("int-003")
         ai_agent.inherit_auth("int-003", teacher_context["token"], teacher_context["permissions"])
         ai_agent.transition_state("int-003", "running")
@@ -138,7 +153,7 @@ class TestE2EIntegration:
         ai_agent.check_privilege_escalation("int-008", {"admin:delete"})
         ai_agent.transition_state("int-008", "stopped")
         all_logs = ai_agent.get_audit_log("int-008")
-        actions = [l["action"] for l in all_logs]
+        actions = [entry["action"] for entry in all_logs]
         assert "create_agent" in actions
         assert "inherit_auth" in actions
         assert "state_transition" in actions

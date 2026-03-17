@@ -69,7 +69,7 @@ class TestAgentLifecycle:
         """TC-AI-LCY-006: Agent 异常恢复"""
         logger.info("TC-AI-LCY-006: Testing agent error recovery")
         ai_agent.reset()
-        agent = ai_agent.create_agent("lcy-006")
+        ai_agent.create_agent("lcy-006")
         ai_agent.transition_state("lcy-006", "running")
         ai_agent.transition_state("lcy-006", "error")
         assert ai_agent._agents["lcy-006"]["state"] == AgentState.ERROR

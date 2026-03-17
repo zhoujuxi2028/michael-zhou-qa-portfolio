@@ -94,10 +94,12 @@ class TestOntologyEntity:
         """TC-DATA-ONT-008: Schema 迁移（版本演进）"""
         logger.info("TC-DATA-ONT-008: Testing schema migration")
         old = sample_ontology.get_schema_version()
+
         def migrate(g):
             for node in g.nodes():
                 if "schema_v" not in g.nodes[node]:
                     g.nodes[node]["schema_v"] = 2
+
         result = sample_ontology.migrate_schema(2, migrate)
         assert result["from"] == old
         assert result["to"] == 2
@@ -108,7 +110,7 @@ class TestOntologyEntity:
         """TC-DATA-ONT-009: 大规模图性能（1000+ 节点）"""
         logger.info("TC-DATA-ONT-009: Testing large graph performance")
         db = graph_db
-        initial = db.node_count()
+        _ = db.node_count()
         entities = [(f"perf_node_{i}", "perf", {"idx": i}) for i in range(1000)]
         added = db.bulk_add_entities(entities)
         assert added == 1000

@@ -38,7 +38,13 @@ def teacher_context():
     token = create_jwt({"sub": "teacher001", "roles": ["teacher"], "tenant": "tenant_a"})
     return {
         "token": token,
-        "permissions": {"read:own_grades", "read:class_grades", "read:student_profiles", "write:grades", "query:courses"},
+        "permissions": {
+            "read:own_grades",
+            "read:class_grades",
+            "read:student_profiles",
+            "write:grades",
+            "query:courses",
+        },
         "tenant": "tenant_a",
     }
 
@@ -67,5 +73,6 @@ def pii_samples():
 @pytest.fixture
 def agent_client(ai_agent, sso_provider, ldap_server):
     from src.clients.auth_client import AuthClient
+
     auth = AuthClient(sso_client=sso_provider, ldap_server=ldap_server)
     return AgentClient(ai_agent=ai_agent, auth_client=auth)

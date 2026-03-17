@@ -11,14 +11,16 @@ class TestDevicePosture:
     def test_compliant_device(self, zero_trust_engine):
         """TC-AUTH-ZT-001: 设备态势评估（合规设备）"""
         logger.info("TC-AUTH-ZT-001: Testing compliant device evaluation")
-        result = zero_trust_engine.evaluate_device({
-            "device_id": "dev-001",
-            "os_version": "macOS 14.0",
-            "antivirus": True,
-            "encryption": True,
-            "os_patched": True,
-            "firewall": True,
-        })
+        result = zero_trust_engine.evaluate_device(
+            {
+                "device_id": "dev-001",
+                "os_version": "macOS 14.0",
+                "antivirus": True,
+                "encryption": True,
+                "os_patched": True,
+                "firewall": True,
+            }
+        )
         assert result["compliant"] is True
         assert result["score"] >= 60
 
@@ -26,14 +28,16 @@ class TestDevicePosture:
     def test_non_compliant_device_denied(self, zero_trust_engine):
         """TC-AUTH-ZT-002: 不合规设备拒绝访问"""
         logger.info("TC-AUTH-ZT-002: Testing non-compliant device denial")
-        result = zero_trust_engine.evaluate_device({
-            "device_id": "dev-bad",
-            "os_version": "Windows XP",
-            "antivirus": False,
-            "encryption": False,
-            "os_patched": False,
-            "firewall": False,
-        })
+        result = zero_trust_engine.evaluate_device(
+            {
+                "device_id": "dev-bad",
+                "os_version": "Windows XP",
+                "antivirus": False,
+                "encryption": False,
+                "os_patched": False,
+                "firewall": False,
+            }
+        )
         assert result["compliant"] is False
         assert result["score"] < 60
 
@@ -83,10 +87,14 @@ class TestAccessPolicy:
         logger.info("TC-AUTH-ZT-007: Testing risk score calculation")
         low_risk = zero_trust_engine.calculate_risk_score({"geo_anomaly": False, "new_device": False})
         assert low_risk["risk_score"] == 0
-        high_risk = zero_trust_engine.calculate_risk_score({
-            "geo_anomaly": True, "new_device": True, "failed_attempts": 5,
-            "device": {"compliant": False},
-        })
+        high_risk = zero_trust_engine.calculate_risk_score(
+            {
+                "geo_anomaly": True,
+                "new_device": True,
+                "failed_attempts": 5,
+                "device": {"compliant": False},
+            }
+        )
         assert high_risk["risk_score"] > 50
 
     @pytest.mark.P1

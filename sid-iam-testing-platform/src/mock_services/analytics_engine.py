@@ -101,12 +101,14 @@ class AnalyticsEngine:
         result = []
         for bucket in sorted(buckets.keys()):
             values = buckets[bucket]
-            result.append({
-                "period": bucket,
-                "sum": sum(values),
-                "count": len(values),
-                "avg": sum(values) / len(values) if values else 0,
-            })
+            result.append(
+                {
+                    "period": bucket,
+                    "sum": sum(values),
+                    "count": len(values),
+                    "avg": sum(values) / len(values) if values else 0,
+                }
+            )
         return result
 
     def cross_dimension_analysis(self, data, dimensions, value_field):

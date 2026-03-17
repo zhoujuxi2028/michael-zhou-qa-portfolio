@@ -94,7 +94,7 @@ class TestTagCRUD:
         logger.info("TC-DATA-TAG-008: Testing tag deletion impact analysis")
         tag_store.reset()
         parent = tag_store.create_tag("parent_del", "test")
-        child = tag_store.create_tag("child_del", "test", parent_id=parent["id"])
+        _ = tag_store.create_tag("child_del", "test", parent_id=parent["id"])
         tag_store.attach_tag(parent["id"], "affected_entity")
         result = tag_store.delete_tag(parent["id"])
         assert result["children_orphaned"] == 1
