@@ -44,5 +44,50 @@ def ldap_connection(ldap_server):
 
 
 @pytest.fixture
-def auth_client(sso_provider, ldap_server):
-    return AuthClient(sso_client=sso_provider, ldap_server=ldap_server)
+def auth_client(sso_provider, ldap_server, kerberos_kdc, zero_trust_engine, session_manager, mfa_provider):
+    return AuthClient(
+        sso_client=sso_provider,
+        ldap_server=ldap_server,
+        kerberos_kdc=kerberos_kdc,
+        zero_trust_engine=zero_trust_engine,
+        session_manager=session_manager,
+        mfa_provider=mfa_provider,
+    )
+
+
+@pytest.fixture
+def kerberos_ticket(kerberos_kdc):
+    tgt = kerberos_kdc.request_tgt(f"student001@{settings.krb_realm}", "pass123")
+    return tgt
+
+
+@pytest.fixture
+def zero_trust_context():
+    return {
+        "user_id": "student001",
+        "device": {
+            "device_id": "dev-001",
+            "os_version": "macOS 14.0",
+            "antivirus": True,
+            "encryption": True,
+            "os_patched": True,
+            "firewall": True,
+            "compliant": True,
+        },
+        "geo_anomaly": False,
+        "hour": 10,
+        "ip": "10.0.1.50",
+    }
+
+
+@pytest.fixture
+def session_store(session_manager):
+    session_manager.reset()
+    return session_manager
+
+
+@pytest.fixture
+def mfa_secret(mfa_provider):
+    mfa_provider.reset()
+    reg = mfa_provider.register("student001")
+    return reg
