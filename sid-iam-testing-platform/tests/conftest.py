@@ -12,6 +12,7 @@ from src.mock_services.pipeline_engine import MockPipelineEngine
 from src.mock_services.data_warehouse import MockDataWarehouse
 from src.mock_services.tag_store import MockTagStore
 from src.mock_services.analytics_engine import AnalyticsEngine
+from src.mock_services.ai_agent import MockAIAgent
 
 
 @pytest.fixture(scope="session")
@@ -89,3 +90,10 @@ def analytics_engine(data_warehouse):
     engine = AnalyticsEngine(warehouse=data_warehouse)
     yield engine
     engine.reset()
+
+
+@pytest.fixture(scope="session")
+def ai_agent():
+    agent = MockAIAgent()
+    yield agent
+    agent.reset()
