@@ -26,8 +26,9 @@
 |-----|------|
 | 测试用例 | 138 |
 | 测试领域 | 3（认证、数据、AI） |
-| Mock 服务 | 7 |
-| 覆盖率目标 | ≥ 90% |
+| Mock 服务 | 12 |
+| 覆盖率 | 81%（Mock 服务 80-94%） |
+| 全部通过 | 138/138 PASSED |
 
 ## 测试领域
 
@@ -120,14 +121,18 @@ sid-iam-testing-platform/
 │       └── test_integration.py         # 跨域 E2E 集成 (8)
 ├── src/
 │   ├── config.py                       # 集中配置
-│   ├── mock_services/                  # Mock 后端服务
+│   ├── mock_services/                  # Mock 后端服务 (12)
 │   │   ├── sso_provider.py            # FastAPI SAML/OIDC 模拟
 │   │   ├── ldap_server.py             # 字典实现的 LDAP
 │   │   ├── kerberos_kdc.py            # Mock 密钥分发中心
+│   │   ├── zero_trust_engine.py       # 零信任策略引擎
+│   │   ├── session_manager.py         # 会话管理（超时/加密）
+│   │   ├── mfa_provider.py            # TOTP 多因素认证
 │   │   ├── graph_db.py                # networkx 图数据库
 │   │   ├── data_warehouse.py          # SQLite :memory: 数仓
 │   │   ├── pipeline_engine.py         # DAG 执行引擎
 │   │   ├── tag_store.py               # 标签注册中心
+│   │   ├── analytics_engine.py        # 分析聚合引擎
 │   │   └── ai_agent.py                # 规则引擎 mock Agent
 │   ├── clients/                        # API 封装层
 │   │   ├── auth_client.py             # 认证 API 封装
@@ -143,9 +148,10 @@ sid-iam-testing-platform/
 │   ├── ARCHITECTURE.md                # 架构设计
 │   ├── TEST-CASES.md                  # 测试用例目录
 │   ├── DESIGN-DECISIONS.md            # 设计决策
-│   ├── TEST-REPORT.md                 # 测试报告（待完成）
-│   └── FAQ.md                         # 常见问题（待完成）
-├── scripts/                            # 运行脚本
+│   ├── TEST-REPORT.md                 # 测试报告
+│   └── FAQ.md                         # 常见问题
+├── scripts/
+│   └── run-tests.sh                   # 测试运行脚本
 ├── reports/                            # 测试报告输出
 ├── pytest.ini
 ├── pyproject.toml
@@ -163,9 +169,14 @@ sid-iam-testing-platform/
 | sso_provider | FastAPI（session fixture） | SAML/OIDC 端点模拟 |
 | ldap_server | Python dict + LDAP 风格 API | 绑定、搜索、修改 |
 | kerberos_kdc | 令牌存储 + 时间戳校验 | 票据生命周期管理 |
+| zero_trust_engine | 策略规则引擎 | 设备态势、风险评分 |
+| session_manager | 内存存储 + 加密 | 会话超时、并发限制 |
+| mfa_provider | TOTP 算法 | 多因素认证、恢复码 |
 | graph_db | networkx.DiGraph | 本体图遍历 |
 | data_warehouse | SQLite `:memory:` | 真实 SQL 执行 |
 | pipeline_engine | Dict + 拓扑排序 | DAG 编排执行 |
+| tag_store | Dict 存储 | 标签 CRUD、层级、治理 |
+| analytics_engine | 聚合计算 | 仪表板、导出、分页 |
 | ai_agent | 规则匹配引擎 | 安全护栏模拟 |
 
 ## 技术栈
@@ -186,7 +197,8 @@ sid-iam-testing-platform/
 - [架构设计](docs/ARCHITECTURE.md) — 分层架构、Mock 服务、Fixture 层级
 - [测试用例目录](docs/TEST-CASES.md) — 138 个用例详细定义
 - [设计决策](docs/DESIGN-DECISIONS.md) — 10 个关键设计决策
-- 测试报告（待完成）
+- [测试报告](docs/TEST-REPORT.md) — 138/138 通过，覆盖率 81%
+- [FAQ](docs/FAQ.md) — 常见问题
 
 ---
 
@@ -196,4 +208,4 @@ sid-iam-testing-platform/
 
 ---
 
-*阶段: 设计 | License: MIT*
+*阶段: 全部完成 | License: MIT*
