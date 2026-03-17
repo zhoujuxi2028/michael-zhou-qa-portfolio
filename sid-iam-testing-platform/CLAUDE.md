@@ -13,7 +13,7 @@ SID IAM (Identity and Access Management) testing platform covering 3 domains: **
 | 1 | Requirements | **Complete** |
 | 2 | Design | **Complete** |
 | 3 | Verification (Implementation) | **Complete** |
-| 4 | Iteration | **In Progress** (4.6 PR pending) |
+| 4 | Iteration | **Complete** |
 
 ## Quick Start
 

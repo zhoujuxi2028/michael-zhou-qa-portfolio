@@ -148,9 +148,10 @@ sid-iam-testing-platform/
 │   ├── ARCHITECTURE.md                # 架构设计
 │   ├── TEST-CASES.md                  # 测试用例目录
 │   ├── DESIGN-DECISIONS.md            # 设计决策
-│   ├── TEST-REPORT.md                 # 测试报告（Phase 4）
-│   └── FAQ.md                         # 常见问题（Phase 4）
-├── scripts/                            # 运行脚本
+│   ├── TEST-REPORT.md                 # 测试报告
+│   └── FAQ.md                         # 常见问题
+├── scripts/
+│   └── run-tests.sh                   # 测试运行脚本
 ├── reports/                            # 测试报告输出
 ├── pytest.ini
 ├── pyproject.toml
@@ -196,7 +197,8 @@ sid-iam-testing-platform/
 - [架构设计](docs/ARCHITECTURE.md) — 分层架构、Mock 服务、Fixture 层级
 - [测试用例目录](docs/TEST-CASES.md) — 138 个用例详细定义
 - [设计决策](docs/DESIGN-DECISIONS.md) — 10 个关键设计决策
-- 测试报告（Phase 4）
+- [测试报告](docs/TEST-REPORT.md) — 138/138 通过，覆盖率 81%
+- [FAQ](docs/FAQ.md) — 常见问题
 
 ---
 
@@ -206,4 +208,4 @@ sid-iam-testing-platform/
 
 ---
 
-*阶段: 实现完成 | License: MIT*
+*阶段: 全部完成 | License: MIT*
