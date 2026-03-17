@@ -10,15 +10,15 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 
 ## Projects
 
-| Project | Description | Key Tech |
-|---------|-------------|----------|
-| `iwsva-cypress-e2e/` | IWSVA E2E testing (77 test cases, 9 components) | Cypress, Page Objects |
-| `k8s-auto-testing-platform/` | K8S HPA testing + Chaos Engineering (37 tests) | Python, Pytest, Chaos Mesh |
-| `security-testing-demo/` | Security testing (170 tests, OWASP Top 10 2021) | Pytest, OWASP ZAP, Nessus, SQLMap |
-| `cicd-demo/` | CI/CD pipeline demonstration | GitHub Actions, Docker |
-| `api-testing-demo/` | API testing demonstration | Newman, Postman |
-| `selenium-demo/` | Browser automation | Selenium, Python |
-| `sid-iam-testing-platform/` | IAM + Data Platform + AI Agent testing (138 tests) | Python, Pytest, FastAPI, networkx |
+| Project                      | Description                                        | Key Tech                          |
+| ---------------------------- | -------------------------------------------------- | --------------------------------- |
+| `iwsva-cypress-e2e/`         | IWSVA E2E testing (77 test cases, 9 components)    | Cypress, Page Objects             |
+| `k8s-auto-testing-platform/` | K8S HPA testing + Chaos Engineering (37 tests)     | Python, Pytest, Chaos Mesh        |
+| `security-testing-demo/`     | Security testing (170 tests, OWASP Top 10 2021)    | Pytest, OWASP ZAP, Nessus, SQLMap |
+| `cicd-demo/`                 | CI/CD pipeline demonstration                       | GitHub Actions, Docker            |
+| `api-testing-demo/`          | API testing demonstration                          | Newman, Postman                   |
+| `selenium-demo/`             | Browser automation                                 | Selenium, Python                  |
+| `sid-iam-testing-platform/`  | IAM + Data Platform + AI Agent testing (138 tests) | Python, Pytest, FastAPI, networkx |
 
 ## Project CLAUDE.md Files
 
