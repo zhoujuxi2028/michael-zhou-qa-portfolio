@@ -7,6 +7,11 @@ from src.mock_services.kerberos_kdc import MockKerberosKDC
 from src.mock_services.zero_trust_engine import ZeroTrustEngine
 from src.mock_services.session_manager import SessionManager
 from src.mock_services.mfa_provider import MFAProvider
+from src.mock_services.graph_db import MockGraphDB
+from src.mock_services.pipeline_engine import MockPipelineEngine
+from src.mock_services.data_warehouse import MockDataWarehouse
+from src.mock_services.tag_store import MockTagStore
+from src.mock_services.analytics_engine import AnalyticsEngine
 
 
 @pytest.fixture(scope="session")
@@ -49,3 +54,38 @@ def mfa_provider():
     provider = MFAProvider()
     yield provider
     provider.reset()
+
+
+@pytest.fixture(scope="session")
+def graph_db():
+    db = MockGraphDB()
+    yield db
+    db.reset()
+
+
+@pytest.fixture(scope="session")
+def pipeline_engine():
+    engine = MockPipelineEngine()
+    yield engine
+    engine.reset()
+
+
+@pytest.fixture(scope="session")
+def data_warehouse():
+    wh = MockDataWarehouse()
+    yield wh
+    wh.reset()
+
+
+@pytest.fixture(scope="session")
+def tag_store():
+    store = MockTagStore()
+    yield store
+    store.reset()
+
+
+@pytest.fixture(scope="session")
+def analytics_engine(data_warehouse):
+    engine = AnalyticsEngine(warehouse=data_warehouse)
+    yield engine
+    engine.reset()
