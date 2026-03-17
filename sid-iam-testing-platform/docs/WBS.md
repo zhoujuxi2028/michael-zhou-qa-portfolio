@@ -25,25 +25,25 @@ WBS 1.0 (需求阶段)
 
 ## WBS 1.0 — 需求阶段 (Requirements)
 
-| ID | 任务 | 文件 | 状态 |
-|----|------|------|------|
-| 1.1 | 创建分支 feature/sid-iam-testing | — | ✅ 完成 |
-| 1.2 | 根 CLAUDE.md 添加项目条目 | CLAUDE.md | ✅ 完成 |
-| 1.3 | 创建项目目录 | sid-iam-testing-platform/ | ✅ 完成 |
-| 1.4 | 项目 CLAUDE.md | sid-iam-testing-platform/CLAUDE.md | ✅ 完成 |
-| 1.5 | 需求文档 | docs/REQUIREMENTS.md | ✅ 完成 |
-| 1.6 | README（中文） | README.md | ✅ 完成 |
-| 1.7 | WBS | docs/WBS.md | ✅ 完成 |
+| ID  | 任务                           | 文件                                 | 状态   |
+| --- | ---------------------------- | ---------------------------------- | ---- |
+| 1.1 | 创建分支 feature/sid-iam-testing | —                                  | ✅ 完成 |
+| 1.2 | 根 CLAUDE.md 添加项目条目           | CLAUDE.md                          | ✅ 完成 |
+| 1.3 | 创建项目目录                       | sid-iam-testing-platform/          | ✅ 完成 |
+| 1.4 | 项目 CLAUDE.md                 | sid-iam-testing-platform/CLAUDE.md | ✅ 完成 |
+| 1.5 | 需求文档                         | docs/REQUIREMENTS.md               | ✅ 完成 |
+| 1.6 | README（中文）                   | README.md                          | ✅ 完成 |
+| 1.7 | WBS                          | docs/WBS.md                        | ✅ 完成 |
 
 ## WBS 2.0 — 设计阶段 (Design)
 
 | ID | 任务 | 文件 | 状态 |
 |----|------|------|------|
-| 2.1 | 架构设计文档 | docs/ARCHITECTURE.md | ⬜ 待开始 |
-| 2.2 | 测试用例目录 | docs/TEST-CASES.md | ⬜ 待开始 |
-| 2.3 | 设计决策文档 | docs/DESIGN-DECISIONS.md | ⬜ 待开始 |
-| 2.4 | pytest.ini + pyproject.toml + requirements.txt | 配置文件 | ⬜ 待开始 |
-| 2.5 | .gitignore + .env.example | 配置文件 | ⬜ 待开始 |
+| 2.1 | 架构设计文档 | docs/ARCHITECTURE.md | ✅ 完成 |
+| 2.2 | 测试用例目录 | docs/TEST-CASES.md | ✅ 完成 |
+| 2.3 | 设计决策文档 | docs/DESIGN-DECISIONS.md | ✅ 完成 |
+| 2.4 | pytest.ini + pyproject.toml + requirements.txt | 配置文件 | ✅ 完成 |
+| 2.5 | .gitignore + .env.example | 配置文件 | ✅ 完成 |
 
 ## WBS 3.0 — 实现阶段 (Verification)
 
