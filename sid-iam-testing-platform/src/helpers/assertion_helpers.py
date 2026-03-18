@@ -16,9 +16,9 @@ def assert_contains_all(actual, expected_items):
 
 def assert_error_response(response, expected_status=None, expected_message=None):
     if expected_status is not None:
-        assert response.get("status") == expected_status or response.get("code") == expected_status, (
-            f"Expected status {expected_status}, got {response}"
-        )
+        assert (
+            response.get("status") == expected_status or response.get("code") == expected_status
+        ), f"Expected status {expected_status}, got {response}"
     if expected_message is not None:
         msg = response.get("message", response.get("error", response.get("detail", "")))
         assert expected_message.lower() in msg.lower(), f"Expected message containing '{expected_message}', got '{msg}'"
