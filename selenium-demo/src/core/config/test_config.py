@@ -10,7 +10,8 @@ Version: 1.0.0
 
 import os
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
+
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -19,13 +20,13 @@ load_dotenv()
 # ==================== Project Paths ====================
 # Robust project root detection - searches for pyproject.toml
 PROJECT_ROOT = Path(__file__).resolve().parent
-while not (PROJECT_ROOT / 'pyproject.toml').exists():
+while not (PROJECT_ROOT / "pyproject.toml").exists():
     PROJECT_ROOT = PROJECT_ROOT.parent
     if PROJECT_ROOT == PROJECT_ROOT.parent:
         raise RuntimeError("Cannot find project root with pyproject.toml")
 
 # Support environment variable override
-PROJECT_ROOT = Path(os.getenv('PROJECT_ROOT', str(PROJECT_ROOT)))
+PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT", str(PROJECT_ROOT)))
 
 TESTS_DIR = PROJECT_ROOT / "tests"
 PAGES_DIR = PROJECT_ROOT / "src" / "frameworks" / "pages"
@@ -53,44 +54,44 @@ class TestConfig:
     """
 
     # ==================== Environment Configuration ====================
-    ENVIRONMENT = os.getenv('TEST_ENV', 'qa')  # dev, qa, staging, production
+    ENVIRONMENT = os.getenv("TEST_ENV", "qa")  # dev, qa, staging, production
 
     # ==================== Application Configuration ====================
-    BASE_URL = os.getenv('BASE_URL', 'https://10.206.201.9:8443')
-    USERNAME = os.getenv('USERNAME', 'admin')
-    PASSWORD = os.getenv('PASSWORD', '111111')
+    BASE_URL = os.getenv("BASE_URL", "https://10.206.201.9:8443")
+    USERNAME = os.getenv("USERNAME", "admin")
+    PASSWORD = os.getenv("PASSWORD", "111111")
 
     # ==================== SSH Configuration ====================
     SSH_CONFIG = {
-        'host': os.getenv('SSH_HOST', '10.206.201.9'),
-        'port': int(os.getenv('SSH_PORT', '22')),
-        'username': os.getenv('SSH_USERNAME', 'root'),
-        'password': os.getenv('SSH_PASSWORD', ''),
+        "host": os.getenv("SSH_HOST", "10.206.201.9"),
+        "port": int(os.getenv("SSH_PORT", "22")),
+        "username": os.getenv("SSH_USERNAME", "root"),
+        "password": os.getenv("SSH_PASSWORD", ""),
     }
 
     # ==================== Browser Configuration ====================
-    BROWSER = os.getenv('BROWSER', 'chrome')  # chrome, firefox, edge
-    HEADLESS = os.getenv('HEADLESS', 'false').lower() == 'true'
-    BROWSER_WIDTH = int(os.getenv('BROWSER_WIDTH', '1920'))
-    BROWSER_HEIGHT = int(os.getenv('BROWSER_HEIGHT', '1080'))
+    BROWSER = os.getenv("BROWSER", "chrome")  # chrome, firefox, edge
+    HEADLESS = os.getenv("HEADLESS", "false").lower() == "true"
+    BROWSER_WIDTH = int(os.getenv("BROWSER_WIDTH", "1920"))
+    BROWSER_HEIGHT = int(os.getenv("BROWSER_HEIGHT", "1080"))
 
     # ==================== WebDriver Version Management ====================
     # ChromeDriver version management (3 modes):
     # 1. CHROMEDRIVER_PATH: Explicit path (fastest, CI/CD)
     # 2. CHROMEDRIVER_VERSION: Version lock (reproducible)
     # 3. Auto-detect: Intelligent default with extended cache
-    CHROMEDRIVER_PATH = os.getenv('CHROMEDRIVER_PATH', None)
-    CHROMEDRIVER_VERSION = os.getenv('CHROMEDRIVER_VERSION', None)
-    CHROMEDRIVER_CACHE_VALID_DAYS = int(os.getenv('CHROMEDRIVER_CACHE_VALID_DAYS', '7'))
+    CHROMEDRIVER_PATH = os.getenv("CHROMEDRIVER_PATH", None)
+    CHROMEDRIVER_VERSION = os.getenv("CHROMEDRIVER_VERSION", None)
+    CHROMEDRIVER_CACHE_VALID_DAYS = int(os.getenv("CHROMEDRIVER_CACHE_VALID_DAYS", "7"))
 
     # GeckoDriver (Firefox) version management
-    GECKODRIVER_PATH = os.getenv('GECKODRIVER_PATH', None)
-    GECKODRIVER_VERSION = os.getenv('GECKODRIVER_VERSION', None)
-    GECKODRIVER_CACHE_VALID_DAYS = int(os.getenv('GECKODRIVER_CACHE_VALID_DAYS', '7'))
+    GECKODRIVER_PATH = os.getenv("GECKODRIVER_PATH", None)
+    GECKODRIVER_VERSION = os.getenv("GECKODRIVER_VERSION", None)
+    GECKODRIVER_CACHE_VALID_DAYS = int(os.getenv("GECKODRIVER_CACHE_VALID_DAYS", "7"))
 
     # EdgeDriver version management
-    EDGEDRIVER_PATH = os.getenv('EDGEDRIVER_PATH', None)
-    EDGEDRIVER_VERSION = os.getenv('EDGEDRIVER_VERSION', None)
+    EDGEDRIVER_PATH = os.getenv("EDGEDRIVER_PATH", None)
+    EDGEDRIVER_VERSION = os.getenv("EDGEDRIVER_VERSION", None)
 
     # ==================== Timeout Configuration ====================
     IMPLICIT_WAIT = 10  # seconds
@@ -99,11 +100,11 @@ class TestConfig:
     SCRIPT_TIMEOUT = 30  # seconds
 
     # ==================== Test Configuration ====================
-    TARGET_KERNEL_VERSION = os.getenv('TARGET_KERNEL_VERSION', '5.14.0-427.24.1.el9_4.x86_64')
+    TARGET_KERNEL_VERSION = os.getenv("TARGET_KERNEL_VERSION", "5.14.0-427.24.1.el9_4.x86_64")
 
     # ==================== Retry Configuration ====================
-    MAX_RETRIES = int(os.getenv('MAX_RETRIES', '2'))
-    RETRY_DELAY = int(os.getenv('RETRY_DELAY', '1'))  # seconds
+    MAX_RETRIES = int(os.getenv("MAX_RETRIES", "2"))
+    RETRY_DELAY = int(os.getenv("RETRY_DELAY", "1"))  # seconds
 
     # ==================== Screenshot Configuration ====================
     SCREENSHOT_ON_FAILURE = True
@@ -112,11 +113,11 @@ class TestConfig:
     SAVE_BROWSER_LOGS_ON_FAILURE = True
 
     # ==================== Video Recording Configuration ====================
-    ENABLE_VIDEO_RECORDING = os.getenv('ENABLE_VIDEO', 'false').lower() == 'true'
+    ENABLE_VIDEO_RECORDING = os.getenv("ENABLE_VIDEO", "false").lower() == "true"
     VIDEO_FPS = 10
 
     # ==================== Logging Configuration ====================
-    LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')  # DEBUG, INFO, WARNING, ERROR
+    LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")  # DEBUG, INFO, WARNING, ERROR
     ENABLE_CONSOLE_LOG = True
     ENABLE_FILE_LOG = True
 
@@ -126,50 +127,50 @@ class TestConfig:
 
     # ==================== Chrome Options ====================
     CHROME_OPTIONS = [
-        '--ignore-certificate-errors',
-        '--allow-insecure-localhost',
-        '--disable-blink-features=AutomationControlled',
-        '--disable-extensions',
-        '--disable-gpu',
-        '--no-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-web-security',
-        '--allow-running-insecure-content',
+        "--ignore-certificate-errors",
+        "--allow-insecure-localhost",
+        "--disable-blink-features=AutomationControlled",
+        "--disable-extensions",
+        "--disable-gpu",
+        "--no-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-web-security",
+        "--allow-running-insecure-content",
     ]
 
     if HEADLESS:
-        CHROME_OPTIONS.append('--headless=new')
+        CHROME_OPTIONS.append("--headless=new")
 
     # ==================== Firefox Options ====================
     FIREFOX_OPTIONS = [
-        '-private',
+        "-private",
     ]
 
     if HEADLESS:
-        FIREFOX_OPTIONS.append('--headless')
+        FIREFOX_OPTIONS.append("--headless")
 
     # ==================== Frame Names ====================
     FRAMES = {
-        'tophead': 'tophead',
-        'left': 'left',
-        'right': 'right',
+        "tophead": "tophead",
+        "left": "left",
+        "right": "right",
     }
 
     # ==================== URLs ====================
     URLS = {
-        'login': f"{BASE_URL}/login.jsp",
-        'system_update': f"{BASE_URL}/jsp/system_update.jsp",
+        "login": f"{BASE_URL}/login.jsp",
+        "system_update": f"{BASE_URL}/jsp/system_update.jsp",
     }
 
     # ==================== Backend Paths ====================
     BACKEND_PATHS = {
-        'ini_file': '/etc/iscan/intscan.ini',
-        'backup_dir': '/var/iwss/backup',
-        'log_dir': '/var/log/iwss',
+        "ini_file": "/etc/iscan/intscan.ini",
+        "backup_dir": "/var/iwss/backup",
+        "log_dir": "/var/log/iwss",
     }
 
     @classmethod
-    def get_config_summary(cls) -> Dict[str, Any]:
+    def get_config_summary(cls) -> dict[str, Any]:
         """
         Get a summary of current configuration.
 
@@ -177,17 +178,17 @@ class TestConfig:
             dict: Configuration summary (sanitized - no passwords)
         """
         return {
-            'environment': cls.ENVIRONMENT,
-            'base_url': cls.BASE_URL,
-            'username': cls.USERNAME,
-            'browser': cls.BROWSER,
-            'headless': cls.HEADLESS,
-            'resolution': f"{cls.BROWSER_WIDTH}x{cls.BROWSER_HEIGHT}",
-            'target_kernel_version': cls.TARGET_KERNEL_VERSION,
-            'ssh_host': cls.SSH_CONFIG['host'],
-            'max_retries': cls.MAX_RETRIES,
-            'log_level': cls.LOG_LEVEL,
-            'video_recording': cls.ENABLE_VIDEO_RECORDING,
+            "environment": cls.ENVIRONMENT,
+            "base_url": cls.BASE_URL,
+            "username": cls.USERNAME,
+            "browser": cls.BROWSER,
+            "headless": cls.HEADLESS,
+            "resolution": f"{cls.BROWSER_WIDTH}x{cls.BROWSER_HEIGHT}",
+            "target_kernel_version": cls.TARGET_KERNEL_VERSION,
+            "ssh_host": cls.SSH_CONFIG["host"],
+            "max_retries": cls.MAX_RETRIES,
+            "log_level": cls.LOG_LEVEL,
+            "video_recording": cls.ENABLE_VIDEO_RECORDING,
         }
 
     @classmethod
@@ -202,9 +203,9 @@ class TestConfig:
             ValueError: If required configuration is missing
         """
         required_fields = {
-            'BASE_URL': cls.BASE_URL,
-            'USERNAME': cls.USERNAME,
-            'PASSWORD': cls.PASSWORD,
+            "BASE_URL": cls.BASE_URL,
+            "USERNAME": cls.USERNAME,
+            "PASSWORD": cls.PASSWORD,
         }
 
         missing_fields = [k for k, v in required_fields.items() if not v]
@@ -220,14 +221,14 @@ class TestConfig:
 
 # ==================== Environment-Specific Configurations ====================
 ENV_CONFIGS = {
-    'dev': {
-        'BASE_URL': 'https://dev-iwsva:8443',
+    "dev": {
+        "BASE_URL": "https://dev-iwsva:8443",
     },
-    'qa': {
-        'BASE_URL': 'https://10.206.201.9:8443',
+    "qa": {
+        "BASE_URL": "https://10.206.201.9:8443",
     },
-    'staging': {
-        'BASE_URL': 'https://staging-iwsva:8443',
+    "staging": {
+        "BASE_URL": "https://staging-iwsva:8443",
     },
 }
 

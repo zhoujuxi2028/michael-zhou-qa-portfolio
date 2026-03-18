@@ -5,7 +5,6 @@ Tests for NoSQL injection vulnerabilities in OWASP Juice Shop.
 Covers OWASP A03:2021 - Injection
 """
 
-import json
 import pytest
 import requests
 
@@ -70,7 +69,7 @@ class TestMongoDBInjection:
             if response.status_code == 200:
                 data = response.json()
                 # Check if injection returned all products unexpectedly
-                products = data.get("data", [])
+                data.get("data", [])
                 # Note: This tests for obvious injection success
                 # Real testing would compare against known product count
 
@@ -140,8 +139,7 @@ class TestJSONInjection:
             # Should properly validate input types
             if response.status_code == 200:
                 data = response.json()
-                assert "token" not in str(data), \
-                    "Nested JSON injection should not succeed"
+                assert "token" not in str(data), "Nested JSON injection should not succeed"
 
 
 @pytest.mark.juice_shop
@@ -157,10 +155,7 @@ class TestOperatorInjection:
         login_url = f"{juice_shop_url}/rest/user/login"
 
         # $ne operator injection - "password not equal to empty"
-        payload = {
-            "email": "admin@juice-sh.op",
-            "password": {"$ne": ""}
-        }
+        payload = {"email": "admin@juice-sh.op", "password": {"$ne": ""}}
 
         response = requests.post(
             login_url,
@@ -172,18 +167,14 @@ class TestOperatorInjection:
         # Should not allow operator injection
         if response.status_code == 200:
             data = response.json()
-            assert "token" not in str(data), \
-                "$ne operator injection allowed authentication"
+            assert "token" not in str(data), "$ne operator injection allowed authentication"
 
     def test_gt_operator_injection(self, juice_shop_url):
         """SEC-NOSQL-004: Test $gt (greater than) operator injection."""
         login_url = f"{juice_shop_url}/rest/user/login"
 
         # $gt operator injection
-        payload = {
-            "email": {"$gt": ""},
-            "password": {"$gt": ""}
-        }
+        payload = {"email": {"$gt": ""}, "password": {"$gt": ""}}
 
         response = requests.post(
             login_url,
@@ -195,18 +186,14 @@ class TestOperatorInjection:
         # Should reject operator injection
         if response.status_code == 200:
             data = response.json()
-            assert "token" not in str(data), \
-                "$gt operator injection allowed authentication"
+            assert "token" not in str(data), "$gt operator injection allowed authentication"
 
     def test_regex_operator_injection(self, juice_shop_url):
         """SEC-NOSQL-005: Test $regex operator injection."""
         login_url = f"{juice_shop_url}/rest/user/login"
 
         # $regex operator to match any email
-        payload = {
-            "email": {"$regex": ".*@.*"},
-            "password": {"$ne": ""}
-        }
+        payload = {"email": {"$regex": ".*@.*"}, "password": {"$ne": ""}}
 
         response = requests.post(
             login_url,
@@ -218,5 +205,4 @@ class TestOperatorInjection:
         # Should reject regex operator
         if response.status_code == 200:
             data = response.json()
-            assert "token" not in str(data), \
-                "$regex operator injection allowed authentication"
+            assert "token" not in str(data), "$regex operator injection allowed authentication"

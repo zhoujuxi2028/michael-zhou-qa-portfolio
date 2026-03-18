@@ -4,6 +4,7 @@ import uuid
 from datetime import datetime, timedelta, timezone
 
 from src.config import settings
+from src.constants.test_users import ADMIN_001, STUDENT_001, TEACHER_001
 
 logger = logging.getLogger(__name__)
 
@@ -25,9 +26,9 @@ class MockKerberosKDC:
 
     def _seed_principals(self):
         self._principals = {
-            f"student001@{self.realm}": {"password": "pass123", "roles": ["student"]},
-            f"teacher001@{self.realm}": {"password": "teach123", "roles": ["teacher"]},
-            f"admin001@{self.realm}": {"password": "admin123", "roles": ["admin"]},
+            f"{STUDENT_001['uid']}@{self.realm}": {"password": STUDENT_001["password"], "roles": ["student"]},
+            f"{TEACHER_001['uid']}@{self.realm}": {"password": TEACHER_001["password"], "roles": ["teacher"]},
+            f"{ADMIN_001['uid']}@{self.realm}": {"password": ADMIN_001["password"], "roles": ["admin"]},
             f"krbtgt/{self.realm}@{self.realm}": {"password": "krbtgt-secret", "roles": ["service"]},
             f"HTTP/webapp.{self.realm.lower()}@{self.realm}": {"password": "http-secret", "roles": ["service"]},
         }

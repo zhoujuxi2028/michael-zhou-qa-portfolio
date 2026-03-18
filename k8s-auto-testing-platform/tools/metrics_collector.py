@@ -9,7 +9,6 @@ import logging
 import time
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, List, Optional
 
 import requests
 
@@ -29,7 +28,7 @@ class MetricSnapshot:
     latency_p50: float
     latency_p95: float
     latency_p99: float
-    scaling_events: Dict[str, int]
+    scaling_events: dict[str, int]
 
 
 class MetricsCollector:
@@ -49,9 +48,9 @@ class MetricsCollector:
         """
         self.prometheus_url = prometheus_url.rstrip("/")
         self.namespace = namespace
-        self.snapshots: List[MetricSnapshot] = []
+        self.snapshots: list[MetricSnapshot] = []
 
-    def query(self, query: str) -> Optional[float]:
+    def query(self, query: str) -> float | None:
         """
         Execute PromQL query and return first result
 
@@ -83,7 +82,7 @@ class MetricsCollector:
         start: datetime,
         end: datetime,
         step: str = "15s",
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """
         Execute PromQL range query
 
@@ -139,7 +138,7 @@ class MetricsCollector:
         self.snapshots.append(snapshot)
         return snapshot
 
-    def _get_scaling_events(self) -> Dict[str, int]:
+    def _get_scaling_events(self) -> dict[str, int]:
         """Get scaling event counts"""
         events = {}
         event_types = [
@@ -240,7 +239,7 @@ class MetricsCollector:
         self,
         start: datetime,
         end: datetime,
-    ) -> Dict:
+    ) -> dict:
         """
         Generate HPA scaling report for time period
 
@@ -340,12 +339,12 @@ class MetricsCollector:
         print("CPU Usage:")
         print(f"  Min: {min(cpu_values):.1f}%")
         print(f"  Max: {max(cpu_values):.1f}%")
-        print(f"  Avg: {sum(cpu_values)/len(cpu_values):.1f}%")
+        print(f"  Avg: {sum(cpu_values) / len(cpu_values):.1f}%")
         print()
         print("Memory Usage:")
         print(f"  Min: {min(mem_values):.1f}%")
         print(f"  Max: {max(mem_values):.1f}%")
-        print(f"  Avg: {sum(mem_values)/len(mem_values):.1f}%")
+        print(f"  Avg: {sum(mem_values) / len(mem_values):.1f}%")
         print()
         print("Pod Count:")
         print(f"  Min: {min(pod_values)}")
@@ -388,9 +387,9 @@ def main():
         print(f"Memory Usage: {snapshot.memory_usage:.1f}%")
         print(f"Pod Count: {snapshot.pod_count}")
         print(f"Request Rate: {snapshot.request_rate:.2f} req/s")
-        print(f"Latency p50: {snapshot.latency_p50*1000:.1f}ms")
-        print(f"Latency p95: {snapshot.latency_p95*1000:.1f}ms")
-        print(f"Latency p99: {snapshot.latency_p99*1000:.1f}ms")
+        print(f"Latency p50: {snapshot.latency_p50 * 1000:.1f}ms")
+        print(f"Latency p95: {snapshot.latency_p95 * 1000:.1f}ms")
+        print(f"Latency p99: {snapshot.latency_p99 * 1000:.1f}ms")
 
     elif args.action == "watch":
         print(f"Watching metrics for {args.duration} seconds...")

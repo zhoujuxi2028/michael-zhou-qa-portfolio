@@ -1,8 +1,10 @@
-import base64
-import hashlib
+import json
 import logging
+import os
 import uuid
 from datetime import datetime, timedelta, timezone
+
+from cryptography.fernet import Fernet, InvalidToken
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +20,8 @@ class SessionManager:
         self.absolute_timeout = absolute_timeout
         self.idle_timeout = idle_timeout
         self.max_concurrent = max_concurrent
-        self._encryption_key = "session-encryption-key"
+        key = os.environ.get("SESSION_ENCRYPTION_KEY") or Fernet.generate_key().decode()
+        self._fernet = Fernet(key.encode() if isinstance(key, str) else key)
 
     def reset(self):
         self._sessions.clear()
@@ -113,16 +116,12 @@ class SessionManager:
         return self._decrypt_data(session["metadata"])
 
     def _encrypt_data(self, data):
-        raw = str(data).encode()
-        encoded = base64.b64encode(raw).decode()
-        tag = hashlib.sha256(f"{self._encryption_key}:{encoded}".encode()).hexdigest()[:16]
-        return f"{tag}:{encoded}"
+        raw = json.dumps(data).encode()
+        return self._fernet.encrypt(raw).decode()
 
     def _decrypt_data(self, encrypted):
-        if ":" not in encrypted:
-            return encrypted
-        tag, encoded = encrypted.split(":", 1)
-        expected = hashlib.sha256(f"{self._encryption_key}:{encoded}".encode()).hexdigest()[:16]
-        if tag != expected:
-            raise SessionError("Session data integrity check failed")
-        return base64.b64decode(encoded).decode()
+        try:
+            decrypted = self._fernet.decrypt(encrypted.encode())
+            return decrypted.decode()
+        except InvalidToken as exc:
+            raise SessionError("Session data integrity check failed") from exc

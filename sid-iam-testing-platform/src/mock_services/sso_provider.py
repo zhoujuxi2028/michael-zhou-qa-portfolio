@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from src.config import settings
+from src.constants.test_users import ALL_USERS
 from src.helpers.token_factory import create_jwt, create_saml_assertion, verify_jwt
 
 logger = logging.getLogger(__name__)
@@ -48,49 +49,7 @@ class SLORequest(BaseModel):
     username: str = ""
 
 
-# User database
-USERS = {
-    "student001": {
-        "uid": "student001",
-        "password": "pass123",
-        "email": "student001@university.edu",
-        "display_name": "Test Student",
-        "roles": ["student"],
-        "tenant": "default",
-    },
-    "teacher001": {
-        "uid": "teacher001",
-        "password": "teach123",
-        "email": "teacher001@university.edu",
-        "display_name": "Test Teacher",
-        "roles": ["teacher", "advisor"],
-        "tenant": "default",
-    },
-    "admin001": {
-        "uid": "admin001",
-        "password": "admin123",
-        "email": "admin001@university.edu",
-        "display_name": "Test Admin",
-        "roles": ["admin"],
-        "tenant": "default",
-    },
-    "tenant_a_user": {
-        "uid": "tenant_a_user",
-        "password": "tenanta123",
-        "email": "user@tenant-a.edu",
-        "display_name": "Tenant A User",
-        "roles": ["student"],
-        "tenant": "tenant_a",
-    },
-    "tenant_b_user": {
-        "uid": "tenant_b_user",
-        "password": "tenantb123",
-        "email": "user@tenant-b.edu",
-        "display_name": "Tenant B User",
-        "roles": ["student"],
-        "tenant": "tenant_b",
-    },
-}
+USERS = ALL_USERS
 
 
 def reset():
@@ -241,7 +200,7 @@ def oidc_userinfo(authorization: str = ""):
     try:
         decoded = verify_jwt(token)
     except Exception as e:
-        raise HTTPException(status_code=401, detail=f"Invalid token: {e}")
+        raise HTTPException(status_code=401, detail=f"Invalid token: {e}") from e
     uid = decoded.get("sub")
     user = USERS.get(uid)
     if not user:

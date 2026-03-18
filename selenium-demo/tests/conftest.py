@@ -13,37 +13,36 @@ Version: 1.0.0
 """
 
 import os
-import sys
-import pytest
-import allure
+from collections.abc import Generator
 from datetime import datetime
-from typing import Generator
 
+import allure
+import pytest
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.firefox.service import Service as FirefoxService
 from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.firefox.service import Service as FirefoxService
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
 from core.config.test_config import TestConfig
-from core.logging.test_logger import TestLogger, get_logger
 from core.debugging.debug_helper import DebugHelper
-from core.helpers.ssh_helper import SSHHelper, create_ssh_helper
+from core.helpers.ssh_helper import create_ssh_helper
+from core.logging.test_logger import get_logger
 from frameworks.pages.login_page import LoginPage
 from frameworks.pages.system_update_page import SystemUpdatePage
 from frameworks.verification.backend_verification import BackendVerification
-from frameworks.verification.ui_verification import UIVerification
 from frameworks.verification.log_verification import LogVerification
-
+from frameworks.verification.ui_verification import UIVerification
 
 logger = get_logger(__name__)
 
 
 # ==================== Session-Level Fixtures ====================
 
-@pytest.fixture(scope='session', autouse=True)
+
+@pytest.fixture(scope="session", autouse=True)
 def test_session_setup():
     """
     Session-level setup - runs once before all tests.
@@ -83,7 +82,8 @@ def test_session_setup():
 
 # ==================== WebDriver Fixture ====================
 
-@pytest.fixture(scope='function')
+
+@pytest.fixture(scope="function")
 def driver() -> Generator[webdriver.Remote, None, None]:
     """
     WebDriver fixture - creates and manages browser instance.
@@ -112,9 +112,9 @@ def driver() -> Generator[webdriver.Remote, None, None]:
 
     try:
         # Initialize driver based on browser choice
-        if TestConfig.BROWSER.lower() == 'chrome':
+        if TestConfig.BROWSER.lower() == "chrome":
             driver_instance = _create_chrome_driver()
-        elif TestConfig.BROWSER.lower() == 'firefox':
+        elif TestConfig.BROWSER.lower() == "firefox":
             driver_instance = _create_firefox_driver()
         else:
             raise ValueError(f"Unsupported browser: {TestConfig.BROWSER}")
@@ -170,14 +170,16 @@ def _create_chrome_driver() -> webdriver.Chrome:
 
     # Set window size
     if not TestConfig.HEADLESS:
-        options.add_argument(f'--window-size={TestConfig.BROWSER_WIDTH},{TestConfig.BROWSER_HEIGHT}')
+        options.add_argument(
+            f"--window-size={TestConfig.BROWSER_WIDTH},{TestConfig.BROWSER_HEIGHT}"
+        )
 
     # Disable automation flags
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option('useAutomationExtension', False)
+    options.add_experimental_option("useAutomationExtension", False)
 
     # Enable browser logging (for debug)
-    options.set_capability('goog:loggingPrefs', {'browser': 'ALL'})
+    options.set_capability("goog:loggingPrefs", {"browser": "ALL"})
 
     # WebDriver version management (3-tier)
     if TestConfig.CHROMEDRIVER_PATH:
@@ -187,13 +189,11 @@ def _create_chrome_driver() -> webdriver.Chrome:
     elif TestConfig.CHROMEDRIVER_VERSION:
         # Mode 2: Version lock (Development, reproducible)
         logger.info(f"Using ChromeDriver version: {TestConfig.CHROMEDRIVER_VERSION}")
-        driver_path = ChromeDriverManager(
-            driver_version=TestConfig.CHROMEDRIVER_VERSION
-        ).install()
+        driver_path = ChromeDriverManager(driver_version=TestConfig.CHROMEDRIVER_VERSION).install()
         service = ChromeService(executable_path=driver_path)
     else:
         # Mode 3: Auto-detect with cache (Fallback)
-        logger.info(f"Auto-detecting ChromeDriver")
+        logger.info("Auto-detecting ChromeDriver")
         driver_path = ChromeDriverManager().install()
         service = ChromeService(executable_path=driver_path)
 
@@ -227,7 +227,7 @@ def _create_firefox_driver() -> webdriver.Firefox:
 
     # Set headless mode
     if TestConfig.HEADLESS:
-        options.add_argument('--headless')
+        options.add_argument("--headless")
 
     # Accept insecure certificates (for IWSVA self-signed cert)
     options.accept_insecure_certs = True
@@ -244,13 +244,11 @@ def _create_firefox_driver() -> webdriver.Firefox:
     elif TestConfig.GECKODRIVER_VERSION:
         # Mode 2: Version lock (Development, reproducible)
         logger.info(f"Using GeckoDriver version: {TestConfig.GECKODRIVER_VERSION}")
-        driver_path = GeckoDriverManager(
-            driver_version=TestConfig.GECKODRIVER_VERSION
-        ).install()
+        driver_path = GeckoDriverManager(driver_version=TestConfig.GECKODRIVER_VERSION).install()
         service = FirefoxService(executable_path=driver_path)
     else:
         # Mode 3: Auto-detect with cache (Fallback)
-        logger.info(f"Auto-detecting GeckoDriver")
+        logger.info("Auto-detecting GeckoDriver")
         driver_path = GeckoDriverManager().install()
         service = FirefoxService(executable_path=driver_path)
 
@@ -263,7 +261,8 @@ def _create_firefox_driver() -> webdriver.Firefox:
 
 # ==================== Page Object Fixtures ====================
 
-@pytest.fixture(scope='function')
+
+@pytest.fixture(scope="function")
 def login_page(driver) -> LoginPage:
     """
     Login Page fixture.
@@ -303,7 +302,7 @@ def login_page(driver) -> LoginPage:
     return page
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def system_update_page(driver, login_page) -> SystemUpdatePage:
     """
     System Update Page fixture.
@@ -340,6 +339,7 @@ def system_update_page(driver, login_page) -> SystemUpdatePage:
 
 # ==================== Test Hooks ====================
 
+
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     """
@@ -359,7 +359,7 @@ def pytest_runtest_makereport(item, call):
     setattr(item, f"rep_{rep.when}", rep)
 
 
-@pytest.fixture(scope='function', autouse=True)
+@pytest.fixture(scope="function", autouse=True)
 def test_failure_handler(request, driver):
     """
     Automatic failure handling fixture.
@@ -381,7 +381,7 @@ def test_failure_handler(request, driver):
     yield
 
     # After test - check for failure
-    if hasattr(request.node, 'rep_call'):
+    if hasattr(request.node, "rep_call"):
         if request.node.rep_call.failed:
             test_name = request.node.name
             test_id = _extract_test_id(request.node)
@@ -393,10 +393,7 @@ def test_failure_handler(request, driver):
             try:
                 # Capture failure artifacts
                 artifacts = DebugHelper.capture_failure_artifacts(
-                    driver,
-                    test_name,
-                    test_id,
-                    exception=request.node.rep_call.longrepr
+                    driver, test_name, test_id, exception=request.node.rep_call.longrepr
                 )
 
                 # Attach artifacts to Allure report
@@ -419,9 +416,9 @@ def _extract_test_id(node) -> str:
         str: Test case ID (e.g., "TC-SYS-001") or test name
     """
     # Try to get test ID from Allure testcase marker
-    for marker in node.iter_markers('allure_label'):
-        if marker.kwargs.get('label_type') == 'testcase':
-            return marker.kwargs.get('name', node.name)
+    for marker in node.iter_markers("allure_label"):
+        if marker.kwargs.get("label_type") == "testcase":
+            return marker.kwargs.get("name", node.name)
 
     return node.name
 
@@ -436,13 +433,13 @@ def _attach_to_allure(file_path: str, attachment_type: str):
     """
     try:
         # Determine Allure attachment type
-        if attachment_type == 'screenshot' or file_path.endswith('.png'):
+        if attachment_type == "screenshot" or file_path.endswith(".png"):
             allure_type = allure.attachment_type.PNG
-        elif attachment_type == 'html' or file_path.endswith('.html'):
+        elif attachment_type == "html" or file_path.endswith(".html"):
             allure_type = allure.attachment_type.HTML
-        elif attachment_type == 'browser_logs' or file_path.endswith('.log'):
+        elif attachment_type == "browser_logs" or file_path.endswith(".log"):
             allure_type = allure.attachment_type.TEXT
-        elif file_path.endswith('.json'):
+        elif file_path.endswith(".json"):
             allure_type = allure.attachment_type.JSON
         else:
             allure_type = allure.attachment_type.TEXT
@@ -451,7 +448,7 @@ def _attach_to_allure(file_path: str, attachment_type: str):
         allure.attach.file(
             file_path,
             name=f"{attachment_type}_{datetime.now().strftime('%H%M%S')}",
-            attachment_type=allure_type
+            attachment_type=allure_type,
         )
 
         logger.debug(f"✓ Attached {attachment_type} to Allure report")
@@ -462,41 +459,27 @@ def _attach_to_allure(file_path: str, attachment_type: str):
 
 # ==================== Pytest Configuration ====================
 
+
 def pytest_configure(config):
     """
     Pytest configuration hook - runs once at start.
 
     Registers custom markers for test categorization.
     """
-    config.addinivalue_line(
-        "markers", "smoke: mark test as smoke test"
-    )
-    config.addinivalue_line(
-        "markers", "regression: mark test as regression test"
-    )
-    config.addinivalue_line(
-        "markers", "ui: mark test as UI-level test"
-    )
-    config.addinivalue_line(
-        "markers", "backend: mark test as backend verification test"
-    )
-    config.addinivalue_line(
-        "markers", "P0: mark test as Priority 0 (Critical)"
-    )
-    config.addinivalue_line(
-        "markers", "P1: mark test as Priority 1 (High)"
-    )
-    config.addinivalue_line(
-        "markers", "P2: mark test as Priority 2 (Medium)"
-    )
-    config.addinivalue_line(
-        "markers", "P3: mark test as Priority 3 (Low)"
-    )
+    config.addinivalue_line("markers", "smoke: mark test as smoke test")
+    config.addinivalue_line("markers", "regression: mark test as regression test")
+    config.addinivalue_line("markers", "ui: mark test as UI-level test")
+    config.addinivalue_line("markers", "backend: mark test as backend verification test")
+    config.addinivalue_line("markers", "P0: mark test as Priority 0 (Critical)")
+    config.addinivalue_line("markers", "P1: mark test as Priority 1 (High)")
+    config.addinivalue_line("markers", "P2: mark test as Priority 2 (Medium)")
+    config.addinivalue_line("markers", "P3: mark test as Priority 3 (Low)")
 
 
 # ==================== Helper Fixtures ====================
 
-@pytest.fixture(scope='session')
+
+@pytest.fixture(scope="session")
 def test_config():
     """
     Test configuration fixture.
@@ -511,7 +494,7 @@ def test_config():
     return TestConfig
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def debug_helper(driver):
     """
     Debug helper fixture.
@@ -533,7 +516,8 @@ def debug_helper(driver):
 
 # ==================== Verification Fixtures ====================
 
-@pytest.fixture(scope='session')
+
+@pytest.fixture(scope="session")
 def ssh_helper():
     """
     SSH Helper fixture for backend operations.
@@ -578,7 +562,7 @@ def ssh_helper():
             logger.info("✓ SSH connection closed")
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def backend_verifier(ssh_helper):
     """
     Backend Verification fixture.
@@ -617,7 +601,7 @@ def backend_verifier(ssh_helper):
     return verifier
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def ui_verifier(driver):
     """
     UI Verification fixture.
@@ -649,7 +633,7 @@ def ui_verifier(driver):
     return verifier
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def log_verifier(ssh_helper):
     """
     Log Verification fixture.
@@ -683,25 +667,33 @@ def log_verifier(ssh_helper):
 
     return verifier
 
+
 # ==================== Workflow Fixtures ====================
 
-@pytest.fixture(scope='function')
+
+@pytest.fixture(scope="function")
 def update_workflow(driver, backend_verifier, ui_verifier, log_verifier):
     from frameworks.workflows.update_workflow import UpdateWorkflow
+
     return UpdateWorkflow(driver, backend_verifier, ui_verifier, log_verifier)
 
-@pytest.fixture(scope='function')
+
+@pytest.fixture(scope="function")
 def rollback_workflow(driver, backend_verifier, ui_verifier, log_verifier):
     from frameworks.workflows.rollback_workflow import RollbackWorkflow
+
     return RollbackWorkflow(driver, backend_verifier, ui_verifier, log_verifier)
 
-@pytest.fixture(scope='function')
+
+@pytest.fixture(scope="function")
 def verification_workflow(driver, backend_verifier, ui_verifier, log_verifier):
     from frameworks.workflows.verification_workflow import VerificationWorkflow
+
     return VerificationWorkflow(driver, backend_verifier, ui_verifier, log_verifier)
 
-@pytest.fixture(scope='function')
+
+@pytest.fixture(scope="function")
 def setup_workflow(driver, backend_verifier, ui_verifier):
     from frameworks.workflows.setup_workflow import SetupWorkflow
-    return SetupWorkflow(driver, backend_verifier, ui_verifier)
 
+    return SetupWorkflow(driver, backend_verifier, ui_verifier)

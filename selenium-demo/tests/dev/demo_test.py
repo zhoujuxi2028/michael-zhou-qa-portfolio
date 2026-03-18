@@ -24,21 +24,22 @@ Usage:
     pytest demo_test.py -v --html=reports/demo_report.html
 """
 
-import pytest
+import os
 import time
+
+import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.firefox.service import Service as FirefoxService
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from selenium.webdriver.support import expected_conditions as EC  # noqa: N812
+from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.firefox import GeckoDriverManager
-import os
-
 
 # ==================== Fixtures ====================
 
-@pytest.fixture(scope='function')
+
+@pytest.fixture(scope="function")
 def demo_driver():
     """
     Create a WebDriver instance for demo purposes.
@@ -54,15 +55,15 @@ def demo_driver():
     options = FirefoxOptions()
 
     # Enable headless mode if specified
-    headless = os.getenv('HEADLESS', 'true').lower() == 'true'
+    headless = os.getenv("HEADLESS", "true").lower() == "true"
     if headless:
-        options.add_argument('--headless')
+        options.add_argument("--headless")
         print("   ✓ Headless mode enabled")
 
     # Additional options for stability
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
-    options.set_preference('browser.privatebrowsing.autostart', True)
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.set_preference("browser.privatebrowsing.autostart", True)
 
     # Create driver
     service = FirefoxService(GeckoDriverManager().install())
@@ -82,6 +83,7 @@ def demo_driver():
 
 
 # ==================== Demo Page Object ====================
+
 
 class DemoPage:
     """
@@ -112,17 +114,16 @@ class DemoPage:
     def find_element_by_tag(self, tag):
         """Find element by tag name (demo purpose)"""
         try:
-            element = self.wait.until(
-                EC.presence_of_element_located((By.TAG_NAME, tag))
-            )
+            element = self.wait.until(EC.presence_of_element_located((By.TAG_NAME, tag)))
             print(f"   ✓ Found element: <{tag}>")
             return element
-        except Exception as e:
+        except Exception:
             print(f"   ✗ Element not found: <{tag}>")
             return None
 
 
 # ==================== Demo Tests ====================
+
 
 class TestSeleniumFrameworkDemo:
     """
@@ -141,9 +142,9 @@ class TestSeleniumFrameworkDemo:
         - WebDriver navigation
         - Page title verification
         """
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TEST: Basic Navigation (Page Object Model Demo)")
-        print("="*70)
+        print("=" * 70)
 
         # Use page object
         page = DemoPage(demo_driver)
@@ -164,9 +165,9 @@ class TestSeleniumFrameworkDemo:
         - WebDriverWait usage
         - Element verification
         """
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TEST: Element Interaction (Wait Strategies Demo)")
-        print("="*70)
+        print("=" * 70)
 
         # Navigate and find elements
         page = DemoPage(demo_driver)
@@ -191,9 +192,9 @@ class TestSeleniumFrameworkDemo:
         - URL verification
         - Page state management
         """
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TEST: Multiple Pages (Navigation Demo)")
-        print("="*70)
+        print("=" * 70)
 
         page = DemoPage(demo_driver)
 
@@ -221,9 +222,9 @@ class TestSeleniumFrameworkDemo:
         - File system operations
         - Artifact generation
         """
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TEST: Screenshot Capture (Debug Artifacts Demo)")
-        print("="*70)
+        print("=" * 70)
 
         # Navigate to page
         page = DemoPage(demo_driver)
@@ -244,11 +245,12 @@ class TestSeleniumFrameworkDemo:
 
 # ==================== Demo Summary ====================
 
+
 def pytest_sessionfinish(session, exitstatus):
     """Print demo summary after test session"""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("🎯 DEMO SUMMARY")
-    print("="*70)
+    print("=" * 70)
     print("\n✅ Framework Capabilities Demonstrated:")
     print("   • Pytest fixtures (automatic setup/teardown)")
     print("   • Page Object Model design pattern")
@@ -270,7 +272,7 @@ def pytest_sessionfinish(session, exitstatus):
     print("   • Framework supports 77 test cases (3 core tests implemented)")
     print("   • Complete design documentation (1,200+ lines)")
     print("   • Production-ready Phase 1 (100% complete)")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
 
 if __name__ == "__main__":

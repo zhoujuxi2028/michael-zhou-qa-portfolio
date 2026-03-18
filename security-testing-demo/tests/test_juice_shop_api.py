@@ -5,7 +5,6 @@ Tests for REST API vulnerabilities in OWASP Juice Shop.
 Target: http://localhost:3000
 """
 
-import json
 import pytest
 import requests
 
@@ -45,8 +44,9 @@ class TestUnauthorizedAccess:
                     if endpoint == "/api/Users/" and len(data["data"]) > 0:
                         # Check if passwords are exposed (vulnerability)
                         for user in data["data"]:
-                            assert "password" not in user or user.get("password") is None, \
+                            assert "password" not in user or user.get("password") is None, (
                                 f"Password exposed in {endpoint}"
+                            )
 
     def test_user_data_endpoint_protection(self, juice_shop_url):
         """SEC-API-002: Verify user data endpoints are protected."""
@@ -57,8 +57,7 @@ class TestUnauthorizedAccess:
         )
 
         # Should require authentication
-        assert response.status_code in [401, 403, 404, 500], \
-            "Direct user access should be restricted"
+        assert response.status_code in [401, 403, 404, 500], "Direct user access should be restricted"
 
 
 @pytest.mark.juice_shop
@@ -89,8 +88,7 @@ class TestIDOR:
             # Vulnerability if we can access basket that isn't ours
             basket_id = data.get("data", {}).get("id", 0)
             # Note: This test documents the vulnerability if it exists
-            assert basket_id != 1 or "test" in email.lower(), \
-                "IDOR vulnerability: Can access other user's basket"
+            assert basket_id != 1 or "test" in email.lower(), "IDOR vulnerability: Can access other user's basket"
 
     @pytest.mark.xfail(reason="Juice Shop has IDOR vulnerability in order history")
     def test_order_history_idor(self, juice_shop_auth_session, juice_shop_url):
@@ -106,8 +104,9 @@ class TestIDOR:
 
         if response.status_code == 200:
             data = response.json()
-            assert "error" in str(data).lower() or data.get("data") is None, \
+            assert "error" in str(data).lower() or data.get("data") is None, (
                 "Should not expose other users' order history"
+            )
 
 
 @pytest.mark.juice_shop
@@ -156,8 +155,7 @@ class TestAPIInformationLeak:
 
         if response.status_code == 200:
             data = response.json()
-            assert "version" not in data, \
-                f"Version should not be disclosed without auth: {data.get('version')}"
+            assert "version" not in data, f"Version should not be disclosed without auth: {data.get('version')}"
 
 
 @pytest.mark.juice_shop
@@ -185,8 +183,7 @@ class TestHTTPMethodAbuse:
                         f"{juice_shop_url}/api/Users/1",
                         timeout=10,
                     )
-                    assert method_response.status_code in [401, 403, 405], \
-                        f"{method} method should be protected"
+                    assert method_response.status_code in [401, 403, 405], f"{method} method should be protected"
 
     @pytest.mark.xfail(reason="Juice Shop may not disable TRACE method")
     def test_trace_method_disabled(self, juice_shop_url):
@@ -200,8 +197,9 @@ class TestHTTPMethodAbuse:
         except requests.RequestException:
             pytest.skip("Juice Shop not available")
 
-        assert response.status_code in [405, 501], \
+        assert response.status_code in [405, 501], (
             f"TRACE method should be disabled (got status {response.status_code})"
+        )
 
 
 @pytest.mark.juice_shop
@@ -216,10 +214,7 @@ class TestRateLimiting:
         Sends multiple failed login attempts to check for rate limiting.
         """
         login_url = f"{juice_shop_url}/rest/user/login"
-        login_data = {
-            "email": "nonexistent@test.com",
-            "password": "wrongpassword"
-        }
+        login_data = {"email": "nonexistent@test.com", "password": "wrongpassword"}
 
         # Send 10 rapid requests
         responses = []
