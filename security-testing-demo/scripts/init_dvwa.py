@@ -2,6 +2,7 @@
 """Initialize DVWA database for CI environment."""
 
 import re
+
 import requests
 
 

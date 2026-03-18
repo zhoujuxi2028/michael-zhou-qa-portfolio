@@ -13,7 +13,6 @@ Reference: https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Fail
 import pytest
 import requests
 
-
 pytestmark = pytest.mark.logging
 
 
@@ -37,7 +36,7 @@ class TestLogInjection:
 
         for payload in injection_payloads:
             try:
-                response = http_session.get(
+                http_session.get(
                     config.TARGET_URL,
                     headers={"User-Agent": payload},
                     timeout=5,

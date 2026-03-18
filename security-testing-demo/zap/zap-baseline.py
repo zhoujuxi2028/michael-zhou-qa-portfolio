@@ -11,7 +11,6 @@ Usage:
 """
 
 import argparse
-import json
 import os
 import sys
 import time
@@ -238,16 +237,12 @@ def main():
     parser.add_argument("--zap-port", type=int, default=8090, help="ZAP port (default: 8090)")
     parser.add_argument("--api-key", default="", help="ZAP API key")
     parser.add_argument("--output", "-o", default="./reports", help="Output directory")
-    parser.add_argument(
-        "--report", "-r", default="html", choices=["html", "json", "xml"], help="Report format"
-    )
+    parser.add_argument("--report", "-r", default="html", choices=["html", "json", "xml"], help="Report format")
 
     args = parser.parse_args()
 
     # Run scan
-    scanner = ZAPBaselineScan(
-        zap_host=args.zap_host, zap_port=args.zap_port, api_key=args.api_key
-    )
+    scanner = ZAPBaselineScan(zap_host=args.zap_host, zap_port=args.zap_port, api_key=args.api_key)
 
     results = scanner.run(target=args.target, output_dir=args.output, report_format=args.report)
 

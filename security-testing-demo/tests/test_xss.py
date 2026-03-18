@@ -78,7 +78,7 @@ class TestReflectedXSS:
         is_raw = payload in response.text
 
         if is_raw and not is_encoded:
-            print(f"[!] XSS Vulnerability: Payload reflected without encoding")
+            print("[!] XSS Vulnerability: Payload reflected without encoding")
 
         assert is_encoded and not is_raw, "XSS payload should be HTML-encoded in output"
 

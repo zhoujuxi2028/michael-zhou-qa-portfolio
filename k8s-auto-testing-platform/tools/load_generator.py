@@ -97,7 +97,7 @@ class LoadGenerator:
 
         results = {"success": 0, "failure": 0, "allocations": []}
 
-        for i in range(count):
+        for _i in range(count):
             try:
                 response = self.session.get(url)
                 if response.status_code == 200:

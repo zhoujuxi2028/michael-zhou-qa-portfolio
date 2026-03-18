@@ -8,8 +8,8 @@ OWASP Top 10: A03:2021 - Injection
 """
 
 import time
+
 import pytest
-import requests
 
 
 class TestSQLInjection:
@@ -104,7 +104,7 @@ class TestSQLInjection:
                     successful_unions.append(payload)
 
         if successful_unions:
-            print(f"[!] UNION injection may be possible")
+            print("[!] UNION injection may be possible")
 
         assert len(successful_unions) == 0, "UNION injection should not be possible"
 
@@ -168,16 +168,12 @@ class TestSQLInjection:
         url = f"{config.DVWA_URL}/vulnerabilities/sqli_blind/"
 
         # Get baseline responses for true/false conditions
-        true_response = dvwa_session.get(
-            url, params={"id": "1' AND '1'='1", "Submit": "Submit"}
-        )
+        true_response = dvwa_session.get(url, params={"id": "1' AND '1'='1", "Submit": "Submit"})
 
         if "Login ::" in true_response.text:
             pytest.skip("DVWA session not maintained")
 
-        false_response = dvwa_session.get(
-            url, params={"id": "1' AND '1'='2", "Submit": "Submit"}
-        )
+        false_response = dvwa_session.get(url, params={"id": "1' AND '1'='2", "Submit": "Submit"})
 
         if "Login ::" in false_response.text:
             pytest.skip("DVWA session not maintained")
@@ -188,7 +184,7 @@ class TestSQLInjection:
 
         # Significant difference indicates boolean injection works
         if abs(true_len - false_len) > 50:
-            print(f"[!] Boolean-based blind SQL injection detected")
+            print("[!] Boolean-based blind SQL injection detected")
             print(f"    True condition response: {true_len} bytes")
             print(f"    False condition response: {false_len} bytes")
 

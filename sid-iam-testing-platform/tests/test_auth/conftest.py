@@ -2,18 +2,19 @@ import pytest
 
 from src.clients.auth_client import AuthClient
 from src.config import settings
+from src.constants.test_users import STUDENT_001
 
 
 @pytest.fixture
 def test_user():
     return {
-        "username": "student001",
-        "password": "pass123",
-        "uid": "student001",
-        "email": "student001@university.edu",
-        "display_name": "Test Student",
-        "roles": ["student"],
-        "tenant": "default",
+        "username": STUDENT_001["uid"],
+        "password": STUDENT_001["password"],
+        "uid": STUDENT_001["uid"],
+        "email": STUDENT_001["email"],
+        "display_name": STUDENT_001["display_name"],
+        "roles": list(STUDENT_001["roles"]),
+        "tenant": STUDENT_001["tenant"],
     }
 
 

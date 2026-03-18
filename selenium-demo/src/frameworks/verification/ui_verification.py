@@ -9,17 +9,13 @@ Author: QA Automation Team
 Version: 1.0.0
 """
 
-from typing import List, Optional, Tuple, Any
+from typing import Optional
+
 from selenium import webdriver
-from selenium.webdriver.remote.webelement import WebElement
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC  # noqa: N812
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import (
-    TimeoutException,
-    NoSuchElementException,
-    StaleElementReferenceException
-)
 
 from core.logging.test_logger import get_logger
 
@@ -59,9 +55,9 @@ class UIVerification:
 
     def verify_element_visible(
         self,
-        locator: Tuple[By, str],
+        locator: tuple[By, str],
         timeout: Optional[int] = None,
-        error_message: Optional[str] = None
+        error_message: Optional[str] = None,
     ) -> bool:
         """
         Verify element is visible on the page.
@@ -86,9 +82,7 @@ class UIVerification:
         logger.info(f"Verifying element visible: {by}={value}")
 
         try:
-            element = WebDriverWait(self.driver, timeout).until(
-                EC.visibility_of_element_located(locator)
-            )
+            WebDriverWait(self.driver, timeout).until(EC.visibility_of_element_located(locator))
 
             logger.info(f"✓ Element is visible: {by}={value}")
             return True
@@ -96,12 +90,10 @@ class UIVerification:
         except TimeoutException:
             msg = error_message or f"Element not visible: {by}={value} (timeout: {timeout}s)"
             logger.error(f"✗ {msg}")
-            raise AssertionError(msg)
+            raise AssertionError(msg) from None
 
     def verify_element_not_visible(
-        self,
-        locator: Tuple[By, str],
-        timeout: Optional[int] = None
+        self, locator: tuple[By, str], timeout: Optional[int] = None
     ) -> bool:
         """
         Verify element is not visible on the page.
@@ -122,21 +114,17 @@ class UIVerification:
         logger.info(f"Verifying element NOT visible: {by}={value}")
 
         try:
-            WebDriverWait(self.driver, timeout).until(
-                EC.invisibility_of_element_located(locator)
-            )
+            WebDriverWait(self.driver, timeout).until(EC.invisibility_of_element_located(locator))
 
             logger.info(f"✓ Element is not visible: {by}={value}")
             return True
 
         except TimeoutException:
             logger.error(f"✗ Element is still visible: {by}={value}")
-            raise AssertionError(f"Element is still visible: {by}={value}")
+            raise AssertionError(f"Element is still visible: {by}={value}") from None
 
     def verify_element_present(
-        self,
-        locator: Tuple[By, str],
-        timeout: Optional[int] = None
+        self, locator: tuple[By, str], timeout: Optional[int] = None
     ) -> bool:
         """
         Verify element is present in DOM (may not be visible).
@@ -157,24 +145,22 @@ class UIVerification:
         logger.info(f"Verifying element present in DOM: {by}={value}")
 
         try:
-            WebDriverWait(self.driver, timeout).until(
-                EC.presence_of_element_located(locator)
-            )
+            WebDriverWait(self.driver, timeout).until(EC.presence_of_element_located(locator))
 
             logger.info(f"✓ Element present in DOM: {by}={value}")
             return True
 
         except TimeoutException:
             logger.error(f"✗ Element not present in DOM: {by}={value}")
-            raise AssertionError(f"Element not present in DOM: {by}={value}")
+            raise AssertionError(f"Element not present in DOM: {by}={value}") from None
 
     # ==================== Text Verification ====================
 
     def verify_text_present(
         self,
         expected_text: str,
-        locator: Optional[Tuple[By, str]] = None,
-        timeout: Optional[int] = None
+        locator: Optional[tuple[By, str]] = None,
+        timeout: Optional[int] = None,
     ) -> bool:
         """
         Verify text is present on the page or in specific element.
@@ -207,7 +193,9 @@ class UIVerification:
 
             except TimeoutException:
                 logger.error(f"✗ Text '{expected_text}' not found in element")
-                raise AssertionError(f"Text '{expected_text}' not found in element {by}={value}")
+                raise AssertionError(
+                    f"Text '{expected_text}' not found in element {by}={value}"
+                ) from None
 
         else:
             logger.info(f"Verifying text '{expected_text}' on page")
@@ -222,10 +210,7 @@ class UIVerification:
                 raise AssertionError(f"Text '{expected_text}' not found on page")
 
     def verify_text_equals(
-        self,
-        locator: Tuple[By, str],
-        expected_text: str,
-        timeout: Optional[int] = None
+        self, locator: tuple[By, str], expected_text: str, timeout: Optional[int] = None
     ) -> bool:
         """
         Verify element text equals expected value exactly.
@@ -265,13 +250,10 @@ class UIVerification:
 
         except TimeoutException:
             logger.error(f"✗ Element not found: {by}={value}")
-            raise AssertionError(f"Element not found: {by}={value}")
+            raise AssertionError(f"Element not found: {by}={value}") from None
 
     def verify_text_contains(
-        self,
-        locator: Tuple[By, str],
-        expected_text: str,
-        timeout: Optional[int] = None
+        self, locator: tuple[By, str], expected_text: str, timeout: Optional[int] = None
     ) -> bool:
         """
         Verify element text contains expected value.
@@ -311,16 +293,16 @@ class UIVerification:
 
         except TimeoutException:
             logger.error(f"✗ Element not found: {by}={value}")
-            raise AssertionError(f"Element not found: {by}={value}")
+            raise AssertionError(f"Element not found: {by}={value}") from None
 
     # ==================== Attribute Verification ====================
 
     def verify_attribute_value(
         self,
-        locator: Tuple[By, str],
+        locator: tuple[By, str],
         attribute_name: str,
         expected_value: str,
-        timeout: Optional[int] = None
+        timeout: Optional[int] = None,
     ) -> bool:
         """
         Verify element attribute has expected value.
@@ -344,7 +326,9 @@ class UIVerification:
         timeout = timeout or self.default_timeout
         by, value = locator
 
-        logger.info(f"Verifying attribute '{attribute_name}' = '{expected_value}' for: {by}={value}")
+        logger.info(
+            f"Verifying attribute '{attribute_name}' = '{expected_value}' for: {by}={value}"
+        )
 
         try:
             element = WebDriverWait(self.driver, timeout).until(
@@ -358,8 +342,7 @@ class UIVerification:
                 return True
             else:
                 logger.error(
-                    f"✗ Attribute mismatch: "
-                    f"expected '{expected_value}', got '{actual_value}'"
+                    f"✗ Attribute mismatch: expected '{expected_value}', got '{actual_value}'"
                 )
                 raise AssertionError(
                     f"Attribute '{attribute_name}' mismatch for {by}={value}: "
@@ -368,12 +351,10 @@ class UIVerification:
 
         except TimeoutException:
             logger.error(f"✗ Element not found: {by}={value}")
-            raise AssertionError(f"Element not found: {by}={value}")
+            raise AssertionError(f"Element not found: {by}={value}") from None
 
     def verify_element_enabled(
-        self,
-        locator: Tuple[By, str],
-        timeout: Optional[int] = None
+        self, locator: tuple[By, str], timeout: Optional[int] = None
     ) -> bool:
         """
         Verify element is enabled (not disabled).
@@ -394,9 +375,7 @@ class UIVerification:
         logger.info(f"Verifying element enabled: {by}={value}")
 
         try:
-            element = WebDriverWait(self.driver, timeout).until(
-                EC.element_to_be_clickable(locator)
-            )
+            element = WebDriverWait(self.driver, timeout).until(EC.element_to_be_clickable(locator))
 
             if element.is_enabled():
                 logger.info(f"✓ Element is enabled: {by}={value}")
@@ -407,15 +386,12 @@ class UIVerification:
 
         except TimeoutException:
             logger.error(f"✗ Element not clickable: {by}={value}")
-            raise AssertionError(f"Element not clickable: {by}={value}")
+            raise AssertionError(f"Element not clickable: {by}={value}") from None
 
     # ==================== Page State Verification ====================
 
     def verify_page_title(
-        self,
-        expected_title: str,
-        exact_match: bool = True,
-        timeout: Optional[int] = None
+        self, expected_title: str, exact_match: bool = True, timeout: Optional[int] = None
     ) -> bool:
         """
         Verify page title.
@@ -438,13 +414,9 @@ class UIVerification:
 
         try:
             if exact_match:
-                WebDriverWait(self.driver, timeout).until(
-                    EC.title_is(expected_title)
-                )
+                WebDriverWait(self.driver, timeout).until(EC.title_is(expected_title))
             else:
-                WebDriverWait(self.driver, timeout).until(
-                    EC.title_contains(expected_title)
-                )
+                WebDriverWait(self.driver, timeout).until(EC.title_contains(expected_title))
 
             actual_title = self.driver.title
             logger.info(f"✓ Page title verified: '{actual_title}'")
@@ -452,14 +424,14 @@ class UIVerification:
 
         except TimeoutException:
             actual_title = self.driver.title
-            logger.error(f"✗ Page title mismatch: expected '{expected_title}', got '{actual_title}'")
-            raise AssertionError(f"Page title mismatch: expected '{expected_title}', got '{actual_title}'")
+            logger.error(
+                f"✗ Page title mismatch: expected '{expected_title}', got '{actual_title}'"
+            )
+            raise AssertionError(
+                f"Page title mismatch: expected '{expected_title}', got '{actual_title}'"
+            ) from None
 
-    def verify_url_contains(
-        self,
-        expected_url_part: str,
-        timeout: Optional[int] = None
-    ) -> bool:
+    def verify_url_contains(self, expected_url_part: str, timeout: Optional[int] = None) -> bool:
         """
         Verify current URL contains expected string.
 
@@ -478,9 +450,7 @@ class UIVerification:
         logger.info(f"Verifying URL contains: '{expected_url_part}'")
 
         try:
-            WebDriverWait(self.driver, timeout).until(
-                EC.url_contains(expected_url_part)
-            )
+            WebDriverWait(self.driver, timeout).until(EC.url_contains(expected_url_part))
 
             current_url = self.driver.current_url
             logger.info(f"✓ URL verified: {current_url}")
@@ -489,15 +459,14 @@ class UIVerification:
         except TimeoutException:
             current_url = self.driver.current_url
             logger.error(f"✗ URL does not contain '{expected_url_part}': {current_url}")
-            raise AssertionError(f"URL does not contain '{expected_url_part}': {current_url}")
+            raise AssertionError(
+                f"URL does not contain '{expected_url_part}': {current_url}"
+            ) from None
 
     # ==================== Multi-Element Verification ====================
 
     def verify_elements_count(
-        self,
-        locator: Tuple[By, str],
-        expected_count: int,
-        timeout: Optional[int] = None
+        self, locator: tuple[By, str], expected_count: int, timeout: Optional[int] = None
     ) -> bool:
         """
         Verify number of elements matching locator.
@@ -520,9 +489,7 @@ class UIVerification:
 
         try:
             # Wait for at least one element to be present
-            WebDriverWait(self.driver, timeout).until(
-                EC.presence_of_element_located(locator)
-            )
+            WebDriverWait(self.driver, timeout).until(EC.presence_of_element_located(locator))
 
             elements = self.driver.find_elements(by, value)
             actual_count = len(elements)
@@ -531,7 +498,9 @@ class UIVerification:
                 logger.info(f"✓ Element count matches: {actual_count}")
                 return True
             else:
-                logger.error(f"✗ Element count mismatch: expected {expected_count}, got {actual_count}")
+                logger.error(
+                    f"✗ Element count mismatch: expected {expected_count}, got {actual_count}"
+                )
                 raise AssertionError(
                     f"Element count mismatch for {by}={value}: "
                     f"expected {expected_count}, got {actual_count}"
@@ -543,15 +512,11 @@ class UIVerification:
                 logger.info("✓ No elements found (as expected)")
                 return True
             else:
-                raise AssertionError(f"No elements found: {by}={value}")
+                raise AssertionError(f"No elements found: {by}={value}") from None
 
     # ==================== Utility Methods ====================
 
-    def get_element_text(
-        self,
-        locator: Tuple[By, str],
-        timeout: Optional[int] = None
-    ) -> str:
+    def get_element_text(self, locator: tuple[By, str], timeout: Optional[int] = None) -> str:
         """
         Get element text with logging.
 

@@ -11,11 +11,11 @@ Version: 1.0.0
 """
 
 from .backend_verification import BackendVerification
-from .ui_verification import UIVerification
 from .log_verification import LogVerification
+from .ui_verification import UIVerification
 
 __all__ = [
-    'BackendVerification',
-    'UIVerification',
-    'LogVerification',
+    "BackendVerification",
+    "UIVerification",
+    "LogVerification",
 ]

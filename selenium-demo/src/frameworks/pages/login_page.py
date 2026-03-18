@@ -12,12 +12,14 @@ Version: 1.0.0
 """
 
 from typing import Optional
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 
-from .base_page import BasePage
 from core.config.test_config import TestConfig
 from core.logging.test_logger import TestLogger
+
+from .base_page import BasePage
 
 
 class LoginPage(BasePage):
@@ -40,23 +42,23 @@ class LoginPage(BasePage):
 
     # Login form elements (Updated: 2026-02-11 - Fix ISSUE-001)
     # Actual HTML: <input name=uid>, <input name=passwd>, <input name=pwd>
-    USERNAME_INPUT = (By.NAME, 'uid')           # Fixed: userid → uid
-    PASSWORD_INPUT = (By.NAME, 'passwd')        # Fixed: password → passwd
-    LOGIN_BUTTON = (By.NAME, 'pwd')             # Fixed: submit → pwd
+    USERNAME_INPUT = (By.NAME, "uid")  # Fixed: userid → uid
+    PASSWORD_INPUT = (By.NAME, "passwd")  # Fixed: password → passwd
+    LOGIN_BUTTON = (By.NAME, "pwd")  # Fixed: submit → pwd
 
     # Alternative locators (fallback to legacy names if needed)
-    USERNAME_INPUT_ALT = (By.NAME, 'userid')    # Legacy fallback
-    PASSWORD_INPUT_ALT = (By.NAME, 'password')  # Legacy fallback
+    USERNAME_INPUT_ALT = (By.NAME, "userid")  # Legacy fallback
+    PASSWORD_INPUT_ALT = (By.NAME, "password")  # Legacy fallback
 
     # Error messages
-    ERROR_MESSAGE = (By.CLASS_NAME, 'error')
+    ERROR_MESSAGE = (By.CLASS_NAME, "error")
     ERROR_MESSAGE_ALT = (By.XPATH, "//*[contains(@class, 'error')]")
 
     # Post-login validation
-    LOGOUT_LINK = (By.LINK_TEXT, 'Logout')
-    TOPHEAD_FRAME = 'tophead'
-    LEFT_FRAME = 'left'
-    RIGHT_FRAME = 'right'
+    LOGOUT_LINK = (By.LINK_TEXT, "Logout")
+    TOPHEAD_FRAME = "tophead"
+    LEFT_FRAME = "left"
+    RIGHT_FRAME = "right"
 
     def __init__(self, driver: WebDriver):
         """
@@ -78,7 +80,7 @@ class LoginPage(BasePage):
             >>> login_page.navigate()
         """
         TestLogger.log_step("Navigate to login page")
-        self.navigate_to(TestConfig.URLS['login'])
+        self.navigate_to(TestConfig.URLS["login"])
         self.logger.info(f"✓ Navigated to login page: {TestConfig.URLS['login']}")
 
     # ==================== Actions ====================
@@ -248,14 +250,14 @@ class LoginPage(BasePage):
 
         try:
             # Check 1: Look for frames (IWSVA uses 3-frame structure after login)
-            frames = self.find_elements(By.TAG_NAME, 'frame', timeout=5)
+            frames = self.find_elements(By.TAG_NAME, "frame", timeout=5)
             if len(frames) == 3:
                 self.logger.debug("✓ Found 3 frames (expected after login)")
                 return True
 
             # Check 2: Verify we're not on login page anymore
             current_url = self.get_current_url()
-            if 'login.jsp' not in current_url:
+            if "login.jsp" not in current_url:
                 self.logger.debug(f"✓ Redirected from login page to: {current_url}")
                 return True
 

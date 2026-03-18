@@ -587,9 +587,9 @@ class TestNetworkChaos:
             # Post-recovery latency should be within 2x of baseline
             baseline_avg = baseline.metadata.get("avg_ms", 100)
             post_avg = post_recovery.metadata.get("avg_ms", 100)
-            assert (
-                post_avg < baseline_avg * 3
-            ), f"Post-recovery latency ({post_avg}ms) much higher than baseline ({baseline_avg}ms)"
+            assert post_avg < baseline_avg * 3, (
+                f"Post-recovery latency ({post_avg}ms) much higher than baseline ({baseline_avg}ms)"
+            )
 
     def test_tc_chaos_012_network_policy_smoke(
         self,

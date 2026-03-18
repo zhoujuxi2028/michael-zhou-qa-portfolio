@@ -25,7 +25,7 @@ def k8s_client():
         try:
             config.load_incluster_config()
             logger.info("Loaded in-cluster config")
-        except Exception as e:
+        except Exception:
             pytest.skip("Kubernetes cluster not available")
 
     return client

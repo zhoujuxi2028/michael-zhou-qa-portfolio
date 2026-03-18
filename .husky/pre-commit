@@ -1,2 +1,11 @@
 # Validate Postman files on commit
 cd api-testing-demo && npm run validate
+
+# Lint Python files with ruff
+cd ..
+CHANGED_PY=$(git diff --cached --name-only --diff-filter=ACM -- '*.py' | grep -v 'venv/')
+if [ -n "$CHANGED_PY" ]; then
+    echo "Running ruff on staged Python files..."
+    ./venv/bin/ruff check $CHANGED_PY
+    ./venv/bin/ruff format --check $CHANGED_PY
+fi

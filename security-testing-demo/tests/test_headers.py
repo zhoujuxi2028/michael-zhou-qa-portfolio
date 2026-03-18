@@ -138,7 +138,7 @@ class TestSecurityHeaders:
             csp = response.headers.get("Content-Security-Policy", "")
 
             if csp:
-                print(f"[+] CSP header present")
+                print("[+] CSP header present")
 
                 # Check for important directives
                 directives = {
@@ -150,7 +150,7 @@ class TestSecurityHeaders:
                     "frame-ancestors": "Controls embedding",
                 }
 
-                for directive, desc in directives.items():
+                for directive, _desc in directives.items():
                     if directive in csp.lower():
                         print(f"    [+] {directive}: defined")
                     else:

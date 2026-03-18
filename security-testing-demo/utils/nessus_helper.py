@@ -5,13 +5,14 @@ This module provides a high-level interface to interact with Nessus
 vulnerability scanner for security testing purposes.
 """
 
+import logging
 import os
 import time
-import logging
-from typing import List, Dict, Optional, Any
+from typing import Any
 
 try:
     from tenable.nessus import Nessus
+
     TENABLE_AVAILABLE = True
 except ImportError:
     TENABLE_AVAILABLE = False
@@ -49,7 +50,7 @@ class NessusHelper:
         self.access_key = access_key or os.getenv("NESSUS_ACCESS_KEY", "")
         self.secret_key = secret_key or os.getenv("NESSUS_SECRET_KEY", "")
 
-        self._client: Optional[Any] = None
+        self._client: Any | None = None
         self._authenticated = False
 
     @property
@@ -172,7 +173,7 @@ class NessusHelper:
         targets: str,
         policy: str = "Basic Network Scan",
         description: str = "",
-    ) -> Optional[int]:
+    ) -> int | None:
         """
         Create a new scan.
 
@@ -220,7 +221,7 @@ class NessusHelper:
             logger.error(f"Failed to create scan: {e}")
             return None
 
-    def launch_scan(self, scan_id: int) -> Optional[str]:
+    def launch_scan(self, scan_id: int) -> str | None:
         """
         Launch an existing scan.
 
@@ -242,7 +243,7 @@ class NessusHelper:
             logger.error(f"Failed to launch scan {scan_id}: {e}")
             return None
 
-    def get_scan_status(self, scan_id: int) -> Dict[str, Any]:
+    def get_scan_status(self, scan_id: int) -> dict[str, Any]:
         """
         Get current status of a scan.
 
@@ -301,7 +302,7 @@ class NessusHelper:
         logger.warning(f"Scan {scan_id} timed out after {timeout}s")
         return False
 
-    def get_vulnerabilities(self, scan_id: int) -> List[Dict[str, Any]]:
+    def get_vulnerabilities(self, scan_id: int) -> list[dict[str, Any]]:
         """
         Get vulnerabilities found in a scan.
 
@@ -323,15 +324,17 @@ class NessusHelper:
                 host_vulns = self._client.scans.host_details(scan_id, host_id)
 
                 for vuln in host_vulns.get("vulnerabilities", []):
-                    vulnerabilities.append({
-                        "host": host.get("hostname", host.get("host_ip", "")),
-                        "host_id": host_id,
-                        "plugin_id": vuln.get("plugin_id"),
-                        "plugin_name": vuln.get("plugin_name"),
-                        "severity": vuln.get("severity"),
-                        "severity_name": self._severity_name(vuln.get("severity", 0)),
-                        "count": vuln.get("count", 1),
-                    })
+                    vulnerabilities.append(
+                        {
+                            "host": host.get("hostname", host.get("host_ip", "")),
+                            "host_id": host_id,
+                            "plugin_id": vuln.get("plugin_id"),
+                            "plugin_name": vuln.get("plugin_name"),
+                            "severity": vuln.get("severity"),
+                            "severity_name": self._severity_name(vuln.get("severity", 0)),
+                            "count": vuln.get("count", 1),
+                        }
+                    )
 
             return vulnerabilities
 
@@ -350,7 +353,7 @@ class NessusHelper:
         }
         return severity_map.get(severity, "Unknown")
 
-    def export_report(self, scan_id: int, format: str = "html") -> Optional[bytes]:
+    def export_report(self, scan_id: int, format: str = "html") -> bytes | None:
         """
         Export scan report in specified format.
 
@@ -391,7 +394,7 @@ class NessusHelper:
             logger.error(f"Failed to export report: {e}")
             return None
 
-    def get_scan_summary(self, scan_id: int) -> Dict[str, Any]:
+    def get_scan_summary(self, scan_id: int) -> dict[str, Any]:
         """
         Get summary statistics for a scan.
 
@@ -439,7 +442,7 @@ class NessusHelper:
             logger.error(f"Failed to get scan summary: {e}")
             return {}
 
-    def list_scans(self) -> List[Dict[str, Any]]:
+    def list_scans(self) -> list[dict[str, Any]]:
         """
         List all available scans.
 

@@ -6,6 +6,7 @@ import uuid
 from datetime import datetime, timezone
 
 from src.config import settings
+from src.constants.test_users import STUDENT_001, STUDENT_002, TEACHER_001
 
 logger = logging.getLogger(__name__)
 
@@ -71,27 +72,27 @@ class MockLDAPServer:
                 "ou": "departments",
                 "objectClass": ["top", "organizationalUnit"],
             },
-            f"uid=student001,ou=students,{self.base_dn}": {
-                "uid": "student001",
-                "cn": "Test Student",
-                "mail": "student001@university.edu",
-                "userPassword": "pass123",
+            f"uid={STUDENT_001['uid']},ou=students,{self.base_dn}": {
+                "uid": STUDENT_001["uid"],
+                "cn": STUDENT_001["display_name"],
+                "mail": STUDENT_001["email"],
+                "userPassword": STUDENT_001["password"],
                 "objectClass": ["top", "person", "inetOrgPerson"],
                 "memberOf": [f"cn=cs101,ou=courses,{self.base_dn}"],
             },
-            f"uid=student002,ou=students,{self.base_dn}": {
-                "uid": "student002",
-                "cn": "Second Student",
-                "mail": "student002@university.edu",
-                "userPassword": "pass456",
+            f"uid={STUDENT_002['uid']},ou=students,{self.base_dn}": {
+                "uid": STUDENT_002["uid"],
+                "cn": STUDENT_002["display_name"],
+                "mail": STUDENT_002["email"],
+                "userPassword": STUDENT_002["password"],
                 "objectClass": ["top", "person", "inetOrgPerson"],
                 "memberOf": [],
             },
-            f"uid=teacher001,ou=teachers,{self.base_dn}": {
-                "uid": "teacher001",
-                "cn": "Test Teacher",
-                "mail": "teacher001@university.edu",
-                "userPassword": "teach123",
+            f"uid={TEACHER_001['uid']},ou=teachers,{self.base_dn}": {
+                "uid": TEACHER_001["uid"],
+                "cn": TEACHER_001["display_name"],
+                "mail": TEACHER_001["email"],
+                "userPassword": TEACHER_001["password"],
                 "objectClass": ["top", "person", "inetOrgPerson"],
                 "title": "Professor",
             },
