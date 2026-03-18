@@ -8,16 +8,16 @@ Author: QA Automation Team
 Version: 1.0.0
 """
 
-from typing import Dict, Any, Optional, List
 from datetime import datetime
+from typing import Any, Optional
 
 from selenium import webdriver
 
 from core.logging.test_logger import get_logger
 from frameworks.pages.system_update_page import SystemUpdatePage
 from frameworks.verification.backend_verification import BackendVerification
-from frameworks.verification.ui_verification import UIVerification
 from frameworks.verification.log_verification import LogVerification
+from frameworks.verification.ui_verification import UIVerification
 
 logger = get_logger(__name__)
 
@@ -49,7 +49,7 @@ class VerificationWorkflow:
         driver: webdriver.Remote,
         backend_verifier: Optional[BackendVerification] = None,
         ui_verifier: Optional[UIVerification] = None,
-        log_verifier: Optional[LogVerification] = None
+        log_verifier: Optional[LogVerification] = None,
     ):
         """
         Initialize Verification Workflow.
@@ -76,8 +76,8 @@ class VerificationWorkflow:
         expected_version: Optional[str] = None,
         check_ui: bool = True,
         check_backend: bool = True,
-        check_logs: bool = True
-    ) -> Dict[str, Any]:
+        check_logs: bool = True,
+    ) -> dict[str, Any]:
         """
         Perform comprehensive multi-level component verification.
 
@@ -106,48 +106,48 @@ class VerificationWorkflow:
         logger.info("=" * 80)
 
         result = {
-            'component_id': component_id,
-            'expected_version': expected_version,
-            'all_passed': True,
-            'ui_verification': {},
-            'backend_verification': {},
-            'log_verification': {},
-            'failures': [],
-            'timestamp': datetime.now().isoformat()
+            "component_id": component_id,
+            "expected_version": expected_version,
+            "all_passed": True,
+            "ui_verification": {},
+            "backend_verification": {},
+            "log_verification": {},
+            "failures": [],
+            "timestamp": datetime.now().isoformat(),
         }
 
         # UI Level Verification
         if check_ui:
             logger.info("UI Level Verification")
             ui_result = self._verify_ui_level(component_id)
-            result['ui_verification'] = ui_result
+            result["ui_verification"] = ui_result
 
-            if not ui_result.get('passed', False):
-                result['all_passed'] = False
-                result['failures'].append('UI verification failed')
+            if not ui_result.get("passed", False):
+                result["all_passed"] = False
+                result["failures"].append("UI verification failed")
 
         # Backend Level Verification
         if check_backend and self.backend_verifier:
             logger.info("Backend Level Verification")
             backend_result = self._verify_backend_level(component_id, expected_version)
-            result['backend_verification'] = backend_result
+            result["backend_verification"] = backend_result
 
-            if not backend_result.get('passed', False):
-                result['all_passed'] = False
-                result['failures'].append('Backend verification failed')
+            if not backend_result.get("passed", False):
+                result["all_passed"] = False
+                result["failures"].append("Backend verification failed")
 
         # Log Level Verification
         if check_logs and self.log_verifier:
             logger.info("Log Level Verification")
             log_result = self._verify_log_level(component_id)
-            result['log_verification'] = log_result
+            result["log_verification"] = log_result
 
-            if not log_result.get('passed', False):
-                result['all_passed'] = False
-                result['failures'].append('Log verification failed')
+            if not log_result.get("passed", False):
+                result["all_passed"] = False
+                result["failures"].append("Log verification failed")
 
         # Summary
-        if result['all_passed']:
+        if result["all_passed"]:
             logger.info("=" * 80)
             logger.info(f"✓ ALL VERIFICATIONS PASSED: {component_id}")
             logger.info("=" * 80)
@@ -159,13 +159,9 @@ class VerificationWorkflow:
 
         return result
 
-    def _verify_ui_level(self, component_id: str) -> Dict[str, Any]:
+    def _verify_ui_level(self, component_id: str) -> dict[str, Any]:
         """UI level verification."""
-        result = {
-            'level': 'ui',
-            'passed': True,
-            'checks': []
-        }
+        result = {"level": "ui", "passed": True, "checks": []}
 
         try:
             # Navigate to System Updates page
@@ -174,109 +170,85 @@ class VerificationWorkflow:
             # Verify page loaded
             self.ui_verifier.verify_page_title("System Update", exact_match=False)
 
-            result['checks'].append({
-                'name': 'Page loaded',
-                'passed': True
-            })
+            result["checks"].append({"name": "Page loaded", "passed": True})
 
         except Exception as e:
-            result['passed'] = False
-            result['error'] = str(e)
-            result['checks'].append({
-                'name': 'Page loaded',
-                'passed': False,
-                'error': str(e)
-            })
+            result["passed"] = False
+            result["error"] = str(e)
+            result["checks"].append({"name": "Page loaded", "passed": False, "error": str(e)})
 
         return result
 
     def _verify_backend_level(
-        self,
-        component_id: str,
-        expected_version: Optional[str]
-    ) -> Dict[str, Any]:
+        self, component_id: str, expected_version: Optional[str]
+    ) -> dict[str, Any]:
         """Backend level verification."""
-        result = {
-            'level': 'backend',
-            'passed': True,
-            'checks': [],
-            'current_version': None
-        }
+        result = {"level": "backend", "passed": True, "checks": [], "current_version": None}
 
         try:
             # Get component version
             version = self.backend_verifier.get_component_version_from_ini(component_id)
-            result['current_version'] = version
+            result["current_version"] = version
 
             if version:
-                result['checks'].append({
-                    'name': 'Version retrieved',
-                    'passed': True,
-                    'value': version
-                })
+                result["checks"].append(
+                    {"name": "Version retrieved", "passed": True, "value": version}
+                )
 
                 # Verify against expected version if provided
                 if expected_version:
                     version_match = version == expected_version
-                    result['checks'].append({
-                        'name': 'Version match',
-                        'passed': version_match,
-                        'expected': expected_version,
-                        'actual': version
-                    })
+                    result["checks"].append(
+                        {
+                            "name": "Version match",
+                            "passed": version_match,
+                            "expected": expected_version,
+                            "actual": version,
+                        }
+                    )
 
                     if not version_match:
-                        result['passed'] = False
+                        result["passed"] = False
             else:
-                result['passed'] = False
-                result['checks'].append({
-                    'name': 'Version retrieved',
-                    'passed': False,
-                    'error': 'Version not found'
-                })
+                result["passed"] = False
+                result["checks"].append(
+                    {"name": "Version retrieved", "passed": False, "error": "Version not found"}
+                )
 
         except Exception as e:
-            result['passed'] = False
-            result['error'] = str(e)
+            result["passed"] = False
+            result["error"] = str(e)
 
         return result
 
-    def _verify_log_level(self, component_id: str) -> Dict[str, Any]:
+    def _verify_log_level(self, component_id: str) -> dict[str, Any]:
         """Log level verification."""
-        result = {
-            'level': 'log',
-            'passed': True,
-            'checks': [],
-            'error_count': 0
-        }
+        result = {"level": "log", "passed": True, "checks": [], "error_count": 0}
 
         try:
             # Check for errors in logs
             no_errors, errors = self.log_verifier.verify_no_errors_for_component(
-                component_id,
-                max_lines=500
+                component_id, max_lines=500
             )
 
-            result['error_count'] = len(errors)
-            result['checks'].append({
-                'name': 'No errors',
-                'passed': no_errors,
-                'error_count': len(errors)
-            })
+            result["error_count"] = len(errors)
+            result["checks"].append(
+                {"name": "No errors", "passed": no_errors, "error_count": len(errors)}
+            )
 
             if not no_errors:
-                result['passed'] = False
-                result['errors'] = errors[:5]  # First 5 errors
+                result["passed"] = False
+                result["errors"] = errors[:5]  # First 5 errors
 
         except Exception as e:
-            result['passed'] = False
-            result['error'] = str(e)
+            result["passed"] = False
+            result["error"] = str(e)
 
         return result
 
     # ==================== System-Level Verification ====================
 
-    def verify_system_health(self) -> Dict[str, Any]:
+    def verify_system_health(self) -> dict[str, Any]:
         """
         Perform comprehensive system health verification.
 
@@ -298,63 +270,59 @@ class VerificationWorkflow:
         logger.info("=" * 80)
 
         result = {
-            'healthy': True,
-            'checks': {},
-            'issues': [],
-            'timestamp': datetime.now().isoformat()
+            "healthy": True,
+            "checks": {},
+            "issues": [],
+            "timestamp": datetime.now().isoformat(),
         }
 
         if self.backend_verifier:
             # Kernel version
             try:
                 kernel = self.backend_verifier.get_kernel_version()
-                result['checks']['kernel'] = {
-                    'passed': True,
-                    'value': kernel
-                }
+                result["checks"]["kernel"] = {"passed": True, "value": kernel}
                 logger.info(f"Kernel: {kernel}")
             except Exception as e:
-                result['healthy'] = False
-                result['issues'].append(f"Kernel check failed: {e}")
-                result['checks']['kernel'] = {'passed': False, 'error': str(e)}
+                result["healthy"] = False
+                result["issues"].append(f"Kernel check failed: {e}")
+                result["checks"]["kernel"] = {"passed": False, "error": str(e)}
 
             # Service status
             try:
                 is_running = self.backend_verifier.is_iwss_service_running()
-                result['checks']['service'] = {
-                    'passed': is_running,
-                    'running': is_running
-                }
+                result["checks"]["service"] = {"passed": is_running, "running": is_running}
 
                 if not is_running:
-                    result['healthy'] = False
-                    result['issues'].append("IWSS service is not running")
+                    result["healthy"] = False
+                    result["issues"].append("IWSS service is not running")
 
                 logger.info(f"IWSS Service: {'Running' if is_running else 'Not running'}")
             except Exception as e:
-                result['healthy'] = False
-                result['issues'].append(f"Service check failed: {e}")
+                result["healthy"] = False
+                result["issues"].append(f"Service check failed: {e}")
 
         if self.log_verifier:
             # Recent errors
             try:
                 summary = self.log_verifier.get_log_summary(max_lines=500)
-                result['checks']['logs'] = {
-                    'passed': summary['error_count'] == 0,
-                    'error_count': summary['error_count'],
-                    'warning_count': summary['warning_count']
+                result["checks"]["logs"] = {
+                    "passed": summary["error_count"] == 0,
+                    "error_count": summary["error_count"],
+                    "warning_count": summary["warning_count"],
                 }
 
-                if summary['error_count'] > 0:
-                    result['healthy'] = False
-                    result['issues'].append(f"{summary['error_count']} errors in recent logs")
+                if summary["error_count"] > 0:
+                    result["healthy"] = False
+                    result["issues"].append(f"{summary['error_count']} errors in recent logs")
 
-                logger.info(f"Logs: {summary['error_count']} errors, {summary['warning_count']} warnings")
+                logger.info(
+                    f"Logs: {summary['error_count']} errors, {summary['warning_count']} warnings"
+                )
             except Exception as e:
                 logger.warning(f"Log check failed: {e}")
 
         # Summary
-        if result['healthy']:
+        if result["healthy"]:
             logger.info("=" * 80)
             logger.info("✓ SYSTEM HEALTH: GOOD")
             logger.info("=" * 80)
@@ -369,10 +337,8 @@ class VerificationWorkflow:
     # ==================== Batch Verification ====================
 
     def verify_multiple_components(
-        self,
-        component_ids: List[str],
-        expected_versions: Optional[Dict[str, str]] = None
-    ) -> Dict[str, Any]:
+        self, component_ids: list[str], expected_versions: Optional[dict[str, str]] = None
+    ) -> dict[str, Any]:
         """
         Verify multiple components in batch.
 
@@ -394,11 +360,11 @@ class VerificationWorkflow:
         logger.info("=" * 80)
 
         result = {
-            'total_count': len(component_ids),
-            'passed_count': 0,
-            'failed_count': 0,
-            'component_results': {},
-            'timestamp': datetime.now().isoformat()
+            "total_count": len(component_ids),
+            "passed_count": 0,
+            "failed_count": 0,
+            "component_results": {},
+            "timestamp": datetime.now().isoformat(),
         }
 
         for component_id in component_ids:
@@ -411,20 +377,22 @@ class VerificationWorkflow:
                 expected_version=expected_ver,
                 check_ui=False,  # Skip UI for batch
                 check_backend=True,
-                check_logs=False  # Skip logs for batch
+                check_logs=False,  # Skip logs for batch
             )
 
-            result['component_results'][component_id] = comp_result
+            result["component_results"][component_id] = comp_result
 
-            if comp_result['all_passed']:
-                result['passed_count'] += 1
+            if comp_result["all_passed"]:
+                result["passed_count"] += 1
             else:
-                result['failed_count'] += 1
+                result["failed_count"] += 1
 
-        result['all_passed'] = result['failed_count'] == 0
+        result["all_passed"] = result["failed_count"] == 0
 
         logger.info("=" * 80)
-        logger.info(f"BATCH VERIFICATION COMPLETED: {result['passed_count']}/{result['total_count']} passed")
+        logger.info(
+            f"BATCH VERIFICATION COMPLETED: {result['passed_count']}/{result['total_count']} passed"
+        )
         logger.info("=" * 80)
 
         return result

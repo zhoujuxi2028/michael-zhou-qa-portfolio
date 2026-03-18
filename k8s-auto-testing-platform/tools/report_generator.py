@@ -12,7 +12,6 @@ import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
 
 
 @dataclass
@@ -22,8 +21,8 @@ class TestResult:
     name: str
     outcome: str  # passed, failed, skipped, error
     duration: float
-    markers: List[str] = field(default_factory=list)
-    error_message: Optional[str] = None
+    markers: list[str] = field(default_factory=list)
+    error_message: str | None = None
 
 
 @dataclass
@@ -36,8 +35,8 @@ class TestSummary:
     skipped: int = 0
     errors: int = 0
     duration: float = 0.0
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
+    start_time: datetime | None = None
+    end_time: datetime | None = None
 
 
 class ReportGenerator:
@@ -52,7 +51,7 @@ class ReportGenerator:
         """
         self.report_dir = Path(report_dir)
         self.report_dir.mkdir(exist_ok=True)
-        self.results: List[TestResult] = []
+        self.results: list[TestResult] = []
         self.summary = TestSummary()
 
     def parse_pytest_output(self, output: str) -> None:
@@ -156,7 +155,7 @@ class ReportGenerator:
         except Exception as e:
             print(f"Error parsing JUnit XML: {e}")
 
-    def generate_executive_summary(self) -> Dict:
+    def generate_executive_summary(self) -> dict:
         """
         Generate executive summary of test results
 
@@ -166,7 +165,7 @@ class ReportGenerator:
         pass_rate = (self.summary.passed / self.summary.total * 100) if self.summary.total > 0 else 0
 
         # Group by test category
-        categories: Dict[str, Dict] = {}
+        categories: dict[str, dict] = {}
         for result in self.results:
             # Extract category from test name (e.g., test_deployment, test_hpa)
             parts = result.name.split("::")
@@ -197,7 +196,7 @@ class ReportGenerator:
             "status": "PASSED" if self.summary.failed == 0 else "FAILED",
         }
 
-    def generate_html_report(self, output_path: Optional[str] = None) -> str:
+    def generate_html_report(self, output_path: str | None = None) -> str:
         """
         Generate enhanced HTML report
 
@@ -219,7 +218,7 @@ class ReportGenerator:
 
         return str(output_path)
 
-    def generate_json_report(self, output_path: Optional[str] = None) -> str:
+    def generate_json_report(self, output_path: str | None = None) -> str:
         """
         Generate JSON report
 
@@ -262,7 +261,7 @@ class ReportGenerator:
             minutes = int((seconds % 3600) // 60)
             return f"{hours}h {minutes}m"
 
-    def _render_html_template(self, summary: Dict) -> str:
+    def _render_html_template(self, summary: dict) -> str:
         """Render HTML report template"""
         status_color = "#28a745" if summary["status"] == "PASSED" else "#dc3545"
 
@@ -273,9 +272,9 @@ class ReportGenerator:
             categories_html += f"""
             <tr>
                 <td>{cat}</td>
-                <td>{stats.get('passed', 0)}</td>
-                <td>{stats.get('failed', 0)}</td>
-                <td>{stats.get('skipped', 0)}</td>
+                <td>{stats.get("passed", 0)}</td>
+                <td>{stats.get("failed", 0)}</td>
+                <td>{stats.get("skipped", 0)}</td>
                 <td>{cat_pass_rate:.1f}%</td>
             </tr>
             """
@@ -396,30 +395,30 @@ class ReportGenerator:
     <div class="container">
         <div class="header">
             <h1>K8S Auto Testing Platform</h1>
-            <p class="timestamp">Generated: {summary['timestamp']}</p>
-            <p class="timestamp">Duration: {summary['duration_formatted']}</p>
-            <span class="status-badge">{summary['status']}</span>
+            <p class="timestamp">Generated: {summary["timestamp"]}</p>
+            <p class="timestamp">Duration: {summary["duration_formatted"]}</p>
+            <span class="status-badge">{summary["status"]}</span>
         </div>
 
         <div class="metrics-grid">
             <div class="metric-card">
-                <div class="metric-value">{summary['summary']['total']}</div>
+                <div class="metric-value">{summary["summary"]["total"]}</div>
                 <div class="metric-label">Total Tests</div>
             </div>
             <div class="metric-card passed">
-                <div class="metric-value">{summary['summary']['passed']}</div>
+                <div class="metric-value">{summary["summary"]["passed"]}</div>
                 <div class="metric-label">Passed</div>
             </div>
             <div class="metric-card failed">
-                <div class="metric-value">{summary['summary']['failed']}</div>
+                <div class="metric-value">{summary["summary"]["failed"]}</div>
                 <div class="metric-label">Failed</div>
             </div>
             <div class="metric-card skipped">
-                <div class="metric-value">{summary['summary']['skipped']}</div>
+                <div class="metric-value">{summary["summary"]["skipped"]}</div>
                 <div class="metric-label">Skipped</div>
             </div>
             <div class="metric-card">
-                <div class="metric-value">{summary['summary']['pass_rate']}%</div>
+                <div class="metric-value">{summary["summary"]["pass_rate"]}%</div>
                 <div class="metric-label">Pass Rate</div>
             </div>
         </div>
@@ -427,7 +426,7 @@ class ReportGenerator:
         <div class="section">
             <h2>Test Progress</h2>
             <div class="progress-bar">
-                <div class="progress-fill" style="width: {summary['summary']['pass_rate']}%"></div>
+                <div class="progress-fill" style="width: {summary["summary"]["pass_rate"]}%"></div>
             </div>
         </div>
 
@@ -477,7 +476,7 @@ class ReportGenerator:
 
 def run_tests_and_generate_report(
     test_path: str = "tests/",
-    markers: Optional[str] = None,
+    markers: str | None = None,
     output_dir: str = "reports",
 ) -> int:
     """

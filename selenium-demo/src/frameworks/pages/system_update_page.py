@@ -12,13 +12,14 @@ Version: 1.0.0
 """
 
 import re
-from typing import Optional, Dict
+from typing import Optional
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 
-from .base_page import BasePage
-from core.config.test_config import TestConfig
 from core.logging.test_logger import TestLogger
+
+from .base_page import BasePage
 
 
 class SystemUpdatePage(BasePage):
@@ -46,17 +47,20 @@ class SystemUpdatePage(BasePage):
     # ==================== Locators ====================
 
     # Frame names
-    RIGHT_FRAME = 'right'
-    LEFT_FRAME = 'left'
-    TOPHEAD_FRAME = 'tophead'
+    RIGHT_FRAME = "right"
+    LEFT_FRAME = "left"
+    TOPHEAD_FRAME = "tophead"
 
     # Page elements (in right frame)
-    PAGE_BODY = (By.TAG_NAME, 'body')
-    PAGE_TITLE = (By.TAG_NAME, 'h1')
-    KERNEL_INFO_SECTION = (By.XPATH, "//*[contains(text(), 'kernel') or contains(text(), 'Kernel')]")
+    PAGE_BODY = (By.TAG_NAME, "body")
+    PAGE_TITLE = (By.TAG_NAME, "h1")
+    KERNEL_INFO_SECTION = (
+        By.XPATH,
+        "//*[contains(text(), 'kernel') or contains(text(), 'Kernel')]",
+    )
 
     # Regex pattern for kernel version
-    KERNEL_VERSION_PATTERN = r'(\d+\.\d+\.\d+-\d+\.\d+\.\d+\.el\d+[._]\d+\.x86_64)'
+    KERNEL_VERSION_PATTERN = r"(\d+\.\d+\.\d+-\d+\.\d+\.\d+\.el\d+[._]\d+\.x86_64)"
 
     def __init__(self, driver: WebDriver):
         """
@@ -88,6 +92,7 @@ class SystemUpdatePage(BasePage):
             >>> system_update_page.navigate()
         """
         import time
+
         TestLogger.log_step("Navigate to System Updates page via menu")
 
         # Step 1: Switch to left frame
@@ -97,19 +102,19 @@ class SystemUpdatePage(BasePage):
 
         # Step 2: Click Administration menu
         self.logger.debug("Clicking Administration menu...")
-        if not self.click_in_frame_by_text(self.LEFT_FRAME, 'Administration'):
+        if not self.click_in_frame_by_text(self.LEFT_FRAME, "Administration"):
             self.logger.error("✗ Failed to click Administration menu")
             return
 
         # Step 3: Wait for submenu to expand
         time.sleep(1)  # Allow animation to complete
         self.logger.debug("Waiting for System Updates submenu...")
-        if not self.wait_for_frame_content(self.LEFT_FRAME, 'System Update', timeout=5):
+        if not self.wait_for_frame_content(self.LEFT_FRAME, "System Update", timeout=5):
             self.logger.warning("System Updates submenu may not be visible")
 
         # Step 4: Click System Updates link
         self.logger.debug("Clicking System Updates link...")
-        if not self.click_link_in_frame(self.LEFT_FRAME, 'System Update'):
+        if not self.click_link_in_frame(self.LEFT_FRAME, "System Update"):
             self.logger.error("✗ Failed to click System Updates link")
             return
 
@@ -176,10 +181,7 @@ class SystemUpdatePage(BasePage):
                 kernel_version = match.group(1)
                 self.logger.info(f"✓ Kernel version extracted: {kernel_version}")
                 TestLogger.log_verification(
-                    "Kernel version extraction",
-                    "Version found",
-                    kernel_version,
-                    True
+                    "Kernel version extraction", "Version found", kernel_version, True
                 )
                 return kernel_version
             else:
@@ -212,27 +214,17 @@ class SystemUpdatePage(BasePage):
         actual_version = self.get_kernel_version()
 
         if not actual_version:
-            TestLogger.log_verification(
-                "Kernel version",
-                expected_version,
-                "Not found",
-                False
-            )
+            TestLogger.log_verification("Kernel version", expected_version, "Not found", False)
             return False
 
-        matches = (actual_version == expected_version)
+        matches = actual_version == expected_version
 
-        TestLogger.log_verification(
-            "Kernel version",
-            expected_version,
-            actual_version,
-            matches
-        )
+        TestLogger.log_verification("Kernel version", expected_version, actual_version, matches)
 
         if matches:
             self.logger.info("✓ Kernel version verification passed")
         else:
-            self.logger.error(f"✗ Kernel version mismatch")
+            self.logger.error("✗ Kernel version mismatch")
             self.logger.error(f"  Expected: {expected_version}")
             self.logger.error(f"  Actual:   {actual_version}")
 
@@ -266,7 +258,7 @@ class SystemUpdatePage(BasePage):
 
             # Fallback: check if "System Update" is in page content
             body = self.find_element(*self.PAGE_BODY)
-            if body and 'System Update' in body.text:
+            if body and "System Update" in body.text:
                 self.logger.info("✓ Found 'System Update' in page content")
                 return "System Update"
 
@@ -307,16 +299,13 @@ class SystemUpdatePage(BasePage):
                 return False
 
             # Check for expected text
-            expected_keywords = ['system update', 'kernel', 'version']
+            expected_keywords = ["system update", "kernel", "version"]
 
             for keyword in expected_keywords:
                 if keyword.lower() in content.lower():
                     self.logger.debug(f"✓ Found keyword: {keyword}")
                     TestLogger.log_verification(
-                        "Page content",
-                        "Contains expected keywords",
-                        "Keywords found",
-                        True
+                        "Page content", "Contains expected keywords", "Keywords found", True
                     )
                     return True
 
@@ -330,7 +319,7 @@ class SystemUpdatePage(BasePage):
 
     # ==================== System Information ====================
 
-    def get_system_information(self) -> Dict[str, Optional[str]]:
+    def get_system_information(self) -> dict[str, Optional[str]]:
         """
         Get comprehensive system information from the page.
 
@@ -348,9 +337,9 @@ class SystemUpdatePage(BasePage):
         TestLogger.log_step("Retrieve comprehensive system information")
 
         system_info = {
-            'kernel_version': self.get_kernel_version(),
-            'page_title': self.get_page_title(),
-            'page_url': self.get_current_url(),
+            "kernel_version": self.get_kernel_version(),
+            "page_title": self.get_page_title(),
+            "page_url": self.get_current_url(),
         }
 
         self.logger.info("=" * 60)
@@ -385,22 +374,17 @@ class SystemUpdatePage(BasePage):
             self.switch_to_default_content()
 
             # Find all frames
-            frames = self.find_elements(By.TAG_NAME, 'frame')
+            frames = self.find_elements(By.TAG_NAME, "frame")
             frame_count = len(frames)
 
             if frame_count != 3:
                 self.logger.error(f"✗ Expected 3 frames, found {frame_count}")
-                TestLogger.log_verification(
-                    "Frame count",
-                    "3",
-                    str(frame_count),
-                    False
-                )
+                TestLogger.log_verification("Frame count", "3", str(frame_count), False)
                 return False
 
             # Verify frame names
-            frame_names = [f.get_attribute('name') for f in frames]
-            expected_frames = ['tophead', 'left', 'right']
+            frame_names = [f.get_attribute("name") for f in frames]
+            expected_frames = ["tophead", "left", "right"]
 
             for expected_frame in expected_frames:
                 if expected_frame not in frame_names:
@@ -414,7 +398,7 @@ class SystemUpdatePage(BasePage):
                 "Frame structure",
                 "3 frames (tophead, left, right)",
                 f"{frame_count} frames {frame_names}",
-                True
+                True,
             )
 
             return True
@@ -451,7 +435,7 @@ class SystemUpdatePage(BasePage):
 
             return False
 
-        except Exception as e:
+        except Exception:
             self.logger.error(f"✗ Frame '{frame_name}' is not accessible")
             return False
 
@@ -460,7 +444,7 @@ class SystemUpdatePage(BasePage):
 
     # ==================== Utility Methods ====================
 
-    def capture_page_snapshot(self) -> Dict[str, str]:
+    def capture_page_snapshot(self) -> dict[str, str]:
         """
         Capture complete page snapshot for debugging.
 
@@ -477,10 +461,10 @@ class SystemUpdatePage(BasePage):
         TestLogger.log_step("Capture page snapshot for debugging")
 
         snapshot = {
-            'content': self.get_page_content() or '',
-            'html': self.get_page_source(),
-            'url': self.get_current_url(),
-            'title': self.get_page_title() or '',
+            "content": self.get_page_content() or "",
+            "html": self.get_page_source(),
+            "url": self.get_current_url(),
+            "title": self.get_page_title() or "",
         }
 
         self.logger.debug(f"✓ Page snapshot captured ({len(snapshot['content'])} chars)")

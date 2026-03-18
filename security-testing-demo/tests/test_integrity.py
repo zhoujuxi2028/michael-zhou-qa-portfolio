@@ -11,10 +11,9 @@ Reference: https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures
 """
 
 import os
-import json
+
 import pytest
 import requests
-
 
 pytestmark = pytest.mark.integrity
 
@@ -91,7 +90,7 @@ class TestCICDIntegrity:
         if not os.path.exists(workflow_path):
             pytest.skip("Workflow file not found")
 
-        with open(workflow_path, "r") as f:
+        with open(workflow_path) as f:
             content = f.read()
 
         # Check for security best practices
@@ -133,7 +132,7 @@ class TestCICDIntegrity:
         for filename in os.listdir(workflow_dir):
             if filename.endswith((".yml", ".yaml")):
                 filepath = os.path.join(workflow_dir, filename)
-                with open(filepath, "r") as f:
+                with open(filepath) as f:
                     content = f.read().lower()
 
                 for pattern in secret_patterns:
@@ -165,6 +164,7 @@ class TestSubresourceIntegrity:
 
             # Look for external scripts
             import re
+
             script_pattern = r'<script[^>]+src=["\']([^"\']+)["\'][^>]*>'
             scripts = re.findall(script_pattern, response.text, re.IGNORECASE)
 
@@ -182,8 +182,9 @@ class TestSubresourceIntegrity:
                 else:
                     print("[!] No SRI hashes found on external scripts")
 
-                assert len(scripts_with_sri) >= len(external_scripts), \
+                assert len(scripts_with_sri) >= len(external_scripts), (
                     f"All external scripts should have SRI ({len(scripts_with_sri)}/{len(external_scripts)})"
+                )
             else:
                 print("[+] No external scripts found")
 
@@ -200,6 +201,7 @@ class TestSubresourceIntegrity:
             response = http_session.get(config.TARGET_URL, timeout=5)
 
             import re
+
             # Look for external stylesheets
             link_pattern = r'<link[^>]+href=["\']([^"\']+\.css[^"\']*)["\'][^>]*>'
             stylesheets = re.findall(link_pattern, response.text, re.IGNORECASE)
@@ -211,8 +213,9 @@ class TestSubresourceIntegrity:
                 # Check for integrity attribute on link tags
                 integrity_pattern = r'<link[^>]+integrity=["\']([^"\']+)["\'][^>]*>'
                 links_with_sri = re.findall(integrity_pattern, response.text, re.IGNORECASE)
-                assert len(links_with_sri) >= len(external_css), \
+                assert len(links_with_sri) >= len(external_css), (
                     f"All external stylesheets should have SRI ({len(links_with_sri)}/{len(external_css)})"
+                )
             else:
                 print("[+] No external stylesheets")
 
@@ -315,7 +318,7 @@ class TestUpdateIntegrity:
         if not os.path.exists("requirements.txt"):
             pytest.skip("requirements.txt not found")
 
-        with open("requirements.txt", "r") as f:
+        with open("requirements.txt") as f:
             lines = f.readlines()
 
         unpinned = []

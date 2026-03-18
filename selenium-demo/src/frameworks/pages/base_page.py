@@ -12,21 +12,19 @@ Author: QA Automation Team
 Version: 1.0.0
 """
 
-from typing import Optional, List
-from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from typing import Optional
+
 from selenium.common.exceptions import (
     TimeoutException,
-    NoSuchElementException,
-    StaleElementReferenceException
 )
+from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support import expected_conditions as EC  # noqa: N812
+from selenium.webdriver.support.ui import WebDriverWait
 
 from core.config.test_config import TestConfig
 from core.logging.test_logger import TestLogger, get_logger
-
 
 logger = get_logger(__name__)
 
@@ -80,9 +78,7 @@ class BasePage:
         """
         try:
             self.driver.switch_to.default_content()
-            self.wait.until(
-                EC.frame_to_be_available_and_switch_to_it(frame_name)
-            )
+            self.wait.until(EC.frame_to_be_available_and_switch_to_it(frame_name))
             self.logger.debug(f"✓ Switched to frame: {frame_name}")
             return True
 
@@ -118,9 +114,7 @@ class BasePage:
         """
         self.switch_to_frame(frame_name)
         try:
-            body = self.wait.until(
-                EC.presence_of_element_located((By.TAG_NAME, 'body'))
-            )
+            body = self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
             return body.text
         finally:
             self.switch_to_default_content()
@@ -128,10 +122,7 @@ class BasePage:
     # ==================== Menu Navigation (ISSUE-004 Fix) ====================
 
     def wait_for_frame_content(
-        self,
-        frame_name: str,
-        expected_text: str,
-        timeout: int = 10
+        self, frame_name: str, expected_text: str, timeout: int = 10
     ) -> bool:
         """
         Wait for frame to contain expected text.
@@ -151,18 +142,19 @@ class BasePage:
             >>> page.wait_for_frame_content('left', 'System Update', 5)
         """
         import time
+
         end_time = time.time() + timeout
 
         while time.time() < end_time:
             try:
                 if self.switch_to_frame(frame_name):
-                    body = self.driver.find_element(By.TAG_NAME, 'body')
+                    body = self.driver.find_element(By.TAG_NAME, "body")
                     if expected_text in body.text:
                         self.logger.debug(f"✓ Found '{expected_text}' in frame '{frame_name}'")
                         self.switch_to_default_content()
                         return True
                     self.switch_to_default_content()
-            except Exception as e:
+            except Exception:
                 self.logger.debug(f"Waiting for '{expected_text}' in frame...")
 
             time.sleep(0.5)
@@ -171,11 +163,7 @@ class BasePage:
         self.switch_to_default_content()
         return False
 
-    def click_in_frame_by_text(
-        self,
-        frame_name: str,
-        text_content: str
-    ) -> bool:
+    def click_in_frame_by_text(self, frame_name: str, text_content: str) -> bool:
         """
         Click element in frame by its text content.
 
@@ -197,7 +185,7 @@ class BasePage:
                 return False
 
             # Try to find link with text
-            links = self.driver.find_elements(By.TAG_NAME, 'a')
+            links = self.driver.find_elements(By.TAG_NAME, "a")
             for link in links:
                 if text_content.lower() in link.text.lower():
                     self.logger.debug(f"✓ Clicking '{link.text}' in frame '{frame_name}'")
@@ -205,7 +193,9 @@ class BasePage:
                     self.switch_to_default_content()
                     return True
 
-            self.logger.error(f"✗ No element found with text '{text_content}' in frame '{frame_name}'")
+            self.logger.error(
+                f"✗ No element found with text '{text_content}' in frame '{frame_name}'"
+            )
             self.switch_to_default_content()
             return False
 
@@ -214,11 +204,7 @@ class BasePage:
             self.switch_to_default_content()
             return False
 
-    def click_link_in_frame(
-        self,
-        frame_name: str,
-        search_text: str
-    ) -> bool:
+    def click_link_in_frame(self, frame_name: str, search_text: str) -> bool:
         """
         Click link in frame by partial text match.
 
@@ -241,17 +227,14 @@ class BasePage:
 
             # Use PARTIAL_LINK_TEXT for more flexible matching
             try:
-                link = self.driver.find_element(
-                    By.PARTIAL_LINK_TEXT,
-                    search_text
-                )
+                link = self.driver.find_element(By.PARTIAL_LINK_TEXT, search_text)
                 self.logger.debug(f"✓ Clicking link '{link.text}' in frame '{frame_name}'")
                 link.click()
                 self.switch_to_default_content()
                 return True
-            except:
+            except Exception:
                 # Fallback: search through all links
-                links = self.driver.find_elements(By.TAG_NAME, 'a')
+                links = self.driver.find_elements(By.TAG_NAME, "a")
                 for link in links:
                     if search_text.lower() in link.text.lower():
                         self.logger.debug(f"✓ Clicking link '{link.text}' in frame '{frame_name}'")
@@ -272,10 +255,7 @@ class BasePage:
     # ==================== Element Finding ====================
 
     def find_element(
-        self,
-        by: By,
-        value: str,
-        timeout: Optional[int] = None
+        self, by: By, value: str, timeout: Optional[int] = None
     ) -> Optional[WebElement]:
         """
         Find element with explicit wait.
@@ -295,9 +275,7 @@ class BasePage:
         wait = WebDriverWait(self.driver, wait_time)
 
         try:
-            element = wait.until(
-                EC.presence_of_element_located((by, value))
-            )
+            element = wait.until(EC.presence_of_element_located((by, value)))
             self.logger.debug(f"✓ Found element: {by}={value}")
             return element
 
@@ -305,12 +283,7 @@ class BasePage:
             self.logger.warning(f"✗ Element not found: {by}={value}")
             return None
 
-    def find_elements(
-        self,
-        by: By,
-        value: str,
-        timeout: Optional[int] = None
-    ) -> List[WebElement]:
+    def find_elements(self, by: By, value: str, timeout: Optional[int] = None) -> list[WebElement]:
         """
         Find multiple elements with explicit wait.
 
@@ -329,9 +302,7 @@ class BasePage:
         wait = WebDriverWait(self.driver, wait_time)
 
         try:
-            elements = wait.until(
-                EC.presence_of_all_elements_located((by, value))
-            )
+            elements = wait.until(EC.presence_of_all_elements_located((by, value)))
             self.logger.debug(f"✓ Found {len(elements)} elements: {by}={value}")
             return elements
 
@@ -339,12 +310,7 @@ class BasePage:
             self.logger.warning(f"✗ Elements not found: {by}={value}")
             return []
 
-    def is_element_visible(
-        self,
-        by: By,
-        value: str,
-        timeout: Optional[int] = None
-    ) -> bool:
+    def is_element_visible(self, by: By, value: str, timeout: Optional[int] = None) -> bool:
         """
         Check if element is visible.
 
@@ -371,12 +337,7 @@ class BasePage:
 
     # ==================== Element Interactions ====================
 
-    def click_element(
-        self,
-        by: By,
-        value: str,
-        timeout: Optional[int] = None
-    ) -> bool:
+    def click_element(self, by: By, value: str, timeout: Optional[int] = None) -> bool:
         """
         Click element with retry logic.
 
@@ -410,12 +371,7 @@ class BasePage:
             return False
 
     def enter_text(
-        self,
-        by: By,
-        value: str,
-        text: str,
-        clear_first: bool = True,
-        timeout: Optional[int] = None
+        self, by: By, value: str, text: str, clear_first: bool = True, timeout: Optional[int] = None
     ) -> bool:
         """
         Enter text into input field.
@@ -450,12 +406,7 @@ class BasePage:
             TestLogger.log_exception(e, f"Text entry failed: {by}={value}")
             return False
 
-    def get_element_text(
-        self,
-        by: By,
-        value: str,
-        timeout: Optional[int] = None
-    ) -> Optional[str]:
+    def get_element_text(self, by: By, value: str, timeout: Optional[int] = None) -> Optional[str]:
         """
         Get text content of element.
 
@@ -477,11 +428,7 @@ class BasePage:
         return None
 
     def get_element_attribute(
-        self,
-        by: By,
-        value: str,
-        attribute: str,
-        timeout: Optional[int] = None
+        self, by: By, value: str, attribute: str, timeout: Optional[int] = None
     ) -> Optional[str]:
         """
         Get attribute value of element.
@@ -516,16 +463,11 @@ class BasePage:
         wait_time = timeout or TestConfig.PAGE_LOAD_TIMEOUT
         wait = WebDriverWait(self.driver, wait_time)
 
-        wait.until(
-            lambda driver: driver.execute_script('return document.readyState') == 'complete'
-        )
+        wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
         self.logger.debug("✓ Page loaded")
 
     def wait_for_element_to_disappear(
-        self,
-        by: By,
-        value: str,
-        timeout: Optional[int] = None
+        self, by: By, value: str, timeout: Optional[int] = None
     ) -> bool:
         """
         Wait for element to disappear (become invisible or removed from DOM).

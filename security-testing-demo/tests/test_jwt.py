@@ -7,6 +7,7 @@ Covers OWASP A07:2021 - Identification and Authentication Failures
 
 import base64
 import json
+
 import pytest
 import requests
 
@@ -93,9 +94,7 @@ class TestJWTSignature:
             payload["data"]["id"] = 1  # Try to become admin
 
         # Re-encode payload
-        tampered_payload = base64.urlsafe_b64encode(
-            json.dumps(payload).encode()
-        ).decode().rstrip("=")
+        tampered_payload = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
 
         # Create tampered token (same header and signature)
         tampered_token = f"{parts[0]}.{tampered_payload}.{parts[2]}"
@@ -110,8 +109,7 @@ class TestJWTSignature:
             timeout=10,
         )
 
-        assert response.status_code in [401, 403, 500], \
-            "Tampered JWT should be rejected"
+        assert response.status_code in [401, 403, 500], "Tampered JWT should be rejected"
 
     @pytest.mark.xfail(reason="Juice Shop may accept 'none' algorithm JWT tokens")
     def test_jwt_none_algorithm(self, juice_shop_auth_session, juice_shop_url):
@@ -130,14 +128,10 @@ class TestJWTSignature:
 
         # Create header with 'none' algorithm
         none_header = {"alg": "none", "typ": "JWT"}
-        header_b64 = base64.urlsafe_b64encode(
-            json.dumps(none_header).encode()
-        ).decode().rstrip("=")
+        header_b64 = base64.urlsafe_b64encode(json.dumps(none_header).encode()).decode().rstrip("=")
 
         # Create payload
-        payload_b64 = base64.urlsafe_b64encode(
-            json.dumps(payload).encode()
-        ).decode().rstrip("=")
+        payload_b64 = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
 
         # Create token with no signature
         none_token = f"{header_b64}.{payload_b64}."
@@ -152,8 +146,7 @@ class TestJWTSignature:
             timeout=10,
         )
 
-        assert response.status_code in [401, 403, 500], \
-            "JWT with 'none' algorithm should be rejected"
+        assert response.status_code in [401, 403, 500], "JWT with 'none' algorithm should be rejected"
 
 
 @pytest.mark.juice_shop
@@ -180,8 +173,7 @@ class TestJWTWeakSecret:
         alg = header.get("alg", "")
 
         # Document the algorithm used
-        assert alg in ["HS256", "RS256", "ES256"], \
-            f"Token uses algorithm: {alg}"
+        assert alg in ["HS256", "RS256", "ES256"], f"Token uses algorithm: {alg}"
 
         # Note: Actual secret cracking would require brute force
         # which is out of scope for this test.
@@ -209,11 +201,11 @@ class TestJWTExpiration:
 
         # Check for expiration claim
         has_exp = "exp" in payload
-        has_iat = "iat" in payload
 
         assert has_exp, "JWT token should have an expiration (exp) claim"
         if has_exp:
             import time
+
             exp = payload.get("exp", 0)
             iat = payload.get("iat", time.time())
 
@@ -221,8 +213,7 @@ class TestJWTExpiration:
             lifetime = exp - iat
             max_lifetime = 86400 * 30  # 30 days
 
-            assert lifetime < max_lifetime, \
-                f"Token lifetime ({lifetime}s) exceeds 30 days"
+            assert lifetime < max_lifetime, f"Token lifetime ({lifetime}s) exceeds 30 days"
 
     def test_token_refresh_flow(self, juice_shop_url):
         """SEC-JWT-005: Test if token refresh is implemented securely."""
@@ -236,8 +227,7 @@ class TestJWTExpiration:
         # Either endpoint doesn't exist or requires valid refresh token
         # 404 = no refresh endpoint
         # 401/403 = requires auth
-        assert response.status_code in [401, 403, 404, 500], \
-            "Refresh endpoint should require valid token"
+        assert response.status_code in [401, 403, 404, 500], "Refresh endpoint should require valid token"
 
 
 @pytest.mark.juice_shop
@@ -263,9 +253,7 @@ class TestJWTStorage:
         # Check response for any URL with token
         if response.status_code == 200:
             # JWT should not appear in any redirect URLs
-            assert token not in response.url, \
-                "JWT should not appear in URL"
+            assert token not in response.url, "JWT should not appear in URL"
 
             # Check if any links in response contain token
-            assert token not in response.text or "Bearer" in response.text, \
-                "JWT should not be embedded in page content"
+            assert token not in response.text or "Bearer" in response.text, "JWT should not be embedded in page content"

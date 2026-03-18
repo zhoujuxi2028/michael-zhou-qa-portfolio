@@ -13,7 +13,7 @@ from .login_page import LoginPage
 from .system_update_page import SystemUpdatePage
 
 __all__ = [
-    'BasePage',
-    'LoginPage',
-    'SystemUpdatePage',
+    "BasePage",
+    "LoginPage",
+    "SystemUpdatePage",
 ]

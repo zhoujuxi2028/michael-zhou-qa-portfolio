@@ -9,12 +9,11 @@ Author: QA Automation Team
 Version: 1.0.0
 """
 
-import re
-from typing import Dict, Any, Optional, List, Tuple
-from datetime import datetime
-from core.helpers.ssh_helper import SSHHelper, create_ssh_helper
-from core.logging.test_logger import get_logger
+from typing import Any, Optional
+
 from core.config.test_config import TestConfig
+from core.helpers.ssh_helper import create_ssh_helper
+from core.logging.test_logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -46,33 +45,32 @@ class BackendVerification:
     # IWSVA Component INI file sections
     COMPONENT_INI_KEYS = {
         # Patterns
-        'PTN': 'PTNVersion',
-        'SPYWARE': 'SpywareVersion',
-        'BOT': 'BotVersion',
-        'ITP': 'ITPVersion',
-        'ITE': 'ITEVersion',
-        'ICRCAGENT': 'ICRCAgentVersion',
-
+        "PTN": "PTNVersion",
+        "SPYWARE": "SpywareVersion",
+        "BOT": "BotVersion",
+        "ITP": "ITPVersion",
+        "ITE": "ITEVersion",
+        "ICRCAGENT": "ICRCAgentVersion",
         # Engines
-        'ENG': 'EngineVersion',
-        'ATSEENG': 'ATSEEngineVersion',
-        'TMUFEENG': 'TMUFEEngineVersion',
+        "ENG": "EngineVersion",
+        "ATSEENG": "ATSEEngineVersion",
+        "TMUFEENG": "TMUFEEngineVersion",
     }
 
     # Lock file paths for components
     LOCK_FILE_PATHS = {
-        'PTN': '/var/iwss/updates/locks/ptn.lock',
-        'SPYWARE': '/var/iwss/updates/locks/spyware.lock',
-        'BOT': '/var/iwss/updates/locks/bot.lock',
-        'ITP': '/var/iwss/updates/locks/itp.lock',
-        'ITE': '/var/iwss/updates/locks/ite.lock',
-        'ICRCAGENT': '/var/iwss/updates/locks/icrcagent.lock',
-        'ENG': '/var/iwss/updates/locks/engine.lock',
-        'ATSEENG': '/var/iwss/updates/locks/atseeng.lock',
-        'TMUFEENG': '/var/iwss/updates/locks/tmufeeng.lock',
+        "PTN": "/var/iwss/updates/locks/ptn.lock",
+        "SPYWARE": "/var/iwss/updates/locks/spyware.lock",
+        "BOT": "/var/iwss/updates/locks/bot.lock",
+        "ITP": "/var/iwss/updates/locks/itp.lock",
+        "ITE": "/var/iwss/updates/locks/ite.lock",
+        "ICRCAGENT": "/var/iwss/updates/locks/icrcagent.lock",
+        "ENG": "/var/iwss/updates/locks/engine.lock",
+        "ATSEENG": "/var/iwss/updates/locks/atseeng.lock",
+        "TMUFEENG": "/var/iwss/updates/locks/tmufeeng.lock",
     }
 
-    def __init__(self, ssh_config: Dict[str, Any]):
+    def __init__(self, ssh_config: dict[str, Any]):
         """
         Initialize Backend Verification.
 
@@ -130,7 +128,7 @@ class BackendVerification:
         logger.info("Getting kernel version from backend")
 
         try:
-            stdout = self.ssh.execute_command_with_output('uname -r')
+            stdout = self.ssh.execute_command_with_output("uname -r")
             kernel_version = stdout.strip()
 
             logger.info(f"✓ Kernel version: {kernel_version}")
@@ -140,7 +138,7 @@ class BackendVerification:
             logger.error(f"✗ Failed to get kernel version: {e}")
             raise
 
-    def verify_kernel_version(self, expected_version: str) -> Tuple[bool, str]:
+    def verify_kernel_version(self, expected_version: str) -> tuple[bool, str]:
         """
         Verify kernel version matches expected version.
 
@@ -162,7 +160,9 @@ class BackendVerification:
         if is_match:
             logger.info(f"✓ Kernel version verified: {actual_version}")
         else:
-            logger.warning(f"✗ Kernel version mismatch: expected '{expected_version}', got '{actual_version}'")
+            logger.warning(
+                f"✗ Kernel version mismatch: expected '{expected_version}', got '{actual_version}'"
+            )
 
         return is_match, actual_version
 
@@ -182,7 +182,7 @@ class BackendVerification:
             FileNotFoundError: If INI file not found
         """
         if ini_path is None:
-            ini_path = TestConfig.BACKEND_PATHS['ini_file']
+            ini_path = TestConfig.BACKEND_PATHS["ini_file"]
 
         logger.debug(f"Reading INI file: {ini_path}")
 
@@ -195,7 +195,7 @@ class BackendVerification:
             logger.error(f"✗ INI file not found: {ini_path}")
             raise
 
-    def parse_ini_file(self, ini_content: str) -> Dict[str, str]:
+    def parse_ini_file(self, ini_content: str) -> dict[str, str]:
         """
         Parse INI file content into key-value dictionary.
 
@@ -214,16 +214,16 @@ class BackendVerification:
 
         ini_data = {}
 
-        for line in ini_content.split('\n'):
+        for line in ini_content.split("\n"):
             line = line.strip()
 
             # Skip empty lines and comments
-            if not line or line.startswith('#') or line.startswith(';'):
+            if not line or line.startswith("#") or line.startswith(";"):
                 continue
 
             # Parse key=value pairs
-            if '=' in line:
-                key, value = line.split('=', 1)
+            if "=" in line:
+                key, value = line.split("=", 1)
                 ini_data[key.strip()] = value.strip()
 
         logger.debug(f"✓ INI file parsed ({len(ini_data)} entries)")
@@ -271,10 +271,8 @@ class BackendVerification:
             return None
 
     def verify_component_version(
-        self,
-        component_id: str,
-        expected_version: str
-    ) -> Tuple[bool, Optional[str]]:
+        self, component_id: str, expected_version: str
+    ) -> tuple[bool, Optional[str]]:
         """
         Verify component version matches expected version.
 
@@ -345,10 +343,7 @@ class BackendVerification:
         return exists
 
     def wait_for_lock_file_removal(
-        self,
-        component_id: str,
-        timeout: int = 600,
-        check_interval: int = 5
+        self, component_id: str, timeout: int = 600, check_interval: int = 5
     ) -> bool:
         """
         Wait for component lock file to be removed (update completion).
@@ -368,6 +363,7 @@ class BackendVerification:
         logger.info(f"Waiting for {component_id} lock file removal (timeout: {timeout}s)")
 
         import time
+
         start_time = time.time()
         elapsed = 0
 
@@ -399,7 +395,7 @@ class BackendVerification:
             ...     print("IWSS service is healthy")
         """
         logger.info("Checking IWSS service status")
-        is_running = self.ssh.is_service_running('iwss')
+        is_running = self.ssh.is_service_running("iwss")
 
         if is_running:
             logger.info("✓ IWSS service is running")
@@ -408,7 +404,7 @@ class BackendVerification:
 
         return is_running
 
-    def get_iwss_service_status(self) -> Dict[str, Any]:
+    def get_iwss_service_status(self) -> dict[str, Any]:
         """
         Get detailed IWSS service status.
 
@@ -416,7 +412,7 @@ class BackendVerification:
             dict: Service status information
         """
         logger.info("Getting IWSS service detailed status")
-        return self.ssh.get_service_status('iwss')
+        return self.ssh.get_service_status("iwss")
 
     # ==================== Log Verification ====================
 
@@ -434,7 +430,7 @@ class BackendVerification:
             >>> log = verifier.get_update_log_tail(50)
             >>> assert 'Update completed successfully' in log
         """
-        log_path = '/var/log/iwss/update.log'
+        log_path = "/var/log/iwss/update.log"
         logger.info(f"Getting update log tail ({lines} lines)")
 
         try:
@@ -449,11 +445,8 @@ class BackendVerification:
             raise
 
     def search_log_for_pattern(
-        self,
-        pattern: str,
-        log_path: str = '/var/log/iwss/update.log',
-        max_lines: int = 1000
-    ) -> List[str]:
+        self, pattern: str, log_path: str = "/var/log/iwss/update.log", max_lines: int = 1000
+    ) -> list[str]:
         """
         Search log file for pattern using grep.
 
@@ -475,7 +468,7 @@ class BackendVerification:
             command = f"tail -n {max_lines} {log_path} | grep -E '{pattern}' || true"
             stdout = self.ssh.execute_command_with_output(command, expected_exit_code=0)
 
-            matches = [line.strip() for line in stdout.split('\n') if line.strip()]
+            matches = [line.strip() for line in stdout.split("\n") if line.strip()]
 
             logger.info(f"✓ Found {len(matches)} matching log lines")
             return matches
@@ -486,7 +479,7 @@ class BackendVerification:
 
     # ==================== System Information ====================
 
-    def get_system_info(self) -> Dict[str, str]:
+    def get_system_info(self) -> dict[str, str]:
         """
         Get comprehensive system information.
 
@@ -503,19 +496,19 @@ class BackendVerification:
 
         try:
             # Kernel version
-            info['kernel_version'] = self.ssh.execute_command_with_output('uname -r')
+            info["kernel_version"] = self.ssh.execute_command_with_output("uname -r")
 
             # OS version
-            info['os_version'] = self.ssh.execute_command_with_output('cat /etc/redhat-release')
+            info["os_version"] = self.ssh.execute_command_with_output("cat /etc/redhat-release")
 
             # Hostname
-            info['hostname'] = self.ssh.execute_command_with_output('hostname')
+            info["hostname"] = self.ssh.execute_command_with_output("hostname")
 
             # Uptime
-            info['uptime'] = self.ssh.execute_command_with_output('uptime -p')
+            info["uptime"] = self.ssh.execute_command_with_output("uptime -p")
 
             # Current time
-            info['current_time'] = self.ssh.execute_command_with_output('date')
+            info["current_time"] = self.ssh.execute_command_with_output("date")
 
             logger.info(f"✓ System info retrieved: {info['hostname']} ({info['os_version']})")
             return info

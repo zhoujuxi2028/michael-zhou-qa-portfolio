@@ -53,7 +53,7 @@ class MockPipelineEngine:
         if not pipeline:
             raise PipelineError(f"Pipeline not found: {pipeline_id}")
         if idempotency_key:
-            for exec_id, ex in self._executions.items():
+            for _exec_id, ex in self._executions.items():
                 if ex.get("idempotency_key") == idempotency_key and ex["status"] == "completed":
                     return ex
         exec_id = str(uuid.uuid4())
