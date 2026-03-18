@@ -10,20 +10,16 @@ Version: 1.0.0
 """
 
 import time
-from typing import Dict, Any, Optional, List
 from datetime import datetime
+from typing import Any, Optional
 
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 from core.logging.test_logger import get_logger
-from core.config.test_config import TestConfig
 from frameworks.pages.system_update_page import SystemUpdatePage
 from frameworks.verification.backend_verification import BackendVerification
-from frameworks.verification.ui_verification import UIVerification
 from frameworks.verification.log_verification import LogVerification
+from frameworks.verification.ui_verification import UIVerification
 
 logger = get_logger(__name__)
 
@@ -54,15 +50,15 @@ class UpdateWorkflow:
 
     # Component update timeout mapping (seconds)
     UPDATE_TIMEOUTS = {
-        'PTN': 300,         # 5 minutes
-        'SPYWARE': 300,     # 5 minutes
-        'BOT': 300,         # 5 minutes
-        'ITP': 300,         # 5 minutes
-        'ITE': 300,         # 5 minutes
-        'ICRCAGENT': 300,   # 5 minutes
-        'ENG': 720,         # 12 minutes
-        'ATSEENG': 600,     # 10 minutes
-        'TMUFEENG': 600,    # 10 minutes
+        "PTN": 300,  # 5 minutes
+        "SPYWARE": 300,  # 5 minutes
+        "BOT": 300,  # 5 minutes
+        "ITP": 300,  # 5 minutes
+        "ITE": 300,  # 5 minutes
+        "ICRCAGENT": 300,  # 5 minutes
+        "ENG": 720,  # 12 minutes
+        "ATSEENG": 600,  # 10 minutes
+        "TMUFEENG": 600,  # 10 minutes
     }
 
     def __init__(
@@ -70,7 +66,7 @@ class UpdateWorkflow:
         driver: webdriver.Remote,
         backend_verifier: Optional[BackendVerification] = None,
         ui_verifier: Optional[UIVerification] = None,
-        log_verifier: Optional[LogVerification] = None
+        log_verifier: Optional[LogVerification] = None,
     ):
         """
         Initialize Update Workflow.
@@ -97,8 +93,8 @@ class UpdateWorkflow:
         verify_before: bool = True,
         verify_after: bool = True,
         verify_logs: bool = True,
-        timeout: Optional[int] = None
-    ) -> Dict[str, Any]:
+        timeout: Optional[int] = None,
+    ) -> dict[str, Any]:
         """
         Execute normal component update with comprehensive verification.
 
@@ -129,15 +125,15 @@ class UpdateWorkflow:
         logger.info("=" * 80)
 
         result = {
-            'component_id': component_id,
-            'update_type': 'normal',
-            'success': False,
-            'message': '',
-            'start_time': datetime.now().isoformat(),
-            'pre_verification': {},
-            'post_verification': {},
-            'log_verification': {},
-            'duration': 0
+            "component_id": component_id,
+            "update_type": "normal",
+            "success": False,
+            "message": "",
+            "start_time": datetime.now().isoformat(),
+            "pre_verification": {},
+            "post_verification": {},
+            "log_verification": {},
+            "duration": 0,
         }
 
         start_time = time.time()
@@ -147,9 +143,9 @@ class UpdateWorkflow:
             if verify_before and self.backend_verifier:
                 logger.info("Step 1: Pre-update verification")
                 pre_version = self._get_component_version_safe(component_id)
-                result['pre_verification'] = {
-                    'version': pre_version,
-                    'timestamp': datetime.now().isoformat()
+                result["pre_verification"] = {
+                    "version": pre_version,
+                    "timestamp": datetime.now().isoformat(),
                 }
                 logger.info(f"Pre-update version: {pre_version}")
 
@@ -169,12 +165,11 @@ class UpdateWorkflow:
             if self.backend_verifier:
                 # Backend monitoring via lock file
                 success = self.backend_verifier.wait_for_lock_file_removal(
-                    component_id,
-                    timeout=update_timeout
+                    component_id, timeout=update_timeout
                 )
                 if not success:
-                    result['success'] = False
-                    result['message'] = f"Update timeout after {update_timeout}s"
+                    result["success"] = False
+                    result["message"] = f"Update timeout after {update_timeout}s"
                     return result
             else:
                 # UI monitoring (fallback)
@@ -186,9 +181,9 @@ class UpdateWorkflow:
             if verify_after and self.backend_verifier:
                 logger.info("Step 5: Post-update verification")
                 post_version = self._get_component_version_safe(component_id)
-                result['post_verification'] = {
-                    'version': post_version,
-                    'timestamp': datetime.now().isoformat()
+                result["post_verification"] = {
+                    "version": post_version,
+                    "timestamp": datetime.now().isoformat(),
                 }
 
                 # Verify version changed
@@ -202,28 +197,27 @@ class UpdateWorkflow:
             if verify_logs and self.log_verifier:
                 logger.info("Step 6: Log verification")
                 log_result = self.log_verifier.verify_complete_update_cycle(
-                    component_id,
-                    max_lines=1000
+                    component_id, max_lines=1000
                 )
-                result['log_verification'] = log_result
+                result["log_verification"] = log_result
 
             # Calculate duration
-            result['duration'] = time.time() - start_time
-            result['end_time'] = datetime.now().isoformat()
+            result["duration"] = time.time() - start_time
+            result["end_time"] = datetime.now().isoformat()
 
             # Overall success
-            result['success'] = True
-            result['message'] = f"{component_id} update completed successfully"
+            result["success"] = True
+            result["message"] = f"{component_id} update completed successfully"
 
             logger.info("=" * 80)
             logger.info(f"✓ UPDATE COMPLETED: {component_id} ({result['duration']:.1f}s)")
             logger.info("=" * 80)
 
         except Exception as e:
-            result['success'] = False
-            result['message'] = f"Update failed: {str(e)}"
-            result['error'] = str(e)
-            result['duration'] = time.time() - start_time
+            result["success"] = False
+            result["message"] = f"Update failed: {str(e)}"
+            result["error"] = str(e)
+            result["duration"] = time.time() - start_time
 
             logger.error("=" * 80)
             logger.error(f"✗ UPDATE FAILED: {component_id}")
@@ -233,11 +227,8 @@ class UpdateWorkflow:
         return result
 
     def execute_forced_update(
-        self,
-        component_id: str,
-        verify_after: bool = True,
-        timeout: Optional[int] = None
-    ) -> Dict[str, Any]:
+        self, component_id: str, verify_after: bool = True, timeout: Optional[int] = None
+    ) -> dict[str, Any]:
         """
         Execute forced component update.
 
@@ -260,23 +251,20 @@ class UpdateWorkflow:
         # Implementation depends on IWSVA UI for forced update
         # For now, delegate to normal update with note
         result = self.execute_normal_update(
-            component_id,
-            verify_before=False,
-            verify_after=verify_after,
-            timeout=timeout
+            component_id, verify_before=False, verify_after=verify_after, timeout=timeout
         )
 
-        result['update_type'] = 'forced'
+        result["update_type"] = "forced"
         return result
 
     # ==================== Batch Update Operations ====================
 
     def execute_update_all(
         self,
-        component_ids: Optional[List[str]] = None,
+        component_ids: Optional[list[str]] = None,
         verify_after: bool = True,
-        continue_on_error: bool = False
-    ) -> Dict[str, Any]:
+        continue_on_error: bool = False,
+    ) -> dict[str, Any]:
         """
         Execute update for multiple components.
 
@@ -301,51 +289,52 @@ class UpdateWorkflow:
             component_ids = list(self.UPDATE_TIMEOUTS.keys())
 
         result = {
-            'update_type': 'batch',
-            'total_count': len(component_ids),
-            'success_count': 0,
-            'failure_count': 0,
-            'component_results': {},
-            'start_time': datetime.now().isoformat()
+            "update_type": "batch",
+            "total_count": len(component_ids),
+            "success_count": 0,
+            "failure_count": 0,
+            "component_results": {},
+            "start_time": datetime.now().isoformat(),
         }
 
         for component_id in component_ids:
-            logger.info(f"Updating component {result['success_count'] + result['failure_count'] + 1}/{result['total_count']}: {component_id}")
+            logger.info(
+                f"Updating component {result['success_count'] + result['failure_count'] + 1}/{result['total_count']}: {component_id}"
+            )
 
             try:
                 comp_result = self.execute_normal_update(
                     component_id,
                     verify_before=False,
                     verify_after=verify_after,
-                    verify_logs=False  # Skip log verification for batch
+                    verify_logs=False,  # Skip log verification for batch
                 )
 
-                result['component_results'][component_id] = comp_result
+                result["component_results"][component_id] = comp_result
 
-                if comp_result['success']:
-                    result['success_count'] += 1
+                if comp_result["success"]:
+                    result["success_count"] += 1
                 else:
-                    result['failure_count'] += 1
+                    result["failure_count"] += 1
                     if not continue_on_error:
                         logger.error(f"Update failed for {component_id}, stopping batch update")
                         break
 
             except Exception as e:
                 logger.error(f"Exception updating {component_id}: {e}")
-                result['failure_count'] += 1
-                result['component_results'][component_id] = {
-                    'success': False,
-                    'error': str(e)
-                }
+                result["failure_count"] += 1
+                result["component_results"][component_id] = {"success": False, "error": str(e)}
 
                 if not continue_on_error:
                     break
 
-        result['end_time'] = datetime.now().isoformat()
-        result['success'] = result['failure_count'] == 0
+        result["end_time"] = datetime.now().isoformat()
+        result["success"] = result["failure_count"] == 0
 
         logger.info("=" * 80)
-        logger.info(f"BATCH UPDATE COMPLETED: {result['success_count']}/{result['total_count']} successful")
+        logger.info(
+            f"BATCH UPDATE COMPLETED: {result['success_count']}/{result['total_count']} successful"
+        )
         logger.info("=" * 80)
 
         return result
@@ -410,7 +399,7 @@ class UpdateWorkflow:
 
     # ==================== Status Checking ====================
 
-    def check_update_status(self, component_id: str) -> Dict[str, Any]:
+    def check_update_status(self, component_id: str) -> dict[str, Any]:
         """
         Check current update status for component.
 
@@ -428,20 +417,20 @@ class UpdateWorkflow:
         logger.info(f"Checking update status: {component_id}")
 
         status = {
-            'component_id': component_id,
-            'is_updating': False,
-            'current_version': None,
-            'timestamp': datetime.now().isoformat()
+            "component_id": component_id,
+            "is_updating": False,
+            "current_version": None,
+            "timestamp": datetime.now().isoformat(),
         }
 
         # Check lock file
         if self.backend_verifier:
-            status['is_updating'] = self.backend_verifier.check_lock_file_exists(component_id)
-            status['current_version'] = self._get_component_version_safe(component_id)
+            status["is_updating"] = self.backend_verifier.check_lock_file_exists(component_id)
+            status["current_version"] = self._get_component_version_safe(component_id)
 
         return status
 
-    def get_component_info(self, component_id: str) -> Dict[str, Any]:
+    def get_component_info(self, component_id: str) -> dict[str, Any]:
         """
         Get comprehensive component information.
 
@@ -458,16 +447,16 @@ class UpdateWorkflow:
         logger.info(f"Getting component info: {component_id}")
 
         info = {
-            'component_id': component_id,
-            'version': None,
-            'is_updating': False,
-            'update_timeout': self.UPDATE_TIMEOUTS.get(component_id, 600),
-            'timestamp': datetime.now().isoformat()
+            "component_id": component_id,
+            "version": None,
+            "is_updating": False,
+            "update_timeout": self.UPDATE_TIMEOUTS.get(component_id, 600),
+            "timestamp": datetime.now().isoformat(),
         }
 
         if self.backend_verifier:
-            info['version'] = self._get_component_version_safe(component_id)
-            info['is_updating'] = self.backend_verifier.check_lock_file_exists(component_id)
+            info["version"] = self._get_component_version_safe(component_id)
+            info["is_updating"] = self.backend_verifier.check_lock_file_exists(component_id)
 
         return info
 

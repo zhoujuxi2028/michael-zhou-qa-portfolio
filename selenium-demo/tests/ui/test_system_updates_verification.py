@@ -17,9 +17,8 @@ Version: 1.2.0
 Last Modified: 2026-02-18
 """
 
-import pytest
 import allure
-from selenium.webdriver.common.by import By
+import pytest
 
 from core.config.test_config import TestConfig
 from core.logging.test_logger import TestLogger
@@ -52,12 +51,7 @@ class TestSystemUpdatesVerification:
 
     This test demonstrates Phase 2 multi-level verification capabilities.
     """)
-    def test_kernel_version_multi_level(
-        self,
-        system_update_page,
-        backend_verifier,
-        ui_verifier
-    ):
+    def test_kernel_version_multi_level(self, system_update_page, backend_verifier, ui_verifier):
         """
         TC-VERIFY-001: Verify kernel version using multi-level verification.
 
@@ -81,7 +75,7 @@ class TestSystemUpdatesVerification:
         TestLogger.log_test_start(
             "TC-VERIFY-001",
             "Multi-Level Kernel Version Verification",
-            "Verify kernel version across UI, Backend, and Logs"
+            "Verify kernel version across UI, Backend, and Logs",
         )
 
         with allure.step("Step 1: Navigate to System Updates page"):
@@ -101,18 +95,13 @@ class TestSystemUpdatesVerification:
             allure.attach(
                 ui_kernel_version,
                 name="UI Kernel Version",
-                attachment_type=allure.attachment_type.TEXT
+                attachment_type=allure.attachment_type.TEXT,
             )
 
             assert ui_kernel_version is not None, "Kernel version not found on UI"
             assert len(ui_kernel_version) > 0, "Kernel version is empty"
 
-            TestLogger.log_verification(
-                "UI Kernel Version",
-                f"Not empty",
-                ui_kernel_version,
-                True
-            )
+            TestLogger.log_verification("UI Kernel Version", "Not empty", ui_kernel_version, True)
 
         with allure.step("Step 3: Backend Verification - Get kernel version via SSH"):
             TestLogger.log_step("Backend Verification: Get kernel version via SSH")
@@ -124,16 +113,13 @@ class TestSystemUpdatesVerification:
             allure.attach(
                 backend_kernel_version,
                 name="Backend Kernel Version",
-                attachment_type=allure.attachment_type.TEXT
+                attachment_type=allure.attachment_type.TEXT,
             )
 
             assert backend_kernel_version is not None, "Backend kernel version not retrieved"
 
             TestLogger.log_verification(
-                "Backend Kernel Version",
-                "Not None",
-                backend_kernel_version,
-                True
+                "Backend Kernel Version", "Not None", backend_kernel_version, True
             )
 
         with allure.step("Step 4: Compare UI and Backend kernel versions"):
@@ -149,7 +135,7 @@ class TestSystemUpdatesVerification:
                 "Kernel Version Match (UI vs Backend)",
                 ui_kernel_version,
                 backend_kernel_version,
-                True
+                True,
             )
 
         with allure.step("Step 5: Verify against expected kernel version"):
@@ -161,10 +147,7 @@ class TestSystemUpdatesVerification:
             is_match, actual = backend_verifier.verify_kernel_version(expected_version)
 
             TestLogger.log_verification(
-                "Expected Kernel Version",
-                expected_version,
-                actual,
-                is_match
+                "Expected Kernel Version", expected_version, actual, is_match
             )
 
             if not is_match:
@@ -209,10 +192,7 @@ class TestSystemUpdatesVerification:
     4. Verify hostname
     5. Verify IWSS service status
     """)
-    def test_system_information_backend(
-        self,
-        backend_verifier
-    ):
+    def test_system_information_backend(self, backend_verifier):
         """
         TC-VERIFY-002: Verify comprehensive system information via backend.
 
@@ -233,7 +213,7 @@ class TestSystemUpdatesVerification:
         TestLogger.log_test_start(
             "TC-VERIFY-002",
             "System Information Comprehensive Verification",
-            "Verify system information via backend SSH"
+            "Verify system information via backend SSH",
         )
 
         with allure.step("Step 1: Get comprehensive system information"):
@@ -245,23 +225,20 @@ class TestSystemUpdatesVerification:
             allure.attach(
                 str(system_info),
                 name="System Information",
-                attachment_type=allure.attachment_type.JSON
+                attachment_type=allure.attachment_type.JSON,
             )
 
         with allure.step("Step 2: Verify required fields are present"):
             TestLogger.log_step("Verify required fields in system info")
 
-            required_fields = ['kernel_version', 'os_version', 'hostname', 'uptime', 'current_time']
+            required_fields = ["kernel_version", "os_version", "hostname", "uptime", "current_time"]
 
             for field in required_fields:
                 assert field in system_info, f"Missing required field: {field}"
                 assert system_info[field], f"Field '{field}' is empty"
 
                 TestLogger.log_verification(
-                    field,
-                    "Present and non-empty",
-                    system_info[field],
-                    True
+                    field, "Present and non-empty", system_info[field], True
                 )
 
         with allure.step("Step 3: Verify IWSS service status"):
@@ -277,19 +254,13 @@ class TestSystemUpdatesVerification:
             allure.attach(
                 str(service_status),
                 name="IWSS Service Status",
-                attachment_type=allure.attachment_type.JSON
+                attachment_type=allure.attachment_type.JSON,
             )
 
             # Soft assertion - service might be stopped for maintenance
             if is_running:
-                TestLogger.log_verification(
-                    "IWSS Service Status",
-                    "running",
-                    "running",
-                    True
-                )
+                TestLogger.log_verification("IWSS Service Status", "running", "running", True)
             else:
                 pass  # IWSS service status logged above
 
         # Test result logged by pytest framework
-

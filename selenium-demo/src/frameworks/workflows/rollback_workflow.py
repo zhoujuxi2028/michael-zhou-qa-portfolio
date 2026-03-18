@@ -9,16 +9,16 @@ Version: 1.0.0
 """
 
 import time
-from typing import Dict, Any, Optional
 from datetime import datetime
+from typing import Any, Optional
 
 from selenium import webdriver
 
 from core.logging.test_logger import get_logger
 from frameworks.pages.system_update_page import SystemUpdatePage
 from frameworks.verification.backend_verification import BackendVerification
-from frameworks.verification.ui_verification import UIVerification
 from frameworks.verification.log_verification import LogVerification
+from frameworks.verification.ui_verification import UIVerification
 
 logger = get_logger(__name__)
 
@@ -51,28 +51,28 @@ class RollbackWorkflow:
 
     # Components that support rollback
     ROLLBACK_SUPPORTED = {
-        'PTN': True,
-        'SPYWARE': True,
-        'BOT': True,
-        'ITP': True,
-        'ITE': True,
-        'ICRCAGENT': True,
-        'ENG': True,
-        'ATSEENG': True,
-        'TMUFEENG': False,  # Does NOT support rollback
+        "PTN": True,
+        "SPYWARE": True,
+        "BOT": True,
+        "ITP": True,
+        "ITE": True,
+        "ICRCAGENT": True,
+        "ENG": True,
+        "ATSEENG": True,
+        "TMUFEENG": False,  # Does NOT support rollback
     }
 
     # Rollback timeout mapping (seconds)
     ROLLBACK_TIMEOUTS = {
-        'PTN': 180,         # 3 minutes
-        'SPYWARE': 180,
-        'BOT': 180,
-        'ITP': 180,
-        'ITE': 180,
-        'ICRCAGENT': 180,
-        'ENG': 360,         # 6 minutes
-        'ATSEENG': 300,     # 5 minutes
-        'TMUFEENG': 0,      # Not supported
+        "PTN": 180,  # 3 minutes
+        "SPYWARE": 180,
+        "BOT": 180,
+        "ITP": 180,
+        "ITE": 180,
+        "ICRCAGENT": 180,
+        "ENG": 360,  # 6 minutes
+        "ATSEENG": 300,  # 5 minutes
+        "TMUFEENG": 0,  # Not supported
     }
 
     def __init__(
@@ -80,7 +80,7 @@ class RollbackWorkflow:
         driver: webdriver.Remote,
         backend_verifier: Optional[BackendVerification] = None,
         ui_verifier: Optional[UIVerification] = None,
-        log_verifier: Optional[LogVerification] = None
+        log_verifier: Optional[LogVerification] = None,
     ):
         """
         Initialize Rollback Workflow.
@@ -106,8 +106,8 @@ class RollbackWorkflow:
         component_id: str,
         verify_before: bool = True,
         verify_after: bool = True,
-        timeout: Optional[int] = None
-    ) -> Dict[str, Any]:
+        timeout: Optional[int] = None,
+    ) -> dict[str, Any]:
         """
         Execute component rollback with verification.
 
@@ -140,14 +140,14 @@ class RollbackWorkflow:
         logger.info("=" * 80)
 
         result = {
-            'component_id': component_id,
-            'operation': 'rollback',
-            'success': False,
-            'message': '',
-            'start_time': datetime.now().isoformat(),
-            'pre_verification': {},
-            'post_verification': {},
-            'duration': 0
+            "component_id": component_id,
+            "operation": "rollback",
+            "success": False,
+            "message": "",
+            "start_time": datetime.now().isoformat(),
+            "pre_verification": {},
+            "post_verification": {},
+            "duration": 0,
         }
 
         start_time = time.time()
@@ -164,9 +164,9 @@ class RollbackWorkflow:
             if verify_before and self.backend_verifier:
                 logger.info("Step 1: Pre-rollback verification")
                 pre_version = self._get_component_version_safe(component_id)
-                result['pre_verification'] = {
-                    'version': pre_version,
-                    'timestamp': datetime.now().isoformat()
+                result["pre_verification"] = {
+                    "version": pre_version,
+                    "timestamp": datetime.now().isoformat(),
                 }
                 logger.info(f"Pre-rollback version: {pre_version}")
 
@@ -197,9 +197,9 @@ class RollbackWorkflow:
             if verify_after and self.backend_verifier:
                 logger.info("Step 5: Post-rollback verification")
                 post_version = self._get_component_version_safe(component_id)
-                result['post_verification'] = {
-                    'version': post_version,
-                    'timestamp': datetime.now().isoformat()
+                result["post_verification"] = {
+                    "version": post_version,
+                    "timestamp": datetime.now().isoformat(),
                 }
 
                 # Verify version changed (rolled back)
@@ -210,12 +210,12 @@ class RollbackWorkflow:
                         logger.info(f"Version rolled back: {pre_version} → {post_version}")
 
             # Calculate duration
-            result['duration'] = time.time() - start_time
-            result['end_time'] = datetime.now().isoformat()
+            result["duration"] = time.time() - start_time
+            result["end_time"] = datetime.now().isoformat()
 
             # Overall success
-            result['success'] = True
-            result['message'] = f"{component_id} rollback completed successfully"
+            result["success"] = True
+            result["message"] = f"{component_id} rollback completed successfully"
 
             logger.info("=" * 80)
             logger.info(f"✓ ROLLBACK COMPLETED: {component_id} ({result['duration']:.1f}s)")
@@ -223,10 +223,10 @@ class RollbackWorkflow:
 
         except ValueError as e:
             # Rollback not supported
-            result['success'] = False
-            result['message'] = str(e)
-            result['error'] = str(e)
-            result['duration'] = time.time() - start_time
+            result["success"] = False
+            result["message"] = str(e)
+            result["error"] = str(e)
+            result["duration"] = time.time() - start_time
 
             logger.error("=" * 80)
             logger.error(f"✗ ROLLBACK NOT SUPPORTED: {component_id}")
@@ -234,10 +234,10 @@ class RollbackWorkflow:
             logger.error("=" * 80)
 
         except Exception as e:
-            result['success'] = False
-            result['message'] = f"Rollback failed: {str(e)}"
-            result['error'] = str(e)
-            result['duration'] = time.time() - start_time
+            result["success"] = False
+            result["message"] = f"Rollback failed: {str(e)}"
+            result["error"] = str(e)
+            result["duration"] = time.time() - start_time
 
             logger.error("=" * 80)
             logger.error(f"✗ ROLLBACK FAILED: {component_id}")
@@ -273,7 +273,7 @@ class RollbackWorkflow:
 
         return can_rb
 
-    def get_rollback_info(self, component_id: str) -> Dict[str, Any]:
+    def get_rollback_info(self, component_id: str) -> dict[str, Any]:
         """
         Get rollback capability information for component.
 
@@ -289,18 +289,18 @@ class RollbackWorkflow:
             ...     print(f"Rollback not available: {info['reason']}")
         """
         info = {
-            'component_id': component_id,
-            'supported': self.can_rollback(component_id),
-            'timeout': self.ROLLBACK_TIMEOUTS.get(component_id, 0),
-            'current_version': None,
-            'reason': None
+            "component_id": component_id,
+            "supported": self.can_rollback(component_id),
+            "timeout": self.ROLLBACK_TIMEOUTS.get(component_id, 0),
+            "current_version": None,
+            "reason": None,
         }
 
-        if not info['supported']:
-            info['reason'] = f"{component_id} does not support rollback operation"
+        if not info["supported"]:
+            info["reason"] = f"{component_id} does not support rollback operation"
 
         if self.backend_verifier:
-            info['current_version'] = self._get_component_version_safe(component_id)
+            info["current_version"] = self._get_component_version_safe(component_id)
 
         return info
 
@@ -343,10 +343,8 @@ class RollbackWorkflow:
     # ==================== Batch Rollback ====================
 
     def execute_batch_rollback(
-        self,
-        component_ids: list,
-        continue_on_error: bool = False
-    ) -> Dict[str, Any]:
+        self, component_ids: list, continue_on_error: bool = False
+    ) -> dict[str, Any]:
         """
         Execute rollback for multiple components.
 
@@ -366,13 +364,13 @@ class RollbackWorkflow:
         logger.info("=" * 80)
 
         result = {
-            'operation': 'batch_rollback',
-            'total_count': len(component_ids),
-            'success_count': 0,
-            'failure_count': 0,
-            'skipped_count': 0,
-            'component_results': {},
-            'start_time': datetime.now().isoformat()
+            "operation": "batch_rollback",
+            "total_count": len(component_ids),
+            "success_count": 0,
+            "failure_count": 0,
+            "skipped_count": 0,
+            "component_results": {},
+            "start_time": datetime.now().isoformat(),
         }
 
         for component_id in component_ids:
@@ -381,44 +379,39 @@ class RollbackWorkflow:
             # Skip if rollback not supported
             if not self.can_rollback(component_id):
                 logger.warning(f"Skipping {component_id} (rollback not supported)")
-                result['skipped_count'] += 1
-                result['component_results'][component_id] = {
-                    'success': False,
-                    'skipped': True,
-                    'reason': 'Rollback not supported'
+                result["skipped_count"] += 1
+                result["component_results"][component_id] = {
+                    "success": False,
+                    "skipped": True,
+                    "reason": "Rollback not supported",
                 }
                 continue
 
             try:
                 comp_result = self.execute_rollback(
-                    component_id,
-                    verify_before=False,
-                    verify_after=True
+                    component_id, verify_before=False, verify_after=True
                 )
 
-                result['component_results'][component_id] = comp_result
+                result["component_results"][component_id] = comp_result
 
-                if comp_result['success']:
-                    result['success_count'] += 1
+                if comp_result["success"]:
+                    result["success_count"] += 1
                 else:
-                    result['failure_count'] += 1
+                    result["failure_count"] += 1
                     if not continue_on_error:
                         logger.error(f"Rollback failed for {component_id}, stopping batch")
                         break
 
             except Exception as e:
                 logger.error(f"Exception rolling back {component_id}: {e}")
-                result['failure_count'] += 1
-                result['component_results'][component_id] = {
-                    'success': False,
-                    'error': str(e)
-                }
+                result["failure_count"] += 1
+                result["component_results"][component_id] = {"success": False, "error": str(e)}
 
                 if not continue_on_error:
                     break
 
-        result['end_time'] = datetime.now().isoformat()
-        result['success'] = result['failure_count'] == 0
+        result["end_time"] = datetime.now().isoformat()
+        result["success"] = result["failure_count"] == 0
 
         logger.info("=" * 80)
         logger.info(

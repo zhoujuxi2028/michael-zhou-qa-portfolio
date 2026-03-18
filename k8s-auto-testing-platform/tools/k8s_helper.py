@@ -6,7 +6,6 @@ Utility functions for K8S operations
 
 import logging
 import time
-from typing import Dict, Optional
 
 from kubernetes import client, config
 
@@ -51,7 +50,7 @@ class K8sHelper:
 
         return len(running_pods)
 
-    def get_deployment_replicas(self, deployment_name: str) -> Dict[str, int]:
+    def get_deployment_replicas(self, deployment_name: str) -> dict[str, int]:
         """
         Get deployment replica counts
 
@@ -70,7 +69,7 @@ class K8sHelper:
             "unavailable": deployment.status.unavailable_replicas or 0,
         }
 
-    def get_hpa_status(self, hpa_name: str) -> Dict:
+    def get_hpa_status(self, hpa_name: str) -> dict:
         """
         Get HPA status
 
@@ -147,7 +146,7 @@ class K8sHelper:
             logger.error(f"Failed to delete pod {pod_name}: {e}")
             return False
 
-    def get_pod_logs(self, pod_name: str, container: Optional[str] = None, tail_lines: int = 100) -> str:
+    def get_pod_logs(self, pod_name: str, container: str | None = None, tail_lines: int = 100) -> str:
         """
         Get pod logs
 
@@ -171,7 +170,7 @@ class K8sHelper:
             logger.error(f"Failed to get logs for {pod_name}: {e}")
             return ""
 
-    def get_service_endpoint(self, service_name: str) -> Optional[str]:
+    def get_service_endpoint(self, service_name: str) -> str | None:
         """
         Get service endpoint
 

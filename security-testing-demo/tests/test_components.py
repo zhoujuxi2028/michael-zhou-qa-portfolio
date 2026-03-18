@@ -9,11 +9,11 @@ Tests for detecting vulnerable dependencies and outdated components including:
 Reference: https://owasp.org/Top10/A06_2021-Vulnerable_and_Outdated_Components/
 """
 
-import subprocess
 import re
+import subprocess
+
 import pytest
 import requests
-
 
 pytestmark = pytest.mark.components
 
@@ -202,8 +202,9 @@ class TestKnownVulnerabilities:
 
             if jquery_version:
                 major, minor, patch = map(int, jquery_version.split("."))
-                assert major > 3 or (major == 3 and minor >= 5), \
+                assert major > 3 or (major == 3 and minor >= 5), (
                     f"jQuery {jquery_version} has known XSS vulnerabilities (need >= 3.5.0)"
+                )
 
         except requests.RequestException:
             pytest.skip("Target not available")
@@ -236,8 +237,9 @@ class TestKnownVulnerabilities:
 
             if bootstrap_version:
                 major, minor, patch = map(int, bootstrap_version.split("."))
-                assert major > 4 or (major == 4 and minor > 3) or (major == 4 and minor == 3 and patch >= 1), \
+                assert major > 4 or (major == 4 and minor > 3) or (major == 4 and minor == 3 and patch >= 1), (
                     f"Bootstrap {bootstrap_version} has known XSS vulnerabilities (need >= 4.3.1)"
+                )
 
         except requests.RequestException:
             pytest.skip("Target not available")
@@ -288,8 +290,7 @@ class TestDockerVulnerabilities:
 
         # Scan DVWA image (quick scan)
         result = subprocess.run(
-            ["trivy", "image", "--severity", "CRITICAL,HIGH",
-             "--timeout", "5m", "vulnerables/web-dvwa"],
+            ["trivy", "image", "--severity", "CRITICAL,HIGH", "--timeout", "5m", "vulnerables/web-dvwa"],
             capture_output=True,
             text=True,
             timeout=300,
@@ -301,8 +302,9 @@ class TestDockerVulnerabilities:
         else:
             print("[+] No critical vulnerabilities")
 
-        assert "CRITICAL" in output or "HIGH" in output, \
+        assert "CRITICAL" in output or "HIGH" in output, (
             "DVWA image should have known vulnerabilities (intentionally vulnerable)"
+        )
 
 
 class TestComponentInventory:

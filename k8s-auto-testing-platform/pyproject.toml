@@ -58,6 +58,31 @@ markers = [
     "smoke: Quick smoke tests",
 ]
 
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+exclude = [
+    ".git",
+    "__pycache__",
+    ".pytest_cache",
+    "venv",
+    ".venv",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+]
+
 [tool.coverage.run]
 source = ["."]
 omit = ["*/tests/*", "*/venv/*", "*/__pycache__/*", "*/site-packages/*"]

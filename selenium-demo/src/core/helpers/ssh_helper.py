@@ -8,10 +8,10 @@ Author: QA Automation Team
 Version: 1.0.0
 """
 
+from typing import Any, Optional
+
 import paramiko
-import time
-from typing import Optional, Tuple, List, Dict, Any
-from pathlib import Path
+
 from core.logging.test_logger import get_logger
 
 logger = get_logger(__name__)
@@ -42,14 +42,7 @@ class SSHHelper:
         >>> ssh.disconnect()
     """
 
-    def __init__(
-        self,
-        host: str,
-        username: str,
-        password: str,
-        port: int = 22,
-        timeout: int = 30
-    ):
+    def __init__(self, host: str, username: str, password: str, port: int = 22, timeout: int = 30):
         """
         Initialize SSH Helper.
 
@@ -94,7 +87,7 @@ class SSHHelper:
                 password=self.password,
                 timeout=self.timeout,
                 look_for_keys=False,
-                allow_agent=False
+                allow_agent=False,
             )
 
             self.connected = True
@@ -126,11 +119,8 @@ class SSHHelper:
             logger.info(f"✓ SSH connection closed to {self.host}")
 
     def execute_command(
-        self,
-        command: str,
-        timeout: int = 30,
-        sudo: bool = False
-    ) -> Tuple[str, str, int]:
+        self, command: str, timeout: int = 30, sudo: bool = False
+    ) -> tuple[str, str, int]:
         """
         Execute a command on the remote server.
 
@@ -154,20 +144,17 @@ class SSHHelper:
 
         try:
             # Add sudo prefix if requested
-            if sudo and not command.startswith('sudo'):
+            if sudo and not command.startswith("sudo"):
                 command = f"sudo {command}"
 
             logger.debug(f"Executing SSH command: {command}")
 
             # Execute command
-            stdin, stdout, stderr = self.client.exec_command(
-                command,
-                timeout=timeout
-            )
+            stdin, stdout, stderr = self.client.exec_command(command, timeout=timeout)
 
             # Read output
-            stdout_text = stdout.read().decode('utf-8')
-            stderr_text = stderr.read().decode('utf-8')
+            stdout_text = stdout.read().decode("utf-8")
+            stderr_text = stderr.read().decode("utf-8")
             exit_code = stdout.channel.recv_exit_status()
 
             if exit_code == 0:
@@ -183,7 +170,7 @@ class SSHHelper:
             logger.error(f"✗ Error executing command '{command}': {e}")
             raise
 
-    def read_file(self, remote_path: str, encoding: str = 'utf-8') -> str:
+    def read_file(self, remote_path: str, encoding: str = "utf-8") -> str:
         """
         Read content of a remote file.
 
@@ -210,7 +197,7 @@ class SSHHelper:
             sftp = self.client.open_sftp()
 
             try:
-                with sftp.file(remote_path, 'r') as remote_file:
+                with sftp.file(remote_path, "r") as remote_file:
                     content = remote_file.read().decode(encoding)
 
                 logger.debug(f"✓ File read successfully ({len(content)} bytes)")
@@ -228,11 +215,7 @@ class SSHHelper:
             raise
 
     def write_file(
-        self,
-        remote_path: str,
-        content: str,
-        encoding: str = 'utf-8',
-        mode: str = 'w'
+        self, remote_path: str, content: str, encoding: str = "utf-8", mode: str = "w"
     ) -> bool:
         """
         Write content to a remote file.
@@ -303,7 +286,7 @@ class SSHHelper:
             logger.error(f"✗ Error checking file existence '{remote_path}': {e}")
             return False
 
-    def get_file_info(self, remote_path: str) -> Optional[Dict[str, Any]]:
+    def get_file_info(self, remote_path: str) -> Optional[dict[str, Any]]:
         """
         Get information about a remote file.
 
@@ -327,11 +310,11 @@ class SSHHelper:
                 stat = sftp.stat(remote_path)
 
                 info = {
-                    'size': stat.st_size,
-                    'mtime': stat.st_mtime,
-                    'permissions': oct(stat.st_mode)[-3:],
-                    'uid': stat.st_uid,
-                    'gid': stat.st_gid,
+                    "size": stat.st_size,
+                    "mtime": stat.st_mtime,
+                    "permissions": oct(stat.st_mode)[-3:],
+                    "uid": stat.st_uid,
+                    "gid": stat.st_gid,
                 }
 
                 logger.debug(f"✓ File info retrieved: {remote_path} ({info['size']} bytes)")
@@ -348,11 +331,7 @@ class SSHHelper:
             logger.error(f"✗ Error getting file info '{remote_path}': {e}")
             return None
 
-    def execute_command_with_output(
-        self,
-        command: str,
-        expected_exit_code: int = 0
-    ) -> str:
+    def execute_command_with_output(self, command: str, expected_exit_code: int = 0) -> str:
         """
         Execute command and return stdout, asserting exit code.
 
@@ -396,7 +375,7 @@ class SSHHelper:
             command = f"systemctl is-active {service_name}"
             stdout, stderr, exit_code = self.execute_command(command)
 
-            is_running = stdout.strip() == 'active'
+            is_running = stdout.strip() == "active"
 
             if is_running:
                 logger.debug(f"✓ Service '{service_name}' is running")
@@ -409,7 +388,7 @@ class SSHHelper:
             logger.error(f"✗ Error checking service status '{service_name}': {e}")
             return False
 
-    def get_service_status(self, service_name: str) -> Dict[str, Any]:
+    def get_service_status(self, service_name: str) -> dict[str, Any]:
         """
         Get detailed status of a systemd service.
 
@@ -424,19 +403,15 @@ class SSHHelper:
             stdout, stderr, exit_code = self.execute_command(command)
 
             return {
-                'service': service_name,
-                'is_running': self.is_service_running(service_name),
-                'status_output': stdout,
-                'exit_code': exit_code
+                "service": service_name,
+                "is_running": self.is_service_running(service_name),
+                "status_output": stdout,
+                "exit_code": exit_code,
             }
 
         except Exception as e:
             logger.error(f"✗ Error getting service status '{service_name}': {e}")
-            return {
-                'service': service_name,
-                'is_running': False,
-                'error': str(e)
-            }
+            return {"service": service_name, "is_running": False, "error": str(e)}
 
     def __enter__(self):
         """Context manager entry - auto connect."""
@@ -455,7 +430,8 @@ class SSHHelper:
 
 # ==================== Factory Function ====================
 
-def create_ssh_helper(ssh_config: Dict[str, Any]) -> SSHHelper:
+
+def create_ssh_helper(ssh_config: dict[str, Any]) -> SSHHelper:
     """
     Factory function to create SSHHelper from config dictionary.
 
@@ -475,8 +451,8 @@ def create_ssh_helper(ssh_config: Dict[str, Any]) -> SSHHelper:
         >>> ssh.connect()
     """
     return SSHHelper(
-        host=ssh_config['host'],
-        port=ssh_config.get('port', 22),
-        username=ssh_config['username'],
-        password=ssh_config['password']
+        host=ssh_config["host"],
+        port=ssh_config.get("port", 22),
+        username=ssh_config["username"],
+        password=ssh_config["password"],
     )

@@ -9,8 +9,9 @@ Version: 1.0.0
 """
 
 import re
-from typing import List, Dict, Any, Optional, Tuple
 from datetime import datetime
+from typing import Any, Optional
+
 from core.helpers.ssh_helper import SSHHelper
 from core.logging.test_logger import get_logger
 
@@ -40,32 +41,28 @@ class LogVerification:
 
     # Update log patterns
     PATTERNS = {
-        'update_started': r'Update started for component: (\w+)',
-        'update_completed': r'Update completed successfully for component: (\w+)',
-        'update_failed': r'Update failed for component: (\w+)',
-        'download_started': r'Downloading component: (\w+)',
-        'download_completed': r'Download completed: (\w+)',
-        'version_changed': r'Version changed from ([\d.]+) to ([\d.]+)',
-        'error': r'ERROR|FAIL|Exception|failed|error',
-        'warning': r'WARNING|WARN|warn',
-        'success': r'SUCCESS|success|completed successfully',
+        "update_started": r"Update started for component: (\w+)",
+        "update_completed": r"Update completed successfully for component: (\w+)",
+        "update_failed": r"Update failed for component: (\w+)",
+        "download_started": r"Downloading component: (\w+)",
+        "download_completed": r"Download completed: (\w+)",
+        "version_changed": r"Version changed from ([\d.]+) to ([\d.]+)",
+        "error": r"ERROR|FAIL|Exception|failed|error",
+        "warning": r"WARNING|WARN|warn",
+        "success": r"SUCCESS|success|completed successfully",
     }
 
     # Component-specific success messages
     COMPONENT_SUCCESS_PATTERNS = {
-        'PTN': r'PTN.*update.*success|Pattern.*update.*complete',
-        'SPYWARE': r'Spyware.*update.*success|Spyware.*update.*complete',
-        'BOT': r'Bot.*update.*success|Bot.*update.*complete',
-        'ENG': r'Engine.*update.*success|Scan engine.*update.*complete',
-        'ATSEENG': r'ATSE.*update.*success|Advanced threat.*update.*complete',
-        'TMUFEENG': r'TMUFE.*update.*success|URL filter.*update.*complete',
+        "PTN": r"PTN.*update.*success|Pattern.*update.*complete",
+        "SPYWARE": r"Spyware.*update.*success|Spyware.*update.*complete",
+        "BOT": r"Bot.*update.*success|Bot.*update.*complete",
+        "ENG": r"Engine.*update.*success|Scan engine.*update.*complete",
+        "ATSEENG": r"ATSE.*update.*success|Advanced threat.*update.*complete",
+        "TMUFEENG": r"TMUFE.*update.*success|URL filter.*update.*complete",
     }
 
-    def __init__(
-        self,
-        ssh: SSHHelper,
-        default_log_path: str = '/var/log/iwss/update.log'
-    ):
+    def __init__(self, ssh: SSHHelper, default_log_path: str = "/var/log/iwss/update.log"):
         """
         Initialize Log Verification.
 
@@ -79,11 +76,7 @@ class LogVerification:
 
     # ==================== Log Reading ====================
 
-    def get_log_tail(
-        self,
-        lines: int = 100,
-        log_path: Optional[str] = None
-    ) -> str:
+    def get_log_tail(self, lines: int = 100, log_path: Optional[str] = None) -> str:
         """
         Get tail of log file.
 
@@ -111,11 +104,7 @@ class LogVerification:
             logger.error(f"✗ Failed to get log tail: {e}")
             raise
 
-    def get_log_since_time(
-        self,
-        since_time: datetime,
-        log_path: Optional[str] = None
-    ) -> str:
+    def get_log_since_time(self, since_time: datetime, log_path: Optional[str] = None) -> str:
         """
         Get log entries since specific time.
 
@@ -132,7 +121,7 @@ class LogVerification:
             >>> recent_log = log_verifier.get_log_since_time(since)
         """
         log_path = log_path or self.default_log_path
-        time_str = since_time.strftime('%Y-%m-%d %H:%M:%S')
+        time_str = since_time.strftime("%Y-%m-%d %H:%M:%S")
 
         logger.info(f"Getting log entries since: {time_str}")
 
@@ -143,7 +132,7 @@ class LogVerification:
             command = f"tail -n 10000 {log_path}"
             stdout = self.ssh.execute_command_with_output(command)
 
-            logger.debug(f"✓ Log retrieved and filtered")
+            logger.debug("✓ Log retrieved and filtered")
             return stdout
 
         except Exception as e:
@@ -157,8 +146,8 @@ class LogVerification:
         pattern: str,
         log_content: Optional[str] = None,
         max_lines: int = 1000,
-        case_sensitive: bool = False
-    ) -> List[str]:
+        case_sensitive: bool = False,
+    ) -> list[str]:
         """
         Search for pattern in log content.
 
@@ -183,7 +172,7 @@ class LogVerification:
         regex = re.compile(pattern, flags)
 
         matches = []
-        for line in log_content.split('\n'):
+        for line in log_content.split("\n"):
             if regex.search(line):
                 matches.append(line.strip())
 
@@ -191,10 +180,8 @@ class LogVerification:
         return matches
 
     def find_errors_in_log(
-        self,
-        log_content: Optional[str] = None,
-        max_lines: int = 1000
-    ) -> List[str]:
+        self, log_content: Optional[str] = None, max_lines: int = 1000
+    ) -> list[str]:
         """
         Find error messages in log.
 
@@ -211,7 +198,7 @@ class LogVerification:
         """
         logger.info("Searching for errors in log")
 
-        error_pattern = self.PATTERNS['error']
+        error_pattern = self.PATTERNS["error"]
         errors = self.search_pattern(error_pattern, log_content, max_lines)
 
         if errors:
@@ -224,10 +211,8 @@ class LogVerification:
         return errors
 
     def find_warnings_in_log(
-        self,
-        log_content: Optional[str] = None,
-        max_lines: int = 1000
-    ) -> List[str]:
+        self, log_content: Optional[str] = None, max_lines: int = 1000
+    ) -> list[str]:
         """
         Find warning messages in log.
 
@@ -240,7 +225,7 @@ class LogVerification:
         """
         logger.info("Searching for warnings in log")
 
-        warning_pattern = self.PATTERNS['warning']
+        warning_pattern = self.PATTERNS["warning"]
         warnings = self.search_pattern(warning_pattern, log_content, max_lines)
 
         if warnings:
@@ -253,11 +238,8 @@ class LogVerification:
     # ==================== Update Verification ====================
 
     def verify_update_success(
-        self,
-        component_id: str,
-        log_content: Optional[str] = None,
-        max_lines: int = 1000
-    ) -> Tuple[bool, List[str]]:
+        self, component_id: str, log_content: Optional[str] = None, max_lines: int = 1000
+    ) -> tuple[bool, list[str]]:
         """
         Verify component update completed successfully in logs.
 
@@ -297,11 +279,8 @@ class LogVerification:
         return success, matches
 
     def verify_update_started(
-        self,
-        component_id: str,
-        log_content: Optional[str] = None,
-        max_lines: int = 1000
-    ) -> Tuple[bool, List[str]]:
+        self, component_id: str, log_content: Optional[str] = None, max_lines: int = 1000
+    ) -> tuple[bool, list[str]]:
         """
         Verify component update was started in logs.
 
@@ -331,11 +310,8 @@ class LogVerification:
         return started, matches
 
     def verify_no_errors_for_component(
-        self,
-        component_id: str,
-        log_content: Optional[str] = None,
-        max_lines: int = 1000
-    ) -> Tuple[bool, List[str]]:
+        self, component_id: str, log_content: Optional[str] = None, max_lines: int = 1000
+    ) -> tuple[bool, list[str]]:
         """
         Verify no errors occurred during component update.
 
@@ -374,10 +350,8 @@ class LogVerification:
     # ==================== Version Tracking ====================
 
     def extract_version_change(
-        self,
-        log_content: Optional[str] = None,
-        max_lines: int = 1000
-    ) -> List[Dict[str, str]]:
+        self, log_content: Optional[str] = None, max_lines: int = 1000
+    ) -> list[dict[str, str]]:
         """
         Extract version changes from log.
 
@@ -398,18 +372,20 @@ class LogVerification:
         if log_content is None:
             log_content = self.get_log_tail(max_lines)
 
-        version_pattern = self.PATTERNS['version_changed']
+        version_pattern = self.PATTERNS["version_changed"]
         regex = re.compile(version_pattern, re.IGNORECASE)
 
         changes = []
-        for line in log_content.split('\n'):
+        for line in log_content.split("\n"):
             match = regex.search(line)
             if match:
-                changes.append({
-                    'from_version': match.group(1),
-                    'to_version': match.group(2),
-                    'log_line': line.strip()
-                })
+                changes.append(
+                    {
+                        "from_version": match.group(1),
+                        "to_version": match.group(2),
+                        "log_line": line.strip(),
+                    }
+                )
 
         logger.info(f"✓ Extracted {len(changes)} version changes")
         return changes
@@ -421,8 +397,8 @@ class LogVerification:
         component_id: str,
         expected_version: Optional[str] = None,
         log_content: Optional[str] = None,
-        max_lines: int = 1000
-    ) -> Dict[str, Any]:
+        max_lines: int = 1000,
+    ) -> dict[str, Any]:
         """
         Perform complete update cycle verification.
 
@@ -450,64 +426,48 @@ class LogVerification:
         if log_content is None:
             log_content = self.get_log_tail(max_lines)
 
-        result = {
-            'component_id': component_id,
-            'success': True,
-            'checks': {},
-            'message': ''
-        }
+        result = {"component_id": component_id, "success": True, "checks": {}, "message": ""}
 
         # Check 1: Update started
         started, start_lines = self.verify_update_started(component_id, log_content)
-        result['checks']['update_started'] = {
-            'passed': started,
-            'lines': start_lines
-        }
+        result["checks"]["update_started"] = {"passed": started, "lines": start_lines}
 
         # Check 2: Update completed successfully
         completed, success_lines = self.verify_update_success(component_id, log_content)
-        result['checks']['update_completed'] = {
-            'passed': completed,
-            'lines': success_lines
-        }
+        result["checks"]["update_completed"] = {"passed": completed, "lines": success_lines}
 
         # Check 3: No errors
         no_errors, error_lines = self.verify_no_errors_for_component(component_id, log_content)
-        result['checks']['no_errors'] = {
-            'passed': no_errors,
-            'errors': error_lines
-        }
+        result["checks"]["no_errors"] = {"passed": no_errors, "errors": error_lines}
 
         # Check 4: Version changed (if expected version provided)
         if expected_version:
             version_changes = self.extract_version_change(log_content)
             version_match = any(
-                change['to_version'] == expected_version
-                for change in version_changes
+                change["to_version"] == expected_version for change in version_changes
             )
-            result['checks']['version_changed'] = {
-                'passed': version_match,
-                'expected': expected_version,
-                'changes': version_changes
+            result["checks"]["version_changed"] = {
+                "passed": version_match,
+                "expected": expected_version,
+                "changes": version_changes,
             }
-            result['success'] = result['success'] and version_match
+            result["success"] = result["success"] and version_match
 
         # Overall success
-        result['success'] = (
-            result['checks']['update_started']['passed'] and
-            result['checks']['update_completed']['passed'] and
-            result['checks']['no_errors']['passed']
+        result["success"] = (
+            result["checks"]["update_started"]["passed"]
+            and result["checks"]["update_completed"]["passed"]
+            and result["checks"]["no_errors"]["passed"]
         )
 
-        if result['success']:
-            result['message'] = f"{component_id} update cycle verified successfully"
+        if result["success"]:
+            result["message"] = f"{component_id} update cycle verified successfully"
             logger.info(f"✓ {result['message']}")
         else:
             failed_checks = [
-                check for check, data in result['checks'].items()
-                if not data['passed']
+                check for check, data in result["checks"].items() if not data["passed"]
             ]
-            result['message'] = f"{component_id} update cycle verification failed: {failed_checks}"
+            result["message"] = f"{component_id} update cycle verification failed: {failed_checks}"
             logger.error(f"✗ {result['message']}")
 
         return result
@@ -515,10 +475,8 @@ class LogVerification:
     # ==================== Utility Methods ====================
 
     def get_log_summary(
-        self,
-        log_content: Optional[str] = None,
-        max_lines: int = 1000
-    ) -> Dict[str, Any]:
+        self, log_content: Optional[str] = None, max_lines: int = 1000
+    ) -> dict[str, Any]:
         """
         Get summary of log file.
 
@@ -542,15 +500,17 @@ class LogVerification:
         warnings = self.find_warnings_in_log(log_content)
 
         summary = {
-            'total_lines': len(log_content.split('\n')),
-            'error_count': len(errors),
-            'warning_count': len(warnings),
-            'errors': errors[:10],  # First 10 errors
-            'warnings': warnings[:10],  # First 10 warnings
+            "total_lines": len(log_content.split("\n")),
+            "error_count": len(errors),
+            "warning_count": len(warnings),
+            "errors": errors[:10],  # First 10 errors
+            "warnings": warnings[:10],  # First 10 warnings
         }
 
-        logger.info(f"✓ Log summary: {summary['total_lines']} lines, "
-                   f"{summary['error_count']} errors, {summary['warning_count']} warnings")
+        logger.info(
+            f"✓ Log summary: {summary['total_lines']} lines, "
+            f"{summary['error_count']} errors, {summary['warning_count']} warnings"
+        )
 
         return summary
 

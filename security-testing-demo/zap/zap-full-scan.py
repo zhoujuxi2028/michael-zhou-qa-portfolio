@@ -258,18 +258,14 @@ def main():
     parser.add_argument("--zap-host", default="localhost", help="ZAP host")
     parser.add_argument("--zap-port", type=int, default=8090, help="ZAP port")
     parser.add_argument("--api-key", default="", help="ZAP API key")
-    parser.add_argument(
-        "--policy", "-p", default="default", choices=["default", "aggressive"], help="Scan policy"
-    )
+    parser.add_argument("--policy", "-p", default="default", choices=["default", "aggressive"], help="Scan policy")
     parser.add_argument("--output", "-o", default="./reports", help="Output directory")
     parser.add_argument("--report", "-r", default="html", choices=["html", "json", "xml"])
     parser.add_argument("--skip-ajax", action="store_true", help="Skip AJAX spider")
 
     args = parser.parse_args()
 
-    scanner = ZAPFullScan(
-        zap_host=args.zap_host, zap_port=args.zap_port, api_key=args.api_key
-    )
+    scanner = ZAPFullScan(zap_host=args.zap_host, zap_port=args.zap_port, api_key=args.api_key)
 
     results = scanner.run(
         target=args.target,

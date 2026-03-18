@@ -87,7 +87,7 @@ class MockGraphDB:
         except nx.NetworkXNoPath:
             return None
         except nx.NodeNotFound as e:
-            raise GraphDBError(str(e))
+            raise GraphDBError(str(e)) from e
 
     def detect_cycles(self):
         try:

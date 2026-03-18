@@ -6,6 +6,7 @@ Provides common fixtures for ZAP connection, Nessus scanning, target URLs, and t
 
 import os
 import sys
+
 import pytest
 import requests
 from dotenv import load_dotenv
@@ -66,7 +67,7 @@ def zap_client(config):
             },
         )
         # Test connection
-        zap.core.version
+        _ = zap.core.version
         return zap
     except Exception:
         pytest.skip("ZAP is not available")
@@ -159,10 +160,12 @@ def juice_shop_session(config):
         requests.Session configured for Juice Shop
     """
     session = requests.Session()
-    session.headers.update({
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-    })
+    session.headers.update(
+        {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
+    )
 
     try:
         # Verify Juice Shop is available
@@ -189,10 +192,12 @@ def juice_shop_auth_session(config):
     import time
 
     session = requests.Session()
-    session.headers.update({
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-    })
+    session.headers.update(
+        {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
+    )
 
     try:
         # Generate unique test user
@@ -206,31 +211,17 @@ def juice_shop_auth_session(config):
             "email": test_email,
             "password": test_password,
             "passwordRepeat": test_password,
-            "securityQuestion": {
-                "id": 1,
-                "question": "Your eldest siblings middle name?"
-            },
-            "securityAnswer": "test"
+            "securityQuestion": {"id": 1, "question": "Your eldest siblings middle name?"},
+            "securityAnswer": "test",
         }
 
-        response = session.post(
-            register_url,
-            data=json.dumps(register_data),
-            timeout=10
-        )
+        response = session.post(register_url, data=json.dumps(register_data), timeout=10)
 
         # Login
         login_url = f"{config.JUICE_SHOP_URL}/rest/user/login"
-        login_data = {
-            "email": test_email,
-            "password": test_password
-        }
+        login_data = {"email": test_email, "password": test_password}
 
-        response = session.post(
-            login_url,
-            data=json.dumps(login_data),
-            timeout=10
-        )
+        response = session.post(login_url, data=json.dumps(login_data), timeout=10)
 
         if response.status_code == 200:
             auth_data = response.json()
@@ -319,6 +310,7 @@ def _is_juice_shop_available():
 # ============================================================================
 # Nessus Fixtures
 # ============================================================================
+
 
 @pytest.fixture(scope="session")
 def nessus_client():
@@ -416,6 +408,7 @@ def cleanup_scan(nessus_authenticated):
 # OpenVAS/GVM Fixtures
 # ============================================================================
 
+
 @pytest.fixture(scope="session")
 def openvas_client():
     """
@@ -487,6 +480,7 @@ def cleanup_openvas_task(openvas_available):
 # Multi-Security-Level Fixtures
 # ============================================================================
 
+
 @pytest.fixture
 def set_security_level(dvwa_session, config):
     """
@@ -504,12 +498,14 @@ def set_security_level(dvwa_session, config):
     Returns:
         Function to set security level
     """
+
     def _set_level(level: str):
         """Set DVWA security level (low, medium, high, impossible)."""
         if dvwa_session is None:
             pytest.skip("DVWA not available")
 
         import re as _re
+
         # GET security.php to extract CSRF token
         resp = dvwa_session.get(f"{config.DVWA_URL}/security.php", timeout=10)
         token_match = _re.search(r"user_token'[^>]+value='([^']+)'", resp.text)
@@ -544,6 +540,7 @@ def security_level(request, dvwa_session, config):
 
     level = request.param
     import re as _re
+
     # GET security.php to extract CSRF token
     resp = dvwa_session.get(f"{config.DVWA_URL}/security.php", timeout=10)
     token_match = _re.search(r"user_token'[^>]+value='([^']+)'", resp.text)

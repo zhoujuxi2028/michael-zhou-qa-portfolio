@@ -70,8 +70,8 @@ class ZAPAPIScan:
                 result = self.zap.openapi.import_url(spec_path, target)
             else:
                 # Import from file
-                with open(spec_path, "r") as f:
-                    spec_content = f.read()
+                with open(spec_path) as f:
+                    f.read()
                 result = self.zap.openapi.import_file(spec_path, target)
 
             print(f"[+] OpenAPI import result: {result}")
@@ -277,9 +277,7 @@ def main():
     if not args.spec and not args.target:
         parser.error("Either --spec or --target is required")
 
-    scanner = ZAPAPIScan(
-        zap_host=args.zap_host, zap_port=args.zap_port, api_key=args.api_key
-    )
+    scanner = ZAPAPIScan(zap_host=args.zap_host, zap_port=args.zap_port, api_key=args.api_key)
 
     results = scanner.run(
         spec_path=args.spec,

@@ -343,6 +343,7 @@ class TestOpenVASIntegration:
         Verifies defaults are applied when not specified.
         """
         import os
+
         from utils.openvas_helper import OpenVASHelper
 
         # Clear env vars temporarily

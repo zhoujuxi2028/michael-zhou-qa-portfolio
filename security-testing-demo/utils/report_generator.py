@@ -7,7 +7,6 @@ Generates formatted reports from security scan results.
 import json
 import os
 from datetime import datetime
-from typing import Dict, List
 
 
 class ReportGenerator:
@@ -26,9 +25,9 @@ class ReportGenerator:
         self,
         scan_type: str,
         target: str,
-        alerts: List[Dict],
+        alerts: list[dict],
         duration: float = 0,
-    ) -> Dict:
+    ) -> dict:
         """Generate summary report.
 
         Args:
@@ -60,7 +59,7 @@ class ReportGenerator:
 
         return report
 
-    def save_json_report(self, report: Dict, filename: str = None) -> str:
+    def save_json_report(self, report: dict, filename: str = None) -> str:
         """Save report as JSON.
 
         Args:
@@ -81,7 +80,7 @@ class ReportGenerator:
 
         return filepath
 
-    def save_html_report(self, report: Dict, filename: str = None) -> str:
+    def save_html_report(self, report: dict, filename: str = None) -> str:
         """Save report as HTML.
 
         Args:
@@ -104,7 +103,7 @@ class ReportGenerator:
 
         return filepath
 
-    def _generate_html(self, report: Dict) -> str:
+    def _generate_html(self, report: dict) -> str:
         """Generate HTML content from report.
 
         Args:
@@ -182,27 +181,27 @@ class ReportGenerator:
 <body>
     <div class="header">
         <h1>Security Scan Report</h1>
-        <p><strong>Target:</strong> {report.get('target', 'N/A')}</p>
-        <p><strong>Scan Type:</strong> {report.get('scan_type', 'N/A')}</p>
-        <p><strong>Timestamp:</strong> {report.get('timestamp', 'N/A')}</p>
-        <p><strong>Duration:</strong> {report.get('duration_seconds', 0):.1f} seconds</p>
+        <p><strong>Target:</strong> {report.get("target", "N/A")}</p>
+        <p><strong>Scan Type:</strong> {report.get("scan_type", "N/A")}</p>
+        <p><strong>Timestamp:</strong> {report.get("timestamp", "N/A")}</p>
+        <p><strong>Duration:</strong> {report.get("duration_seconds", 0):.1f} seconds</p>
     </div>
 
     <div class="summary">
         <div class="summary-card high">
-            <h2>{summary.get('High', 0)}</h2>
+            <h2>{summary.get("High", 0)}</h2>
             <p>High Risk</p>
         </div>
         <div class="summary-card medium">
-            <h2>{summary.get('Medium', 0)}</h2>
+            <h2>{summary.get("Medium", 0)}</h2>
             <p>Medium Risk</p>
         </div>
         <div class="summary-card low">
-            <h2>{summary.get('Low', 0)}</h2>
+            <h2>{summary.get("Low", 0)}</h2>
             <p>Low Risk</p>
         </div>
         <div class="summary-card info">
-            <h2>{summary.get('Informational', 0)}</h2>
+            <h2>{summary.get("Informational", 0)}</h2>
             <p>Informational</p>
         </div>
     </div>
@@ -239,7 +238,7 @@ class ReportGenerator:
 
         return html
 
-    def print_summary(self, report: Dict) -> None:
+    def print_summary(self, report: dict) -> None:
         """Print summary to console.
 
         Args:
