@@ -6,7 +6,6 @@ Wrapper class for common ZAP operations.
 
 import os
 import time
-from typing import Dict, List, Optional
 
 # Disable system proxy for localhost ZAP connections
 os.environ["NO_PROXY"] = "localhost,127.0.0.1"
@@ -54,7 +53,7 @@ class ZAPHelper:
             True if connected, False otherwise
         """
         try:
-            self.zap.core.version
+            _ = self.zap.core.version
             return True
         except Exception:
             return False
@@ -72,7 +71,7 @@ class ZAPHelper:
         target: str,
         max_duration: int = 60,
         recurse: bool = True,
-    ) -> List[str]:
+    ) -> list[str]:
         """Spider a target URL.
 
         Args:
@@ -133,9 +132,9 @@ class ZAPHelper:
 
     def get_alerts(
         self,
-        target: Optional[str] = None,
-        risk: Optional[str] = None,
-    ) -> List[Dict]:
+        target: str | None = None,
+        risk: str | None = None,
+    ) -> list[dict]:
         """Get alerts from scan.
 
         Args:
@@ -155,7 +154,7 @@ class ZAPHelper:
 
         return alerts
 
-    def get_alert_summary(self, alerts: List[Dict]) -> Dict[str, int]:
+    def get_alert_summary(self, alerts: list[dict]) -> dict[str, int]:
         """Generate alert summary.
 
         Args:
@@ -201,7 +200,7 @@ class ZAPHelper:
         """Clear ZAP session data."""
         self.zap.core.new_session()
 
-    def set_context(self, name: str, include_regex: List[str]) -> str:
+    def set_context(self, name: str, include_regex: list[str]) -> str:
         """Create scan context.
 
         Args:

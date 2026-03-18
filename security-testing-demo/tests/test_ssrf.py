@@ -13,7 +13,6 @@ Reference: https://owasp.org/Top10/A10_2021-Server-Side_Request_Forgery_%28SSRF%
 import pytest
 import requests
 
-
 pytestmark = pytest.mark.ssrf
 
 
@@ -313,5 +312,6 @@ class TestJuiceShopSSRF:
         else:
             print("[*] No redirect behavior detected")
 
-        assert "localhost" not in location and "127.0.0.1" not in location, \
+        assert "localhost" not in location and "127.0.0.1" not in location, (
             "Redirect should not allow access to internal addresses"
+        )

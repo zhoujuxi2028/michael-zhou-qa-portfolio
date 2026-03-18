@@ -64,12 +64,6 @@ class TestBruteForce:
         ID: SEC-AUTH-002
         Description: Check for account lockout mechanism
         """
-        lockout_indicators = [
-            "account locked",
-            "too many attempts",
-            "temporarily disabled",
-            "try again later",
-        ]
 
         print("[*] Account lockout test:")
         print("    - Secure apps should lock accounts after 3-5 failed attempts")
@@ -92,7 +86,7 @@ class TestSessionManagement:
         login_url = f"{config.DVWA_URL}/login.php"
 
         # Get session before login
-        response = http_session.get(login_url, timeout=10)
+        http_session.get(login_url, timeout=10)
         session_before = http_session.cookies.get("PHPSESSID", "")
 
         # Perform login

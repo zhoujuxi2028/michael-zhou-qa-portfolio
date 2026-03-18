@@ -11,9 +11,9 @@ Reference: https://owasp.org/Top10/A02_2021-Cryptographic_Failures/
 """
 
 import re
+
 import pytest
 import requests
-
 
 pytestmark = pytest.mark.crypto
 
@@ -128,12 +128,9 @@ class TestSensitiveDataExposure:
         assert len(password_inputs) > 0, "No password field found on login page"
 
         has_autocomplete_off = any(
-            'autocomplete="off"' in inp or 'autocomplete="new-password"' in inp
-            for inp in password_inputs
+            'autocomplete="off"' in inp or 'autocomplete="new-password"' in inp for inp in password_inputs
         )
-        assert has_autocomplete_off, (
-            f"Password field missing autocomplete='off': {password_inputs}"
-        )
+        assert has_autocomplete_off, f"Password field missing autocomplete='off': {password_inputs}"
 
 
 class TestWeakCryptography:
@@ -151,9 +148,7 @@ class TestWeakCryptography:
 
         session_id = dvwa_session.cookies.get("PHPSESSID", "")
         assert session_id, "No PHPSESSID cookie found"
-        assert len(session_id) >= 26, (
-            f"Session ID too short ({len(session_id)} chars), vulnerable to brute-force"
-        )
+        assert len(session_id) >= 26, f"Session ID too short ({len(session_id)} chars), vulnerable to brute-force"
 
     def test_session_token_not_predictable(self, dvwa_session, config):
         """
@@ -184,9 +179,7 @@ class TestWeakCryptography:
 
         set_cookie = response.headers.get("Set-Cookie", "")
         assert set_cookie, "No Set-Cookie header returned from login.php"
-        assert "secure" in set_cookie.lower(), (
-            f"Cookie missing Secure flag: {set_cookie}"
-        )
+        assert "secure" in set_cookie.lower(), f"Cookie missing Secure flag: {set_cookie}"
 
 
 class TestDataInTransit:
@@ -214,10 +207,5 @@ class TestDataInTransit:
 
         assert results, "Could not reach any sensitive page"
 
-        missing_no_store = [
-            path for path, cc in results.items()
-            if "no-store" not in cc.lower()
-        ]
-        assert not missing_no_store, (
-            f"Sensitive pages cacheable (missing no-store): {missing_no_store}"
-        )
+        missing_no_store = [path for path, cc in results.items() if "no-store" not in cc.lower()]
+        assert not missing_no_store, f"Sensitive pages cacheable (missing no-store): {missing_no_store}"

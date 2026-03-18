@@ -6,8 +6,9 @@ These tests verify ZAP is functioning and can detect vulnerabilities.
 """
 
 import os
-import pytest
 import sys
+
+import pytest
 
 # Add project root to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -127,8 +128,7 @@ class TestZAPAlerts:
         high_alerts = zap_helper.get_alerts(risk="High")
 
         # Filtered count should be <= total count
-        assert len(high_alerts) <= len(all_alerts), \
-            "Filtered alerts should not exceed total"
+        assert len(high_alerts) <= len(all_alerts), "Filtered alerts should not exceed total"
 
         # All filtered alerts should be High risk
         for alert in high_alerts:
@@ -145,8 +145,7 @@ class TestZAPReports:
 
         assert report is not None, "Report should not be None"
         assert len(report) > 0, "Report should have content"
-        assert "<html" in report.lower() or "<!doctype" in report.lower(), \
-            "Should be valid HTML"
+        assert "<html" in report.lower() or "<!doctype" in report.lower(), "Should be valid HTML"
 
     def test_json_report_generation(self, zap_helper):
         """SEC-ZAP-010: Verify JSON report can be generated."""
@@ -179,8 +178,9 @@ class TestZAPBaselineScan:
 
         # 4. Generate summary
         summary = zap_helper.get_alert_summary(alerts)
-        assert all(k in summary for k in ["High", "Medium", "Low", "Informational"]), \
+        assert all(k in summary for k in ["High", "Medium", "Low", "Informational"]), (
             "Summary should have all risk levels"
+        )
 
         # 5. Generate report
         html_report = zap_helper.generate_html_report()

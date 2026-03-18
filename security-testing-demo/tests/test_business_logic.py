@@ -5,9 +5,7 @@ Tests for business logic vulnerabilities in OWASP Juice Shop.
 Covers OWASP A04:2021 - Insecure Design
 """
 
-import json
 import pytest
-import requests
 
 
 @pytest.mark.juice_shop
@@ -107,8 +105,7 @@ class TestCouponAbuse:
             responses.append(response.status_code)
 
         # After first application, subsequent should fail
-        assert not all(r == 200 for r in responses), \
-            "Coupon should not be reusable multiple times"
+        assert not all(r == 200 for r in responses), "Coupon should not be reusable multiple times"
 
     def test_coupon_stacking(self, juice_shop_auth_session, juice_shop_url):
         """SEC-BL-003: Test multiple coupon stacking.
@@ -168,8 +165,7 @@ class TestPriceManipulation:
         )
 
         # Server should calculate price, not accept client value
-        assert response.status_code != 200, \
-            "Server should not accept client-provided price in checkout"
+        assert response.status_code != 200, "Server should not accept client-provided price in checkout"
 
     def test_free_delivery_manipulation(self, juice_shop_auth_session, juice_shop_url):
         """SEC-BL-004: Test delivery cost bypass.
@@ -191,8 +187,7 @@ class TestPriceManipulation:
 
             if deliveries:
                 cheapest = min(deliveries, key=lambda d: d.get("price", 999))
-                assert cheapest.get("price", 0) >= 0, \
-                    "Delivery price should not be negative"
+                assert cheapest.get("price", 0) >= 0, "Delivery price should not be negative"
 
 
 @pytest.mark.juice_shop

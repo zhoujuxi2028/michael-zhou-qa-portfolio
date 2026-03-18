@@ -115,7 +115,7 @@ class TestOntologyEntity:
         added = db.bulk_add_entities(entities)
         assert added == 1000
         for i in range(999):
-            db.graph.add_edge(f"perf_node_{i}", f"perf_node_{i+1}", relation_type="seq")
+            db.graph.add_edge(f"perf_node_{i}", f"perf_node_{i + 1}", relation_type="seq")
         path = db.shortest_path("perf_node_0", "perf_node_999")
         assert path is not None
         assert len(path) == 1000

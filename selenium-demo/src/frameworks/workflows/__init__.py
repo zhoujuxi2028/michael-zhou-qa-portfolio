@@ -11,14 +11,14 @@ Author: QA Automation Team
 Version: 1.0.0
 """
 
-from .update_workflow import UpdateWorkflow
 from .rollback_workflow import RollbackWorkflow
-from .verification_workflow import VerificationWorkflow
 from .setup_workflow import SetupWorkflow
+from .update_workflow import UpdateWorkflow
+from .verification_workflow import VerificationWorkflow
 
 __all__ = [
-    'UpdateWorkflow',
-    'RollbackWorkflow',
-    'VerificationWorkflow',
-    'SetupWorkflow',
+    "UpdateWorkflow",
+    "RollbackWorkflow",
+    "VerificationWorkflow",
+    "SetupWorkflow",
 ]

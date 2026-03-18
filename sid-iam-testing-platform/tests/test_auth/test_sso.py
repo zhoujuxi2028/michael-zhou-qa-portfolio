@@ -125,7 +125,7 @@ class TestOIDC:
         """TC-AUTH-SSO-009: Token 过期处理"""
         logger.info("TC-AUTH-SSO-009: Testing token expiration handling")
         expired_token = create_expired_jwt({"sub": "student001", "scope": "openid"})
-        with pytest.raises(Exception):
+        with pytest.raises(Exception):  # noqa: B017
             auth_client.verify_token(expired_token)
 
     @pytest.mark.P1

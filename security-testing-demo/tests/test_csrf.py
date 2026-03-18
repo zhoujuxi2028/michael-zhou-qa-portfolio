@@ -113,9 +113,7 @@ class TestCSRF:
             ext_response = http_session.get(url, headers=headers_external, timeout=10)
 
             # Compare responses
-            all_same = (
-                len(normal_response.text) == len(no_ref_response.text) == len(ext_response.text)
-            )
+            all_same = len(normal_response.text) == len(no_ref_response.text) == len(ext_response.text)
 
             if all_same:
                 print("[*] Application does not validate Referer header")

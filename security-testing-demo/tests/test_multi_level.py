@@ -8,8 +8,6 @@ OWASP Top 10: A03:2021 - Injection
 """
 
 import pytest
-import requests
-
 
 pytestmark = pytest.mark.multi_level
 
@@ -308,12 +306,15 @@ class TestSecurityLevelComparison:
 
             # Test CSRF
             csrf_url = f"{config.DVWA_URL}/vulnerabilities/csrf/"
-            csrf_resp = dvwa_session.post(csrf_url, data={
-                "password_new": "test123",
-                "password_conf": "test123",
-                "Change": "Change",
-                "user_token": "invalid",
-            })
+            csrf_resp = dvwa_session.post(
+                csrf_url,
+                data={
+                    "password_new": "test123",
+                    "password_conf": "test123",
+                    "Change": "Change",
+                    "user_token": "invalid",
+                },
+            )
             results[level]["csrf"] = "Password Changed" in csrf_resp.text
 
         # Print matrix

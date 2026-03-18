@@ -8,7 +8,6 @@ Tests will skip gracefully if Nessus is not available.
 """
 
 import pytest
-import os
 
 # Skip all tests in this module if Nessus is not available
 pytestmark = pytest.mark.nessus
@@ -76,9 +75,7 @@ class TestNessusHostDiscovery:
         assert isinstance(scan_id, int), "Scan ID should be an integer"
 
     @pytest.mark.slow
-    def test_host_discovery_detects_targets(
-        self, nessus_authenticated, cleanup_scan, dvwa_ip
-    ):
+    def test_host_discovery_detects_targets(self, nessus_authenticated, cleanup_scan, dvwa_ip):
         """
         Test that host discovery finds target hosts.
 
@@ -113,9 +110,7 @@ class TestNessusNetworkScan:
     """Tests for Nessus network vulnerability scanning."""
 
     @pytest.mark.slow
-    def test_basic_network_scan_dvwa(
-        self, nessus_authenticated, cleanup_scan, dvwa_ip
-    ):
+    def test_basic_network_scan_dvwa(self, nessus_authenticated, cleanup_scan, dvwa_ip):
         """
         Test basic network scan against DVWA.
 
@@ -137,9 +132,7 @@ class TestNessusNetworkScan:
         assert status.get("status") != "error", "Scan should be created without error"
 
     @pytest.mark.slow
-    def test_basic_network_scan_juice_shop(
-        self, nessus_authenticated, cleanup_scan, juice_shop_ip
-    ):
+    def test_basic_network_scan_juice_shop(self, nessus_authenticated, cleanup_scan, juice_shop_ip):
         """
         Test basic network scan against OWASP Juice Shop.
 
@@ -161,9 +154,7 @@ class TestNessusNetworkScan:
         assert status.get("status") != "error", "Scan should be created without error"
 
     @pytest.mark.slow
-    def test_scan_detects_open_ports(
-        self, nessus_authenticated, cleanup_scan, dvwa_ip
-    ):
+    def test_scan_detects_open_ports(self, nessus_authenticated, cleanup_scan, dvwa_ip):
         """
         Test that scans detect open ports on targets.
 

@@ -15,7 +15,6 @@ import random
 import statistics
 import time
 from dataclasses import dataclass
-from typing import Dict, List, Optional
 
 import requests
 from kubernetes import client, config
@@ -32,8 +31,8 @@ class ChaosResult:
     operation: str
     target: str
     duration: float
-    error: Optional[str] = None
-    metadata: Optional[Dict] = None
+    error: str | None = None
+    metadata: dict | None = None
 
 
 class ChaosTester:
@@ -42,7 +41,7 @@ class ChaosTester:
     def __init__(
         self,
         namespace: str = "k8s-testing",
-        service_url: Optional[str] = None,
+        service_url: str | None = None,
     ):
         """
         Initialize chaos tester
@@ -67,7 +66,7 @@ class ChaosTester:
         self,
         label_selector: str = "app=test-app",
         phase: str = "Running",
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Get list of pod names
 
@@ -170,7 +169,7 @@ class ChaosTester:
         self,
         percent: float,
         label_selector: str = "app=test-app",
-    ) -> List[ChaosResult]:
+    ) -> list[ChaosResult]:
         """
         Delete a percentage of pods
 
@@ -207,7 +206,7 @@ class ChaosTester:
 
     def exhaust_cpu(
         self,
-        pod_name: Optional[str] = None,
+        pod_name: str | None = None,
         duration: int = 30,
     ) -> ChaosResult:
         """
@@ -267,7 +266,7 @@ class ChaosTester:
 
     def exhaust_memory(
         self,
-        pod_name: Optional[str] = None,
+        pod_name: str | None = None,
         size_mb: int = 100,
     ) -> ChaosResult:
         """
@@ -439,7 +438,7 @@ class ChaosTester:
             logger.error(f"Service check failed: {e}")
             return False
 
-    def get_hpa_status(self, hpa_name: str = "test-app-hpa") -> Dict:
+    def get_hpa_status(self, hpa_name: str = "test-app-hpa") -> dict:
         """
         Get HPA status
 
@@ -470,7 +469,7 @@ class ChaosTester:
         count: int = 3,
         interval: int = 10,
         label_selector: str = "app=test-app",
-    ) -> List[ChaosResult]:
+    ) -> list[ChaosResult]:
         """
         Perform rolling pod kills
 
@@ -539,7 +538,7 @@ class ChaosTester:
                 else:
                     errors += 1
             except Exception as e:
-                logger.warning(f"Request {i+1} failed: {e}")
+                logger.warning(f"Request {i + 1} failed: {e}")
                 errors += 1
 
         elapsed = time.time() - start_time
@@ -604,7 +603,7 @@ class ChaosTester:
                 error="Service URL not configured",
             )
 
-        def make_request(req_id: int) -> Dict:
+        def make_request(req_id: int) -> dict:
             try:
                 req_start = time.time()
                 response = requests.get(

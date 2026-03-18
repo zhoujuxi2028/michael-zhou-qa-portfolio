@@ -7,10 +7,9 @@ Tests will skip if sqlmap is not installed.
 OWASP Top 10: A03:2021 - Injection
 """
 
-import os
 import subprocess
-import pytest
 
+import pytest
 
 pytestmark = pytest.mark.sqlmap
 
@@ -99,15 +98,23 @@ class TestSQLMapDetection:
         # Run sqlmap in batch mode (non-interactive)
         cmd = [
             "sqlmap",
-            "-u", target_url,
-            "--cookie", f"PHPSESSID={session_cookie}; security=low",
+            "-u",
+            target_url,
+            "--cookie",
+            f"PHPSESSID={session_cookie}; security=low",
             "--batch",  # Non-interactive
-            "--level", "1",  # Basic level
-            "--risk", "1",  # Low risk
-            "--technique", "BEU",  # Boolean, Error, Union
-            "--timeout", "10",
-            "--retries", "1",
-            "--threads", "1",
+            "--level",
+            "1",  # Basic level
+            "--risk",
+            "1",  # Low risk
+            "--technique",
+            "BEU",  # Boolean, Error, Union
+            "--timeout",
+            "10",
+            "--retries",
+            "1",
+            "--threads",
+            "1",
         ]
 
         try:
@@ -155,12 +162,16 @@ class TestSQLMapDetection:
         # Run sqlmap to enumerate databases
         cmd = [
             "sqlmap",
-            "-u", target_url,
-            "--cookie", f"PHPSESSID={session_cookie}; security=low",
+            "-u",
+            target_url,
+            "--cookie",
+            f"PHPSESSID={session_cookie}; security=low",
             "--batch",
             "--dbs",  # Enumerate databases
-            "--timeout", "10",
-            "--retries", "1",
+            "--timeout",
+            "10",
+            "--retries",
+            "1",
         ]
 
         try:

@@ -5,16 +5,16 @@ This module provides a high-level interface to interact with OpenVAS/GVM
 vulnerability scanner for security testing purposes.
 """
 
+import logging
 import os
 import time
-import logging
-from typing import List, Dict, Optional, Any
+from typing import Any
 
 try:
-    from gvm.connections import UnixSocketConnection, TLSConnection
+    from gvm.connections import TLSConnection, UnixSocketConnection
     from gvm.protocols.gmp import Gmp
     from gvm.transforms import EtreeTransform
-    from gvm.errors import GvmError
+
     GVM_AVAILABLE = True
 except ImportError:
     GVM_AVAILABLE = False
@@ -176,7 +176,7 @@ class OpenVASHelper:
         hosts: str,
         port_list_id: str = None,
         comment: str = "",
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Create a scan target.
 
@@ -237,7 +237,7 @@ class OpenVASHelper:
         config: str = "full_and_fast",
         scanner_id: str = None,
         comment: str = "",
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Create a scan task.
 
@@ -290,7 +290,7 @@ class OpenVASHelper:
             logger.error(f"Failed to create task: {e}")
             return None
 
-    def start_task(self, task_id: str) -> Optional[str]:
+    def start_task(self, task_id: str) -> str | None:
         """
         Start a scan task.
 
@@ -321,7 +321,7 @@ class OpenVASHelper:
             logger.error(f"Failed to start task {task_id}: {e}")
             return None
 
-    def get_task_status(self, task_id: str) -> Dict[str, Any]:
+    def get_task_status(self, task_id: str) -> dict[str, Any]:
         """
         Get current status of a task.
 
@@ -384,7 +384,7 @@ class OpenVASHelper:
         logger.warning(f"Task {task_id} timed out after {timeout}s")
         return False
 
-    def get_results(self, task_id: str) -> List[Dict[str, Any]]:
+    def get_results(self, task_id: str) -> list[dict[str, Any]]:
         """
         Get vulnerability results from a task.
 
@@ -422,14 +422,24 @@ class OpenVASHelper:
                         severity_elem = result.find("severity")
                         desc_elem = result.find("description")
 
-                        results.append({
-                            "nvt_oid": nvt.get("oid") if nvt is not None else "",
-                            "nvt_name": nvt.find("name").text if nvt is not None and nvt.find("name") is not None else "",
-                            "host": host_elem.text if host_elem is not None else "",
-                            "severity": float(severity_elem.text) if severity_elem is not None and severity_elem.text else 0.0,
-                            "severity_class": self._severity_class(float(severity_elem.text) if severity_elem is not None and severity_elem.text else 0.0),
-                            "description": desc_elem.text[:500] if desc_elem is not None and desc_elem.text else "",
-                        })
+                        results.append(
+                            {
+                                "nvt_oid": nvt.get("oid") if nvt is not None else "",
+                                "nvt_name": nvt.find("name").text
+                                if nvt is not None and nvt.find("name") is not None
+                                else "",
+                                "host": host_elem.text if host_elem is not None else "",
+                                "severity": float(severity_elem.text)
+                                if severity_elem is not None and severity_elem.text
+                                else 0.0,
+                                "severity_class": self._severity_class(
+                                    float(severity_elem.text)
+                                    if severity_elem is not None and severity_elem.text
+                                    else 0.0
+                                ),
+                                "description": desc_elem.text[:500] if desc_elem is not None and desc_elem.text else "",
+                            }
+                        )
 
                     return results
 
@@ -450,7 +460,7 @@ class OpenVASHelper:
         else:
             return "Info"
 
-    def get_report_summary(self, task_id: str) -> Dict[str, Any]:
+    def get_report_summary(self, task_id: str) -> dict[str, Any]:
         """
         Get summary statistics for a task's report.
 
@@ -533,7 +543,7 @@ class OpenVASHelper:
             logger.error(f"Failed to delete target {target_id}: {e}")
             return False
 
-    def list_tasks(self) -> List[Dict[str, Any]]:
+    def list_tasks(self) -> list[dict[str, Any]]:
         """
         List all available tasks.
 
@@ -553,18 +563,20 @@ class OpenVASHelper:
                     for task in tasks.findall(".//task"):
                         name_elem = task.find("name")
                         status_elem = task.find("status")
-                        result.append({
-                            "id": task.get("id"),
-                            "name": name_elem.text if name_elem is not None else "",
-                            "status": status_elem.text if status_elem is not None else "",
-                        })
+                        result.append(
+                            {
+                                "id": task.get("id"),
+                                "name": name_elem.text if name_elem is not None else "",
+                                "status": status_elem.text if status_elem is not None else "",
+                            }
+                        )
                     return result
 
         except Exception as e:
             logger.error(f"Failed to list tasks: {e}")
             return []
 
-    def list_scan_configs(self) -> List[Dict[str, str]]:
+    def list_scan_configs(self) -> list[dict[str, str]]:
         """
         List available scan configurations.
 
@@ -583,10 +595,12 @@ class OpenVASHelper:
                     result = []
                     for config in configs.findall(".//config"):
                         name_elem = config.find("name")
-                        result.append({
-                            "id": config.get("id"),
-                            "name": name_elem.text if name_elem is not None else "",
-                        })
+                        result.append(
+                            {
+                                "id": config.get("id"),
+                                "name": name_elem.text if name_elem is not None else "",
+                            }
+                        )
                     return result
 
         except Exception as e:

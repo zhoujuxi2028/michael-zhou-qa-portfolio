@@ -25,17 +25,20 @@ class TestLDAPBind:
             ldap_server.bind(f"uid=student001,ou=students,{settings.ldap_base_dn}", "wrongpass")
 
     @pytest.mark.P0
-    def test_ldap_injection_defense(self, ldap_server, ldap_connection):
-        """TC-AUTH-LDAP-004: LDAP 注入防御"""
-        logger.info("TC-AUTH-LDAP-004: Testing LDAP injection defense")
-        injection_payloads = [
+    @pytest.mark.parametrize(
+        "payload",
+        [
             "uid=*)(objectClass=*",
             "uid=admin)(|(password=*)",
             "*()|&",
-        ]
-        for payload in injection_payloads:
-            with pytest.raises(LDAPInjectionError):
-                ldap_server.search(ldap_connection, settings.ldap_base_dn, payload)
+        ],
+        ids=["wildcard_filter_escape", "union_password_leak", "special_chars"],
+    )
+    def test_ldap_injection_defense(self, ldap_server, ldap_connection, payload):
+        """TC-AUTH-LDAP-004: LDAP 注入防御"""
+        logger.info("TC-AUTH-LDAP-004: Testing LDAP injection defense with payload=%s", payload)
+        with pytest.raises(LDAPInjectionError):
+            ldap_server.search(ldap_connection, settings.ldap_base_dn, payload)
 
 
 @pytest.mark.auth

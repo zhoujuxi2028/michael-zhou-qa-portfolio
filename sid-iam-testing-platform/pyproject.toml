@@ -27,9 +27,11 @@ disable = [
     "C0115",  # missing-class-docstring
     "C0116",  # missing-function-docstring
     "W1203",  # logging-fstring-interpolation
-    "R0801",  # duplicate-code
     "R0902",  # too-many-instance-attributes
 ]
+
+[tool.pylint.similarities]
+min-similarity-lines = 6
 
 [tool.pylint.format]
 max-line-length = 120
@@ -55,6 +57,31 @@ markers = [
     "integration: Integration tests",
     "smoke: Quick smoke tests",
     "slow: Long-running tests",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+exclude = [
+    ".git",
+    "__pycache__",
+    ".pytest_cache",
+    "venv",
+    ".venv",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
 ]
 
 [tool.coverage.run]
