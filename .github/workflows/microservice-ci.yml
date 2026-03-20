@@ -1,0 +1,98 @@
+name: Microservice Testing CI
+
+on:
+  push:
+    branches: [main, feature/microservice-testing]
+    paths: ['microservice-testing-platform/**']
+  pull_request:
+    branches: [main]
+    paths: ['microservice-testing-platform/**']
+
+defaults:
+  run:
+    working-directory: microservice-testing-platform
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: npm
+          cache-dependency-path: microservice-testing-platform/package-lock.json
+      - run: npm ci
+      - run: npx eslint services/ tests/ shared/ --ext .js
+      - run: npx prettier --check 'services/**/*.js' 'tests/**/*.js' 'shared/**/*.js'
+
+  unit-test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: npm
+          cache-dependency-path: microservice-testing-platform/package-lock.json
+      - run: npm ci
+      - run: npx jest tests/unit/ --coverage --coverageReporters=text --coverageReporters=lcov
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: microservice-testing-platform/coverage/
+
+  contract-test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: npm
+          cache-dependency-path: microservice-testing-platform/package-lock.json
+      - run: npm ci
+      - run: npx jest tests/contract/
+
+  integration-test:
+    runs-on: ubuntu-latest
+    needs: [unit-test, contract-test]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: npm
+          cache-dependency-path: microservice-testing-platform/package-lock.json
+      - run: npm ci
+      - run: npx jest tests/integration/
+
+  e2e-test:
+    runs-on: ubuntu-latest
+    needs: integration-test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: npm
+          cache-dependency-path: microservice-testing-platform/package-lock.json
+      - run: npm ci
+      - run: npx jest tests/e2e/
+
+  observability-test:
+    runs-on: ubuntu-latest
+    needs: integration-test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: npm
+          cache-dependency-path: microservice-testing-platform/package-lock.json
+      - run: npm ci
+      - run: npx jest tests/observability/
