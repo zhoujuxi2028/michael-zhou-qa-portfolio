@@ -19,6 +19,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | `api-testing-demo/`          | API testing demonstration                          | Newman, Postman                   |
 | `selenium-demo/`             | Browser automation                                 | Selenium, Python                  |
 | `sid-iam-testing-platform/`  | IAM + Data Platform + AI Agent testing (138 tests) | Python, Pytest, FastAPI, networkx |
+| `microservice-testing-platform/` | Microservice testing (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 |
 
 ## Project CLAUDE.md Files
 
@@ -29,6 +30,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | Security Testing Demo | `security-testing-demo/CLAUDE.md` |
 | CI/CD Demo | `cicd-demo/CLAUDE.md` |
 | SID IAM Testing | `sid-iam-testing-platform/CLAUDE.md` |
+| Microservice Testing | `microservice-testing-platform/CLAUDE.md` |
 
 ## Virtual Environment
 
@@ -99,6 +101,19 @@ pytest tests/test_data/ -v  # Data platform only (44 tests)
 pytest tests/test_ai/ -v    # AI Agent only (40 tests)
 ```
 
+### microservice-testing-platform
+```bash
+cd microservice-testing-platform
+npm install
+npm run test:unit          # 46 unit tests
+npm run test:contract      # 15 contract tests
+npm run test:integration   # 20 integration tests
+npm run test:e2e           # 10 E2E tests
+npm run test:observability # 10 observability tests
+npm run test:all           # All 101 tests
+npm run docker:up          # Start all services + Redis
+```
+
 ## Git Workflow
 
 - **Default branch**: `main`
@@ -116,6 +131,7 @@ pytest tests/test_ai/ -v    # AI Agent only (40 tests)
 | `feature/robot-framework-demo` | Robot Framework demo | In development |
 | `fix/api-testing-defects` | API testing bug fixes | In development |
 | `feature/sid-iam-testing` | SID IAM + Data Platform + AI Agent testing (138 tests) | In development |
+| `feature/microservice-testing` | Microservice testing platform (101 tests, 5 layers) | In development |
 
 ## GitHub Actions
 
@@ -131,6 +147,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `security-tests.yml` | security-testing-demo | Security tests (DVWA, Juice Shop, ZAP, OWASP Top 10) |
 | `k8s-ci.yml` | k8s-auto-testing-platform | K8S CI (code quality, unit tests, integration) |
 | `sid-iam-ci.yml` | sid-iam-testing-platform | SID IAM CI (code quality, unit tests, integration) |
+| `microservice-ci.yml` | microservice-testing-platform | Lint → unit → contract → integration → E2E (101 tests) |
 
 ## Security
 

@@ -8,7 +8,7 @@
 | 2 | 设计阶段 | **Complete** |
 | 3 | 开发阶段 | **Complete** |
 | 4 | 测试阶段 | **Complete** |
-| 5 | 收尾阶段 | Pending |
+| 5 | 收尾阶段 | **Complete** |
 
 ---
 
