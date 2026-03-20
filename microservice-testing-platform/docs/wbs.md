@@ -7,7 +7,7 @@
 | 1 | 需求分析 | **Complete** |
 | 2 | 设计阶段 | **Complete** |
 | 3 | 开发阶段 | **Complete** |
-| 4 | 测试阶段 | Pending |
+| 4 | 测试阶段 | **Complete** |
 | 5 | 收尾阶段 | Pending |
 
 ---
