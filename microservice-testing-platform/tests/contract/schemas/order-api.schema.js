@@ -10,7 +10,10 @@ const orderResponse = {
     quantity: { type: 'integer', minimum: 1 },
     unitPrice: { type: 'number', exclusiveMinimum: 0 },
     totalAmount: { type: 'number', exclusiveMinimum: 0 },
-    status: { type: 'string', enum: ['pending', 'confirmed', 'cancelled', 'paid', 'failed', 'completed'] },
+    status: {
+      type: 'string',
+      enum: ['pending', 'confirmed', 'cancelled', 'paid', 'failed', 'completed'],
+    },
     paymentId: { type: ['string', 'null'] },
     createdAt: { type: 'string' },
     updatedAt: { type: 'string' },
@@ -22,7 +25,10 @@ const statusUpdateResponse = {
   required: ['id', 'status'],
   properties: {
     id: { type: 'string', pattern: '^ORD-' },
-    status: { type: 'string', enum: ['pending', 'confirmed', 'cancelled', 'paid', 'failed', 'completed'] },
+    status: {
+      type: 'string',
+      enum: ['pending', 'confirmed', 'cancelled', 'paid', 'failed', 'completed'],
+    },
     paymentId: { type: ['string', 'null'] },
   },
 };
@@ -45,4 +51,9 @@ const invalidTransitionError = {
   },
 };
 
-module.exports = { orderResponse, statusUpdateResponse, orderNotFoundError, invalidTransitionError };
+module.exports = {
+  orderResponse,
+  statusUpdateResponse,
+  orderNotFoundError,
+  invalidTransitionError,
+};
