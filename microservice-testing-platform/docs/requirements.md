@@ -11,15 +11,15 @@
 
 ### 2.1 In Scope
 
-| 项目 | 说明 |
-|------|------|
-| 3 个微服务 | Order、Inventory、Payment |
-| 同步通信 | REST API（Order → Inventory） |
-| 异步通信 | Redis Pub/Sub（Order → Payment） |
-| 6 层测试 | 单元、契约、集成、E2E、性能、可观测性 |
-| 容器化 | Docker Compose 一键启动 |
-| CI/CD | GitHub Actions |
-| 可观测性 | 结构化日志、链路追踪、Prometheus 指标 |
+| 项目     | 说明                             |
+| ------ | ------------------------------ |
+| 3 个微服务 | Order、Inventory、Payment        |
+| 同步通信   | REST API（Order → Inventory）    |
+| 异步通信   | Redis Pub/Sub（Order → Payment） |
+| 6 层测试  | 单元、契约、集成、E2E、性能、可观测性           |
+| 容器化    | Docker Compose 一键启动            |
+| CI/CD  | GitHub Actions                 |
+| 可观测性   | 结构化日志、链路追踪、Prometheus 指标       |
 
 ### 2.2 Out of Scope
 
