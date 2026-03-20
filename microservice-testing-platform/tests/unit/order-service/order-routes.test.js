@@ -44,9 +44,7 @@ describe('Order Routes', () => {
     });
 
     test('returns 400 when productId is missing', async () => {
-      const res = await request(app)
-        .post('/api/orders')
-        .send({ quantity: 2, unitPrice: 29.99 });
+      const res = await request(app).post('/api/orders').send({ quantity: 2, unitPrice: 29.99 });
 
       expect(res.status).toBe(400);
       expect(res.body.error).toBe('VALIDATION_ERROR');

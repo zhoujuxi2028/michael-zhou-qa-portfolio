@@ -29,9 +29,7 @@ describe('Observability: Correlation ID', () => {
 
   // OB-05: Use provided header
   test('uses X-Correlation-ID header when provided', async () => {
-    const res = await request(app)
-      .get('/test')
-      .set('X-Correlation-ID', 'my-custom-corr-id');
+    const res = await request(app).get('/test').set('X-Correlation-ID', 'my-custom-corr-id');
 
     expect(res.body.correlationId).toBe('my-custom-corr-id');
   });
