@@ -19,7 +19,7 @@ Test automation and DevOps demonstration projects.
 | [playwright-demo](./playwright-demo/)                     | Cross-Browser E2E Testing (32 tests)                                | Playwright, TypeScript            |
 | [selenium-demo](./selenium-demo/)                         | Browser Automation                                                  | Selenium, Python                  |
 | [sid-iam-testing-platform](./sid-iam-testing-platform/)   | IAM + Data Platform + AI Agent Testing (138 tests)                  | Python, Pytest, FastAPI, networkx |
-|                                                           |                                                                     |                                   |
+| [microservice-testing-platform](./microservice-testing-platform/) | Microservice Testing (101 tests, 5 layers)               | Node.js, Express, Jest, Redis, k6 |
 
 ---
 
@@ -47,6 +47,7 @@ Test automation and DevOps demonstration projects.
 | `k8s-ci.yml` | k8s-auto-testing-platform | Push/PR, manual | Code quality + unit tests + K8S integration |
 | `playwright-tests.yml` | playwright-demo | Push/PR to main | Cross-browser E2E (Chromium, Firefox, WebKit) |
 | `sid-iam-ci.yml` | sid-iam-testing-platform | Push/PR, manual | Code quality + unit tests + integration (138 tests) |
+| `microservice-ci.yml` | microservice-testing-platform | Push/PR | Lint → unit → contract → integration → E2E (101 tests) |
 
 ---
 
@@ -68,6 +69,7 @@ cd security-testing-demo && pip install -r requirements.txt && pytest tests/ -v
 cd cicd-demo && npm install && npm test
 cd playwright-demo && npm install && npx playwright install && npm test
 cd sid-iam-testing-platform && pip install -r requirements.txt && pytest tests/ -v
+cd microservice-testing-platform && npm install && npm run test:all
 ```
 
 ---
