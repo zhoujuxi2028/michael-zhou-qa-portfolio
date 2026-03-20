@@ -1,6 +1,4 @@
-const {
-  ERROR_CODES,
-} = require('../../../shared/constants');
+const { ERROR_CODES } = require('../../../shared/constants');
 
 let db;
 let inventoryModel;

@@ -32,9 +32,7 @@ const indexExists = db
   .prepare("SELECT name FROM sqlite_master WHERE type='index' AND name='idx_inv_tx_order_type'")
   .get();
 if (!indexExists) {
-  db.exec(
-    'CREATE UNIQUE INDEX idx_inv_tx_order_type ON inventory_transactions(order_id, type)'
-  );
+  db.exec('CREATE UNIQUE INDEX idx_inv_tx_order_type ON inventory_transactions(order_id, type)');
 }
 
 // Seed data if empty

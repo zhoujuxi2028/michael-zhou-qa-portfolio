@@ -88,9 +88,7 @@ describe('Payment API Integration', () => {
       correlationId: 'corr-004',
     });
 
-    const rows = db
-      .prepare('SELECT * FROM payments WHERE order_id = ?')
-      .all('ORD-IT-P04');
+    const rows = db.prepare('SELECT * FROM payments WHERE order_id = ?').all('ORD-IT-P04');
     expect(rows.length).toBe(1);
   });
 
