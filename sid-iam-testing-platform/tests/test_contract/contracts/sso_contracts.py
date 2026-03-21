@@ -31,7 +31,14 @@ SAML_LOGIN_SUCCESS = {
             "required": ["status", "saml_response", "session_id", "relay_state"],
             "properties": {
                 "status": {"type": "string", "enum": ["success"]},
-                "saml_response": {"type": "string", "minLength": 1},
+                "saml_response": {
+                    "type": "object",
+                    "required": ["assertion", "signature"],
+                    "properties": {
+                        "assertion": {"type": "string", "minLength": 1},
+                        "signature": {"type": "string", "minLength": 1},
+                    },
+                },
                 "session_id": {"type": "string", "minLength": 1},
                 "relay_state": {"type": "string"},
             },
