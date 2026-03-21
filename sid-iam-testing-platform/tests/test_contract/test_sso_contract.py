@@ -84,7 +84,7 @@ class TestSSOProviderContracts:
         contract = OIDC_USERINFO_SUCCESS
         resp = sso_provider.get(
             contract["request"]["path"],
-            headers={"authorization": f"Bearer {valid_user_token}"},
+            params={"authorization": f"Bearer {valid_user_token}"},
         )
         contract_validator.validate_response(contract, resp.status_code, resp.json())
 
@@ -93,7 +93,7 @@ class TestSSOProviderContracts:
         contract = OIDC_USERINFO_NO_TOKEN
         resp = sso_provider.get(
             contract["request"]["path"],
-            headers={"authorization": ""},
+            params={"authorization": ""},
         )
         contract_validator.validate_response(contract, resp.status_code, resp.json())
 
