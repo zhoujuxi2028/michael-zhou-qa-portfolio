@@ -20,6 +20,9 @@ cryptography==41.0.7
 # HTTP
 requests==2.31.0
 
+# Contract Testing
+jsonschema==4.21.1
+
 # Config & Utils
 python-dotenv==1.0.0
 pyyaml==6.0.1
