@@ -13,11 +13,11 @@ Test automation and DevOps demonstration projects.
 | --------------------------------------------------------- | ------------------------------------------------------------------- | --------------------------------- |
 | [iwsva-cypress-e2e](./iwsva-cypress-e2e/)                 | IWSVA E2E Testing (77 tests) ([setup notes](./docs/iwsva-setup.md)) | Cypress, JavaScript               |
 | [k8s-auto-testing-platform](./k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests)                              | Python, Pytest, Chaos Mesh        |
-| [security-testing-demo](./security-testing-demo/)         | DAST Security Testing (170 tests, OWASP Top 10 2021)                | OWASP ZAP, Nessus, SQLMap, Pytest |
-| [cicd-demo](./cicd-demo/)                                 | CI/CD Pipeline Demo                                                 | GitHub Actions, Docker            |
-| [api-testing-demo](./api-testing-demo/)                   | API Testing                                                         | Newman, Postman                   |
-| [playwright-demo](./playwright-demo/)                     | Cross-Browser E2E Testing (32 tests)                                | Playwright, TypeScript            |
-| [selenium-demo](./selenium-demo/)                         | Browser Automation                                                  | Selenium, Python                  |
+| [security-testing-demo](./security-testing-demo/)         | DAST Security Testing (~182 tests, OWASP Top 10 2021)               | OWASP ZAP, Nessus, SQLMap, Pytest |
+| [cicd-demo](./cicd-demo/)                                 | CI/CD Pipeline Demo (34 tests)                                      | GitHub Actions, Docker, Terraform |
+| [api-testing-demo](./api-testing-demo/)                   | API Testing (280+ assertions)                                       | Newman, Postman, json-server      |
+| [playwright-demo](./playwright-demo/)                     | Cross-Browser E2E Testing (38 tests)                                | Playwright, TypeScript, axe-core  |
+| [selenium-demo](./selenium-demo/)                         | Browser Automation                                                  | Selenium, Python, Allure          |
 | [sid-iam-testing-platform](./sid-iam-testing-platform/)   | IAM + Data Platform + AI Agent Testing (138 tests)                  | Python, Pytest, FastAPI, networkx |
 | [microservice-testing-platform](./microservice-testing-platform/) | Microservice Testing (101 tests, 5 layers)               | Node.js, Express, Jest, Redis, k6 |
 
@@ -71,6 +71,21 @@ cd playwright-demo && npm install && npx playwright install && npm test
 cd sid-iam-testing-platform && pip install -r requirements.txt && pytest tests/ -v
 cd microservice-testing-platform && npm install && npm run test:all
 ```
+
+---
+
+## Wiki | 文档
+
+For detailed documentation, see the [Project Wiki](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki):
+
+| Page | Description |
+|------|-------------|
+| [Architecture](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki/Architecture) | System architecture & test layering |
+| [Test Strategy](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki/Test-Strategy) | Test types, coverage, selection criteria |
+| [CI/CD Pipeline](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki/CI-CD-Pipeline) | GitHub Actions workflows & triggers |
+| [Defect Management](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki/Defect-Management) | Label system, issue workflow |
+| [Lessons Learned](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki/Lessons-Learned) | Real-world debugging experiences |
+| [Tech Stack](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki/Tech-Stack) | Tool selection rationale |
 
 ---
 
