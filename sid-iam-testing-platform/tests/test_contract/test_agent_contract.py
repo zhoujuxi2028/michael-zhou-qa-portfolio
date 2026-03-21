@@ -72,9 +72,7 @@ class TestAgentAuthContracts:
         ai_agent.reset()
         ai_agent.create_agent(agent_id="contract-auth-001")
         token = create_jwt({"sub": "student001", "roles": ["student"]})
-        result = ai_agent.inherit_auth(
-            "contract-auth-001", token, ["read:courses", "read:grades"]
-        )
+        result = ai_agent.inherit_auth("contract-auth-001", token, ["read:courses", "read:grades"])
         contract_validator.validate_output(AGENT_INHERIT_AUTH, result)
 
     def test_escalation_detected_contract(self, ai_agent, contract_validator):
@@ -84,9 +82,7 @@ class TestAgentAuthContracts:
         token = create_jwt({"sub": "student001", "roles": ["student"]})
         ai_agent.inherit_auth("contract-auth-002", token, ["read:courses"])
 
-        result = ai_agent.check_privilege_escalation(
-            "contract-auth-002", ["read:courses", "admin:delete_users"]
-        )
+        result = ai_agent.check_privilege_escalation("contract-auth-002", ["read:courses", "admin:delete_users"])
         contract_validator.validate_output(AGENT_CHECK_ESCALATION, result)
         assert result["escalation_detected"] is True
         assert "admin:delete_users" in result["attempted"]
@@ -98,9 +94,7 @@ class TestAgentAuthContracts:
         token = create_jwt({"sub": "student001", "roles": ["student"]})
         ai_agent.inherit_auth("contract-auth-003", token, ["read:courses", "read:grades"])
 
-        result = ai_agent.check_privilege_escalation(
-            "contract-auth-003", ["read:courses"]
-        )
+        result = ai_agent.check_privilege_escalation("contract-auth-003", ["read:courses"])
         contract_validator.validate_output(AGENT_CHECK_ESCALATION, result)
         assert result["escalation_detected"] is False
 

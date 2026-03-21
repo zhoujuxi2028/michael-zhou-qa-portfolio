@@ -79,9 +79,7 @@ class TestSSOProviderContracts:
         resp = sso_provider.post(contract["request"]["path"], json=contract["request"]["body"])
         contract_validator.validate_response(contract, resp.status_code, resp.json())
 
-    def test_oidc_userinfo_success_contract(
-        self, sso_provider, contract_validator, valid_user_token
-    ):
+    def test_oidc_userinfo_success_contract(self, sso_provider, contract_validator, valid_user_token):
         """Contract: Userinfo returns sub + email + name + roles + tenant."""
         contract = OIDC_USERINFO_SUCCESS
         resp = sso_provider.get(
@@ -123,21 +121,26 @@ class TestSSOContractBackwardCompatibility:
         resp = sso_provider.post("/saml/sso", json=SAML_LOGIN_SUCCESS["request"]["body"])
         body = resp.json()
         required_fields = {"status", "saml_response", "session_id", "relay_state"}
-        assert required_fields.issubset(body.keys()), (
-            f"Missing consumer-required fields: {required_fields - body.keys()}"
-        )
+        assert required_fields.issubset(
+            body.keys()
+        ), f"Missing consumer-required fields: {required_fields - body.keys()}"
 
     def test_oidc_token_response_contains_all_consumer_required_fields(self, sso_provider):
         """Consumer depends on: access_token, id_token, refresh_token, token_type, expires_in."""
         resp = sso_provider.post("/oidc/token", json=OIDC_TOKEN_SUCCESS["request"]["body"])
         body = resp.json()
         required_fields = {
-            "status", "access_token", "id_token", "refresh_token",
-            "token_type", "expires_in", "session_id",
+            "status",
+            "access_token",
+            "id_token",
+            "refresh_token",
+            "token_type",
+            "expires_in",
+            "session_id",
         }
-        assert required_fields.issubset(body.keys()), (
-            f"Missing consumer-required fields: {required_fields - body.keys()}"
-        )
+        assert required_fields.issubset(
+            body.keys()
+        ), f"Missing consumer-required fields: {required_fields - body.keys()}"
 
     def test_token_type_is_always_bearer(self, sso_provider):
         """Consumer hardcodes Bearer token handling — type must not change."""
