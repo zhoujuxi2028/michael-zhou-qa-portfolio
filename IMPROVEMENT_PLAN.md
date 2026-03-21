@@ -55,3 +55,16 @@ Generated: 2026-03-21
 | 9 | microservice-testing-platform | 101 | ✅ | ✅ |
 
 **Total: 700+ tests across 9 projects**
+
+---
+
+## Issue Tracker
+
+| ID | Date | Project | Issue | Root Cause | Fix | Status |
+|----|------|---------|-------|------------|-----|--------|
+| ISS-001 | 2026-03-21 | sid-iam-testing-platform | PR #7 CI `code-quality` failed: `black --check` on 3 contract test files | conftest.py, test_agent_contract.py, test_sso_contract.py 未经 black 格式化即提交 | `black --line-length 120 tests/test_contract/` | ✅ Fixed |
+| ISS-002 | 2026-03-21 | sid-iam-testing-platform | PR #7 CI `code-quality` failed: `isort --check-only` on conftest.py | conftest.py import 顺序不符合 isort 规范 | `isort --profile black tests/test_contract/` | ✅ Fixed |
+| ISS-003 | 2026-03-21 | sid-iam-testing-platform | PR #7 CI `unit-tests` failed: `ModuleNotFoundError: No module named 'jsonschema'` | conftest.py 依赖 jsonschema 但 requirements.txt 未声明 | 添加 `jsonschema==4.21.1` 到 requirements.txt | ✅ Fixed |
+| ISS-004 | 2026-03-21 | sid-iam-testing-platform | PR #7 CI `unit-tests` failed: `'contract' not found in markers configuration` | `--strict-markers` 要求所有 marker 注册，但 pytest.ini 缺少 `contract` | 在 pytest.ini markers 中添加 `contract: Contract tests` | ✅ Fixed |
+| ISS-005 | 2026-03-21 | sid-iam-testing-platform | test_saml_login_success_contract failed: `saml_response is not of type 'string'` | SSO Provider 返回 `{assertion, signature}` 对象，但 contract schema 期望 string | 将 schema 从 `"type": "string"` 改为 `"type": "object"` | ✅ Fixed |
+| ISS-006 | 2026-03-21 | sid-iam-testing-platform | test_oidc_userinfo_success_contract failed: expected 200 got 401 | 测试用 `headers=` 传递 authorization，但 endpoint 用 query param 接收 | 改用 `params=` 传递 authorization，与 auth_client.py 一致 | ✅ Fixed |
