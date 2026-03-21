@@ -14,10 +14,11 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | ---------------------------- | -------------------------------------------------- | --------------------------------- |
 | `iwsva-cypress-e2e/`         | IWSVA E2E testing (77 test cases, 9 components)    | Cypress, Page Objects             |
 | `k8s-auto-testing-platform/` | K8S HPA testing + Chaos Engineering (37 tests)     | Python, Pytest, Chaos Mesh        |
-| `security-testing-demo/`     | Security testing (170 tests, OWASP Top 10 2021)    | Pytest, OWASP ZAP, Nessus, SQLMap |
-| `cicd-demo/`                 | CI/CD pipeline demonstration                       | GitHub Actions, Docker            |
-| `api-testing-demo/`          | API testing demonstration                          | Newman, Postman                   |
-| `selenium-demo/`             | Browser automation                                 | Selenium, Python                  |
+| `security-testing-demo/`     | Security testing (~182 tests, OWASP Top 10 2021)   | Pytest, OWASP ZAP, Nessus, SQLMap |
+| `cicd-demo/`                 | CI/CD pipeline (34 tests)                          | GitHub Actions, Docker, Terraform |
+| `api-testing-demo/`          | API testing (280+ assertions)                      | Newman, Postman, json-server      |
+| `playwright-demo/`           | Cross-browser E2E testing (38 tests)               | Playwright, TypeScript, axe-core  |
+| `selenium-demo/`             | Browser automation                                 | Selenium, Python, Allure          |
 | `sid-iam-testing-platform/`  | IAM + Data Platform + AI Agent testing (138 tests) | Python, Pytest, FastAPI, networkx |
 | `microservice-testing-platform/` | Microservice testing (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 |
 
@@ -29,6 +30,9 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | K8S Testing Platform | `k8s-auto-testing-platform/CLAUDE.md` |
 | Security Testing Demo | `security-testing-demo/CLAUDE.md` |
 | CI/CD Demo | `cicd-demo/CLAUDE.md` |
+| API Testing Demo | `api-testing-demo/CLAUDE.md` |
+| Playwright Demo | `playwright-demo/CLAUDE.md` |
+| Selenium Demo | `selenium-demo/CLAUDE.md` |
 | SID IAM Testing | `sid-iam-testing-platform/CLAUDE.md` |
 | Microservice Testing | `microservice-testing-platform/CLAUDE.md` |
 
@@ -80,8 +84,20 @@ kill %1                     # Stop json-server
 cd security-testing-demo
 docker compose -f docker/docker-compose.yml up -d    # Start ZAP + DVWA
 pip install -r requirements.txt
-pytest tests/ -v                                     # Run 170 security tests
+pytest tests/ -v                                     # Run ~182 security tests
 python zap/zap-baseline.py --target http://localhost # ZAP baseline scan
+```
+
+### playwright-demo
+```bash
+cd playwright-demo
+npm install
+npx playwright install
+npm test                    # All 38 tests (Chromium + Firefox + WebKit)
+npm run test:chromium       # Chromium only
+npm run test:api            # API tests (no browser)
+npm run test:a11y           # Accessibility tests
+npm run report              # Open HTML report
 ```
 
 ### selenium-demo
@@ -146,6 +162,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `helm-deploy.yml` | cicd-demo | Helm chart validation & deploy |
 | `security-tests.yml` | security-testing-demo | Security tests (DVWA, Juice Shop, ZAP, OWASP Top 10) |
 | `k8s-ci.yml` | k8s-auto-testing-platform | K8S CI (code quality, unit tests, integration) |
+| `playwright-tests.yml` | playwright-demo | Cross-browser E2E tests (Chromium, Firefox, WebKit) |
 | `sid-iam-ci.yml` | sid-iam-testing-platform | SID IAM CI (code quality, unit tests, integration) |
 | `microservice-ci.yml` | microservice-testing-platform | Lint → unit → contract → integration → E2E (101 tests) |
 
