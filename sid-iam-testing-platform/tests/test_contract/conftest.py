@@ -6,7 +6,6 @@ from jsonschema import validate
 
 from src.helpers.token_factory import create_jwt
 
-
 CONTRACTS_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "contracts", "generated")
 
 
