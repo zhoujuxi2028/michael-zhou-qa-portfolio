@@ -1,1 +1,2 @@
+npm run db:reset
 npx lint-staged

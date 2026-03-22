@@ -299,7 +299,9 @@ class UpdateWorkflow:
 
         for component_id in component_ids:
             logger.info(
-                f"Updating component {result['success_count'] + result['failure_count'] + 1}/{result['total_count']}: {component_id}"
+                f"Updating component "
+                f"{result['success_count'] + result['failure_count'] + 1}"
+                f"/{result['total_count']}: {component_id}"
             )
 
             try:
