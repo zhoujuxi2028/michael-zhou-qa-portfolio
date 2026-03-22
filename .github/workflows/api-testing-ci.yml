@@ -1,0 +1,66 @@
+name: API Testing CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'api-testing-demo/**'
+      - '.github/workflows/api-testing-ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'api-testing-demo/**'
+      - '.github/workflows/api-testing-ci.yml'
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: api-testing-demo
+
+jobs:
+  validate:
+    name: Validate Collections
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: api-testing-demo/package-lock.json
+      - run: npm ci
+      - run: npm run validate
+
+  api-tests:
+    name: API Tests (Newman)
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: api-testing-demo/package-lock.json
+      - run: npm ci
+
+      - name: Start json-server
+        run: npm run server &
+
+      - name: Wait for server
+        run: |
+          for i in $(seq 1 10); do
+            curl -s http://localhost:3001 > /dev/null && break
+            sleep 1
+          done
+
+      - name: Run Newman tests
+        run: npm run test:ci
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-reports
+          path: api-testing-demo/reports/
+          retention-days: 14

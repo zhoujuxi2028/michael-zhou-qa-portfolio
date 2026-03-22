@@ -42,7 +42,8 @@ class TestSystemUpdatesVerification:
     @allure.story("TC-VERIFY-001: Multi-Level Kernel Version Verification")
     @allure.testcase("TC-VERIFY-001", "Kernel Version Multi-Level Verification")
     @allure.severity(allure.severity_level.CRITICAL)
-    @allure.description("""
+    @allure.description(
+        """
     Verify kernel version across UI and Backend levels:
     1. UI Level: Verify kernel version displayed on System Updates page
     2. Backend Level: Verify kernel version via SSH (uname -r)
@@ -50,7 +51,8 @@ class TestSystemUpdatesVerification:
     Note: Log verification disabled - log file path issue needs investigation.
 
     This test demonstrates Phase 2 multi-level verification capabilities.
-    """)
+    """
+    )
     def test_kernel_version_multi_level(self, system_update_page, backend_verifier, ui_verifier):
         """
         TC-VERIFY-001: Verify kernel version using multi-level verification.
@@ -85,7 +87,8 @@ class TestSystemUpdatesVerification:
         with allure.step("Step 2: UI Verification - Get kernel version from page"):
             TestLogger.log_step("UI Verification: Get kernel version from page")
 
-            # Verify page is loaded (ISSUE-004 fix: use SystemUpdatePage method for frame-based verification)
+            # Verify page is loaded
+            # ISSUE-004 fix: use SystemUpdatePage method for frame-based verification
             assert system_update_page.verify_page_loaded(), "System Updates page not loaded"
 
             # Get kernel version from UI
@@ -184,14 +187,16 @@ class TestSystemUpdatesVerification:
     @allure.story("TC-VERIFY-002: System Information Comprehensive Verification")
     @allure.testcase("TC-VERIFY-002", "System Information Verification")
     @allure.severity(allure.severity_level.NORMAL)
-    @allure.description("""
+    @allure.description(
+        """
     Verify comprehensive system information via backend:
     1. Get complete system information
     2. Verify kernel version
     3. Verify OS version
     4. Verify hostname
     5. Verify IWSS service status
-    """)
+    """
+    )
     def test_system_information_backend(self, backend_verifier):
         """
         TC-VERIFY-002: Verify comprehensive system information via backend.
