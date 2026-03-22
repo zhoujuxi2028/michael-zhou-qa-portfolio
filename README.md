@@ -12,7 +12,7 @@ Test automation and DevOps demonstration projects.
 | Category | Project | Description | Tech Stack |
 |----------|---------|-------------|------------|
 | 功能测试 | [iwsva-cypress-e2e](./iwsva-cypress-e2e/) | IWSVA E2E Testing (77 tests) | Cypress, JavaScript |
-| 功能测试 | [cicd-demo](./cicd-demo/) | CI/CD Pipeline Demo (34 tests) | GitHub Actions, Docker, Terraform |
+| DevOps | [cicd-demo](./cicd-demo/) | DevOps Infrastructure Platform (IaC + GitOps + Monitoring) | Terraform, K8S, ArgoCD, Prometheus |
 | 功能测试 | [api-testing-demo](./api-testing-demo/) | API Testing (280+ assertions) | Newman, Postman, json-server |
 | 功能测试 | [playwright-demo](./playwright-demo/) | Cross-Browser E2E Testing (38 tests) | Playwright, TypeScript, axe-core |
 | 功能测试 | [selenium-demo](./selenium-demo/) | Browser Automation | Selenium, Python, Allure |
