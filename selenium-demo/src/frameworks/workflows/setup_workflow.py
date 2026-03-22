@@ -343,7 +343,8 @@ class SetupWorkflow:
                     result["message"] = f"Successfully downgraded to {target_version}"
                 else:
                     result["message"] = (
-                        f"Downgrade verification failed: got {result['final_version']}, expected {target_version}"
+                        f"Downgrade verification failed: "
+                        f"got {result['final_version']}, expected {target_version}"
                     )
 
         except Exception as e:
