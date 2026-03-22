@@ -44,6 +44,9 @@ jobs:
           cache-dependency-path: api-testing-demo/package-lock.json
       - run: npm ci
 
+      - name: Reset database
+        run: git checkout db.json
+
       - name: Start json-server
         run: npm run server &
 
@@ -56,7 +59,7 @@ jobs:
 
       - name: Run Newman tests
         run: npm test
-        continue-on-error: true
+        continue-on-error: true  # 32 known failures from test state coupling
 
       - name: Upload test reports
         if: always()
