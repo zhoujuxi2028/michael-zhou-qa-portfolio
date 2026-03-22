@@ -1,6 +1,8 @@
-# CI/CD Demo — DevOps Platform
+# CI/CD Demo — DevOps Infrastructure Platform
 
-A complete CI/CD pipeline demonstration: from code push to production deployment, with monitoring, alerting, and GitOps.
+**Category: DevOps 基础设施演示**
+
+A complete DevOps infrastructure platform: Terraform IaC, Kubernetes orchestration, ArgoCD GitOps, Trivy security scanning, and Prometheus + Grafana observability. Includes CI/CD pipelines and basic test automation as validation layer.
 
 ## What This Project Demonstrates
 
@@ -13,14 +15,14 @@ Code Push → GitHub Actions (CI) → Docker Build & Test → Helm Package
 
 | Component | Technology | What It Does |
 |-----------|-----------|--------------|
-| **CI Pipeline** | GitHub Actions | 5 workflows: pipeline, PR checks, Docker tests, security scan, Helm deploy |
-| **Test Automation** | Cypress + Newman | 16 E2E tests + 18 API assertions, 100% pass rate |
-| **Containerization** | Docker Compose | Cypress + Newman in containers, reproducible test env |
 | **Infrastructure as Code** | Terraform + Localstack | S3, DynamoDB, 3 environment configs (dev/staging/prod) |
 | **Container Orchestration** | Kubernetes (k3d) | 3-node cluster, Jobs, Deployments, Services, Ingress |
-| **Security Scanning** | Trivy + npm audit | 4-layer scanning (filesystem, Docker, IaC, dependencies) |
 | **GitOps** | ArgoCD | 2 apps (dev auto-sync, staging manual), self-healing |
+| **Security Scanning** | Trivy + npm audit | 4-layer scanning (filesystem, Docker, IaC, dependencies) |
 | **Monitoring** | Prometheus + Grafana | Metrics collection, 2 dashboards (14 panels) |
+| **CI Pipeline** | GitHub Actions | 5 workflows: pipeline, PR checks, Docker tests, security scan, Helm deploy |
+| **Validation Layer** | Cypress + Newman | 16 E2E tests + 18 API assertions (pipeline validation) |
+| **Containerization** | Docker Compose | Cypress + Newman in containers, reproducible test env |
 
 ### Phase 2: CI/CD Pipeline Integration (Planned)
 
@@ -172,23 +174,6 @@ Pipeline metrics ──→ Pushgateway ──→ Prometheus ──→ Grafana da
 Pod logs ──→ Promtail ──→ Loki ──→ Grafana log explorer
 ```
 
-## Test Coverage
-
-### Cypress E2E Tests (16 tests)
-
-| Category | Tests | What's Covered |
-|----------|-------|---------------|
-| API Tests | 8 | GET, POST, PUT, DELETE, error handling, response validation |
-| UI Tests | 8 | Page load, links, responsive design, performance budgets |
-
-### Newman API Tests (18 assertions)
-
-| Category | Assertions | What's Covered |
-|----------|-----------|---------------|
-| User API | 6 | CRUD operations, schema validation |
-| Post API | 6 | Create, read, filter, pagination |
-| Error Cases | 6 | 404 handling, invalid input, edge cases |
-
 ## Infrastructure Overview
 
 ### Kubernetes Cluster (k3d)
@@ -238,13 +223,13 @@ Total Pods: 30+
 
 ### Key Skills Demonstrated
 
-- **CI/CD Pipeline Design**: Dual-layer strategy (fast PR checks + production Docker tests)
+- **Terraform IaC**: Multi-environment (dev/staging/prod) with Localstack
+- **Kubernetes**: Deployments, Jobs, Services, Ingress, PVCs, ConfigMaps, 3-node k3d
+- **GitOps**: ArgoCD with auto-sync, self-heal, manual approval gate
+- **Security Scanning**: Trivy 4-layer (filesystem, Docker, IaC, deps) + SARIF → GitHub Security
+- **Monitoring**: Prometheus metrics, Grafana dashboards (14 panels), PromQL, AlertManager
+- **CI/CD Pipeline Design**: Dual-layer strategy (fast PR checks + nightly Docker regression)
 - **Docker**: Multi-container orchestration, custom images, volume caching
-- **Kubernetes**: Deployments, Jobs, Services, Ingress, PVCs, ConfigMaps
-- **Terraform**: Multi-environment IaC with Localstack
-- **GitOps**: ArgoCD with auto-sync, self-heal, manual approval
-- **Security**: Trivy container/filesystem/IaC scanning, npm audit, SARIF
-- **Monitoring**: Prometheus metrics, Grafana dashboards, PromQL
 
 ### Pre-Demo Checklist
 
