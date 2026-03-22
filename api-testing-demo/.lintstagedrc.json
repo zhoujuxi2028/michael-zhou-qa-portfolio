@@ -4,5 +4,8 @@
   ],
   "environments/*.json": [
     "node scripts/validate-environment.js"
+  ],
+  "db.json": [
+    "node -e \"const d=require('./db.json'); const u=d.users||[]; const bad=u.filter(x=>!x.username); if(bad.length){console.error('db.json: users missing username:',bad.map(x=>x.id));process.exit(1)}\""
   ]
 }
