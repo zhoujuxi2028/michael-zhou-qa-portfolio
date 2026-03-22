@@ -216,9 +216,12 @@
       "id": 11
     },
     {
+      "id": 12,
       "name": "Invalid Email User",
+      "username": "invalid_email_user",
       "email": "not-an-email",
-      "id": 12
+      "phone": "000-000-0000",
+      "website": "none.com"
     },
     {
       "id": 13,
@@ -273,7 +276,10 @@
       "body": "quo et expedita modi cum officia vel magni\ndoloribus qui repudiandae\nvero nisi sit\nquos veniam quod sed accusamus veritatis error"
     },
     {
-      "id": 11
+      "id": 11,
+      "userId": 6,
+      "title": "Test post placeholder",
+      "body": "This is a placeholder post for testing."
     }
   ],
   "comments": [
@@ -342,18 +348,18 @@
       "title": "illo est ratione doloremque quia maiores aut",
       "completed": true
     },
-    [
-      {
-        "userId": 1,
-        "title": "Bulk Order 1",
-        "completed": false
-      },
-      {
-        "userId": 1,
-        "title": "Bulk Order 2",
-        "completed": false
-      }
-    ]
+    {
+      "id": 11,
+      "userId": 1,
+      "title": "Bulk Order 1",
+      "completed": false
+    },
+    {
+      "id": 12,
+      "userId": 1,
+      "title": "Bulk Order 2",
+      "completed": false
+    }
   ],
   "albums": [
     {
