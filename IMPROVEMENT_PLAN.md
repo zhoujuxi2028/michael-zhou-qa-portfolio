@@ -10,35 +10,44 @@ Generated: 2026-03-21
 | **Root CLAUDE.md outdated** | Missing `playwright-demo` from projects table                                                                | ✅ Added |
 | **Test count mismatches**   | security-testing-demo: docs say 170, actual ~182                                                             | ✅ Fixed |
 
-## 2. Uncommitted Work
+## 2. Uncommitted Work ✅ DONE
 
-- `sid-iam-testing-platform/tests/test_contract/` — new contract tests sitting untracked
-- `.claude/settings.local.json` — modified but not staged
+- `sid-iam-testing-platform/tests/test_contract/` — ✅ Committed in PR #7
+- `.claude/settings.local.json` — local only, gitignored
 
 ## 3. Missing CI/CD for Some Projects
 
-- `api-testing-demo` and `selenium-demo` have no dedicated GitHub Actions workflows
+| Item | Issue | Status |
+|------|-------|--------|
+| Add CI for api-testing-demo | [#14](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/14) | 📋 Todo |
+| Add CI for selenium-demo | [#15](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/15) | 📋 Todo |
 
 ## 4. Consistency
 
-- Project structures vary (some have `docs/project-management/`, others don't)
-- Issue tracking format differs across projects
-- Some projects use bilingual docs (中文), others English only
+| Item | Issue | Status |
+|------|-------|--------|
+| Standardize project directory structure | [#16](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/16) | 📋 Todo |
 
 ## 5. Potential New Additions
 
-| Idea | Value |
-|------|-------|
-| **Performance testing project** | Dedicated k6/JMeter project beyond what microservice-testing-platform covers |
-| **Mobile testing demo** | Appium or Detox — a gap in the portfolio |
-| **AI/LLM testing demo** | Timely given industry trends — prompt testing, hallucination detection |
-| **Test reporting dashboard** | Aggregate results from all 9 projects into one view |
+| Idea | Value | Issue | Status |
+|------|-------|-------|--------|
+| **Performance testing project** | Dedicated k6/JMeter project | [#17](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/17) | 📋 Todo |
+| **Mobile testing demo** | Appium or Detox — fills portfolio gap | [#18](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/18) | 📋 Todo |
+| **AI/LLM testing demo** | Prompt testing, hallucination detection | [#19](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/19) | 📋 Todo |
+| **Test reporting dashboard** | Aggregate results from all 9 projects | [#20](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/20) | 📋 Todo |
 
-## Recommended Priority
+## Roadmap
 
-1. **Quick wins**: Commit the contract tests, update root CLAUDE.md with playwright-demo
-2. **Medium effort**: Add CLAUDE.md to the 6 missing projects, fix test count docs
-3. **New features**: Add CI workflows for api-testing and selenium, consider a mobile or AI testing project
+**GitHub Project Board**: https://github.com/users/zhoujuxi2028/projects/1
+
+### Priority
+
+| Priority | Issues | Category |
+|----------|--------|----------|
+| 🔴 High | [#14](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/14), [#15](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/15) | CI/CD gaps |
+| 🟡 Medium | [#16](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/16) | Consistency |
+| 🔵 Future | [#17](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/17), [#18](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/18), [#19](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/19), [#20](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/20) | New projects |
 
 ## Current Portfolio Summary
 
