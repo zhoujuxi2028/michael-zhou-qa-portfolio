@@ -9,17 +9,17 @@ Test automation and DevOps demonstration projects.
 
 ## Projects | 项目
 
-| Project                                                   | Description                                                         | Tech Stack                        |
-| --------------------------------------------------------- | ------------------------------------------------------------------- | --------------------------------- |
-| [iwsva-cypress-e2e](./iwsva-cypress-e2e/)                 | IWSVA E2E Testing (77 tests) ([setup notes](./docs/iwsva-setup.md)) | Cypress, JavaScript               |
-| [k8s-auto-testing-platform](./k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests)                              | Python, Pytest, Chaos Mesh        |
-| [security-testing-demo](./security-testing-demo/)         | DAST Security Testing (~182 tests, OWASP Top 10 2021)               | OWASP ZAP, Nessus, SQLMap, Pytest |
-| [cicd-demo](./cicd-demo/)                                 | CI/CD Pipeline Demo (34 tests)                                      | GitHub Actions, Docker, Terraform |
-| [api-testing-demo](./api-testing-demo/)                   | API Testing (280+ assertions)                                       | Newman, Postman, json-server      |
-| [playwright-demo](./playwright-demo/)                     | Cross-Browser E2E Testing (38 tests)                                | Playwright, TypeScript, axe-core  |
-| [selenium-demo](./selenium-demo/)                         | Browser Automation                                                  | Selenium, Python, Allure          |
-| [sid-iam-testing-platform](./sid-iam-testing-platform/)   | IAM + Data Platform + AI Agent Testing (138 tests)                  | Python, Pytest, FastAPI, networkx |
-| [microservice-testing-platform](./microservice-testing-platform/) | Microservice Testing (101 tests, 5 layers)               | Node.js, Express, Jest, Redis, k6 |
+| Category | Project | Description | Tech Stack |
+|----------|---------|-------------|------------|
+| 功能测试 | [iwsva-cypress-e2e](./iwsva-cypress-e2e/) | IWSVA E2E Testing (77 tests) | Cypress, JavaScript |
+| 功能测试 | [cicd-demo](./cicd-demo/) | CI/CD Pipeline Demo (34 tests) | GitHub Actions, Docker, Terraform |
+| 功能测试 | [api-testing-demo](./api-testing-demo/) | API Testing (280+ assertions) | Newman, Postman, json-server |
+| 功能测试 | [playwright-demo](./playwright-demo/) | Cross-Browser E2E Testing (38 tests) | Playwright, TypeScript, axe-core |
+| 功能测试 | [selenium-demo](./selenium-demo/) | Browser Automation | Selenium, Python, Allure |
+| 安全测试 | [security-testing-demo](./security-testing-demo/) | DAST Security Testing (~182 tests, OWASP Top 10) | OWASP ZAP, Nessus, SQLMap, Pytest |
+| 平台测试 | [sid-iam-testing-platform](./sid-iam-testing-platform/) | IAM + Data + AI Agent Testing (138 tests) | Python, Pytest, FastAPI, networkx |
+| 平台测试 | [microservice-testing-platform](./microservice-testing-platform/) | Microservice Testing (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 |
+| 稳定性测试 | [k8s-auto-testing-platform](./k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests) | Python, Pytest, Chaos Mesh |
 
 ---
 
