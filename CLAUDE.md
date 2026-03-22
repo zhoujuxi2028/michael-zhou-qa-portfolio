@@ -8,19 +8,31 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 - **No fluff**: Avoid unnecessary explanations, verbose comments, or filler text
 - **Tables over prose**: Use tables/lists instead of paragraphs when possible
 
-## Projects
+## Projects (by Testing Category)
 
-| Project                      | Description                                        | Key Tech                          |
-| ---------------------------- | -------------------------------------------------- | --------------------------------- |
-| `iwsva-cypress-e2e/`         | IWSVA E2E testing (77 test cases, 9 components)    | Cypress, Page Objects             |
-| `k8s-auto-testing-platform/` | K8S HPA testing + Chaos Engineering (37 tests)     | Python, Pytest, Chaos Mesh        |
-| `security-testing-demo/`     | Security testing (~182 tests, OWASP Top 10 2021)   | Pytest, OWASP ZAP, Nessus, SQLMap |
-| `cicd-demo/`                 | CI/CD pipeline (34 tests)                          | GitHub Actions, Docker, Terraform |
-| `api-testing-demo/`          | API testing (280+ assertions)                      | Newman, Postman, json-server      |
-| `playwright-demo/`           | Cross-browser E2E testing (38 tests)               | Playwright, TypeScript, axe-core  |
-| `selenium-demo/`             | Browser automation                                 | Selenium, Python, Allure          |
-| `sid-iam-testing-platform/`  | IAM + Data Platform + AI Agent testing (138 tests) | Python, Pytest, FastAPI, networkx |
-| `microservice-testing-platform/` | Microservice testing (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 |
+| Category | Project | Description | Key Tech |
+|----------|---------|-------------|----------|
+| 功能测试 | `iwsva-cypress-e2e/` | IWSVA E2E testing (77 tests) | Cypress, Page Objects |
+| 功能测试 | `cicd-demo/` | CI/CD pipeline (34 tests) | GitHub Actions, Docker, Terraform |
+| 功能测试 | `api-testing-demo/` | API testing (280+ assertions) | Newman, Postman, json-server |
+| 功能测试 | `playwright-demo/` | Cross-browser E2E testing (38 tests) | Playwright, TypeScript, axe-core |
+| 功能测试 | `selenium-demo/` | Browser automation | Selenium, Python, Allure |
+| 安全测试 | `security-testing-demo/` | Security testing (~182 tests, OWASP Top 10) | Pytest, OWASP ZAP, Nessus, SQLMap |
+| 平台测试 | `sid-iam-testing-platform/` | IAM + Data + AI Agent testing (163 tests) | Python, Pytest, FastAPI, networkx |
+| 平台测试 | `microservice-testing-platform/` | Microservice testing (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 |
+| 稳定性测试 | `k8s-auto-testing-platform/` | K8S HPA + Chaos Engineering (37 tests) | Python, Pytest, Chaos Mesh |
+
+## Standard docs/ Template
+
+All projects use the same `docs/` structure:
+
+```
+docs/
+├── architecture/           # ARCHITECTURE.md, design decisions, API specs
+├── test-cases/             # TEST-CASES.md, test reports, strategies
+├── project-management/     # WBS.md, ISSUES.md, requirements, defects
+└── guides/                 # FAQ, troubleshooting, learning guides (optional)
+```
 
 ## Project CLAUDE.md Files
 
@@ -165,6 +177,57 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `playwright-tests.yml` | playwright-demo | Cross-browser E2E tests (Chromium, Firefox, WebKit) |
 | `sid-iam-ci.yml` | sid-iam-testing-platform | SID IAM CI (code quality, unit tests, integration) |
 | `microservice-ci.yml` | microservice-testing-platform | Lint → unit → contract → integration → E2E (101 tests) |
+| `api-testing-ci.yml` | api-testing-demo | Validate collections → Newman tests (280+ assertions) |
+| `selenium-ci.yml` | selenium-demo | Code quality (black + flake8) → smoke tests |
+
+## Pre-commit Checklist
+
+### Python Projects
+
+```bash
+source venv/bin/activate && cd <project-dir>
+black --check src/ tests/
+isort --check-only src/ tests/
+flake8 src/ tests/ --max-line-length=120 --extend-ignore=E203
+pytest tests/ -v -m "not integration"
+```
+
+### Node.js Projects
+
+```bash
+cd <project-dir>
+npx eslint . || true
+npm test
+```
+
+### Writing CI Workflows
+
+Before pushing a new `.github/workflows/*.yml`:
+
+```bash
+# 1. Verify every command in the workflow exists in deps
+grep <tool> requirements.txt   # Python: black, flake8, isort, pylint
+grep <tool> package.json       # Node.js: eslint, prettier, newman
+
+# 2. Run each CI step locally in order
+# 3. Confirm all steps pass before pushing
+```
+
+### Common Pitfalls
+
+| Check | Why | Learned From |
+|-------|-----|--------------|
+| `black` / `isort` / `flake8` | CI enforces formatting | ISS-001, ISS-002 |
+| New imports → `requirements.txt` | Missing deps = `ModuleNotFoundError` in CI | ISS-003 |
+| New markers → `pytest.ini` | `--strict-markers` rejects undeclared markers | ISS-004 |
+| Contract schemas match actual responses | Validate response shape before writing schema | ISS-005, ISS-006 |
+| CI tools must be in dependency files | `command not found` (exit 127) if missing | ISS-007 |
+| Run tests locally before pushing CI | Pre-existing test failures break CI | ISS-008 |
+
+## Wiki & Roadmap
+
+- Wiki: https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki
+- Roadmap: https://github.com/users/zhoujuxi2028/projects/1
 
 ## Security
 
