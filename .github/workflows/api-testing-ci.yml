@@ -55,7 +55,7 @@ jobs:
           done
 
       - name: Run Newman tests
-        run: npm run test:ci
+        run: npm test
 
       - name: Upload test reports
         if: always()
