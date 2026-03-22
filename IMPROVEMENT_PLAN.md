@@ -54,7 +54,7 @@ Generated: 2026-03-21
 | # | Category | Project | Tests | CLAUDE.md | CI/CD | docs/ |
 |---|----------|---------|-------|-----------|-------|-------|
 | 1 | 功能测试 | iwsva-cypress-e2e | 77 | ✅ | ✅ | ✅ |
-| 2 | 功能测试 | cicd-demo | 34 | ✅ | ✅ | ✅ |
+| 2 | DevOps | cicd-demo | 34 | ✅ | ✅ | ✅ |
 | 3 | 功能测试 | api-testing-demo | 316+ | ✅ | ✅ | ✅ |
 | 4 | 功能测试 | playwright-demo | 38 | ✅ | ✅ | ✅ |
 | 5 | 功能测试 | selenium-demo | 6+ | ✅ | ✅ | ✅ |

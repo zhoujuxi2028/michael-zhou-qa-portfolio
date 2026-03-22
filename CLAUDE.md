@@ -13,7 +13,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | Category | Project | Description | Key Tech |
 |----------|---------|-------------|----------|
 | 功能测试 | `iwsva-cypress-e2e/` | IWSVA E2E testing (77 tests) | Cypress, Page Objects |
-| 功能测试 | `cicd-demo/` | CI/CD pipeline (34 tests) | GitHub Actions, Docker, Terraform |
+| DevOps | `cicd-demo/` | DevOps Infrastructure Platform (IaC + GitOps + Monitoring) | Terraform, K8S, ArgoCD, Prometheus |
 | 功能测试 | `api-testing-demo/` | API testing (280+ assertions) | Newman, Postman, json-server |
 | 功能测试 | `playwright-demo/` | Cross-browser E2E testing (38 tests) | Playwright, TypeScript, axe-core |
 | 功能测试 | `selenium-demo/` | Browser automation | Selenium, Python, Allure |
