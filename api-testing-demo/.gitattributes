@@ -1,0 +1,2 @@
+# Prevent test-run mutations to db.json from causing merge conflicts
+db.json merge=ours
