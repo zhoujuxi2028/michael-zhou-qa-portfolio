@@ -61,7 +61,13 @@
       "Bash(node -e \"const d=require\\(''./db.json''\\); const u=d.users||[]; const bad=u.filter\\(x=>!x.username\\); if\\(bad.length\\){console.error\\(''FAIL: users missing username:'',bad.map\\(x=>x.id\\)\\);process.exit\\(1\\)} else {console.log\\(''OK: all'',u.length,''users have username''\\)}\")",
       "Bash(node -e \"const d=require\\(''./db.json''\\); for\\(const [k,v] of Object.entries\\(d\\)\\){if\\(!Array.isArray\\(v\\)\\)continue; const nested=v.filter\\(x=>Array.isArray\\(x\\)\\); if\\(nested.length\\){console.error\\(''FAIL:'',k,''has nested arrays''\\);process.exit\\(1\\)}}; console.log\\(''OK: no nested arrays in db.json''\\)\")",
       "Bash(find /Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio -maxdepth 3 \\\\\\(-name ISSUES.md -o -name *BUG* -o -name *DEFECT* \\\\\\))",
-      "Bash(echo \"exit:$?\")"
+      "Bash(echo \"exit:$?\")",
+      "Bash(k6:*)",
+      "Bash(jmeter --version)",
+      "Bash(docker compose:*)",
+      "Bash(npm:*)",
+      "Bash(grafana-server --version)",
+      "Bash(influxd version:*)"
     ]
   },
   "hooks": {
