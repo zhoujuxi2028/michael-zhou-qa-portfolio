@@ -24,6 +24,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 - Claude 在每个阶段完成后必须**报告状态并等待确认**，不得自行跳到下一阶段
 - 如果评审发现问题，在当前阶段修复后重新评审
 - 阶段可根据任务规模简化（小 bugfix 可合并阶段），但需用户同意
+- 详见 [Development Process Checklist](docs/dev-process-checklist.md)
 
 ## Projects (by Testing Category)
 
