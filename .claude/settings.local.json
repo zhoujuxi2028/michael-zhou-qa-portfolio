@@ -27,7 +27,76 @@
       "Bash(xargs ls:*)",
       "Bash(git checkout:*)",
       "Bash(sed -n:*)",
-      "Bash(git cherry-pick:*)"
+      "Bash(git cherry-pick:*)",
+      "Bash(git merge:*)",
+      "Bash(npm install:*)",
+      "Bash(npx jest:*)",
+      "Bash(npx eslint:*)",
+      "Bash(npx prettier:*)",
+      "Bash(du -sh */)",
+      "Bash(black:*)",
+      "Bash(source venv/bin/activate:*)",
+      "Bash(isort:*)",
+      "Bash(flake8:*)",
+      "Bash(pylint:*)",
+      "Bash(pytest:*)",
+      "Bash(pip install:*)",
+      "Bash(cd /Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio:*)",
+      "Skill(update-config)",
+      "Bash(git ls-remote:*)",
+      "Bash(git clone:*)",
+      "Bash(git:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(git stash:*)",
+      "Bash(for i:*)",
+      "Bash(do gh:*)",
+      "Bash(echo \"Added #$i\")",
+      "Bash(done)",
+      "Bash(source ../venv/bin/activate)",
+      "Bash(gh issue:*)",
+      "Bash(npm run:*)",
+      "Bash(node -e \"const d=require\\(''./db.json''\\); const u=d.users||[]; const bad=u.filter\\(x=>!x.username\\); if\\(bad.length\\){console.error\\(''FAIL: users missing username:'',bad.map\\(x=>x.id\\)\\);process.exit\\(1\\)} else {console.log\\(''OK: all'',u.length,''users have username''\\)}\")",
+      "Bash(node -e \"const d=require\\(''./db.json''\\); for\\(const [k,v] of Object.entries\\(d\\)\\){if\\(!Array.isArray\\(v\\)\\)continue; const nested=v.filter\\(x=>Array.isArray\\(x\\)\\); if\\(nested.length\\){console.error\\(''FAIL:'',k,''has nested arrays''\\);process.exit\\(1\\)}}; console.log\\(''OK: no nested arrays in db.json''\\)\")",
+      "Bash(find /Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio -maxdepth 3 \\\\\\(-name ISSUES.md -o -name *BUG* -o -name *DEFECT* \\\\\\))",
+      "Bash(echo \"exit:$?\")"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.command // empty' | { read -r cmd; if echo \"$cmd\" | grep -qE '(rm -rf|git push --force|git push -f|git reset --hard|docker rm |docker rmi )'; then echo \"{\\\"decision\\\":\\\"block\\\",\\\"reason\\\":\\\"Dangerous command blocked: $cmd\\\"}\"; exit 1; fi; } || true",
+            "statusMessage": "Safety check..."
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // empty' | { read -r f; [ -n \"$f\" ] && echo \"$f\" | grep -q '.github/workflows/' && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"WARNING: You are editing a CI workflow file. This project has 10 GitHub Actions workflows. Verify your changes will not break CI.\"}}'; } || true"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "REPO=/Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio; jq -r '.tool_input.file_path // .tool_response.filePath // empty' | { read -r f; [ -z \"$f\" ] && exit 0; if echo \"$f\" | grep -qE '\\.py$'; then \"$REPO/venv/bin/black\" --quiet \"$f\" 2>/dev/null; \"$REPO/venv/bin/ruff\" check --fix --quiet \"$f\" 2>/dev/null; elif echo \"$f\" | grep -qE '\\.(js|ts|jsx|tsx)$'; then d=\"$f\"; while [ \"$d\" != \"/\" ]; do d=$(dirname \"$d\"); if [ -x \"$d/node_modules/.bin/prettier\" ]; then \"$d/node_modules/.bin/prettier\" --write \"$f\" 2>/dev/null; break; fi; done; fi; } || true",
+            "statusMessage": "Auto-formatting..."
+          }
+        ]
+      }
     ]
   }
 }
