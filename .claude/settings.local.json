@@ -97,6 +97,17 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio; changed=$({ git diff --name-only HEAD 2>/dev/null; git ls-files --others --exclude-standard 2>/dev/null; } | sort -u); [ -z \"$changed\" ] && exit 0; suggestions=\"\"; echo \"$changed\" | grep -q '\\.py$' && suggestions=\"pytest\"; echo \"$changed\" | grep -qE '\\.(js|ts|jsx|tsx)$' && { [ -n \"$suggestions\" ] && suggestions=\"$suggestions, npm test\" || suggestions=\"npm test\"; }; echo \"$changed\" | grep -q '.github/workflows/' && { [ -n \"$suggestions\" ] && suggestions=\"$suggestions, check GitHub Actions\" || suggestions=\"check GitHub Actions\"; }; [ -n \"$suggestions\" ] && echo \"{\\\"systemMessage\\\":\\\"Test suggestion: $suggestions\\\"}\" || true",
+            "statusMessage": "Checking for test suggestions..."
+          }
+        ]
+      }
     ]
   }
 }

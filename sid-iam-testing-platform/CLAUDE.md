@@ -72,6 +72,15 @@ black, flake8, pylint, isort
 ## Conventions
 
 - Test IDs: `TC-{DOMAIN}-{MODULE}-{NNN}` (e.g., `TC-AUTH-SSO-001`)
-- Markers: `@pytest.mark.auth`, `@pytest.mark.data`, `@pytest.mark.ai`, `@pytest.mark.P0`
+- Markers: `@pytest.mark.auth`, `@pytest.mark.data`, `@pytest.mark.ai`, `@pytest.mark.contract`, `@pytest.mark.P0`
 - Fixtures: session-level for mock services, function-level for test state
 - Code quality: pylint >= 9.0, black formatted, coverage >= 90%
+
+## Known Pitfalls (from Lessons Learned)
+
+| Pitfall | Detail |
+|---------|--------|
+| FastAPI param binding | `def foo(x: str)` = **query param**, `def foo(x: str = Header())` = **header**. SSO Provider uses query params for authorization. |
+| SAML response type | `create_saml_assertion()` returns `{"assertion": "...", "signature": "..."}` (object, not string) |
+| New markers | `--strict-markers` in pytest.ini — always register new markers before use |
+| New deps | Any new import must be added to `requirements.txt` or CI will fail |
