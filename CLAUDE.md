@@ -8,6 +8,23 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 - **No fluff**: Avoid unnecessary explanations, verbose comments, or filler text
 - **Tables over prose**: Use tables/lists instead of paragraphs when possible
 
+## Development Process（开发流程）
+
+每个新功能/项目遵循 5 阶段流程，**每阶段结束必须暂停等待人工评审**，通过后才能进入下一阶段。
+
+| 阶段 | 活动 | 交付物 | 评审要点 |
+|------|------|--------|----------|
+| 1. 需求 | Issue 分析、scope 确认、可行性评估 | 需求描述 + 可行性评估 | scope 是否合理、本机环境是否支持 |
+| 2. 设计 | 实施计划、架构设计、Plan Review | 实施计划文档 | 架构合理、任务拆分清晰、reviewer 问题已修复 |
+| 3. 开发 | TDD 编码、逐步提交 | 代码 + 单元测试 | 代码质量、测试覆盖、commit 规范 |
+| 4. 测试 | 本地自测、lint、CI 验证 | 全部测试通过 | lint 通过、所有测试 PASS、CI 绿灯 |
+| 5. 收尾 | PR 创建、文档更新、root 注册 | PR merged + 文档同步 | README/CLAUDE.md 更新、Wiki 同步 |
+
+**规则：**
+- Claude 在每个阶段完成后必须**报告状态并等待确认**，不得自行跳到下一阶段
+- 如果评审发现问题，在当前阶段修复后重新评审
+- 阶段可根据任务规模简化（小 bugfix 可合并阶段），但需用户同意
+
 ## Projects (by Testing Category)
 
 | Category | Project | Description | Key Tech |
