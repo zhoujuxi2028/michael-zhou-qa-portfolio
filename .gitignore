@@ -2,5 +2,4 @@ CLAUDE.md
 **/CLAUDE.md
 venv/
 .venv/
-.claude/settings.local.json
 security-testing-demo/.claude/
