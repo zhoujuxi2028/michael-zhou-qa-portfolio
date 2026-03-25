@@ -219,7 +219,7 @@ npx eslint src/ tests/unit/ --ext .js || echo "No files yet, OK"
 - [ ] **Step 7: Commit**
 
 ```bash
-git add performance-testing-platform/
+git add performance-testing-platform/package.json performance-testing-platform/package-lock.json performance-testing-platform/jest.config.js performance-testing-platform/.eslintrc.js performance-testing-platform/.eslintignore performance-testing-platform/.prettierrc performance-testing-platform/.gitignore
 git commit -m "feat(performance): scaffold project with config files"
 ```
 
@@ -231,6 +231,7 @@ git commit -m "feat(performance): scaffold project with config files"
 - Create: `performance-testing-platform/src/db/database.js`
 - Create: `performance-testing-platform/src/utils/delay.js`
 - Test: `performance-testing-platform/tests/unit/utils/delay.test.js`
+- Test: `performance-testing-platform/tests/unit/db/database.test.js`
 
 - [ ] **Step 1: Write failing test for delay utility**
 
@@ -279,7 +280,45 @@ npx jest tests/unit/utils/delay.test.js -v
 ```
 Expected: 2 tests PASS
 
-- [ ] **Step 5: Implement database module**
+- [ ] **Step 5: Write failing test for database module**
+
+```javascript
+// tests/unit/db/database.test.js
+const { getDatabase, resetDatabase } = require('../../../src/db/database');
+
+afterEach(() => resetDatabase());
+
+describe('database', () => {
+  test('getDatabase returns a database instance', () => {
+    const db = getDatabase();
+    expect(db).toBeDefined();
+    expect(typeof db.prepare).toBe('function');
+  });
+
+  test('getDatabase seeds 5 products', () => {
+    const db = getDatabase();
+    const count = db.prepare('SELECT COUNT(*) as count FROM products').get().count;
+    expect(count).toBe(5);
+  });
+
+  test('resetDatabase clears the singleton', () => {
+    getDatabase();
+    resetDatabase();
+    const db = getDatabase();
+    const count = db.prepare('SELECT COUNT(*) as count FROM products').get().count;
+    expect(count).toBe(5);
+  });
+});
+```
+
+- [ ] **Step 6: Run database test to verify it fails**
+
+```bash
+npx jest tests/unit/db/database.test.js -v
+```
+Expected: FAIL — `Cannot find module '../../../src/db/database'`
+
+- [ ] **Step 7: Implement database module**
 
 ```javascript
 // src/db/database.js
@@ -320,11 +359,11 @@ function initSchema() {
 function seedData() {
   const insert = db.prepare('INSERT INTO products (name, price, stock) VALUES (?, ?, ?)');
   const products = [
-    ['Laptop', 999.99, 50],
-    ['Phone', 699.99, 100],
-    ['Tablet', 449.99, 75],
-    ['Headphones', 149.99, 200],
-    ['Keyboard', 89.99, 150],
+    ['Laptop', 999.99, 100000],
+    ['Phone', 699.99, 100000],
+    ['Tablet', 449.99, 100000],
+    ['Headphones', 149.99, 100000],
+    ['Keyboard', 89.99, 100000],
   ];
   const tx = db.transaction(() => products.forEach((p) => insert.run(...p)));
   tx();
@@ -340,10 +379,17 @@ function resetDatabase() {
 module.exports = { getDatabase, resetDatabase };
 ```
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 8: Run database test to verify it passes**
 
 ```bash
-git add performance-testing-platform/src/utils/ performance-testing-platform/src/db/ performance-testing-platform/tests/unit/utils/
+npx jest tests/unit/db/database.test.js -v
+```
+Expected: 3 tests PASS
+
+- [ ] **Step 9: Commit**
+
+```bash
+git add performance-testing-platform/src/utils/ performance-testing-platform/src/db/ performance-testing-platform/tests/unit/utils/ performance-testing-platform/tests/unit/db/
 git commit -m "feat(performance): add database module and delay utility with tests"
 ```
 
@@ -561,14 +607,14 @@ app.listen(PORT, () => {
 });
 ```
 
-- [ ] **Step 8: Run health test to verify it passes**
+- [ ] **Step 8: Write products tests (RED — will pass once app.js exists)**
 
-```bash
-npx jest tests/unit/routes/health.test.js -v
-```
-Expected: 2 tests PASS
+> Note: Steps 8-10 write all remaining test files before Step 7 created app.js,
+> so they would fail if written before Step 7. Since app.js is needed for health
+> tests to pass (Step 1-2 RED-GREEN), we batch the remaining tests here.
+> All tests run together in Step 12 as the GREEN verification.
 
-- [ ] **Step 9: Write and run products tests**
+- [ ] **Step 9: Write products tests**
 
 ```javascript
 // tests/unit/routes/products.test.js
@@ -620,12 +666,7 @@ describe('POST /api/products', () => {
 });
 ```
 
-```bash
-npx jest tests/unit/routes/products.test.js -v
-```
-Expected: 5 tests PASS
-
-- [ ] **Step 10: Write and run orders tests**
+- [ ] **Step 10: Write orders tests**
 
 ```javascript
 // tests/unit/routes/orders.test.js
@@ -657,7 +698,7 @@ describe('POST /api/orders', () => {
   });
 
   test('returns 409 when insufficient stock', async () => {
-    const res = await request(app).post('/api/orders').send({ product_id: 1, quantity: 9999 });
+    const res = await request(app).post('/api/orders').send({ product_id: 1, quantity: 200000 });
     expect(res.status).toBe(409);
   });
 
@@ -668,12 +709,7 @@ describe('POST /api/orders', () => {
 });
 ```
 
-```bash
-npx jest tests/unit/routes/orders.test.js -v
-```
-Expected: 4 tests PASS
-
-- [ ] **Step 11: Write and run metrics middleware test**
+- [ ] **Step 11: Write metrics middleware test**
 
 ```javascript
 // tests/unit/middleware/metrics.test.js
@@ -711,7 +747,7 @@ Expected: 2 tests PASS
 ```bash
 npx jest tests/unit/ -v --coverage
 ```
-Expected: 15 tests PASS, coverage >= 80%
+Expected: 19 tests PASS (delay:2, database:3, health:2, products:6, orders:4, metrics:2), coverage >= 80%
 
 - [ ] **Step 13: Run lint**
 
@@ -725,7 +761,7 @@ Expected: No errors
 
 ```bash
 git add performance-testing-platform/src/ performance-testing-platform/tests/unit/
-git commit -m "feat(performance): add target API with routes, middleware, and 15 unit tests"
+git commit -m "feat(performance): add target API with routes, middleware, and 19 unit tests"
 ```
 
 ---
@@ -912,6 +948,8 @@ export default function () {
 - [ ] **Step 6: Verify smoke test runs locally**
 
 ```bash
+cd performance-testing-platform
+
 # Start API in background
 node src/server.js &
 sleep 2
@@ -1016,15 +1054,13 @@ providers:
 
 - [ ] **Step 4: Create k6 results Grafana dashboard JSON**
 
-Create a dashboard with 6 panels:
-- Virtual Users (timeseries)
-- Request Rate (timeseries)
-- Response Time p95 (timeseries)
-- Error Rate (stat)
-- HTTP Request Duration Distribution (histogram)
-- Checks Pass Rate (gauge)
+Download the standard k6 + InfluxDB dashboard (Grafana community dashboard ID 2587) and customize:
 
-> Note: Dashboard JSON will be ~200 lines. Use a standard k6 + InfluxDB dashboard template.
+```bash
+curl -o grafana/dashboards/k6-results.json 'https://grafana.com/api/dashboards/2587/revisions/3/download'
+```
+
+Then verify the JSON contains panels for: Virtual Users, Request Rate, Response Time p95, Error Rate, HTTP Request Duration Distribution, Checks Pass Rate. Adjust datasource UID to match `influxdb.yml` if needed.
 
 - [ ] **Step 5: Verify Docker Compose starts**
 
@@ -1146,7 +1182,7 @@ jobs:
 - [ ] **Step 2: Verify CI workflow YAML is valid**
 
 ```bash
-cd /Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio
+cd "$(git rev-parse --show-toplevel)"
 python3 -c "import yaml; yaml.safe_load(open('.github/workflows/performance-ci.yml'))" && echo "YAML valid"
 ```
 
@@ -1172,7 +1208,7 @@ git commit -m "ci(performance): add CI pipeline — lint, unit tests, k6 smoke g
 
 - [ ] **Step 1: Create README.md**
 
-Include: Category (性能测试), architecture diagram, test layers table (15 unit + 4 k6 scripts), quick start, documentation links.
+Include: Category (性能测试), architecture diagram, test layers table (19 unit + 4 k6 scripts), quick start, documentation links.
 
 - [ ] **Step 2: Create CLAUDE.md**
 
@@ -1188,7 +1224,7 @@ Follow existing pattern: project description, quick start, architecture, test st
 
 Add to Projects table:
 ```
-| 性能测试 | `performance-testing-platform/` | Performance testing (15 unit + 4 k6 scripts) | k6, Express, Grafana, InfluxDB |
+| 性能测试 | `performance-testing-platform/` | Performance testing (19 unit + 4 k6 scripts) | k6, Express, Grafana, InfluxDB |
 ```
 
 Add to Project CLAUDE.md Files table:
@@ -1215,9 +1251,9 @@ git commit -m "docs(performance): add README, CLAUDE.md, docs/, and register in 
 
 | Type | Count | Tool |
 |------|-------|------|
-| Unit tests | 15 | Jest |
+| Unit tests | 19 | Jest (delay:2, database:3, health:2, products:6, orders:4, metrics:2) |
 | k6 scripts | 4 | k6 (smoke, load, stress, spike) |
-| **Total** | **19** | |
+| **Total** | **23** | |
 
 ## Thresholds Summary
 
