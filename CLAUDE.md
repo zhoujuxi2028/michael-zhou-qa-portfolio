@@ -21,6 +21,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | 5. 收尾 | PR 创建、文档更新、root 注册 | PR merged + 文档同步 | README/CLAUDE.md 更新、Wiki 同步 |
 
 **规则：**
+- **每阶段开始时，先对照 checklist 列出本阶段所有交付物**，再逐项完成
 - Claude 在每个阶段完成后必须**报告状态并等待确认**，不得自行跳到下一阶段
 - 如果评审发现问题，在当前阶段修复后重新评审
 - 阶段可根据任务规模简化（小 bugfix 可合并阶段），但需用户同意
