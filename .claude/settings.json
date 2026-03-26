@@ -1,0 +1,67 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(gh:*)",
+      "Bash(tree:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(test:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run:*)",
+      "Bash(npm install:*)",
+      "Bash(npm:*)",
+      "Bash(npx jest:*)",
+      "Bash(npx eslint:*)",
+      "Bash(npx prettier:*)",
+      "Bash(newman run:*)",
+      "Bash(pytest:*)",
+      "Bash(python3:*)",
+      "Bash(pip install:*)",
+      "Bash(black:*)",
+      "Bash(isort:*)",
+      "Bash(flake8:*)",
+      "Bash(pylint:*)",
+      "Bash(du -sh */)",
+      "Bash(sed -n:*)",
+      "Bash(xargs ls:*)",
+      "Skill(update-config)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.command // empty' | { read -r cmd; if echo \"$cmd\" | grep -qE '(rm -rf|git push --force|git push -f|git reset --hard|docker rm |docker rmi )'; then echo \"{\\\"decision\\\":\\\"block\\\",\\\"reason\\\":\\\"Dangerous command blocked: $cmd\\\"}\"; exit 1; fi; } || true",
+            "statusMessage": "Safety check..."
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // empty' | { read -r f; [ -n \"$f\" ] && echo \"$f\" | grep -q '.github/workflows/' && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"WARNING: You are editing a CI workflow file. This project has 10 GitHub Actions workflows. Verify your changes will not break CI.\"}}'; } || true"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "REPO=\"$(git rev-parse --show-toplevel 2>/dev/null)\"; jq -r '.tool_input.file_path // .tool_response.filePath // empty' | { read -r f; [ -z \"$f\" ] && exit 0; if echo \"$f\" | grep -qE '\\.py$'; then \"$REPO/venv/bin/black\" --quiet \"$f\" 2>/dev/null; \"$REPO/venv/bin/ruff\" check --fix --quiet \"$f\" 2>/dev/null; elif echo \"$f\" | grep -qE '\\.(js|ts|jsx|tsx)$'; then d=\"$f\"; while [ \"$d\" != \"/\" ]; do d=$(dirname \"$d\"); if [ -x \"$d/node_modules/.bin/prettier\" ]; then \"$d/node_modules/.bin/prettier\" --write \"$f\" 2>/dev/null; break; fi; done; fi; } || true",
+            "statusMessage": "Auto-formatting..."
+          }
+        ]
+      }
+    ]
+  }
+}
