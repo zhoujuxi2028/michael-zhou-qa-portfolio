@@ -3,3 +3,4 @@ CLAUDE.md
 venv/
 .venv/
 security-testing-demo/.claude/
+.claude/settings.local.json
