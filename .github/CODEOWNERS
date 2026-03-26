@@ -1,0 +1,17 @@
+# Default owner for all files
+* @zhoujuxi2028
+
+# Project-specific owners
+/iwsva-cypress-e2e/          @zhoujuxi2028
+/k8s-auto-testing-platform/  @zhoujuxi2028
+/security-testing-demo/      @zhoujuxi2028
+/cicd-demo/                  @zhoujuxi2028
+/api-testing-demo/           @zhoujuxi2028
+/playwright-demo/            @zhoujuxi2028
+/selenium-demo/              @zhoujuxi2028
+/sid-iam-testing-platform/   @zhoujuxi2028
+/microservice-testing-platform/ @zhoujuxi2028
+/performance-testing-platform/  @zhoujuxi2028
+
+# CI/CD workflows
+/.github/workflows/          @zhoujuxi2028
