@@ -42,6 +42,7 @@
 
 ## 3. 开发阶段
 
+- [ ] 前置条件已验证 → 实施计划 Prerequisites 中的工具已安装、依赖版本正确（`which <tool>` / `<tool> --version`）
 - [ ] TDD：先写失败测试，再写实现（RED → GREEN → REFACTOR）
 - [ ] 源代码已产出 → `src/` 目录（按实施计划的模块结构）
 - [ ] 测试代码已产出 → `tests/` 目录（单元测试、集成测试等）
@@ -51,8 +52,9 @@
 - [ ] 代码符合项目 lint 规范（ESLint/Prettier 或 black/flake8）
 - [ ] 新依赖已添加到 `package.json` 或 `requirements.txt`
 - [ ] 无硬编码路径、密钥、凭证
+- [ ] 自测验证已执行 → 每项功能有实际运行证据（命令输出），不能仅凭文件存在就视为完成
 
-**评审要点：** 代码质量、测试覆盖、commit 规范、源代码与测试代码结构完整
+**评审要点：** 代码质量、测试覆盖、commit 规范、源代码与测试代码结构完整、自测证据齐全
 
 ---
 
@@ -118,6 +120,7 @@ Every new feature/project follows a 5-phase process. Each phase must pause for m
 
 ## 3. Development Phase
 
+- [ ] Prerequisites verified → all tools from implementation plan installed and version-checked (`which <tool>` / `<tool> --version`)
 - [ ] TDD: write failing test first, then implement (RED → GREEN → REFACTOR)
 - [ ] Source code produced → `src/` directory (per implementation plan module structure)
 - [ ] Test code produced → `tests/` directory (unit tests, integration tests, etc.)
@@ -127,8 +130,9 @@ Every new feature/project follows a 5-phase process. Each phase must pause for m
 - [ ] Code passes project lint rules (ESLint/Prettier or black/flake8)
 - [ ] New dependencies added to `package.json` or `requirements.txt`
 - [ ] No hardcoded paths, secrets, or credentials
+- [ ] Self-test verification executed → every feature has actual run evidence (command output), not just file existence
 
-**Review focus:** Code quality, test coverage, commit conventions, source and test code structure complete
+**Review focus:** Code quality, test coverage, commit conventions, source and test code structure complete, self-test evidence present
 
 ---
 
