@@ -1,0 +1,147 @@
+{
+  "uid": "jmeter-results",
+  "title": "JMeter Performance Test Results",
+  "tags": ["jmeter", "performance"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "5s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Active Threads",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
+      "targets": [
+        {
+          "query": "SELECT last(\"maxAT\") FROM \"jmeter\" WHERE (\"statut\" = 'all') AND $timeFilter GROUP BY time($__interval)",
+          "rawQuery": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "fillOpacity": 20, "lineWidth": 2 },
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Response Time (avg / p90 / p95 / p99)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
+      "targets": [
+        {
+          "query": "SELECT mean(\"avg\") AS \"avg\", mean(\"pct90.0\") AS \"p90\", mean(\"pct95.0\") AS \"p95\", mean(\"pct99.0\") AS \"p99\" FROM \"jmeter\" WHERE (\"statut\" = 'all') AND $timeFilter GROUP BY time($__interval)",
+          "rawQuery": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "fillOpacity": 10, "lineWidth": 2 },
+          "unit": "ms"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Throughput (req/s)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
+      "targets": [
+        {
+          "query": "SELECT sum(\"count\") FROM \"jmeter\" WHERE (\"statut\" = 'all') AND $timeFilter GROUP BY time($__interval)",
+          "rawQuery": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "green" },
+          "custom": { "fillOpacity": 20, "lineWidth": 2 },
+          "unit": "reqps"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Error Rate (%)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
+      "targets": [
+        {
+          "query": "SELECT mean(\"countError\") / mean(\"count\") * 100 AS \"error_rate\" FROM \"jmeter\" WHERE (\"statut\" = 'all') AND $timeFilter GROUP BY time($__interval)",
+          "rawQuery": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "red" },
+          "custom": { "fillOpacity": 20, "lineWidth": 2 },
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Response Time by Transaction",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
+      "targets": [
+        {
+          "query": "SELECT mean(\"avg\") FROM \"jmeter\" WHERE (\"statut\" = 'all') AND $timeFilter GROUP BY time($__interval), \"transaction\"",
+          "rawQuery": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "fillOpacity": 0, "lineWidth": 2 },
+          "unit": "ms"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Top 5 Slowest Requests",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
+      "targets": [
+        {
+          "query": "SELECT mean(\"avg\") AS \"avg_ms\", mean(\"pct95.0\") AS \"p95_ms\", mean(\"count\") AS \"samples\" FROM \"jmeter\" WHERE (\"statut\" = 'all') AND $timeFilter GROUP BY \"transaction\" ORDER BY mean(\"avg\") DESC LIMIT 5",
+          "rawQuery": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        }
+      }
+    }
+  ]
+}

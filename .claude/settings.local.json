@@ -29,7 +29,10 @@
       "Bash(for action:*)",
       "Bash(curl -s https://api.github.com/repos/actions/checkout/releases)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "Bash(do sed:*)"
+      "Bash(do sed:*)",
+      "Bash(HOMEBREW_NO_AUTO_UPDATE=1 brew install jmeter 2>&1)",
+      "Read(//private/tmp/**)",
+      "Bash(lsof -ti:3000)"
     ]
   },
   "hooks": {
