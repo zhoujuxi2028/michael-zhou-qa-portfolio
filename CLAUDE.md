@@ -242,6 +242,7 @@ grep <tool> package.json       # Node.js: eslint, prettier, newman
 | Contract schemas match actual responses | Validate response shape before writing schema | ISS-005, ISS-006 |
 | CI tools must be in dependency files | `command not found` (exit 127) if missing | ISS-007 |
 | Run tests locally before pushing CI | Pre-existing test failures break CI | ISS-008 |
+| Upgrade tasks: scan ALL refs, verify ALL workflows | Partial scan misses third-party actions; partial CI check misses untriggered workflows | ISS-009 |
 
 ## Wiki & Roadmap
 

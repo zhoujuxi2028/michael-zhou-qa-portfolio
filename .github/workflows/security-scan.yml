@@ -118,7 +118,7 @@ jobs:
       # fast, comprehensive, and integrates seamlessly with GitHub Security tab via
       # SARIF format."
       - name: Run Trivy vulnerability scanner (filesystem)
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           scan-type: 'fs'
           scan-ref: 'cicd-demo'
@@ -132,7 +132,7 @@ jobs:
         run: trivy convert --format sarif --output trivy-fs-results.sarif trivy-fs-results.json
 
       - name: Upload Trivy results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: 'trivy-fs-results.sarif'
@@ -191,7 +191,7 @@ jobs:
       # For Node.js images, it analyzes package-lock.json. This catches vulnerabilities
       # in base images (e.g., Alpine Linux) and our application dependencies."
       - name: Run Trivy vulnerability scanner (Docker image)
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           scan-type: 'image'
           image-ref: ${{ matrix.image.tag }}
@@ -204,7 +204,7 @@ jobs:
         run: trivy convert --format sarif --output trivy-docker-${{ matrix.image.name }}-results.sarif trivy-docker-${{ matrix.image.name }}-results.json
 
       - name: Upload Trivy results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: 'trivy-docker-${{ matrix.image.name }}-results.sarif'
@@ -238,7 +238,7 @@ jobs:
       # for misconfigurations and security issues. This includes insecure defaults,
       # missing security controls, and compliance violations (CIS benchmarks)."
       - name: Run Trivy IaC scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           scan-type: 'config'
           scan-ref: 'cicd-demo'
@@ -250,7 +250,7 @@ jobs:
         run: trivy convert --format sarif --output trivy-iac-results.sarif trivy-iac-results.json
 
       - name: Upload Trivy IaC results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: 'trivy-iac-results.sarif'
