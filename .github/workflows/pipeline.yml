@@ -144,8 +144,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: e2e-tests
     if: ${{ github.event.inputs.deploy_env != 'none' }}
-    environment:
-      name: dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -170,8 +168,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy-dev
     if: ${{ github.event.inputs.deploy_env == 'staging' || github.ref == 'refs/heads/main' }}
-    environment:
-      name: staging
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
