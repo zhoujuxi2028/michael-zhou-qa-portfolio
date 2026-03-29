@@ -18,6 +18,10 @@
     "k6:spike": "k6 run tests/performance/spike.k6.js",
     "k6:smoke:influx": "k6 run --out influxdb=http://localhost:8086/k6 tests/performance/smoke.k6.js",
     "k6:load:influx": "k6 run --out influxdb=http://localhost:8086/k6 tests/performance/load.k6.js",
+    "jmeter:smoke": "rm -rf reports/jmeter-smoke results/jmeter-smoke.jtl && jmeter -n -t tests/jmeter/smoke.jmx -q tests/jmeter/config/smoke.properties -l results/jmeter-smoke.jtl -e -o reports/jmeter-smoke",
+    "jmeter:load": "rm -rf reports/jmeter-load results/jmeter-load.jtl && jmeter -n -t tests/jmeter/load.jmx -q tests/jmeter/config/load.properties -l results/jmeter-load.jtl -e -o reports/jmeter-load",
+    "jmeter:stress": "rm -rf reports/jmeter-stress results/jmeter-stress.jtl && jmeter -n -t tests/jmeter/stress.jmx -q tests/jmeter/config/stress.properties -l results/jmeter-stress.jtl -e -o reports/jmeter-stress",
+    "jmeter:spike": "rm -rf reports/jmeter-spike results/jmeter-spike.jtl && jmeter -n -t tests/jmeter/spike.jmx -q tests/jmeter/config/spike.properties -l results/jmeter-spike.jtl -e -o reports/jmeter-spike",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down"
   },
