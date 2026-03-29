@@ -2,3 +2,7 @@ node_modules/
 coverage/
 *.db
 .env
+results/
+reports/
+*.jtl
+apache-jmeter-*/
