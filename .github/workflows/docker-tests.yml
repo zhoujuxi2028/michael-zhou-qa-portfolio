@@ -42,7 +42,7 @@ jobs:
     steps:
       # Step 1: Checkout code
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       # Step 2: Setup Docker Buildx
       # Interview Talking Point:
@@ -78,7 +78,7 @@ jobs:
       # Step 5: Upload test artifacts
       - name: Upload Cypress screenshots
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: cypress-screenshots-docker
           path: cicd-demo/cypress/screenshots/
@@ -87,7 +87,7 @@ jobs:
 
       - name: Upload Cypress videos
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: cypress-videos-docker
           path: cicd-demo/cypress/videos/
@@ -96,7 +96,7 @@ jobs:
 
       - name: Upload Newman reports
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: newman-reports-docker
           path: cicd-demo/newman/
