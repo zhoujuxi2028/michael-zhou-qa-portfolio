@@ -50,14 +50,14 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Interview Talking Point:
       # "We cache node_modules to speed up CI. The cache key includes package-lock.json
       # hash, so the cache invalidates when dependencies change. This reduces install
       # time from ~2 minutes to ~30 seconds on cache hits."
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'npm'
@@ -93,7 +93,7 @@ jobs:
       # Security teams can review historical scans, track remediation progress,
       # and demonstrate due diligence to auditors."
       - name: Upload npm audit results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: npm-audit-results
@@ -110,7 +110,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Interview Talking Point:
       # "Trivy is an open-source vulnerability scanner from Aqua Security. It scans
@@ -143,7 +143,7 @@ jobs:
         run: trivy convert --format table --output trivy-fs-report.txt trivy-fs-results.json
 
       - name: Upload Trivy filesystem results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: trivy-filesystem-results
@@ -168,7 +168,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -214,7 +214,7 @@ jobs:
         run: trivy convert --format table --output trivy-docker-${{ matrix.image.name }}-report.txt trivy-docker-${{ matrix.image.name }}-results.json
 
       - name: Upload Trivy Docker image results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: trivy-docker-${{ matrix.image.name }}-results
@@ -231,7 +231,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Interview Talking Point:
       # "Trivy can scan Infrastructure as Code (Terraform, K8s manifests, Dockerfiles)
@@ -260,7 +260,7 @@ jobs:
         run: trivy convert --format table --output trivy-iac-report.txt trivy-iac-results.json
 
       - name: Upload Trivy IaC results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: trivy-iac-results
@@ -279,7 +279,7 @@ jobs:
 
     steps:
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
 
       - name: Generate security summary
         run: |
@@ -315,7 +315,7 @@ jobs:
           echo "- Workflow Artifacts: Actions > This workflow run > Artifacts section" >> security-summary.md
 
       - name: Upload security summary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: security-summary
           path: security-summary.md
