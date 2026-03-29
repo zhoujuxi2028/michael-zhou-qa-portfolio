@@ -60,7 +60,11 @@ jobs:
           node-version: '18'
           cache: npm
           cache-dependency-path: performance-testing-platform/package-lock.json
-      - uses: grafana/setup-k6-action@v1
+      - name: Install k6
+        run: |
+          curl -sSL https://github.com/grafana/k6/releases/download/v1.7.0/k6-v1.7.0-linux-amd64.tar.gz | tar xz
+          sudo mv k6-v1.7.0-linux-amd64/k6 /usr/local/bin/
+          k6 version
       - run: npm ci
       - name: Start target API
         run: node src/server.js &
