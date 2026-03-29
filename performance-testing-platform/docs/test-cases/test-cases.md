@@ -5,38 +5,42 @@
 - [1. 测试策略](#1-测试策略)
 - [2. 覆盖目标](#2-覆盖目标)
 - [3. 单元测试用例表](#3-单元测试用例表)
-- [4. 性能测试用例表](#4-性能测试用例表)
-- [5. 性能阈值定义](#5-性能阈值定义)
+- [4. k6 性能测试用例表](#4-k6-性能测试用例表)
+- [5. JMeter 性能测试用例表](#5-jmeter-性能测试用例表)
+- [6. 性能阈值定义](#6-性能阈值定义)
 - [English Version](#english-version)
 
 ---
 
 ## 1. 测试策略
 
-本项目采用两层测试：
+本项目采用三层测试，双引擎性能测试：
 
 | 层 | 工具 | 数量 | 目的 |
 |----|------|------|------|
 | 单元测试 | Jest + Supertest | 19 | 验证 API 功能正确性 |
-| 性能测试 | k6 | 4 脚本 | 验证非功能性指标 (延迟、吞吐、错误率) |
+| 性能测试 (轻量级) | k6 | 4 脚本 | 验证非功能性指标 (延迟、吞吐、错误率) |
+| 性能测试 (企业级) | JMeter | 4 测试计划 | 企业级负载测试 + HTML 报告 + Grafana 可视化 |
 
 ### 测试金字塔
 
 ```
-        ┌──────────┐
-        │ 性能测试  │  4 k6 脚本 (smoke/load/stress/spike)
-        │  (k6)    │
-        ├──────────┤
-        │ 单元测试  │  19 Jest tests (routes/middleware/utils/db)
-        │  (Jest)  │
-        └──────────┘
+        ┌──────────────────────────┐
+        │      性能测试（双引擎）      │
+        │  k6: 4 脚本 (轻量级)       │
+        │  JMeter: 4 测试计划 (企业级) │
+        ├──────────────────────────┤
+        │        单元测试             │
+        │  19 Jest tests             │
+        └──────────────────────────┘
 ```
 
 ### 原则
 
 - **TDD**：先写失败测试，再写实现
 - **隔离**：每个测试用例独立，`afterEach` 重置数据库
-- **CI 门禁**：k6 smoke test 作为性能门禁，阈值不通过则 CI 失败
+- **双引擎 CI 门禁**：k6 + JMeter smoke test 并行作为性能门禁
+- **参数外置**：JMeter 测试参数通过 .properties 文件配置，.jmx 保持最小化
 
 ## 2. 覆盖目标
 
@@ -46,8 +50,10 @@
 | 分支覆盖率 (branches) | >= 70% | Jest --coverage |
 | 函数覆盖率 (functions) | >= 80% | Jest --coverage |
 | 行覆盖率 (lines) | >= 80% | Jest --coverage |
-| 性能 p95 延迟 (smoke) | < 500ms | k6 thresholds |
-| 错误率 (smoke) | < 1% | k6 thresholds |
+| 性能 p95 延迟 (k6 smoke) | < 500ms | k6 thresholds |
+| 错误率 (k6 smoke) | < 1% | k6 thresholds |
+| p95 响应时间 (JMeter smoke) | < 500ms | .jtl 解析 |
+| 错误率 (JMeter smoke) | < 1% | .jtl 解析 |
 
 ## 3. 单元测试用例表
 
@@ -101,7 +107,7 @@
 | UT-METRICS-01 | 发送 3 次请求后查询 /metrics | requestCount = 3 |
 | UT-METRICS-02 | 发送请求后查询 avgDuration | avgDuration >= 0 |
 
-## 4. 性能测试用例表
+## 4. k6 性能测试用例表
 
 ### 4.1 冒烟测试 (`smoke.k6.js`)
 
@@ -136,7 +142,71 @@
 | PT-SPIKE-02 | 保持尖峰 | 100 VUs, 30s | error rate < 10% |
 | PT-SPIKE-03 | 恢复到基线 | 100→5, 观察 30s | 性能恢复到尖峰前水平 |
 
-## 5. 性能阈值定义
+## 5. JMeter 性能测试用例表
+
+### 5.1 冒烟测试 (`smoke.jmx`)
+
+| ID | 测试场景 | 负载模式 | 阈值 | 报告 |
+|----|----------|----------|------|------|
+| JM-SMOKE-01 | GET /health 可用性 | 2 threads, 30s | status 200, duration < 500ms | .jtl |
+| JM-SMOKE-02 | GET /api/products 列表 | 2 threads, 30s | status 200 | .jtl |
+| JM-SMOKE-03 | GET /api/products/:id 详情 | 2 threads, 30s | status 200 | .jtl |
+| JM-SMOKE-04 | 全局验证 | 2 threads, 30s | error rate < 1% | HTML Report |
+
+### 5.2 负载测试 (`load.jmx`)
+
+| ID | 测试场景 | 负载模式 | 阈值 | 报告 |
+|----|----------|----------|------|------|
+| JM-LOAD-01 | 商品列表 + 详情 + 下单混合流量 | ramp 0→50, 5m | duration < 500ms | .jtl |
+| JM-LOAD-02 | 请求吞吐量 | 50 threads 持续 | 吞吐量 > 10 req/s | HTML Report |
+| JM-LOAD-03 | 全局错误率 | 50 threads, 5m | error rate < 1% | HTML Report |
+
+### 5.3 压力测试 (`stress.jmx`)
+
+| ID | 测试场景 | 负载模式 | 阈值 | 报告 |
+|----|----------|----------|------|------|
+| JM-STRESS-01 | 商品 + 下单混合流量 | ramp 0→200, 3.5m | duration < 1000ms | .jtl |
+| JM-STRESS-02 | 高并发错误率 | 200 threads 峰值 | error rate < 5% | HTML Report |
+| JM-STRESS-03 | 观察降级点 | 逐步增加 threads | 记录性能拐点 | HTML Report |
+
+### 5.4 尖峰测试 (`spike.jmx`)
+
+| ID | 测试场景 | 负载模式 | 阈值 | 报告 |
+|----|----------|----------|------|------|
+| JM-SPIKE-01 | 突增到 100 threads | 5→100 (5s ramp) | duration < 2000ms | .jtl |
+| JM-SPIKE-02 | 保持尖峰 | 100 threads, 30s | error rate < 10% | HTML Report |
+| JM-SPIKE-03 | 恢复到基线 | 100→5, 观察 30s | 性能恢复到尖峰前水平 | HTML Report |
+
+### 5.5 HTML 报告验证
+
+| ID | 验证项 | 预期结果 |
+|----|--------|----------|
+| JM-RPT-01 | `jmeter -g results.jtl -o reports/` 生成完整 HTML | reports/ 目录包含 index.html |
+| JM-RPT-02 | 报告包含 Summary 统计 | 显示 total requests, error %, throughput |
+| JM-RPT-03 | 报告包含 Response Time 图表 | 折线图可渲染 |
+
+### 5.6 Grafana 可视化验证
+
+| ID | 验证项 | 预期结果 |
+|----|--------|----------|
+| JM-GRF-01 | Backend Listener → InfluxDB | jmeter DB 有数据写入 |
+| JM-GRF-02 | Grafana JMeter dashboard 加载 | 6 个面板渲染正常 |
+| JM-GRF-03 | Active Threads 面板 | 显示线程数变化曲线 |
+| JM-GRF-04 | Response Time 面板 | 显示 avg/p90/p95 延迟 |
+
+### 5.7 CI 门禁验证
+
+| ID | 验证项 | 预期结果 |
+|----|--------|----------|
+| JM-CI-01 | JMeter smoke test 在 CI 中运行 | GitHub Actions job 成功 |
+| JM-CI-02 | 错误率 > 1% 时 CI 失败 | exit code 非 0 |
+| JM-CI-03 | .jtl 结果上传为 artifact | 可在 Actions 中下载 |
+
+---
+
+## 6. 性能阈值定义
+
+### k6 阈值
 
 | 脚本 | p95 延迟 | p99 延迟 | 错误率 | VUs | 时长 |
 |------|----------|----------|--------|-----|------|
@@ -145,20 +215,30 @@
 | Stress | < 1000ms | — | < 5% | 200 | 3.5m |
 | Spike | < 2000ms | — | < 10% | 100 | 1.5m |
 
+### JMeter 阈值（与 k6 一致，通过 .jtl 解析验证）
+
+| 测试计划 | p95 响应时间 | 错误率 | Threads | 时长 |
+|----------|-------------|--------|---------|------|
+| Smoke | < 500ms | < 1% | 2 | 30s |
+| Load | < 500ms | < 1% | 50 | 5m |
+| Stress | < 1000ms | < 5% | 200 | 3.5m |
+| Spike | < 2000ms | < 10% | 100 | 1.5m |
+
 ---
 
 # English Version
 
 ## 1. Test Strategy
 
-Two-layer testing approach:
+Three-layer testing with dual-engine performance testing:
 
 | Layer | Tool | Count | Purpose |
 |-------|------|-------|---------|
 | Unit Tests | Jest + Supertest | 19 | Verify API functional correctness |
-| Performance Tests | k6 | 4 scripts | Verify non-functional metrics (latency, throughput, error rate) |
+| Performance (Lightweight) | k6 | 4 scripts | Non-functional metrics (latency, throughput, error rate) |
+| Performance (Enterprise) | JMeter | 4 test plans | Enterprise load testing + HTML reports + Grafana |
 
-Principles: TDD, test isolation (afterEach database reset), k6 smoke as CI performance gate.
+Principles: TDD, test isolation (afterEach database reset), dual-engine smoke as CI performance gate, JMeter params externalized to .properties.
 
 ## 2. Coverage Targets
 
@@ -168,8 +248,10 @@ Principles: TDD, test isolation (afterEach database reset), k6 smoke as CI perfo
 | Branch coverage | >= 70% | Jest --coverage |
 | Function coverage | >= 80% | Jest --coverage |
 | Line coverage | >= 80% | Jest --coverage |
-| p95 latency (smoke) | < 500ms | k6 thresholds |
-| Error rate (smoke) | < 1% | k6 thresholds |
+| p95 latency (k6 smoke) | < 500ms | k6 thresholds |
+| Error rate (k6 smoke) | < 1% | k6 thresholds |
+| p95 response time (JMeter smoke) | < 500ms | .jtl parsing |
+| Error rate (JMeter smoke) | < 1% | .jtl parsing |
 
 ## 3. Unit Test Cases (19 tests)
 
@@ -196,7 +278,7 @@ Principles: TDD, test isolation (afterEach database reset), k6 smoke as CI perfo
 | UT-METRICS-01 | middleware/metrics | 3 requests → count = 3 | requestCount = 3 |
 | UT-METRICS-02 | middleware/metrics | avgDuration tracked | >= 0 |
 
-## 4. Performance Test Cases (4 scripts)
+## 4. k6 Performance Test Cases (4 scripts)
 
 | ID | Script | Scenario | VUs | Duration | Threshold |
 |----|--------|----------|-----|----------|-----------|
@@ -205,7 +287,21 @@ Principles: TDD, test isolation (afterEach database reset), k6 smoke as CI perfo
 | PT-STRESS-01~03 | stress.k6.js | Ramp to 200 VUs | 200 | 3.5m | p95 < 1s, err < 5% |
 | PT-SPIKE-01~03 | spike.k6.js | Sudden burst + recovery | 100 | 1.5m | p95 < 2s, err < 10% |
 
-## 5. Performance Thresholds
+## 5. JMeter Performance Test Cases (4 test plans)
+
+| ID | Test Plan | Scenario | Threads | Duration | Threshold |
+|----|-----------|----------|---------|----------|-----------|
+| JM-SMOKE-01~04 | smoke.jmx | Health + products + detail | 2 | 30s | duration < 500ms, err < 1% |
+| JM-LOAD-01~03 | load.jmx | Mixed CRUD traffic | 50 | 5m | duration < 500ms, err < 1% |
+| JM-STRESS-01~03 | stress.jmx | Ramp to 200 threads | 200 | 3.5m | duration < 1s, err < 5% |
+| JM-SPIKE-01~03 | spike.jmx | Sudden burst + recovery | 100 | 1.5m | duration < 2s, err < 10% |
+| JM-RPT-01~03 | — | HTML report generation | — | — | index.html + charts |
+| JM-GRF-01~04 | — | Grafana dashboard | — | — | 6 panels render |
+| JM-CI-01~03 | — | CI smoke gate | — | — | error rate check + artifact |
+
+## 6. Performance Thresholds
+
+### k6
 
 | Script | p95      | p99      | Error Rate | VUs | Duration |
 | ------ | -------- | -------- | ---------- | --- | -------- |
@@ -213,4 +309,12 @@ Principles: TDD, test isolation (afterEach database reset), k6 smoke as CI perfo
 | Load   | < 500ms  | < 1000ms | < 1%       | 50  | 5m       |
 | Stress | < 1000ms | —        | < 5%       | 200 | 3.5m     |
 | Spike  | < 2000ms | —        | < 10%      | 100 | 1.5m     |
-|        |          |          |            |     |          |
+
+### JMeter (aligned with k6)
+
+| Test Plan | p95 Response Time | Error Rate | Threads | Duration |
+| --------- | ----------------- | ---------- | ------- | -------- |
+| Smoke     | < 500ms           | < 1%       | 2       | 30s      |
+| Load      | < 500ms           | < 1%       | 50      | 5m       |
+| Stress    | < 1000ms          | < 5%       | 200     | 3.5m     |
+| Spike     | < 2000ms          | < 10%      | 100     | 1.5m     |

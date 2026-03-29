@@ -51,6 +51,51 @@ Test automation and DevOps demonstration projects.
 
 ---
 
+## Prerequisites | 运行环境要求
+
+### 通用
+
+| 软件 | 最低版本 | 验证命令 | 安装方式 |
+|------|----------|----------|----------|
+| Git | 2.x | `git --version` | git-scm.com |
+| Node.js | 18+ | `node -v` | nodejs.org |
+| npm | 9+ | `npm -v` | 随 Node.js |
+| Python | 3.10+ | `python3 --version` | python.org |
+| Docker | 20+ | `docker -v` | docker.com |
+| Docker Compose | v2+ | `docker compose version` | 随 Docker Desktop |
+
+### 各项目额外依赖
+
+| 项目 | 额外依赖 | 安装方式 |
+|------|----------|----------|
+| playwright-demo | Playwright browsers | `npx playwright install` |
+| security-testing-demo | OWASP ZAP, Docker | `docker compose up` 自动拉取 |
+| k8s-auto-testing-platform | kubectl, Kubernetes cluster | docker.com/kubernetes |
+| performance-testing-platform | k6 | `brew install k6` (macOS) |
+| microservice-testing-platform | Redis (Docker) | `docker compose up` 自动拉取 |
+
+### 端口占用
+
+以下端口需确保未被占用（按项目）：
+
+| 端口 | 项目 | 服务 |
+|------|------|------|
+| 3000 | cicd-demo, performance-testing-platform, microservice-testing-platform | 应用 API |
+| 3001 | api-testing-demo, performance-testing-platform | json-server / Grafana |
+| 3001–3005 | microservice-testing-platform | 微服务集群 |
+| 6379 | microservice-testing-platform | Redis |
+| 8080 | security-testing-demo | DVWA / Juice Shop |
+| 8086 | performance-testing-platform | InfluxDB |
+| 9090 | cicd-demo | Prometheus |
+
+### 一键验证
+
+```bash
+git --version && node -v && npm -v && python3 --version && docker -v && docker compose version
+```
+
+---
+
 ## Quick Start | 快速开始
 
 ```bash

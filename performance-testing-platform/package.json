@@ -1,0 +1,39 @@
+{
+  "name": "performance-testing-platform",
+  "version": "1.0.0",
+  "description": "Performance testing platform — k6 load/stress/spike/smoke testing with Grafana + InfluxDB",
+  "private": true,
+  "scripts": {
+    "lint": "eslint src/ tests/unit/ --ext .js",
+    "lint:fix": "eslint src/ tests/unit/ --ext .js --fix",
+    "format": "prettier --write 'src/**/*.js' 'tests/unit/**/*.js'",
+    "format:check": "prettier --check 'src/**/*.js' 'tests/unit/**/*.js'",
+    "start": "node src/server.js",
+    "test": "jest",
+    "test:unit": "jest --testPathPattern=tests/unit",
+    "test:coverage": "jest --testPathPattern=tests/unit --coverage",
+    "k6:smoke": "k6 run tests/performance/smoke.k6.js",
+    "k6:load": "k6 run tests/performance/load.k6.js",
+    "k6:stress": "k6 run tests/performance/stress.k6.js",
+    "k6:spike": "k6 run tests/performance/spike.k6.js",
+    "k6:smoke:influx": "k6 run --out influxdb=http://localhost:8086/k6 tests/performance/smoke.k6.js",
+    "k6:load:influx": "k6 run --out influxdb=http://localhost:8086/k6 tests/performance/load.k6.js",
+    "jmeter:smoke": "rm -rf reports/jmeter-smoke results/jmeter-smoke.jtl && jmeter -n -t tests/jmeter/smoke.jmx -q tests/jmeter/config/smoke.properties -l results/jmeter-smoke.jtl -e -o reports/jmeter-smoke",
+    "jmeter:load": "rm -rf reports/jmeter-load results/jmeter-load.jtl && jmeter -n -t tests/jmeter/load.jmx -q tests/jmeter/config/load.properties -l results/jmeter-load.jtl -e -o reports/jmeter-load",
+    "jmeter:stress": "rm -rf reports/jmeter-stress results/jmeter-stress.jtl && jmeter -n -t tests/jmeter/stress.jmx -q tests/jmeter/config/stress.properties -l results/jmeter-stress.jtl -e -o reports/jmeter-stress",
+    "jmeter:spike": "rm -rf reports/jmeter-spike results/jmeter-spike.jtl && jmeter -n -t tests/jmeter/spike.jmx -q tests/jmeter/config/spike.properties -l results/jmeter-spike.jtl -e -o reports/jmeter-spike",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.2.0",
+    "supertest": "^6.3.3"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.0.0",
+    "express": "^4.18.2"
+  }
+}
