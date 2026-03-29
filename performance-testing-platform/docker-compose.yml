@@ -15,6 +15,9 @@ services:
       - '8086:8086'
     environment:
       - INFLUXDB_DB=k6
+      - INFLUXDB_HTTP_AUTH_ENABLED=false
+    volumes:
+      - ./influxdb/init.iql:/docker-entrypoint-initdb.d/init.iql
 
   grafana:
     image: grafana/grafana:10.2.0
