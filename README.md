@@ -84,7 +84,7 @@ Test automation and DevOps demonstration projects.
 | playwright-demo | Playwright browsers | `npx playwright install` |
 | security-testing-demo | OWASP ZAP, Docker | `docker compose up` 自动拉取 |
 | k8s-auto-testing-platform | kubectl, Kubernetes cluster | docker.com/kubernetes |
-| performance-testing-platform | k6 | `brew install k6` (macOS) |
+| performance-testing-platform | k6, JMeter | `brew install k6 jmeter` (macOS) |
 | microservice-testing-platform | Redis (Docker) | `docker compose up` 自动拉取 |
 
 ### 端口占用

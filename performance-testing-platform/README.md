@@ -2,7 +2,7 @@
 
 **分类: 性能测试 (Performance Testing)**
 
-专项性能测试平台，展示 k6 负载测试能力：smoke / load / stress / spike 四种模式，Express 目标 API，Grafana + InfluxDB 可观测。
+k6 + JMeter 双引擎性能测试平台：smoke / load / stress / spike 四种模式，Express 目标 API，JMeter HTML 报告，Grafana + InfluxDB 可观测。
 
 ## 目录
 
@@ -17,17 +17,18 @@
 ## 架构
 
 ```
-k6 脚本 ──→ 目标 API (Express + SQLite)
-    │
-    └──→ InfluxDB ──→ Grafana Dashboard
+k6 脚本    ──→ 目标 API (Express + SQLite) ←── JMeter 测试计划
+    │                                              │
+    └──→ InfluxDB ──→ Grafana Dashboard      .jtl + HTML 报告
 ```
 
 ## 测试概览
 
-| 类型     | 数量 | 工具                            |
-| -------- | ---- | ------------------------------- |
-| 单元测试 | 19   | Jest                            |
-| k6 脚本  | 4    | k6 (smoke, load, stress, spike) |
+| 类型              | 数量       | 工具                            |
+| ----------------- | ---------- | ------------------------------- |
+| 单元测试          | 20         | Jest + Supertest                |
+| k6 性能测试       | 4 脚本     | k6 (smoke, load, stress, spike) |
+| JMeter 性能测试   | 4 测试计划 | JMeter (.jmx + .properties)     |
 
 ## 运行环境要求
 
@@ -38,6 +39,7 @@ k6 脚本 ──→ 目标 API (Express + SQLite)
 | Node.js        | 18+        | `node -v`                | nodejs.org                             |
 | npm            | 9+         | `npm -v`                 | 随 Node.js                             |
 | k6             | 最新稳定版 | `k6 version`             | `brew install k6` (macOS)              |
+| JMeter         | 5.6+       | `jmeter --version`       | `brew install jmeter` (macOS, 可选)    |
 | Docker         | 20+        | `docker -v`              | docker.com (Grafana 可视化需要)        |
 | Docker Compose | v2+        | `docker compose version` | 随 Docker Desktop (Grafana 可视化需要) |
 
@@ -111,12 +113,21 @@ npm run k6:load:influx       # 运行 load test，输出到 InfluxDB
 
 ### k6 测试配置
 
-| 模式   | VUs         | 持续时间 | 阈值                     |
-| ------ | ----------- | -------- | ------------------------ |
-| Smoke  | 2           | 30s      | p95 < 500ms, 错误率 < 1% |
-| Load   | 渐进 10→50  | 5m+      | p95 < 500ms, 错误率 < 1% |
-| Stress | 渐进至 100+ | 阶梯递增 | p95 < 1000ms             |
-| Spike  | 突增至 200+ | 短时脉冲 | p95 < 2000ms             |
+| 模式   | VUs        | 持续时间 | 阈值                      |
+| ------ | ---------- | -------- | ------------------------- |
+| Smoke  | 5          | 60s      | p95 < 500ms, 错误率 < 1%  |
+| Load   | 渐进 20→50 | 5m       | p95 < 2000ms, 错误率 < 1% |
+| Stress | 阶梯至 200 | 3.5m     | p95 < 3000ms, 错误率 < 5% |
+| Spike  | 5→100 突增 | 1.5m     | p95 < 2000ms, 错误率 < 10% |
+
+### JMeter 测试配置
+
+| 模式   | Threads      | 持续时间 | 配置文件                     |
+| ------ | ------------ | -------- | ---------------------------- |
+| Smoke  | 5            | 60s      | `config/smoke.properties`    |
+| Load   | 20→50 (2 阶) | 4m       | `config/load.properties`     |
+| Stress | 50→200 (4 阶)| 3.5m     | `config/stress.properties`   |
+| Spike  | 5→100 突增   | 2m       | `config/spike.properties`    |
 
 ### npm 脚本
 
@@ -131,6 +142,10 @@ npm run k6:load:influx       # 运行 load test，输出到 InfluxDB
 | `npm run k6:spike`        | k6 spike 测试         |
 | `npm run k6:smoke:influx` | smoke 测试 → InfluxDB |
 | `npm run k6:load:influx`  | load 测试 → InfluxDB  |
+| `npm run jmeter:smoke`    | JMeter smoke 测试     |
+| `npm run jmeter:load`     | JMeter load 测试      |
+| `npm run jmeter:stress`   | JMeter stress 测试    |
+| `npm run jmeter:spike`    | JMeter spike 测试     |
 | `npm run lint`            | ESLint 检查           |
 | `npm run format:check`    | Prettier 格式检查     |
 | `npm run docker:up`       | 启动所有 Docker 服务  |
@@ -146,17 +161,18 @@ npm run k6:load:influx       # 运行 load test，输出到 InfluxDB
 | 开发   | `supertest`      | ^6.3.3   | HTTP 断言                        |
 | 开发   | `eslint`         | ^8.56.0  | 代码检查                         |
 | 开发   | `prettier`       | ^3.2.0   | 代码格式化                       |
-| 外部   | `k6`             | 系统安装 | 性能测试引擎 (`brew install k6`) |
+| 外部   | `k6`             | 系统安装 | 性能测试引擎 (`brew install k6`)     |
+| 外部   | `jmeter`         | 系统安装 | 企业级性能测试 (`brew install jmeter`) |
 
 ## 文档
 
-| 文档     | 路径                                                                               |
-| -------- | ---------------------------------------------------------------------------------- |
-| 架构设计 | [docs/architecture/](docs/architecture/)                                           |
-| 测试用例 | [docs/test-cases/](docs/test-cases/)                                               |
-| 项目管理 | [docs/project-management/](docs/project-management/)                               |
-| 需求文档 | [docs/project-management/requirements.md](docs/project-management/requirements.md) |
+| 文档           | 路径                                                                               |
+| -------------- | ---------------------------------------------------------------------------------- |
+| 架构设计       | [docs/architecture/](docs/architecture/)                                           |
+| 测试用例       | [docs/test-cases/](docs/test-cases/)                                               |
+| RTM 追溯矩阵   | [docs/test-cases/rtm-jmeter.md](docs/test-cases/rtm-jmeter.md)                    |
+| 项目管理       | [docs/project-management/](docs/project-management/)                               |
+| 需求文档       | [docs/project-management/requirements.md](docs/project-management/requirements.md) |
+| 性能测试参数指南 | [docs/guides/performance-testing-parameters.md](docs/guides/performance-testing-parameters.md) |
 
 属于 [Michael Zhou's QA Portfolio](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio)。
-
-<!-- TODO: 开发完成后补充最终内容 -->
