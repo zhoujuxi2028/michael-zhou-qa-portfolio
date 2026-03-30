@@ -1,0 +1,77 @@
+
+> microservice-testing-platform@1.0.0 test:coverage
+> jest --testPathPattern='tests/(unit|contract|integration|e2e|observability)' --coverage
+
+PASS tests/integration/payment-api.test.js
+PASS tests/integration/order-api.test.js
+PASS tests/unit/order-service/order-routes.test.js
+PASS tests/integration/inventory-api.test.js
+PASS tests/contract/consumer/payment-order.contract.test.js
+PASS tests/unit/inventory-service/inventory-model.test.js
+PASS tests/e2e/order-flow.test.js (5.049 s)
+PASS tests/unit/payment-service/payment-routes.test.js
+PASS tests/observability/correlation-id.test.js
+PASS tests/unit/order-service/order-model.test.js
+PASS tests/unit/payment-service/payment-model.test.js
+PASS tests/contract/consumer/order-inventory.contract.test.js
+PASS tests/observability/logging.test.js
+PASS tests/contract/consumer/events.contract.test.js
+PASS tests/observability/metrics.test.js
+PASS tests/unit/inventory-service/inventory-routes.test.js (7.223 s)
+📦 report is created on: /Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio/microservice-testing-platform/reports/test-report.html
+----------------------------------|---------|----------|---------|---------|-------------------
+File                              | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+----------------------------------|---------|----------|---------|---------|-------------------
+All files                         |   96.33 |    77.86 |   95.55 |   96.28 |                   
+ inventory-service/src            |      96 |       50 |     100 |      96 |                   
+  app.js                          |      96 |       50 |     100 |      96 | 24                
+ inventory-service/src/db         |     100 |       50 |     100 |     100 |                   
+  init.js                         |     100 |       50 |     100 |     100 | 4-40              
+ inventory-service/src/middleware |     100 |     62.5 |     100 |     100 |                   
+  correlation-id.js               |     100 |      100 |     100 |     100 |                   
+  error-handler.js                |     100 |       50 |     100 |     100 | 17-20             
+  request-logger.js               |     100 |      100 |     100 |     100 |                   
+ inventory-service/src/models     |   93.61 |    93.75 |     100 |   93.33 |                   
+  inventory.js                    |   93.61 |    93.75 |     100 |   93.33 | 45-47             
+ inventory-service/src/routes     |    92.3 |       90 |     100 |    92.3 |                   
+  inventory.js                    |    92.3 |       90 |     100 |    92.3 | 43,52             
+ inventory-service/src/utils      |     100 |      100 |     100 |     100 |                   
+  logger.js                       |     100 |      100 |     100 |     100 |                   
+  metrics.js                      |     100 |      100 |     100 |     100 |                   
+ order-service/src                |      96 |       50 |     100 |      96 |                   
+  app.js                          |      96 |       50 |     100 |      96 | 24                
+ order-service/src/db             |     100 |       50 |     100 |     100 |                   
+  init.js                         |     100 |       50 |     100 |     100 | 4-27              
+ order-service/src/middleware     |     100 |    66.66 |     100 |     100 |                   
+  correlation-id.js               |     100 |      100 |     100 |     100 |                   
+  error-handler.js                |     100 |       50 |     100 |     100 | 18-19             
+  request-logger.js               |     100 |      100 |     100 |     100 |                   
+ order-service/src/models         |     100 |     86.2 |     100 |     100 |                   
+  order.js                        |     100 |     86.2 |     100 |     100 | 51,86             
+ order-service/src/routes         |   97.36 |       75 |     100 |   97.36 |                   
+  orders.js                       |   97.36 |       75 |     100 |   97.36 | 34                
+ order-service/src/utils          |     100 |      100 |     100 |     100 |                   
+  logger.js                       |     100 |      100 |     100 |     100 |                   
+  metrics.js                      |     100 |      100 |     100 |     100 |                   
+ payment-service/src              |      88 |       50 |      50 |      88 |                   
+  app.js                          |      88 |       50 |      50 |      88 | 24,39-40          
+ payment-service/src/db           |     100 |       50 |     100 |     100 |                   
+  init.js                         |     100 |       50 |     100 |     100 | 4-24              
+ payment-service/src/middleware   |   76.47 |    33.33 |      75 |   76.47 |                   
+  correlation-id.js               |     100 |      100 |     100 |     100 |                   
+  error-handler.js                |   42.85 |        0 |       0 |   42.85 | 5-17              
+  request-logger.js               |     100 |      100 |     100 |     100 |                   
+ payment-service/src/models       |     100 |       90 |     100 |     100 |                   
+  payment.js                      |     100 |       90 |     100 |     100 | 37,59             
+ payment-service/src/routes       |     100 |      100 |     100 |     100 |                   
+  payments.js                     |     100 |      100 |     100 |     100 |                   
+ payment-service/src/utils        |     100 |      100 |     100 |     100 |                   
+  logger.js                       |     100 |      100 |     100 |     100 |                   
+  metrics.js                      |     100 |      100 |     100 |     100 |                   
+----------------------------------|---------|----------|---------|---------|-------------------
+
+Test Suites: 16 passed, 16 total
+Tests:       101 passed, 101 total
+Snapshots:   0 total
+Time:        9.313 s
+Ran all test suites matching /tests\/(unit|contract|integration|e2e|observability)/i.
