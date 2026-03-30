@@ -1,6 +1,7 @@
 name: Microservice Testing CI
 
 on:
+  workflow_dispatch:
   push:
     branches: [main, feature/microservice-testing]
     paths: ['microservice-testing-platform/**']
