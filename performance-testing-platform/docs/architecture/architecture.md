@@ -30,7 +30,7 @@
 │  Express + SQLite        │  │  InfluxDB (k6 db + jmeter db)             │
 │  :3000                   │  │  :8086                                    │
 │                          │  │  Grafana (k6 dashboard + JMeter dashboard)│
-│                          │  │  :3001                                    │
+│                          │  │  :3010                                    │
 └─────────────────────────┘  └────────────────────────────────────────────┘
 ```
 
@@ -182,7 +182,7 @@ TestPlan
 |------|------|------|------|
 | api | 自建 (node:18-alpine) | 3000 | 目标 API |
 | influxdb | influxdb:1.8 | 8086 | k6 + JMeter 指标存储 (双 DB) |
-| grafana | grafana/grafana:10.2.0 | 3001 | 可视化 Dashboard (双引擎) |
+| grafana | grafana/grafana:10.2.0 | 3010 | 可视化 Dashboard (双引擎) |
 
 ### 环境变量
 
@@ -303,7 +303,7 @@ Error codes: `400` (missing fields), `404` (product not found), `409` (insuffici
 |---------|-------|------|---------|
 | api | Custom (node:18-alpine) | 3000 | Target API |
 | influxdb | influxdb:1.8 | 8086 | k6 + JMeter metrics storage (dual DB) |
-| grafana | grafana/grafana:10.2.0 | 3001 | Visualization dashboards (dual engine) |
+| grafana | grafana/grafana:10.2.0 | 3010 | Visualization dashboards (dual engine) |
 
 ### Environment Variables
 
