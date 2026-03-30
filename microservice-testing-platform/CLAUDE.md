@@ -27,7 +27,10 @@ npm run test:integration   # 20 integration tests
 npm run test:e2e           # 10 E2E tests
 npm run test:observability # 10 observability tests
 npm run test:all           # All 101 tests
+npm run test:coverage      # All tests + coverage report (coverage/)
 ```
+
+Tests generate HTML report at `reports/test-report.html` automatically.
 
 ### Docker Compose (full stack)
 
