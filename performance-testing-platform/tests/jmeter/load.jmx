@@ -82,7 +82,7 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{"productId": 1, "quantity": 1}</stringProp>
+                <stringProp name="Argument.value">{"product_id": 1, "quantity": 1}</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
@@ -213,7 +213,7 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{"productId": 1, "quantity": 1}</stringProp>
+                <stringProp name="Argument.value">{"product_id": 1, "quantity": 1}</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
