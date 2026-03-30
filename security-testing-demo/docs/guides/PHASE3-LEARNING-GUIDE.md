@@ -36,7 +36,7 @@ docker compose -f docker/docker-compose.yml up -d
 
 # 验证目标
 curl -I http://localhost        # DVWA
-curl -I http://localhost:3000   # Juice Shop
+curl -I http://localhost:3100   # Juice Shop
 ```
 
 ### 浏览器代理配置
@@ -153,7 +153,7 @@ username=admin&password=password&Login=Login&user_token=xxx
 
 #### 练习 2: Juice Shop 登录拦截
 
-1. 访问 http://localhost:3000
+1. 访问 http://localhost:3100
 2. 点击 Login
 3. 输入任意凭据并提交
 
@@ -161,7 +161,7 @@ username=admin&password=password&Login=Login&user_token=xxx
 
 ```http
 POST /rest/user/login HTTP/1.1
-Host: localhost:3000
+Host: localhost:3100
 Content-Type: application/json
 
 {"email":"test@test.com","password":"test123"}
@@ -254,7 +254,7 @@ GET /vulnerabilities/xss_r/?name=<script>alert('XSS')</script> HTTP/1.1
 ```http
 # 登录后获取 Token
 POST /rest/user/login HTTP/1.1
-Host: localhost:3000
+Host: localhost:3100
 Content-Type: application/json
 
 {"email":"test@test.com","password":"Test123!"}
@@ -684,7 +684,7 @@ docker compose -f docker/docker-compose.yml up -d
 
 # 验证目标
 curl -I http://localhost        # DVWA
-curl -I http://localhost:3000   # Juice Shop
+curl -I http://localhost:3100   # Juice Shop
 
 # 启动 Burp Suite
 open -a "Burp Suite Community Edition"
