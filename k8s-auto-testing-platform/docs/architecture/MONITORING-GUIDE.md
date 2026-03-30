@@ -46,11 +46,11 @@ kubectl get pods -n k8s-testing | grep -E "prometheus|grafana"
 kubectl port-forward svc/prometheus 9090:9090 -n k8s-testing &
 
 # Port-forward Grafana
-kubectl port-forward svc/grafana 3000:3000 -n k8s-testing &
+kubectl port-forward svc/grafana 3020:3000 -n k8s-testing &
 
 # Access dashboards
 open http://localhost:9090  # Prometheus
-open http://localhost:3000  # Grafana (admin/admin)
+open http://localhost:3020  # Grafana (admin/admin)
 ```
 
 ## Application Metrics
@@ -113,7 +113,7 @@ The `app_scaling_events_total` metric tracks these event types:
 
 ### Importing the Dashboard
 
-1. Open Grafana at http://localhost:3000
+1. Open Grafana at http://localhost:3020
 2. Go to Dashboards > Import
 3. Upload `monitoring/grafana-dashboard.json`
 4. Select Prometheus as the data source
