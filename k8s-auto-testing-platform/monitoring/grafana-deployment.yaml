@@ -279,7 +279,7 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: 3000
+    - port: 3020
       targetPort: 3000
       nodePort: 30030
       name: http
