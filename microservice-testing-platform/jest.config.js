@@ -10,6 +10,17 @@ module.exports = {
     '!**/services/order-client.js',
   ],
   coverageDirectory: 'coverage',
+  reporters: [
+    'default',
+    [
+      'jest-html-reporters',
+      {
+        publicPath: './reports',
+        filename: 'test-report.html',
+        pageTitle: 'Microservice Testing Platform - Test Report',
+      },
+    ],
+  ],
   coverageThreshold: {
     global: {
       branches: 70,
