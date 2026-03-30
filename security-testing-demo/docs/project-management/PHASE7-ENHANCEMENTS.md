@@ -127,7 +127,7 @@ jobs:
       juice-shop:
         image: bkimminich/juice-shop
         ports:
-          - 3000:3000
+          - 3100:3000
 
     steps:
       - uses: actions/checkout@v4

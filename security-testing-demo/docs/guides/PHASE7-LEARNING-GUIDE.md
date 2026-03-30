@@ -27,7 +27,7 @@ docker compose -f docker/docker-compose.yml up -d
 
 # 2. 验证服务已就绪
 curl -I http://localhost        # DVWA (应返回 200/302)
-curl -I http://localhost:3000   # Juice Shop (应返回 200)
+curl -I http://localhost:3100   # Juice Shop (应返回 200)
 
 # 3. 安装依赖
 pip install -r requirements.txt
@@ -203,7 +203,7 @@ pytest tests/test_components.py -v
 
 ```bash
 # 发送包含原型污染的 JSON
-curl -X POST http://localhost:3000/api/Users/ \
+curl -X POST http://localhost:3100/api/Users/ \
   -H "Content-Type: application/json" \
   -d '{"__proto__": {"admin": true}}'
 
@@ -378,10 +378,10 @@ echo "缩写: 127.1"
 
 ```bash
 # 测试开放重定向
-curl -I "http://localhost:3000/redirect?to=http://evil.com" 2>&1 | grep -i location
+curl -I "http://localhost:3100/redirect?to=http://evil.com" 2>&1 | grep -i location
 
 # 测试内部重定向
-curl -I "http://localhost:3000/redirect?to=http://127.0.0.1" 2>&1 | grep -i location
+curl -I "http://localhost:3100/redirect?to=http://127.0.0.1" 2>&1 | grep -i location
 ```
 
 ### 运行测试

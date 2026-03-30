@@ -41,7 +41,7 @@ This project demonstrates a professional security testing automation framework u
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
 │  │  OWASP ZAP   │  │    DVWA      │  │  Juice Shop  │      │
 │  │  (Scanner)   │  │   (Target)   │  │   (Target)   │      │
-│  │  :8090       │  │   :80        │  │   :3000      │      │
+│  │  :8090       │  │   :80        │  │   :3100      │      │
 │  └──────────────┘  └──────────────┘  └──────────────┘      │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -86,7 +86,7 @@ tests/
 services:
   zap:        # OWASP ZAP daemon on :8090
   dvwa:       # Vulnerable web app on :80
-  juice-shop: # Modern vulnerable app on :3000
+  juice-shop: # Modern vulnerable app on :3100
 ```
 
 ## Data Flow

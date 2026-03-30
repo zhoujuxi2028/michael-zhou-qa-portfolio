@@ -41,7 +41,7 @@ services:
     image: bkimminich/juice-shop
     container_name: juice-shop-target
     ports:
-      - "3000:3000"
+      - "3100:3000"
     networks:
       - security-net
     restart: unless-stopped

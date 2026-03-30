@@ -39,8 +39,8 @@ class Config:
     DVWA_PASSWORD = os.getenv("DVWA_PASSWORD", "password")
 
     # Juice Shop configuration
-    JUICE_SHOP_URL = os.getenv("JUICE_SHOP_URL", "http://localhost:3000")
-    JUICE_SHOP_API_URL = os.getenv("JUICE_SHOP_API_URL", "http://localhost:3000/api")
+    JUICE_SHOP_URL = os.getenv("JUICE_SHOP_URL", "http://localhost:3100")
+    JUICE_SHOP_API_URL = os.getenv("JUICE_SHOP_API_URL", "http://localhost:3100/api")
 
 
 @pytest.fixture(scope="session")
@@ -169,7 +169,9 @@ def juice_shop_session(config):
 
     try:
         # Verify Juice Shop is available
-        response = session.get(f"{config.JUICE_SHOP_URL}/rest/admin/application-version", timeout=10)
+        response = session.get(
+            f"{config.JUICE_SHOP_URL}/rest/admin/application-version", timeout=10
+        )
         if response.status_code not in [200, 401, 403]:
             pytest.skip("Juice Shop is not available")
             return None
@@ -211,11 +213,16 @@ def juice_shop_auth_session(config):
             "email": test_email,
             "password": test_password,
             "passwordRepeat": test_password,
-            "securityQuestion": {"id": 1, "question": "Your eldest siblings middle name?"},
+            "securityQuestion": {
+                "id": 1,
+                "question": "Your eldest siblings middle name?",
+            },
             "securityAnswer": "test",
         }
 
-        response = session.post(register_url, data=json.dumps(register_data), timeout=10)
+        response = session.post(
+            register_url, data=json.dumps(register_data), timeout=10
+        )
 
         # Login
         login_url = f"{config.JUICE_SHOP_URL}/rest/user/login"
@@ -255,8 +262,12 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "nosql: NoSQL injection tests")
     config.addinivalue_line("markers", "api: API security tests")
     config.addinivalue_line("markers", "business_logic: Business logic tests")
-    config.addinivalue_line("markers", "nessus: marks tests requiring Nessus (skip if unavailable)")
-    config.addinivalue_line("markers", "openvas: marks tests requiring OpenVAS/GVM (skip if unavailable)")
+    config.addinivalue_line(
+        "markers", "nessus: marks tests requiring Nessus (skip if unavailable)"
+    )
+    config.addinivalue_line(
+        "markers", "openvas: marks tests requiring OpenVAS/GVM (skip if unavailable)"
+    )
     config.addinivalue_line("markers", "multi_level: Multi-security-level tests")
     config.addinivalue_line("markers", "sqlmap: SQLMap integration tests")
     config.addinivalue_line("markers", "crypto: Cryptographic failures tests (A02)")
