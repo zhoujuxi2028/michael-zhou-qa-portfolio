@@ -64,7 +64,7 @@ docker compose -f docker/docker-compose.yml up -d
 
 # 验证服务运行
 curl -I http://localhost       # DVWA
-curl -I http://localhost:3000  # Juice Shop
+curl -I http://localhost:3100  # Juice Shop
 
 # 获取 Docker 网络 IP
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' docker-dvwa-1
