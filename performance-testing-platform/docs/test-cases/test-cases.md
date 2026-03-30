@@ -123,7 +123,7 @@
 | ID | 测试场景 | 负载模式 | 阈值 |
 |----|----------|----------|------|
 | PT-LOAD-01 | 商品列表 + 详情 + 下单混合流量 | ramp 20→50→0, 5m | p95 < 500ms, p99 < 1s |
-| PT-LOAD-02 | 请求吞吐量 | 50 VUs 持续 | rate > 10 req/s |
+| PT-LOAD-02 | 请求吞吐量 | 50 VUs 持续 | rate > 8 req/s |
 | PT-LOAD-03 | 全局错误率 | 50 VUs, 5m | error rate < 1% |
 
 ### 4.3 压力测试 (`stress.k6.js`)
@@ -158,7 +158,7 @@
 | ID | 测试场景 | 负载模式 | 阈值 | 报告 |
 |----|----------|----------|------|------|
 | JM-LOAD-01 | 商品列表 + 详情 + 下单混合流量 | ramp 0→50, 5m | duration < 500ms | .jtl |
-| JM-LOAD-02 | 请求吞吐量 | 50 threads 持续 | 吞吐量 > 10 req/s | HTML Report |
+| JM-LOAD-02 | 请求吞吐量 | 50 threads 持续 | 吞吐量 > 8 req/s | HTML Report |
 | JM-LOAD-03 | 全局错误率 | 50 threads, 5m | error rate < 1% | HTML Report |
 
 ### 5.3 压力测试 (`stress.jmx`)

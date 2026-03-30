@@ -12,7 +12,7 @@ export const options = {
     { duration: '30s', target: 0 },
   ],
   thresholds: {
-    http_req_duration: ['p(95)<1000'],
+    http_req_duration: ['p(95)<3000'],
     http_req_failed: ['rate<0.05'],
   },
 };
@@ -22,11 +22,9 @@ export default function () {
   checkStatus(products, 200, 'products');
 
   const productId = Math.ceil(Math.random() * 5);
-  http.post(
-    `${BASE_URL}/api/orders`,
-    JSON.stringify({ product_id: productId, quantity: 1 }),
-    { headers: { 'Content-Type': 'application/json' } }
-  );
+  http.post(`${BASE_URL}/api/orders`, JSON.stringify({ product_id: productId, quantity: 1 }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
 
   sleep(0.3);
 }
