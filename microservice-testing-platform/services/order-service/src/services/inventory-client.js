@@ -1,6 +1,6 @@
 const logger = require('../utils/logger');
 
-const INVENTORY_URL = process.env.INVENTORY_SERVICE_URL || 'http://localhost:3002';
+const INVENTORY_URL = process.env.INVENTORY_SERVICE_URL || 'http://localhost:3004';
 
 async function checkAndDeduct(productId, quantity, orderId, correlationId) {
   const response = await fetch(`${INVENTORY_URL}/api/inventory/${productId}/deduct`, {

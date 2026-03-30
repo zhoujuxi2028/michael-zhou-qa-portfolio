@@ -22,7 +22,7 @@ export const options = {
   },
 };
 
-const ORDER_URL = __ENV.ORDER_URL || 'http://localhost:3001';
+const ORDER_URL = __ENV.ORDER_URL || 'http://localhost:3003';
 
 export function createOrder() {
   const payload = JSON.stringify({
