@@ -75,6 +75,7 @@ python3 -m venv venv && source venv/bin/activate
 | 6379 | microservice-testing-platform | Redis |
 | 8080 | k8s-auto-testing-platform | Test App |
 | 8086 | performance-testing-platform | InfluxDB |
+| 3100 | security-testing-demo | Juice Shop |
 | 8090 | security-testing-demo | OWASP ZAP |
 | 8443 | selenium-demo / iwsva-cypress-e2e | IWSVA |
 | 9090 | cicd-demo / k8s | Prometheus |
