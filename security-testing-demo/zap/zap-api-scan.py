@@ -6,7 +6,7 @@ Scans REST APIs using OpenAPI/Swagger specifications.
 Supports OpenAPI 3.0 and Swagger 2.0 formats.
 
 Usage:
-    python zap-api-scan.py --spec openapi.yaml --target http://localhost:3000
+    python zap-api-scan.py --spec openapi.yaml --target http://localhost:3100
     python zap-api-scan.py --spec https://api.example.com/openapi.json
 """
 
@@ -29,7 +29,9 @@ except ImportError:
 class ZAPAPIScan:
     """OWASP ZAP API Scanner"""
 
-    def __init__(self, zap_host: str = "localhost", zap_port: int = 8090, api_key: str = ""):
+    def __init__(
+        self, zap_host: str = "localhost", zap_port: int = 8090, api_key: str = ""
+    ):
         """Initialize ZAP connection."""
         self.zap_host = zap_host
         self.zap_port = zap_port
@@ -269,7 +271,9 @@ def main():
     parser.add_argument("--zap-port", type=int, default=8090, help="ZAP port")
     parser.add_argument("--api-key", default="", help="ZAP API key")
     parser.add_argument("--output", "-o", default="./reports", help="Output directory")
-    parser.add_argument("--report", "-r", default="html", choices=["html", "json", "xml"])
+    parser.add_argument(
+        "--report", "-r", default="html", choices=["html", "json", "xml"]
+    )
     parser.add_argument("--passive-only", action="store_true", help="Skip active scan")
 
     args = parser.parse_args()
@@ -277,7 +281,9 @@ def main():
     if not args.spec and not args.target:
         parser.error("Either --spec or --target is required")
 
-    scanner = ZAPAPIScan(zap_host=args.zap_host, zap_port=args.zap_port, api_key=args.api_key)
+    scanner = ZAPAPIScan(
+        zap_host=args.zap_host, zap_port=args.zap_port, api_key=args.api_key
+    )
 
     results = scanner.run(
         spec_path=args.spec,

@@ -12,7 +12,7 @@ Quick-start guide for using Burp Suite CE with DVWA and Juice Shop.
 | Target | URL | Credentials |
 |--------|-----|-------------|
 | DVWA | http://localhost | admin / password |
-| Juice Shop | http://localhost:3000 | - |
+| Juice Shop | http://localhost:3100 | - |
 
 ## 1. Proxy Setup
 
@@ -64,7 +64,7 @@ networksetup -setsecurewebproxystate "Wi-Fi" off
 
 ### Practice: Juice Shop Login
 
-1. Browse to http://localhost:3000
+1. Browse to http://localhost:3100
 2. Click Login
 3. Enter: `test@test.com` / `test123`
 4. Intercept shows JSON body:
@@ -173,7 +173,7 @@ username=admin&password=§test§&Login=Login
 
 Limit Burp to only target hosts:
 1. **Target > Scope > Add**
-2. Add: `http://localhost` and `http://localhost:3000`
+2. Add: `http://localhost` and `http://localhost:3100`
 3. **Proxy > Options > Intercept Client Requests**
 4. Check "And URL Is in target scope"
 
@@ -203,7 +203,7 @@ docker compose -f docker/docker-compose.yml up -d
 
 # Verify targets
 curl -I http://localhost        # DVWA
-curl -I http://localhost:3000   # Juice Shop
+curl -I http://localhost:3100   # Juice Shop
 
 # Open Burp Suite
 open -a "Burp Suite Community Edition"
