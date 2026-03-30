@@ -7,4 +7,10 @@ module.exports = {
     'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     'prefer-const': 'error',
   },
+  overrides: [
+    {
+      files: ['src/server.js'],
+      rules: { 'no-console': 'off' },
+    },
+  ],
 };
