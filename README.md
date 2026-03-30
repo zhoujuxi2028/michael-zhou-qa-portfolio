@@ -80,13 +80,17 @@ Test automation and DevOps demonstration projects.
 
 | 端口 | 项目 | 服务 |
 |------|------|------|
-| 3000 | cicd-demo, performance-testing-platform, microservice-testing-platform | 应用 API |
-| 3001 | api-testing-demo, performance-testing-platform | json-server / Grafana |
-| 3001–3005 | microservice-testing-platform | 微服务集群 |
+| 3000 | performance-testing-platform | Target API |
+| 3001-3002 | api-testing-demo | json-server |
+| 3003-3005 | microservice-testing-platform | Order / Inventory / Payment |
+| 3010 | performance-testing-platform | Grafana |
+| 3020 | k8s-auto-testing-platform | Grafana |
+| 3100 | security-testing-demo | Juice Shop |
 | 6379 | microservice-testing-platform | Redis |
-| 8080 | security-testing-demo | DVWA / Juice Shop |
+| 8080 | k8s-auto-testing-platform | Test App |
 | 8086 | performance-testing-platform | InfluxDB |
-| 9090 | cicd-demo | Prometheus |
+| 8090 | security-testing-demo | OWASP ZAP |
+| 9090 | cicd-demo / k8s | Prometheus |
 
 ### 一键验证
 
@@ -131,6 +135,14 @@ For detailed documentation, see the [Project Wiki](https://github.com/zhoujuxi20
 | [Defect Management](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki/Defect-Management) | Label system, issue workflow |
 | [Lessons Learned](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki/Lessons-Learned) | Real-world debugging experiences |
 | [Tech Stack](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki/Tech-Stack) | Tool selection rationale |
+
+---
+
+## Known Issues | 已知问题
+
+| Issue | 描述 | 状态 |
+|-------|------|------|
+| [#35](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/35) | `trivy-action` 内部 `actions/cache@v4.2.4` 使用 Node.js 20（deprecation warning） | 上游问题，等待 `aquasecurity/trivy-action` 升级到 `actions/cache@v5` |
 
 ---
 
