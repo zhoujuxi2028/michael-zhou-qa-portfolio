@@ -29,21 +29,22 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 
 ## Projects (by Testing Category)
 
-| Category | Project | Description | Key Tech |
-|----------|---------|-------------|----------|
-| 功能测试 | `iwsva-cypress-e2e/` | IWSVA E2E testing (77 tests) | Cypress, Page Objects |
-| DevOps | `cicd-demo/` | DevOps Infrastructure Platform (IaC + GitOps + Monitoring) | Terraform, K8S, ArgoCD, Prometheus |
-| 功能测试 | `api-testing-demo/` | API testing (280+ assertions) | Newman, Postman, json-server |
-| 功能测试 | `playwright-demo/` | Cross-browser E2E testing (38 tests) | Playwright, TypeScript, axe-core |
-| 功能测试 | `selenium-demo/` | Browser automation | Selenium, Python, Allure |
-| 安全测试 | `security-testing-demo/` | Security testing (~182 tests, OWASP Top 10) | Pytest, OWASP ZAP, Nessus, SQLMap |
-| 平台测试 | `sid-iam-testing-platform/` | IAM + Data + AI Agent testing (163 tests) | Python, Pytest, FastAPI, networkx |
-| 平台测试 | `microservice-testing-platform/` | Microservice testing (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 |
-| 稳定性测试 | `k8s-auto-testing-platform/` | K8S HPA + Chaos Engineering (37 tests) | Python, Pytest, Chaos Mesh |
+| Category | Project | Key Tech | CLAUDE.md |
+|----------|---------|----------|-----------|
+| 功能测试 | `iwsva-cypress-e2e/` — IWSVA E2E (77 tests) | Cypress, Page Objects | `iwsva-cypress-e2e/CLAUDE.md` |
+| DevOps | `cicd-demo/` — DevOps Infrastructure Platform | Terraform, K8S, ArgoCD, Prometheus | `cicd-demo/CLAUDE.md` |
+| 功能测试 | `api-testing-demo/` — API testing (280+ assertions) | Newman, Postman, json-server | `api-testing-demo/CLAUDE.md` |
+| 功能测试 | `playwright-demo/` — Cross-browser E2E (38 tests) | Playwright, TypeScript, axe-core | `playwright-demo/CLAUDE.md` |
+| 功能测试 | `selenium-demo/` — Browser automation | Selenium, Python, Allure | `selenium-demo/CLAUDE.md` |
+| 安全测试 | `security-testing-demo/` — Security (~182 tests, OWASP Top 10) | Pytest, OWASP ZAP, Nessus, SQLMap | `security-testing-demo/CLAUDE.md` |
+| 平台测试 | `sid-iam-testing-platform/` — IAM + Data + AI Agent (163 tests) | Python, Pytest, FastAPI, networkx | `sid-iam-testing-platform/CLAUDE.md` |
+| 平台测试 | `microservice-testing-platform/` — Microservice (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 | `microservice-testing-platform/CLAUDE.md` |
+| 性能测试 | `performance-testing-platform/` — k6 + JMeter dual-engine (20 unit + 8 perf) | k6, JMeter, Express, Grafana, InfluxDB | `performance-testing-platform/CLAUDE.md` |
+| 稳定性测试 | `k8s-auto-testing-platform/` — K8S HPA + Chaos (37 tests) | Python, Pytest, Chaos Mesh | `k8s-auto-testing-platform/CLAUDE.md` |
+
+> **Quick Commands**: 各项目的安装、运行、测试命令详见对应子项目 `CLAUDE.md`。
 
 ## Standard docs/ Template
-
-All projects use the same `docs/` structure:
 
 ```
 docs/
@@ -53,112 +54,10 @@ docs/
 └── guides/                 # FAQ, troubleshooting, learning guides (optional)
 ```
 
-## Project CLAUDE.md Files
-
-| Project | CLAUDE.md |
-|---------|-----------|
-| IWSVA Cypress E2E | `iwsva-cypress-e2e/CLAUDE.md` |
-| K8S Testing Platform | `k8s-auto-testing-platform/CLAUDE.md` |
-| Security Testing Demo | `security-testing-demo/CLAUDE.md` |
-| CI/CD Demo | `cicd-demo/CLAUDE.md` |
-| API Testing Demo | `api-testing-demo/CLAUDE.md` |
-| Playwright Demo | `playwright-demo/CLAUDE.md` |
-| Selenium Demo | `selenium-demo/CLAUDE.md` |
-| SID IAM Testing | `sid-iam-testing-platform/CLAUDE.md` |
-| Microservice Testing | `microservice-testing-platform/CLAUDE.md` |
-
-## Virtual Environment
+## Virtual Environment (Python Projects)
 
 ```bash
-# Create once at repo root (for all Python projects)
-python3 -m venv venv
-source venv/bin/activate
-```
-
-## Quick Commands by Project
-
-### iwsva-cypress-e2e
-```bash
-cd iwsva-cypress-e2e
-npm install
-npm test                    # Run main test
-npm run cypress:open        # Interactive mode
-```
-
-### k8s-auto-testing-platform
-```bash
-cd k8s-auto-testing-platform
-export no_proxy=localhost,127.0.0.1,kubernetes.docker.internal,10.0.0.0/8
-pytest tests/ -v
-./scripts/hpa-stress-test.sh --duration 120 --concurrency 15
-```
-
-### cicd-demo
-```bash
-cd cicd-demo
-npm install
-npm test                    # Both Cypress + Newman
-npm run docker:test         # Run in Docker
-```
-
-### api-testing-demo
-```bash
-cd api-testing-demo
-npm install
-npm run server &            # Start json-server (port 3001)
-npm run test:full           # Run full Newman suite (316 assertions)
-kill %1                     # Stop json-server
-```
-
-### security-testing-demo
-```bash
-cd security-testing-demo
-docker compose -f docker/docker-compose.yml up -d    # Start ZAP + DVWA
-pip install -r requirements.txt
-pytest tests/ -v                                     # Run ~182 security tests
-python zap/zap-baseline.py --target http://localhost # ZAP baseline scan
-```
-
-### playwright-demo
-```bash
-cd playwright-demo
-npm install
-npx playwright install
-npm test                    # All 38 tests (Chromium + Firefox + WebKit)
-npm run test:chromium       # Chromium only
-npm run test:api            # API tests (no browser)
-npm run test:a11y           # Accessibility tests
-npm run report              # Open HTML report
-```
-
-### selenium-demo
-```bash
-cd selenium-demo
-pip install -r requirements.txt
-pytest tests/ -v            # Run Selenium tests
-```
-
-### sid-iam-testing-platform
-```bash
-cd sid-iam-testing-platform
-pip install -r requirements.txt
-pytest tests/ -v            # Run all 138 tests
-pytest tests/test_auth/ -v  # Auth domain only (54 tests)
-pytest tests/test_data/ -v  # Data platform only (44 tests)
-pytest tests/test_ai/ -v    # AI Agent only (40 tests)
-```
-
-### microservice-testing-platform
-```bash
-cd microservice-testing-platform
-npm install
-npm run test:unit          # 46 unit tests
-npm run test:contract      # 15 contract tests
-npm run test:integration   # 20 integration tests
-npm run test:e2e           # 10 E2E tests
-npm run test:observability # 10 observability tests
-npm run test:all           # All 101 tests
-npm run docker:up          # Start all services + Redis
+python3 -m venv venv && source venv/bin/activate
 ```
 
 ## Git Workflow
@@ -179,6 +78,7 @@ npm run docker:up          # Start all services + Redis
 | `fix/api-testing-defects` | API testing bug fixes | In development |
 | `feature/sid-iam-testing` | SID IAM + Data Platform + AI Agent testing (138 tests) | In development |
 | `feature/microservice-testing` | Microservice testing platform (101 tests, 5 layers) | In development |
+| `feature/performance-testing` | Performance testing platform (k6 + JMeter dual-engine) | In development |
 
 ## GitHub Actions
 
@@ -198,6 +98,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `microservice-ci.yml` | microservice-testing-platform | Lint → unit → contract → integration → E2E (101 tests) |
 | `api-testing-ci.yml` | api-testing-demo | Validate collections → Newman tests (280+ assertions) |
 | `selenium-ci.yml` | selenium-demo | Code quality (black + flake8) → smoke tests |
+| `performance-ci.yml` | performance-testing-platform | Lint → unit tests → k6 + JMeter smoke gate |
 
 ## Pre-commit Checklist
 

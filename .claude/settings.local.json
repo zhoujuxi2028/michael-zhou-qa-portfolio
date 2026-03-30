@@ -32,7 +32,11 @@
       "Bash(do sed:*)",
       "Bash(HOMEBREW_NO_AUTO_UPDATE=1 brew install jmeter 2>&1)",
       "Read(//private/tmp/**)",
-      "Bash(lsof -ti:3000)"
+      "Bash(lsof -ti:3000)",
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(node scripts/check-port.js)",
+      "Bash(echo \"exit code: $?\")",
+      "Skill(commit-commands:commit)"
     ]
   },
   "hooks": {
