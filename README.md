@@ -32,6 +32,7 @@ Test automation and DevOps demonstration projects.
 | 安全测试 | [security-testing-demo](./security-testing-demo/) | DAST Security Testing (~182 tests, OWASP Top 10) | OWASP ZAP, Nessus, SQLMap, Pytest |
 | 平台测试 | [sid-iam-testing-platform](./sid-iam-testing-platform/) | IAM + Data + AI Agent Testing (138 tests) | Python, Pytest, FastAPI, networkx |
 | 平台测试 | [microservice-testing-platform](./microservice-testing-platform/) | Microservice Testing (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 |
+| 性能测试 | [performance-testing-platform](./performance-testing-platform/) | k6 + JMeter Dual-Engine (20 unit + 8 perf) | k6, JMeter, Express, Grafana, InfluxDB |
 | 稳定性测试 | [k8s-auto-testing-platform](./k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests) | Python, Pytest, Chaos Mesh |
 
 ---
@@ -41,9 +42,10 @@ Test automation and DevOps demonstration projects.
 - **Test Automation | 测试自动化**: Cypress, Playwright, Selenium, Pytest
 - **API Testing | API测试**: Postman, Newman
 - **Security Testing | 安全测试**: OWASP ZAP, Nessus, DAST, OWASP Top 10 2021
+- **Performance Testing | 性能测试**: k6, JMeter, Load/Stress/Spike Testing
 - **CI/CD**: GitHub Actions, Docker
 - **Cloud/K8S | 云原生**: Kubernetes, HPA, Chaos Mesh
-- **Monitoring | 监控**: Prometheus, Grafana
+- **Monitoring | 监控**: Prometheus, Grafana, InfluxDB
 
 ---
 
@@ -61,6 +63,7 @@ Test automation and DevOps demonstration projects.
 | `playwright-tests.yml` | playwright-demo | Push/PR to main | Cross-browser E2E (Chromium, Firefox, WebKit) |
 | `sid-iam-ci.yml` | sid-iam-testing-platform | Push/PR, manual | Code quality + unit tests + integration (138 tests) |
 | `microservice-ci.yml` | microservice-testing-platform | Push/PR | Lint → unit → contract → integration → E2E (101 tests) |
+| `performance-ci.yml` | performance-testing-platform | Push/PR | Lint → unit tests → k6 + JMeter smoke gate |
 
 ---
 
@@ -132,6 +135,7 @@ cd cicd-demo && npm install && npm test
 cd playwright-demo && npm install && npx playwright install && npm test
 cd sid-iam-testing-platform && pip install -r requirements.txt && pytest tests/ -v
 cd microservice-testing-platform && npm install && npm run test:all
+cd performance-testing-platform && npm install && npm start & npm run k6:smoke
 ```
 
 ---
