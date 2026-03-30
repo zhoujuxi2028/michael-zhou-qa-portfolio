@@ -3,7 +3,7 @@ const logger = require('./utils/logger');
 const redisSubscriber = require('./services/redis-subscriber');
 const redisPublisher = require('./services/redis-publisher');
 
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT || 3005;
 
 async function start() {
   await redisPublisher.connect();

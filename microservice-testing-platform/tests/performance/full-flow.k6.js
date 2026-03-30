@@ -33,8 +33,8 @@ export const options = {
   },
 };
 
-const ORDER_URL = __ENV.ORDER_URL || 'http://localhost:3001';
-const INVENTORY_URL = __ENV.INVENTORY_URL || 'http://localhost:3002';
+const ORDER_URL = __ENV.ORDER_URL || 'http://localhost:3003';
+const INVENTORY_URL = __ENV.INVENTORY_URL || 'http://localhost:3004';
 
 // PT-03: Full flow - create order (triggers inventory deduction)
 export function fullFlowStress() {

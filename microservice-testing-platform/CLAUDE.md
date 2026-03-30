@@ -48,9 +48,9 @@ k6 run tests/performance/full-flow.k6.js
 
 ```
 services/
-├── order-service/      Express :3001, SQLite, Redis Pub
-├── inventory-service/  Express :3002, SQLite
-└── payment-service/    Express :3003, SQLite, Redis Sub
+├── order-service/      Express :3003, SQLite, Redis Pub
+├── inventory-service/  Express :3004, SQLite
+└── payment-service/    Express :3005, SQLite, Redis Sub
 ```
 
 | Communication | Pattern | Example |

@@ -60,6 +60,26 @@ docs/
 python3 -m venv venv && source venv/bin/activate
 ```
 
+## Port Allocation
+
+避免跨项目端口冲突，所有项目端口统一分配如下：
+
+| 端口 | 项目 | 服务 |
+|------|------|------|
+| 3000 | performance-testing-platform | Target API |
+| 3001 | api-testing-demo | json-server |
+| 3002 | api-testing-demo (staging) | json-server |
+| 3003-3005 | microservice-testing-platform | Order / Inventory / Payment |
+| 3010 | performance-testing-platform | Grafana |
+| 3020 | k8s-auto-testing-platform | Grafana (K8S) |
+| 6379 | microservice-testing-platform | Redis |
+| 8080 | k8s-auto-testing-platform | Test App |
+| 8086 | performance-testing-platform | InfluxDB |
+| 8090 | security-testing-demo | OWASP ZAP |
+| 8443 | selenium-demo / iwsva-cypress-e2e | IWSVA |
+| 9090 | cicd-demo / k8s | Prometheus |
+| 9390-9392 | security-testing-demo | OpenVAS |
+
 ## Git Workflow
 
 - **Default branch**: `main`

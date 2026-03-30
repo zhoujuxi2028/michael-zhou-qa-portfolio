@@ -14,12 +14,12 @@ services:
       context: .
       dockerfile: services/inventory-service/Dockerfile
     ports:
-      - "3002:3002"
+      - "3004:3004"
     environment:
-      - PORT=3002
+      - PORT=3004
       - NODE_ENV=production
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3002/health"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3004/health"]
       interval: 10s
       timeout: 3s
       retries: 3
@@ -29,11 +29,11 @@ services:
       context: .
       dockerfile: services/order-service/Dockerfile
     ports:
-      - "3001:3001"
+      - "3003:3003"
     environment:
-      - PORT=3001
+      - PORT=3003
       - NODE_ENV=production
-      - INVENTORY_SERVICE_URL=http://inventory-service:3002
+      - INVENTORY_SERVICE_URL=http://inventory-service:3004
       - REDIS_URL=redis://redis:6379
     depends_on:
       redis:
@@ -41,7 +41,7 @@ services:
       inventory-service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001/health"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3003/health"]
       interval: 10s
       timeout: 3s
       retries: 3
@@ -51,11 +51,11 @@ services:
       context: .
       dockerfile: services/payment-service/Dockerfile
     ports:
-      - "3003:3003"
+      - "3005:3005"
     environment:
-      - PORT=3003
+      - PORT=3005
       - NODE_ENV=production
-      - ORDER_SERVICE_URL=http://order-service:3001
+      - ORDER_SERVICE_URL=http://order-service:3003
       - REDIS_URL=redis://redis:6379
     depends_on:
       redis:
@@ -63,7 +63,7 @@ services:
       order-service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3003/health"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3005/health"]
       interval: 10s
       timeout: 3s
       retries: 3

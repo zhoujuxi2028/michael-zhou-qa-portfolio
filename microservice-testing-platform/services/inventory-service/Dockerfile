@@ -10,5 +10,5 @@ COPY services/inventory-service ./services/inventory-service
 
 WORKDIR /app/services/inventory-service
 
-EXPOSE 3002
+EXPOSE 3004
 CMD ["node", "src/server.js"]
