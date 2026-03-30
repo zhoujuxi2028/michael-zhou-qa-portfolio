@@ -7,6 +7,19 @@ Test automation and DevOps demonstration projects.
 
 ---
 
+## Table of Contents | 目录
+
+- [Projects | 项目](#projects--项目)
+- [Skills Demonstrated | 技能展示](#skills-demonstrated--技能展示)
+- [CI/CD Workflows | 持续集成](#cicd-workflows--持续集成)
+- [Prerequisites | 运行环境要求](#prerequisites--运行环境要求)
+- [Quick Start | 快速开始](#quick-start--快速开始)
+- [Wiki | 文档](#wiki--文档)
+- [Known Issues | 已知问题](#known-issues--已知问题)
+- [Contact | 联系方式](#contact--联系方式)
+
+---
+
 ## Projects | 项目
 
 | Category | Project | Description | Tech Stack |
