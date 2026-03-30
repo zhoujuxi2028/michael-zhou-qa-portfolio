@@ -63,11 +63,16 @@ jobs:
           RETRY_DELAY=1
           ENVEOF
 
-      - name: Run smoke tests (collect only - no target available)
-        run: pytest tests/ --collect-only -q 2>&1 || true
-
-      - name: Verify imports and fixtures
-        run: python -c "from src.core.config.test_config import TestConfig; print('Config OK')" 2>&1 || true
+      - name: Run smoke tests
+        # Smoke test: continue-on-error at job level allows visibility without blocking
+        env:
+          PYTHONPATH: src
+        run: >
+          pytest tests/smoke/ -v
+          -o "addopts="
+          --confcutdir=tests/smoke
+          --tb=short
+          --timeout=30
 
       - name: Upload logs
         if: always()
