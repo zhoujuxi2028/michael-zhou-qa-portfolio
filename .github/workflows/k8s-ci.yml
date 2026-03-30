@@ -221,6 +221,10 @@ jobs:
           docker build -t test-app:latest ./app
           kind load docker-image test-app:latest --name k8s-testing
 
+      - name: Create namespace
+        run: |
+          kubectl create namespace k8s-testing --dry-run=client -o yaml | kubectl apply -f -
+
       - name: Deploy to K8S
         run: |
           kubectl apply -f k8s-manifests/
