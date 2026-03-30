@@ -74,14 +74,14 @@ docker compose -f docker/docker-compose.yml logs zap
 | 项目 | 内容 |
 |------|------|
 | 现象 | `Bind for 0.0.0.0:80 failed: port is already allocated` |
-| 原因 | 端口 80/3000/8090 被其他进程占用 |
+| 原因 | 端口 80/3100/8090 被其他进程占用 |
 | 解决 | 停止占用端口的进程或修改 docker-compose.yml 端口映射 |
 
 **诊断命令**:
 ```bash
 # 查看端口占用
 lsof -i :80
-lsof -i :3000
+lsof -i :3100
 lsof -i :8090
 
 # 停止占用进程
@@ -214,7 +214,7 @@ OWASP ZAP 需要较多内存，建议：
 启动环境前检查：
 
 - [ ] Docker Desktop 已启动（菜单栏图标为绿色）
-- [ ] 端口 80, 3000, 8090 未被占用
+- [ ] 端口 80, 3100, 8090 未被占用
 - [ ] `no_proxy` 已配置（如使用代理）
 
 启动后验证：
@@ -230,7 +230,7 @@ curl http://localhost:8090/JSON/core/view/version/
 curl -I http://localhost
 
 # 4. 检查 Juice Shop
-curl -I http://localhost:3000
+curl -I http://localhost:3100
 ```
 
 ---
