@@ -96,6 +96,7 @@ k6 version
 ### Task 1: Project Scaffolding & Configuration
 
 **Files:**
+
 - Create: `performance-testing-platform/package.json`
 - Create: `performance-testing-platform/jest.config.js`
 - Create: `performance-testing-platform/.eslintrc.js`
@@ -180,11 +181,13 @@ module.exports = {
 - [ ] **Step 4: Create .eslintignore, .prettierrc, .gitignore**
 
 `.eslintignore`:
+
 ```
 tests/performance/
 ```
 
 `.prettierrc`:
+
 ```json
 {
   "semi": true,
@@ -196,6 +199,7 @@ tests/performance/
 ```
 
 `.gitignore`:
+
 ```
 node_modules/
 coverage/
@@ -228,6 +232,7 @@ git commit -m "feat(performance): scaffold project with config files"
 ### Task 2: Target API — Database & Utilities
 
 **Files:**
+
 - Create: `performance-testing-platform/src/db/database.js`
 - Create: `performance-testing-platform/src/utils/delay.js`
 - Test: `performance-testing-platform/tests/unit/utils/delay.test.js`
@@ -262,6 +267,7 @@ describe('delay utility', () => {
 ```bash
 npx jest tests/unit/utils/delay.test.js -v
 ```
+
 Expected: FAIL — `Cannot find module '../../../src/utils/delay'`
 
 - [ ] **Step 3: Implement delay utility**
@@ -278,6 +284,7 @@ module.exports = { simulateDelay };
 ```bash
 npx jest tests/unit/utils/delay.test.js -v
 ```
+
 Expected: 2 tests PASS
 
 - [ ] **Step 5: Write failing test for database module**
@@ -316,6 +323,7 @@ describe('database', () => {
 ```bash
 npx jest tests/unit/db/database.test.js -v
 ```
+
 Expected: FAIL — `Cannot find module '../../../src/db/database'`
 
 - [ ] **Step 7: Implement database module**
@@ -384,6 +392,7 @@ module.exports = { getDatabase, resetDatabase };
 ```bash
 npx jest tests/unit/db/database.test.js -v
 ```
+
 Expected: 3 tests PASS
 
 - [ ] **Step 9: Commit**
@@ -398,6 +407,7 @@ git commit -m "feat(performance): add database module and delay utility with tes
 ### Task 3: Target API — Routes & Middleware
 
 **Files:**
+
 - Create: `performance-testing-platform/src/routes/health.js`
 - Create: `performance-testing-platform/src/routes/products.js`
 - Create: `performance-testing-platform/src/routes/orders.js`
@@ -438,6 +448,7 @@ describe('GET /ready', () => {
 ```bash
 npx jest tests/unit/routes/health.test.js -v
 ```
+
 Expected: FAIL — `Cannot find module '../../../src/app'`
 
 - [ ] **Step 3: Implement metrics middleware**
@@ -524,7 +535,9 @@ router.post('/api/products', (req, res) => {
   const db = getDatabase();
   const { name, price, stock } = req.body;
   if (!name || price == null) return res.status(400).json({ error: 'name and price required' });
-  const result = db.prepare('INSERT INTO products (name, price, stock) VALUES (?, ?, ?)').run(name, price, stock || 0);
+  const result = db
+    .prepare('INSERT INTO products (name, price, stock) VALUES (?, ?, ?)')
+    .run(name, price, stock || 0);
   const product = db.prepare('SELECT * FROM products WHERE id = ?').get(result.lastInsertRowid);
   res.status(201).json(product);
 });
@@ -548,7 +561,9 @@ router.get('/api/orders', (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const offset = (page - 1) * limit;
-  const orders = db.prepare('SELECT * FROM orders ORDER BY created_at DESC LIMIT ? OFFSET ?').all(limit, offset);
+  const orders = db
+    .prepare('SELECT * FROM orders ORDER BY created_at DESC LIMIT ? OFFSET ?')
+    .all(limit, offset);
   const total = db.prepare('SELECT COUNT(*) as count FROM orders').get().count;
   res.json({ data: orders, page, limit, total });
 });
@@ -556,7 +571,8 @@ router.get('/api/orders', (req, res) => {
 router.post('/api/orders', async (req, res) => {
   const db = getDatabase();
   const { product_id, quantity } = req.body;
-  if (!product_id || !quantity) return res.status(400).json({ error: 'product_id and quantity required' });
+  if (!product_id || !quantity)
+    return res.status(400).json({ error: 'product_id and quantity required' });
 
   const product = db.prepare('SELECT * FROM products WHERE id = ?').get(product_id);
   if (!product) return res.status(404).json({ error: 'Product not found' });
@@ -567,7 +583,9 @@ router.post('/api/orders', async (req, res) => {
   const total = product.price * quantity;
   const tx = db.transaction(() => {
     db.prepare('UPDATE products SET stock = stock - ? WHERE id = ?').run(quantity, product_id);
-    return db.prepare('INSERT INTO orders (product_id, quantity, total, status) VALUES (?, ?, ?, ?)').run(product_id, quantity, total, 'confirmed');
+    return db
+      .prepare('INSERT INTO orders (product_id, quantity, total, status) VALUES (?, ?, ?, ?)')
+      .run(product_id, quantity, total, 'confirmed');
   });
   const result = tx();
   const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(result.lastInsertRowid);
@@ -654,7 +672,9 @@ describe('GET /api/products/:id', () => {
 
 describe('POST /api/products', () => {
   test('creates a new product', async () => {
-    const res = await request(app).post('/api/products').send({ name: 'Monitor', price: 299.99, stock: 30 });
+    const res = await request(app)
+      .post('/api/products')
+      .send({ name: 'Monitor', price: 299.99, stock: 30 });
     expect(res.status).toBe(201);
     expect(res.body.name).toBe('Monitor');
   });
@@ -740,6 +760,7 @@ describe('metrics middleware', () => {
 ```bash
 npx jest tests/unit/middleware/metrics.test.js -v
 ```
+
 Expected: 2 tests PASS
 
 - [ ] **Step 12: Run all unit tests together**
@@ -747,6 +768,7 @@ Expected: 2 tests PASS
 ```bash
 npx jest tests/unit/ -v --coverage
 ```
+
 Expected: 19 tests PASS (delay:2, database:3, health:2, products:6, orders:4, metrics:2), coverage >= 80%
 
 - [ ] **Step 13: Run lint**
@@ -755,6 +777,7 @@ Expected: 19 tests PASS (delay:2, database:3, health:2, products:6, orders:4, me
 npx eslint src/ tests/unit/ --ext .js
 npx prettier --check 'src/**/*.js' 'tests/unit/**/*.js'
 ```
+
 Expected: No errors
 
 - [ ] **Step 14: Commit**
@@ -769,6 +792,7 @@ git commit -m "feat(performance): add target API with routes, middleware, and 19
 ### Task 4: k6 Performance Test Scripts
 
 **Files:**
+
 - Create: `performance-testing-platform/tests/performance/helpers/utils.js`
 - Create: `performance-testing-platform/tests/performance/smoke.k6.js`
 - Create: `performance-testing-platform/tests/performance/load.k6.js`
@@ -843,9 +867,9 @@ import { BASE_URL, checkStatus } from './helpers/utils.js';
 
 export const options = {
   stages: [
-    { duration: '1m', target: 20 },   // ramp up
-    { duration: '3m', target: 50 },   // stay at 50
-    { duration: '1m', target: 0 },    // ramp down
+    { duration: '1m', target: 20 }, // ramp up
+    { duration: '3m', target: 50 }, // stay at 50
+    { duration: '1m', target: 0 }, // ramp down
   ],
   thresholds: {
     http_req_duration: ['p(95)<500', 'p(99)<1000'],
@@ -887,8 +911,8 @@ export const options = {
     { duration: '30s', target: 100 },
     { duration: '30s', target: 150 },
     { duration: '30s', target: 200 },
-    { duration: '1m', target: 200 },   // hold at peak
-    { duration: '30s', target: 0 },    // ramp down
+    { duration: '1m', target: 200 }, // hold at peak
+    { duration: '30s', target: 0 }, // ramp down
   ],
   thresholds: {
     http_req_duration: ['p(95)<1000'],
@@ -901,11 +925,9 @@ export default function () {
   checkStatus(products, 200, 'products');
 
   const productId = Math.ceil(Math.random() * 5);
-  http.post(
-    `${BASE_URL}/api/orders`,
-    JSON.stringify({ product_id: productId, quantity: 1 }),
-    { headers: { 'Content-Type': 'application/json' } }
-  );
+  http.post(`${BASE_URL}/api/orders`, JSON.stringify({ product_id: productId, quantity: 1 }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
 
   sleep(0.3);
 }
@@ -921,12 +943,12 @@ import { BASE_URL, checkStatus } from './helpers/utils.js';
 
 export const options = {
   stages: [
-    { duration: '10s', target: 5 },    // baseline
-    { duration: '5s', target: 100 },   // spike!
-    { duration: '30s', target: 100 },  // hold spike
-    { duration: '10s', target: 5 },    // recover
-    { duration: '30s', target: 5 },    // verify recovery
-    { duration: '5s', target: 0 },     // done
+    { duration: '10s', target: 5 }, // baseline
+    { duration: '5s', target: 100 }, // spike!
+    { duration: '30s', target: 100 }, // hold spike
+    { duration: '10s', target: 5 }, // recover
+    { duration: '30s', target: 5 }, // verify recovery
+    { duration: '5s', target: 0 }, // done
   ],
   thresholds: {
     http_req_duration: ['p(95)<2000'],
@@ -960,6 +982,7 @@ k6 run tests/performance/smoke.k6.js
 # Stop API
 kill %1
 ```
+
 Expected: smoke test passes, p(95) < 500ms, error rate < 1%
 
 - [ ] **Step 7: Commit**
@@ -974,6 +997,7 @@ git commit -m "feat(performance): add k6 scripts — smoke, load, stress, spike 
 ### Task 5: Docker Compose + Grafana Dashboard
 
 **Files:**
+
 - Create: `performance-testing-platform/Dockerfile`
 - Create: `performance-testing-platform/docker-compose.yml`
 - Create: `performance-testing-platform/grafana/provisioning/datasources/influxdb.yml`
@@ -1094,6 +1118,7 @@ git commit -m "feat(performance): add Docker Compose with Grafana + InfluxDB obs
 ### Task 6: CI/CD Integration
 
 **Files:**
+
 - Create: `.github/workflows/performance-ci.yml`
 
 - [ ] **Step 1: Create CI workflow**
@@ -1198,6 +1223,7 @@ git commit -m "ci(performance): add CI pipeline — lint, unit tests, k6 smoke g
 ### Task 7: Documentation & Project Registration
 
 **Files:**
+
 - Create: `performance-testing-platform/README.md`
 - Create: `performance-testing-platform/CLAUDE.md`
 - Create: `performance-testing-platform/docs/architecture/architecture.md`
@@ -1223,11 +1249,13 @@ Follow existing pattern: project description, quick start, architecture, test st
 - [ ] **Step 4: Update root CLAUDE.md**
 
 Add to Projects table:
+
 ```
 | 性能测试 | `performance-testing-platform/` | Performance testing (19 unit + 4 k6 scripts) | k6, Express, Grafana, InfluxDB |
 ```
 
 Add to Project CLAUDE.md Files table:
+
 ```
 | Performance Testing | `performance-testing-platform/CLAUDE.md` |
 ```
@@ -1249,17 +1277,17 @@ git commit -m "docs(performance): add README, CLAUDE.md, docs/, and register in 
 
 ## Test Summary
 
-| Type | Count | Tool |
-|------|-------|------|
-| Unit tests | 19 | Jest (delay:2, database:3, health:2, products:6, orders:4, metrics:2) |
-| k6 scripts | 4 | k6 (smoke, load, stress, spike) |
-| **Total** | **23** | |
+| Type       | Count  | Tool                                                                  |
+| ---------- | ------ | --------------------------------------------------------------------- |
+| Unit tests | 19     | Jest (delay:2, database:3, health:2, products:6, orders:4, metrics:2) |
+| k6 scripts | 4      | k6 (smoke, load, stress, spike)                                       |
+| **Total**  | **23** |                                                                       |
 
 ## Thresholds Summary
 
-| Script | p95 Latency | Error Rate | VUs | Duration |
-|--------|-------------|------------|-----|----------|
-| Smoke | < 500ms | < 1% | 2 | 30s |
-| Load | < 500ms (p95), < 1s (p99) | < 1% | 50 | 5m |
-| Stress | < 1000ms | < 5% | 200 | 3.5m |
-| Spike | < 2000ms | < 10% | 100 | 1.5m |
+| Script | p95 Latency               | Error Rate | VUs | Duration |
+| ------ | ------------------------- | ---------- | --- | -------- |
+| Smoke  | < 500ms                   | < 1%       | 2   | 30s      |
+| Load   | < 500ms (p95), < 1s (p99) | < 1%       | 50  | 5m       |
+| Stress | < 1000ms                  | < 5%       | 200 | 3.5m     |
+| Spike  | < 2000ms                  | < 10%      | 100 | 1.5m     |
