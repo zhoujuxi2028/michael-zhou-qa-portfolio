@@ -10,5 +10,5 @@ COPY services/payment-service ./services/payment-service
 
 WORKDIR /app/services/payment-service
 
-EXPOSE 3003
+EXPOSE 3005
 CMD ["node", "src/server.js"]

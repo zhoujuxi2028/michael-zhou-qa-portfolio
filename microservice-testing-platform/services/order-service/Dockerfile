@@ -10,5 +10,5 @@ COPY services/order-service ./services/order-service
 
 WORKDIR /app/services/order-service
 
-EXPOSE 3001
+EXPOSE 3003
 CMD ["node", "src/server.js"]

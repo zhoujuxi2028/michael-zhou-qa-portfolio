@@ -1,6 +1,6 @@
 const logger = require('../utils/logger');
 
-const ORDER_URL = process.env.ORDER_SERVICE_URL || 'http://localhost:3001';
+const ORDER_URL = process.env.ORDER_SERVICE_URL || 'http://localhost:3003';
 
 async function updateOrderStatus(orderId, payload, correlationId) {
   const response = await fetch(`${ORDER_URL}/api/orders/${orderId}/status`, {

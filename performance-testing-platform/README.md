@@ -56,7 +56,7 @@ k6 脚本 ──→ 目标 API (Express + SQLite)
 | 端口 | 服务 | 使用场景 |
 |------|------|----------|
 | 3000 | Express 目标 API | `npm start` 或 `docker compose up` |
-| 3001 | Grafana 面板 | `docker compose up` |
+| 3010 | Grafana 面板 | `docker compose up` |
 | 8086 | InfluxDB | `docker compose up` |
 
 ### 一键验证
@@ -80,7 +80,7 @@ npm run k6:smoke             # 运行 smoke test
 ```bash
 docker compose up -d         # API + Grafana + InfluxDB
 npm run k6:load:influx       # 运行 load test，输出到 InfluxDB
-# 打开 http://localhost:3001  → k6 Results dashboard
+# 打开 http://localhost:3010  → k6 Results dashboard
 ```
 
 ## 配置说明
@@ -98,7 +98,7 @@ npm run k6:load:influx       # 运行 load test，输出到 InfluxDB
 | 服务 | 端口 | 说明 |
 |------|------|------|
 | 目标 API (Express) | `3000` | 被测应用 |
-| Grafana | `3001` | 可视化面板 (映射容器 3000→主机 3001) |
+| Grafana | `3010` | 可视化面板 (映射容器 3000→主机 3010) |
 | InfluxDB | `8086` | 时序数据库，存储 k6 指标 |
 
 ### Docker Compose 服务

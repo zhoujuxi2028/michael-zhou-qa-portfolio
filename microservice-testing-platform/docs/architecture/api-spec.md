@@ -1,6 +1,6 @@
 # API 接口规格
 
-## 1. Order Service（端口 3001）
+## 1. Order Service（端口 3003）
 
 ### 1.1 创建订单
 
@@ -113,7 +113,7 @@ GET /metrics
 
 ---
 
-## 2. Inventory Service（端口 3002）
+## 2. Inventory Service（端口 3004）
 
 ### 2.1 查询库存
 
@@ -206,7 +206,7 @@ GET /metrics
 
 ---
 
-## 3. Payment Service（端口 3003）
+## 3. Payment Service（端口 3005）
 
 ### 3.1 查询支付记录
 
