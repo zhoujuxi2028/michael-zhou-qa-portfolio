@@ -99,7 +99,16 @@ UC-05: JMeter 可视化测试分析
 | CI Pipeline       | lint → unit test → k6 smoke gate → JMeter smoke gate | P0     |
 | Documentation     | README, CLAUDE.md, docs/ 标准结构                    | P0     |
 
-### Phase 2（未来规划，不在本次 scope）
+### Phase 2（#54 — 系统指标采集 + 容量测试）
+
+| 模块 | 内容 |
+|------|------|
+| `/metrics` 扩展 | 进程级 CPU / 内存 / 事件循环延迟 |
+| 系统采集器 | CPU% / 内存% / 磁盘 I/O / 网络 I/O → CSV |
+| 容量测试 | 二分法逼近最大并发承载量 + 瓶颈定位 |
+| 漏斗流量模型 | 浏览 60% + 详情 30% + 下单 10% |
+
+### Phase 3（未来规划，不在本次 scope）
 
 | 模块           | 内容                                |
 | -------------- | ----------------------------------- |
