@@ -19,7 +19,7 @@
 
 | 层 | 工具 | 数量 | 目的 |
 |----|------|------|------|
-| 单元测试 | Jest + Supertest | 20 | 验证 API 功能正确性 |
+| 单元测试 | Jest + Supertest | 23 | 验证 API 功能正确性 |
 | 性能测试 (轻量级) | k6 | 4 脚本 | 延迟、吞吐、错误率 → HTML 报告 |
 | 性能测试 (企业级) | JMeter | 4 测试计划 | 负载测试 + HTML 报告 + Grafana 可视化 |
 | 系统指标采集 | Node.js 采集器 | SM-01~09 | CPU / 内存 / 磁盘 I/O / 网络 I/O → CSV |
@@ -34,7 +34,7 @@
         │  JMeter: 4 测试计划 (企业级) │
         ├──────────────────────────┤
         │        单元测试             │
-        │  20 Jest tests             │
+        │  23 Jest tests             │
         └──────────────────────────┘
 ```
 
@@ -315,7 +315,7 @@ Principles: TDD, test isolation (afterEach database reset), dual-engine smoke as
 | p95 response time (JMeter smoke) | < 500ms | .jtl parsing    |
 | Error rate (JMeter smoke)        | < 1%    | .jtl parsing    |
 
-## 3. Unit Test Cases (20 tests)
+## 3. Unit Test Cases (23 tests)
 
 | ID            | Module             | Test Case                            | Expected                       |
 | ------------- | ------------------ | ------------------------------------ | ------------------------------ |
