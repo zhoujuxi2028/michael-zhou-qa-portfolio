@@ -1,6 +1,29 @@
 {
   "users": [
     {
+      "id": 1,
+      "name": "Leanne Graham",
+      "username": "Bret",
+      "email": "Sincere@april.biz",
+      "address": {
+        "street": "Kulas Light",
+        "suite": "Apt. 556",
+        "city": "Gwenborough",
+        "zipcode": "92998-3874",
+        "geo": {
+          "lat": "-37.3159",
+          "lng": "81.1496"
+        }
+      },
+      "phone": "1-770-736-8031 x56442",
+      "website": "hildegard.org",
+      "company": {
+        "name": "Romaguera-Crona",
+        "catchPhrase": "Multi-layered client-server neural-net",
+        "bs": "harness real-time e-markets"
+      }
+    },
+    {
       "id": 2,
       "name": "Ervin Howell",
       "username": "Antonette",
@@ -206,106 +229,147 @@
         "catchPhrase": "Centralized empowering task-force",
         "bs": "target end-to-end models"
       }
-    },
-    {
-      "name": "Test User",
-      "username": "testuser",
-      "email": "test@example.com",
-      "phone": "1-770-736-8031",
-      "website": "test.com",
-      "id": 11
-    },
-    {
-      "id": 12,
-      "name": "Invalid Email User",
-      "username": "invalid_email_user",
-      "email": "not-an-email",
-      "phone": "000-000-0000",
-      "website": "none.com"
-    },
-    {
-      "id": 13,
-      "name": "Updated Test User",
-      "username": "updatedtestuser",
-      "email": "updated.1773493448191@example.com",
-      "phone": "1-999-999-9999",
-      "website": "updated-test.com"
     }
   ],
   "posts": [
     {
+      "id": 1,
+      "userId": 1,
+      "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+      "body": "quia et suscipit suscipit recusandae consequuntur expedita"
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "title": "qui est esse",
+      "body": "est rerum tempore vitae sequi sint nihil reprehenderit dolor beatae ea dolores neque"
+    },
+    {
+      "id": 3,
+      "userId": 1,
+      "title": "ea molestias quasi exercitationem repellat qui ipsa sit aut",
+      "body": "et iusto sed quo iure voluptatem occaecati omnis eligendi aut ad"
+    },
+    {
       "id": 4,
       "userId": 2,
       "title": "eum et est occaecati",
-      "body": "ullam et saepe reiciendis voluptatem adipisci\nsit amet autem assumenda provident rerum culpa\nquis hic commodi nesciunt rem tenetur doloremque ipsam iure"
+      "body": "ullam et saepe reiciendis voluptatem adipisci sit amet autem assumenda provident rerum culpa"
     },
     {
       "id": 5,
       "userId": 2,
       "title": "nesciunt quas odio",
-      "body": "repudiandae veniam quaerat sunt sed\nalias aut fugiat sit autem sed est\nvoluptatem omnis possimus esse voluptatibus quis\nest aut tenetur dolor neque"
+      "body": "repudiandae veniam quaerat sunt sed alias aut fugiat sit autem sed est"
     },
     {
       "id": 6,
       "userId": 3,
       "title": "dolorem eum magni eos aperiam quia",
-      "body": "ut aspernatur corporis harum nihil quis provident sequi\nmollitia nobis aliquid molestiae"
+      "body": "ut aspernatur corporis harum nihil quis provident sequi mollitia nobis aliquid molestiae"
     },
     {
       "id": 7,
       "userId": 3,
       "title": "magnam facilis autem",
-      "body": "dolore placeat quibusdam ea quo vitae\nmagni quis enim qui quis quasi nemo\nnostrum ducimus ratione vel eveniet"
+      "body": "dolore placeat quibusdam ea quo vitae magni quis enim qui quis quasi nemo"
     },
     {
       "id": 8,
       "userId": 4,
       "title": "dolorem dolore est ipsam",
-      "body": "dignissimos aperiam dolorem qui eum\nfacilis quibusdam animi sint suscipit qui sint possimus cum\nquaerat magni maiores excepturi\nipsam ut commodi dolor voluptatum modi aut vitae"
+      "body": "dignissimos aperiam dolorem qui eum facilis quibusdam animi sint suscipit"
     },
     {
       "id": 9,
       "userId": 5,
       "title": "nesciunt iure omnis dolorem tempora et accusantium",
-      "body": "consectetur animi nesciunt iure dolore\nenim quia ad\nveniam autem ut quam aut nobis\net est aut quod aut provident voluptas autem voluptas"
+      "body": "consectetur animi nesciunt iure dolore enim quia ad veniam autem ut quam aut nobis"
     },
     {
       "id": 10,
       "userId": 5,
       "title": "optio molestias id quia eum",
-      "body": "quo et expedita modi cum officia vel magni\ndoloribus qui repudiandae\nvero nisi sit\nquos veniam quod sed accusamus veritatis error"
-    },
-    {
-      "id": 11,
-      "userId": 6,
-      "title": "Test post placeholder",
-      "body": "This is a placeholder post for testing."
+      "body": "quo et expedita modi cum officia vel magni doloribus qui repudiandae"
     }
   ],
   "comments": [
     {
-      "id": 8,
+      "id": 1,
+      "postId": 1,
+      "name": "id labore ex et quam laborum",
+      "email": "Eliseo@gardner.biz",
+      "body": "laudantium enim quasi est quidem magnam voluptate ipsam eos"
+    },
+    {
+      "id": 2,
+      "postId": 1,
+      "name": "quo vero reiciendis velit similique earum",
+      "email": "Jayne_Kuhic@sydney.com",
+      "body": "est natus enim nihil est dolore omnis voluptatem numquam"
+    },
+    {
+      "id": 3,
+      "postId": 1,
+      "name": "odio adipisci rerum aut animi",
+      "email": "Nikita@garfield.biz",
+      "body": "quia molestiae reprehenderit quasi aspernatur"
+    },
+    {
+      "id": 4,
+      "postId": 2,
+      "name": "alias odio sit",
+      "email": "Lew@alysha.tv",
+      "body": "non et atque occaecati deserunt quas accusantium"
+    },
+    {
+      "id": 5,
+      "postId": 2,
+      "name": "vero eaque aliquid doloribus et culpa",
+      "email": "Hayden@althea.biz",
+      "body": "harum non quasi et ratione tempore iure ex voluptates"
+    },
+    {
+      "id": 6,
       "postId": 4,
+      "name": "et fugit eligendi deleniti",
+      "email": "Preez@laura.com",
+      "body": "fuga eos qui dolor rerum inventore corporis"
+    },
+    {
+      "id": 7,
+      "postId": 4,
+      "name": "repellat consequatur praesentium",
+      "email": "Dallas@ole.me",
+      "body": "sit quo debitis existentiae expedita eum aliquam"
+    },
+    {
+      "id": 8,
+      "postId": 5,
       "name": "et omnis dolorem",
       "email": "Mallory_Kunze@marie.org",
-      "body": "ut voluptatem corrupti velit\nad voluptatem maiores"
-    },
-    {
-      "id": 9,
-      "postId": 4,
-      "name": "provident id voluptas",
-      "email": "Meghan_Littel@reba.ca",
-      "body": "sapiente assumenda molestiae atque\nadipisci laborum distinctio aperiam et ab ut omnis"
-    },
-    {
-      "id": 10,
-      "postId": 5,
-      "name": "eaque et deleniti atque tenetur ut quo ut",
-      "email": "Carmen@spencer.net",
-      "body": "voluptate iusto quis nobis reprehenderit ipsum amet nulla"
+      "body": "ut dolorum nostrum id quia aut est fuga est"
     }
   ],
   "todos": [
+    {
+      "id": 1,
+      "userId": 1,
+      "title": "delectus aut autem",
+      "completed": false
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "title": "quis ut nam facilis et officia qui",
+      "completed": false
+    },
+    {
+      "id": 3,
+      "userId": 1,
+      "title": "fugiat veniam minus",
+      "completed": false
+    },
     {
       "id": 4,
       "userId": 2,
@@ -347,21 +411,24 @@
       "userId": 5,
       "title": "illo est ratione doloremque quia maiores aut",
       "completed": true
-    },
-    {
-      "id": 11,
-      "userId": 1,
-      "title": "Bulk Order 1",
-      "completed": false
-    },
-    {
-      "id": 12,
-      "userId": 1,
-      "title": "Bulk Order 2",
-      "completed": false
     }
   ],
   "albums": [
+    {
+      "id": 1,
+      "userId": 1,
+      "title": "quidem molestiae enim"
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "title": "sunt qui excepturi placeat culpa"
+    },
+    {
+      "id": 3,
+      "userId": 1,
+      "title": "omnis laborum odio"
+    },
     {
       "id": 4,
       "userId": 2,
@@ -400,25 +467,60 @@
   ],
   "photos": [
     {
-      "id": 8,
+      "id": 1,
+      "albumId": 1,
+      "title": "accusamus beatae ad facilis cum similique qui sunt",
+      "url": "https://via.placeholder.com/600/92c952",
+      "thumbnailUrl": "https://via.placeholder.com/150/92c952"
+    },
+    {
+      "id": 2,
+      "albumId": 1,
+      "title": "reprehenderit est deserunt velit ipsam",
+      "url": "https://via.placeholder.com/600/771796",
+      "thumbnailUrl": "https://via.placeholder.com/150/771796"
+    },
+    {
+      "id": 3,
+      "albumId": 1,
+      "title": "officia porro iure quia iusto qui ipsa ut exped",
+      "url": "https://via.placeholder.com/600/24f355",
+      "thumbnailUrl": "https://via.placeholder.com/150/24f355"
+    },
+    {
+      "id": 4,
+      "albumId": 2,
+      "title": "culpa odio esse rerum omnis laboriosam voluptate repudiandae",
+      "url": "https://via.placeholder.com/600/d32776",
+      "thumbnailUrl": "https://via.placeholder.com/150/d32776"
+    },
+    {
+      "id": 5,
+      "albumId": 2,
+      "title": "natus nisi omnis corporis facere molestiae rerum in",
+      "url": "https://via.placeholder.com/600/f66b97",
+      "thumbnailUrl": "https://via.placeholder.com/150/f66b97"
+    },
+    {
+      "id": 6,
       "albumId": 4,
-      "title": "aut porro officiis laborum odit ea laudantium corporis",
+      "title": "accusamus soluta adipisci",
+      "url": "https://via.placeholder.com/600/56a8c2",
+      "thumbnailUrl": "https://via.placeholder.com/150/56a8c2"
+    },
+    {
+      "id": 7,
+      "albumId": 4,
+      "title": "officia delectus consequatur vero",
+      "url": "https://via.placeholder.com/600/b0f7cc",
+      "thumbnailUrl": "https://via.placeholder.com/150/b0f7cc"
+    },
+    {
+      "id": 8,
+      "albumId": 5,
+      "title": "aut porro officiis laborum odit",
       "url": "https://via.placeholder.com/600/54176f",
       "thumbnailUrl": "https://via.placeholder.com/150/54176f"
-    },
-    {
-      "id": 9,
-      "albumId": 5,
-      "title": "qui eius qui autem sed",
-      "url": "https://via.placeholder.com/600/51aa97",
-      "thumbnailUrl": "https://via.placeholder.com/150/51aa97"
-    },
-    {
-      "id": 10,
-      "albumId": 5,
-      "title": "beatae et provident et ut vel",
-      "url": "https://via.placeholder.com/600/810b14",
-      "thumbnailUrl": "https://via.placeholder.com/150/810b14"
     }
   ]
 }
