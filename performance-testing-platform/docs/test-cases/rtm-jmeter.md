@@ -109,6 +109,8 @@
 | SM-05 | 系统内存% | `scripts/collect-metrics.js` | SM-IT-01 | PENDING |
 | SM-06 | 磁盘 I/O | `scripts/collect-metrics.js` | SM-IT-01 | PENDING |
 | SM-07 | 网络 I/O | `scripts/collect-metrics.js` | SM-IT-01 | PENDING |
+
+> **注:** SM-04~07 共用 SM-IT-01，该用例验证 CSV 包含全部 4 类指标列 (CPU/mem/disk/net)。
 | SM-08 | CSV 输出归档 | `scripts/collect-metrics.js` | SM-IT-02, SM-IT-03 | PENDING |
 | SM-09 | npm scripts 集成 | `package.json` | CAP-01 | PENDING |
 | SM-10 | Express Cluster 模式 | `src/cluster.js` | CLU-01~03 | PENDING |
@@ -119,7 +121,7 @@
 | 需求 ID | 需求 | 设计文件 | 测试用例 ID | 状态 |
 |---------|------|---------|------------|------|
 | US-12 | 最大并发承载量 | `tests/performance/capacity.k6.js` | CAP-05 | PENDING |
-| US-13 | 一条命令采集+测试 | `package.json` | CAP-01 | PENDING |
+| US-13 | 一条命令采集+测试+归档 | `package.json` | CAP-01~03 | PENDING |
 
 ### 测试质量保障
 

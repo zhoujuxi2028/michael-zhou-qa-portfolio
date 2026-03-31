@@ -34,7 +34,7 @@
         │  JMeter: 4 测试计划 (企业级) │
         ├──────────────────────────┤
         │        单元测试             │
-        │  19 Jest tests             │
+        │  20 Jest tests             │
         └──────────────────────────┘
 ```
 
@@ -315,7 +315,7 @@ Principles: TDD, test isolation (afterEach database reset), dual-engine smoke as
 | p95 response time (JMeter smoke) | < 500ms | .jtl parsing    |
 | Error rate (JMeter smoke)        | < 1%    | .jtl parsing    |
 
-## 3. Unit Test Cases (19 tests)
+## 3. Unit Test Cases (20 tests)
 
 | ID            | Module             | Test Case                            | Expected                       |
 | ------------- | ------------------ | ------------------------------------ | ------------------------------ |

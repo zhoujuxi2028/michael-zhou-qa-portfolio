@@ -346,9 +346,9 @@ const cpuUser = new Trend('server_cpu_user');
 ```javascript
 export const options = {
   stages: [
-    { duration: '30s', target: 10 },   // ← Warm-up 阶段, 不纳入 SLA
-    { duration: '60s', target: 50 },   // ← 正式测试开始
-    // ...
+    { duration: '30s', target: 10 },   // ← Warm-up 阶段 (额外), 不纳入 SLA
+    { duration: '60s', target: 10 },   // ← 正式测试第 1 阶段 (同 Task 3 stages)
+    // ... 后续同 Task 3 的 stages 配置
   ],
 };
 ```
@@ -403,7 +403,7 @@ export const options = {
 | CAP-01 | 容量测试脚本可运行 | `npm run capacity:test` 正常完成 |
 | CAP-02 | 系统指标 CSV 生成 | `reports/system-metrics.csv` 包含 CPU/mem/disk/net 列 |
 | CAP-03 | k6 HTML 报告生成 | `reports/k6-capacity.html` 可打开查看 |
-| CAP-04 | `/metrics` 返回系统指标 | CPU, memory, eventLoop 字段存在且合理 |
+| CAP-04 | 漏斗模型流量分布接近 60:30:10 | k6 报告中 products/detail/order 请求比例合理 |
 | CAP-05 | 二分法找到最大并发 (Cluster 模式) | 确定满足 SLA 的最大 VUs (4 核) |
 | CAP-06 | 瓶颈层定位 | 根据系统指标判断 CPU/Memory/I-O/Network |
 
