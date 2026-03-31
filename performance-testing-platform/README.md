@@ -136,10 +136,10 @@ npm run k6:load:influx       # 运行 load test，输出到 InfluxDB
 | `npm start`               | 启动目标 API          |
 | `npm test`                | 运行 Jest 单元测试    |
 | `npm run test:coverage`   | 单元测试 + 覆盖率     |
-| `npm run k6:smoke`        | k6 smoke 测试         |
-| `npm run k6:load`         | k6 load 测试          |
-| `npm run k6:stress`       | k6 stress 测试        |
-| `npm run k6:spike`        | k6 spike 测试         |
+| `npm run k6:smoke`        | k6 smoke 测试 → HTML 报告  |
+| `npm run k6:load`         | k6 load 测试 → HTML 报告   |
+| `npm run k6:stress`       | k6 stress 测试 → HTML 报告 |
+| `npm run k6:spike`        | k6 spike 测试 → HTML 报告  |
 | `npm run k6:smoke:influx` | smoke 测试 → InfluxDB |
 | `npm run k6:load:influx`  | load 测试 → InfluxDB  |
 | `npm run jmeter:smoke`    | JMeter smoke 测试     |
