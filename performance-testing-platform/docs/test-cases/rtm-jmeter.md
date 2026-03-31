@@ -102,35 +102,81 @@
 
 | 需求 ID | 需求 | 设计文件 | 测试用例 ID | 状态 |
 |---------|------|---------|------------|------|
-| SM-01 | 进程级 CPU | `src/middleware/metrics.js` | SM-UT-01 | PENDING |
-| SM-02 | 进程级内存 | `src/middleware/metrics.js` | SM-UT-02 | PENDING |
-| SM-03 | 事件循环延迟 | `src/middleware/metrics.js` | SM-UT-03 | PENDING |
-| SM-04 | 系统 CPU% | `scripts/collect-metrics.js` | SM-IT-01 | PENDING |
-| SM-05 | 系统内存% | `scripts/collect-metrics.js` | SM-IT-01 | PENDING |
-| SM-06 | 磁盘 I/O | `scripts/collect-metrics.js` | SM-IT-01 | PENDING |
-| SM-07 | 网络 I/O | `scripts/collect-metrics.js` | SM-IT-01 | PENDING |
+| SM-01 | 进程级 CPU | `src/middleware/metrics.js` | SM-UT-01 | PASS |
+| SM-02 | 进程级内存 | `src/middleware/metrics.js` | SM-UT-02 | PASS |
+| SM-03 | 事件循环延迟 | `src/middleware/metrics.js` | SM-UT-03 | PASS |
+| SM-04 | 系统 CPU% | `scripts/collect-metrics.js` | SM-IT-01 | PASS |
+| SM-05 | 系统内存% | `scripts/collect-metrics.js` | SM-IT-01 | PASS |
+| SM-06 | 磁盘 I/O | `scripts/collect-metrics.js` | SM-IT-01 | PASS |
+| SM-07 | 网络 I/O | `scripts/collect-metrics.js` | SM-IT-01 | PASS |
 
 > **注:** SM-04~07 共用 SM-IT-01，该用例验证 CSV 包含全部 4 类指标列 (CPU/mem/disk/net)。
-| SM-08 | CSV 输出归档 | `scripts/collect-metrics.js` | SM-IT-02, SM-IT-03 | PENDING |
-| SM-09 | npm scripts 集成 | `package.json` | CAP-01 | PENDING |
-| SM-10 | Express Cluster 模式 | `src/cluster.js` | CLU-01~03 | PENDING |
-| SM-11 | SQLite 文件模式 + WAL | `src/db/database.js` | CLU-01 | PENDING |
+
+| SM-08 | CSV 输出归档 | `scripts/collect-metrics.js` | SM-IT-02, SM-IT-03 | PASS |
+| SM-09 | npm scripts 集成 | `package.json` | CAP-01 | PASS |
+| SM-10 | Express Cluster 模式 | `src/cluster.js` | CLU-01~03 | PASS |
+| SM-11 | SQLite 文件模式 + WAL | `src/db/database.js` | CLU-01 | PASS |
 
 ### 容量测试
 
 | 需求 ID | 需求 | 设计文件 | 测试用例 ID | 状态 |
 |---------|------|---------|------------|------|
-| US-12 | 最大并发承载量 | `tests/performance/capacity.k6.js` | CAP-05 | PENDING |
-| US-13 | 一条命令采集+测试+归档 | `package.json` | CAP-01~03 | PENDING |
+| US-12 | 最大并发承载量 | `tests/performance/capacity.k6.js` | CAP-05 | PASS (>200 VUs, 需扩大范围) |
+| US-13 | 一条命令采集+测试+归档 | `package.json` | CAP-01~03 | PASS |
 
 ### 测试质量保障
 
 | 需求 ID | 需求 | 测试用例 ID | 状态 |
 |---------|------|------------|------|
-| TQ-01 | 数据膨胀控制 | TQ-IT-01 | PENDING |
-| TQ-02 | 预热 (Warm-up) | TQ-IT-02 | PENDING |
-| TQ-03 | 测试隔离 | TQ-IT-03 | PENDING |
-| TQ-04 | 结果可重复性 | TQ-IT-04 | PENDING |
+| TQ-01 | 数据膨胀控制 | TQ-IT-01 | PASS (服务重启重建 DB) |
+| TQ-02 | 预热 (Warm-up) | TQ-IT-02 | PASS (30s warm-up stage) |
+| TQ-03 | 测试隔离 | TQ-IT-03 | PASS (每轮重启服务) |
+| TQ-04 | 结果可重复性 | TQ-IT-04 | PENDING (拐点附近需 3 次) |
+
+---
+
+## 容量测试结果 — 第 1 轮 (粗粒度)
+
+**测试环境:** MacBook Pro Intel i5-1038NG7, 4C8T, 16GB, Cluster 模式 (8 Workers)
+
+### 总体结果
+
+| 指标 | 结果 |
+|------|------|
+| 总请求 | 73,533 (203.9 req/s) |
+| 总迭代 | 41,515 |
+| 最大 VUs | 200 |
+| 错误率 | 0.00% |
+| p95 延迟 | 51.61ms |
+| SLA 判定 | **全部 PASS** |
+
+### 服务端指标
+
+| 指标 | avg | p95 | max | 判定 |
+|------|-----|-----|-----|------|
+| event_loop_lag (ms) | 0.08 | 0.17 | 6.02 | 正常 (< 10ms) |
+| heap_used (MB) | 10.87 | 11.60 | 12.05 | 稳定 |
+| cpu_user (ms) | 3192 | 5263 | 5750 | 中等 |
+
+### 系统指标 (CSV 采集)
+
+| 指标 | avg | max |
+|------|-----|-----|
+| CPU user% | 19.1% | 50.3% |
+| CPU idle% | 69.7% | — |
+| disk write KB/s | 11,320 | — |
+| net rx KB/s | 22.8 | — |
+
+### 瓶颈分析
+
+| 判定项 | 阈值 | 实际 | 结论 |
+|--------|------|------|------|
+| event loop lag > 10ms? | 10ms | p95=0.17ms | ❌ 非 CPU-bound |
+| heapUsed 持续增长? | — | 稳定 10.87MB | ❌ 非 Memory-bound |
+| disk write 高? | — | 11.3 MB/s (SQLite WAL) | ⚠️ 有活动但未饱和 |
+| network 饱和? | — | 22.8 KB/s | ❌ 非 Network-bound |
+
+> **结论:** 200 VUs 时系统仍在 SLA 范围内 (p95=51.61ms, 0% error)。CPU idle 69.7%，Cluster 多核分担有效。**系统容量上限 > 200 VUs**，需第 2 轮扩大范围 (200→500) 找到真正拐点。
 
 ---
 

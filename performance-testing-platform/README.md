@@ -52,7 +52,7 @@ JMeter (多线程) ───────────→├─ Worker 3 ─┼─
 
 | 层 | 工具 | 数量 | 目的 |
 |----|------|------|------|
-| 单元测试 | Jest + Supertest | 20 tests | API 功能正确性 |
+| 单元测试 | Jest + Supertest | 23 tests | API 功能正确性 |
 | 性能测试 (轻量级) | k6 | 4 脚本 | 延迟、吞吐、错误率 → HTML 报告 |
 | 性能测试 (企业级) | JMeter | 4 测试计划 | 负载测试 + HTML 报告 + Grafana 可视化 |
 | 系统指标采集 | Node.js 采集器 | 1 | CPU / 内存 / 磁盘 I/O / 网络 I/O → CSV |
@@ -176,8 +176,9 @@ performance-testing-platform/
 
 | 命令 | 说明 |
 |------|------|
-| `npm start` | 启动目标 API |
-| `npm test` | 运行 Jest 单元测试 (20 tests) |
+| `npm start` | 启动目标 API — Cluster 模式 (自动检测端口) |
+| `npm run start:single` | 启动目标 API — 单进程模式 |
+| `npm test` | 运行 Jest 单元测试 (23 tests) |
 | `npm run test:coverage` | 单元测试 + 覆盖率 |
 | `npm run k6:smoke` | k6 smoke 测试 → HTML 报告 |
 | `npm run k6:load` | k6 load 测试 → HTML 报告 |
@@ -189,6 +190,7 @@ performance-testing-platform/
 | `npm run jmeter:load` | JMeter load 测试 |
 | `npm run jmeter:stress` | JMeter stress 测试 |
 | `npm run jmeter:spike` | JMeter spike 测试 |
+| `npm run capacity:test` | 容量测试 (采集器 + k6 + 报告归档) |
 | `npm run lint` | ESLint 检查 |
 | `npm run format:check` | Prettier 格式检查 |
 | `npm run docker:up` | 启动所有 Docker 服务 |

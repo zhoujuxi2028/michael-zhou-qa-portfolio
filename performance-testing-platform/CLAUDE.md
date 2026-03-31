@@ -17,7 +17,7 @@
 ```bash
 npm install && npm start &   # 启动目标 API — Cluster 模式 (port 3000)
 npm run start:single &       # 启动目标 API — 单进程模式
-npm test                     # 单元测试 (20 tests)
+npm test                     # 单元测试 (23 tests)
 npm run k6:smoke             # k6 smoke test
 npm run jmeter:smoke         # JMeter smoke test
 npm run lint                 # ESLint
