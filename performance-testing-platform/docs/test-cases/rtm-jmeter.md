@@ -96,6 +96,42 @@
 
 ---
 
+## Phase 2 需求 → 设计 → 测试用例 (#54)
+
+### Cluster 模式 + 系统指标采集
+
+| 需求 ID | 需求 | 设计文件 | 测试用例 ID | 状态 |
+|---------|------|---------|------------|------|
+| SM-01 | 进程级 CPU | `src/middleware/metrics.js` | SM-UT-01 | PENDING |
+| SM-02 | 进程级内存 | `src/middleware/metrics.js` | SM-UT-02 | PENDING |
+| SM-03 | 事件循环延迟 | `src/middleware/metrics.js` | SM-UT-03 | PENDING |
+| SM-04 | 系统 CPU% | `scripts/collect-metrics.js` | SM-IT-01 | PENDING |
+| SM-05 | 系统内存% | `scripts/collect-metrics.js` | SM-IT-01 | PENDING |
+| SM-06 | 磁盘 I/O | `scripts/collect-metrics.js` | SM-IT-01 | PENDING |
+| SM-07 | 网络 I/O | `scripts/collect-metrics.js` | SM-IT-01 | PENDING |
+| SM-08 | CSV 输出归档 | `scripts/collect-metrics.js` | SM-IT-02, SM-IT-03 | PENDING |
+| SM-09 | npm scripts 集成 | `package.json` | CAP-01 | PENDING |
+| SM-10 | Express Cluster 模式 | `src/cluster.js` | CLU-01~03 | PENDING |
+| SM-11 | SQLite 文件模式 + WAL | `src/db/database.js` | CLU-01 | PENDING |
+
+### 容量测试
+
+| 需求 ID | 需求 | 设计文件 | 测试用例 ID | 状态 |
+|---------|------|---------|------------|------|
+| US-12 | 最大并发承载量 | `tests/performance/capacity.k6.js` | CAP-05 | PENDING |
+| US-13 | 一条命令采集+测试 | `package.json` | CAP-01 | PENDING |
+
+### 测试质量保障
+
+| 需求 ID | 需求 | 测试用例 ID | 状态 |
+|---------|------|------------|------|
+| TQ-01 | 数据膨胀控制 | TQ-IT-01 | PENDING |
+| TQ-02 | 预热 (Warm-up) | TQ-IT-02 | PENDING |
+| TQ-03 | 测试隔离 | TQ-IT-03 | PENDING |
+| TQ-04 | 结果可重复性 | TQ-IT-04 | PENDING |
+
+---
+
 ## 发现的缺陷
 
 | #   | 发现阶段 | 缺陷                                               | 影响                                           | Issue | 状态  |
