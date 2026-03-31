@@ -1,6 +1,7 @@
 node_modules/
 coverage/
 *.db
+data/
 .env
 results/
 reports/
