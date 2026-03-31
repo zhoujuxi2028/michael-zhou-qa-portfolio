@@ -13,7 +13,7 @@
 
 ## 1. 系统概述
 
-性能测试平台由 3 层组成，支持 k6 + JMeter 双引擎：
+性能测试平台由 4 层组成，支持 k6 + JMeter 双引擎 + 系统指标采集：
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
@@ -34,12 +34,13 @@
 └─────────────────────────┘  └────────────────────────────────────────────┘
 ```
 
-| 层       | 组件                       | 职责                                        |
-| -------- | -------------------------- | ------------------------------------------- |
-| 测试层   | k6 脚本 (4 种模式)         | 轻量级负载生成、阈值验证                    |
-| 测试层   | JMeter 测试计划 (4 种模式) | 企业级负载生成、HTML 报告、Backend Listener |
-| API 层   | Express + SQLite           | 被测系统 (SUT)                              |
-| 可观测层 | InfluxDB + Grafana         | 存储双引擎指标、可视化                      |
+| 层 | 组件 | 职责 |
+|----|------|------|
+| 测试层 | k6 脚本 (4 种模式 + 容量测试) | 轻量级负载生成、阈值验证、HTML 报告 |
+| 测试层 | JMeter 测试计划 (4 种模式) | 企业级负载生成、HTML 报告、Backend Listener |
+| API 层 | Express Cluster (4 Worker) + SQLite WAL | 被测系统 (SUT)，多核并行，`/metrics` 暴露进程指标 |
+| 可观测层 | InfluxDB + Grafana | 存储双引擎指标、可视化 |
+| 采集层 | collect-metrics.js | 系统级指标 (CPU/mem/disk/net) → CSV |
 
 ## 2. 数据流
 
@@ -88,29 +89,31 @@ k6 VU
 | 模块     | 文件                    | 职责                                      |
 | -------- | ----------------------- | ----------------------------------------- |
 | 入口     | `app.js`                | Express 应用组装 (无 listen，可测试)      |
-| 启动     | `server.js`             | 监听端口，生产入口                        |
-| 健康检查 | `routes/health.js`      | `/health`, `/ready`, `/metrics`           |
+| Cluster  | `cluster.js`            | Master + N Worker，多核并行 (Phase 2)     |
+| 启动     | `server.js`             | 监听端口，单 Worker 入口                  |
+| 健康检查 | `routes/health.js`      | `/health`, `/ready`, `/metrics` (含系统指标) |
 | 商品     | `routes/products.js`    | CRUD `/api/products` (分页、查询、创建)   |
 | 订单     | `routes/orders.js`      | `/api/orders` (下单含库存校验 + 延迟模拟) |
-| 指标     | `middleware/metrics.js` | 请求计数、平均耗时追踪                    |
-| 数据库   | `db/database.js`        | SQLite 内存库，schema 初始化 + 种子数据   |
+| 指标     | `middleware/metrics.js` | 请求计数、平均耗时 + CPU/内存/事件循环延迟 |
+| 数据库   | `db/database.js`        | SQLite (Phase 1 内存, Phase 2 文件+WAL)   |
 | 工具     | `utils/delay.js`        | 可配置延迟模拟                            |
 
 ### 3.2 k6 测试 (`tests/performance/`)
 
 | 脚本               | 目的                           | VUs       | 时长 |
 | ------------------ | ------------------------------ | --------- | ---- |
-| `smoke.k6.js`      | 冒烟测试：验证 API 可用性      | 2         | 30s  |
+| `smoke.k6.js`      | 冒烟测试：验证 API 可用性      | 5         | 60s  |
 | `load.k6.js`       | 负载测试：正常流量下性能       | 20→50→0   | 5m   |
 | `stress.k6.js`     | 压力测试：找到系统极限         | 50→200→0  | 3.5m |
 | `spike.k6.js`      | 尖峰测试：突发流量恢复能力     | 5→100→5→0 | 1.5m |
+| `capacity.k6.js`   | 容量测试：二分法逼近最大并发   | 10→200 阶梯 | 5.5m |
 | `helpers/utils.js` | 共享工具：BASE_URL、check 封装 | —         | —    |
 
 ### 3.3 JMeter 测试 (`tests/jmeter/`)
 
 | 测试计划              | 目的                       | Threads | 时长 | 报告        |
 | --------------------- | -------------------------- | ------- | ---- | ----------- |
-| `smoke.jmx`           | 冒烟测试：验证 API 可用性  | 2       | 30s  | .jtl + HTML |
+| `smoke.jmx`           | 冒烟测试：验证 API 可用性  | 5       | 60s  | .jtl + HTML |
 | `load.jmx`            | 负载测试：正常流量下性能   | 50      | 5m   | .jtl + HTML |
 | `stress.jmx`          | 压力测试：找到系统极限     | 200     | 3.5m | .jtl + HTML |
 | `spike.jmx`           | 尖峰测试：突发流量恢复能力 | 100     | 1.5m | .jtl + HTML |
@@ -150,7 +153,7 @@ TestPlan
 | ---------- | ---- | --------------------------------------- |
 | `/health`  | GET  | `{"status": "ok", "timestamp": "..."}`  |
 | `/ready`   | GET  | `{"ready": true}`                       |
-| `/metrics` | GET  | `{"requestCount": N, "avgDuration": N}` |
+| `/metrics` | GET  | `{"requestCount": N, "avgDuration": N, "cpu": {...}, "memory": {...}, "eventLoop": {...}}` |
 
 ### 4.2 商品 API
 
@@ -212,12 +215,13 @@ lint → unit-test → ┬─ k6 smoke gate      (grafana/setup-k6-action)
 
 ## 1. System Overview
 
-The platform has 3 layers with dual-engine support (k6 + JMeter): test scripts (load generation), Target API (system under test), and Observability (InfluxDB + Grafana).
+The platform has 4 layers: test scripts (load generation + capacity test), Target API with Cluster mode (system under test), Observability (InfluxDB + Grafana), and System Metrics Collection.
 
-| Engine | Type        | Scripts                    | Report                | Observability                         |
-| ------ | ----------- | -------------------------- | --------------------- | ------------------------------------- |
-| k6     | Lightweight | 4 .k6.js scripts           | CLI stdout            | --out influxdb → Grafana              |
-| JMeter | Enterprise  | 4 .jmx plans + .properties | HTML Dashboard + .jtl | Backend Listener → InfluxDB → Grafana |
+| Engine | Type | Scripts | Report | Observability |
+|--------|------|---------|--------|---------------|
+| k6 | Lightweight | 4 .k6.js + capacity.k6.js | HTML reports | --out influxdb → Grafana |
+| JMeter | Enterprise | 4 .jmx plans + .properties | HTML Dashboard + .jtl | Backend Listener → InfluxDB → Grafana |
+| Collector | System metrics | collect-metrics.js | CSV (CPU/mem/disk/net) | — |
 
 ## 2. Data Flow
 
@@ -247,28 +251,30 @@ The platform has 3 layers with dual-engine support (k6 + JMeter): test scripts (
 | Module    | File                    | Responsibility                                      |
 | --------- | ----------------------- | --------------------------------------------------- |
 | Entry     | `app.js`                | Express app assembly (no listen, testable)          |
-| Startup   | `server.js`             | Listen on port, production entry                    |
-| Health    | `routes/health.js`      | `/health`, `/ready`, `/metrics`                     |
+| Cluster   | `cluster.js`            | Master + N Workers, multi-core parallel (Phase 2)   |
+| Startup   | `server.js`             | Listen on port, single Worker entry                 |
+| Health    | `routes/health.js`      | `/health`, `/ready`, `/metrics` (with system metrics) |
 | Products  | `routes/products.js`    | CRUD `/api/products` (pagination, query, create)    |
 | Orders    | `routes/orders.js`      | `/api/orders` (stock validation + delay simulation) |
-| Metrics   | `middleware/metrics.js` | Request count, average duration tracking            |
-| Database  | `db/database.js`        | SQLite in-memory, schema init + seed data           |
+| Metrics   | `middleware/metrics.js` | Request count, avg duration + CPU/memory/event loop |
+| Database  | `db/database.js`        | SQLite (Phase 1 in-memory, Phase 2 file+WAL)       |
 | Utilities | `utils/delay.js`        | Configurable delay simulation                       |
 
 ### k6 Tests (`tests/performance/`)
 
 | Script         | Purpose                                     | VUs       | Duration |
 | -------------- | ------------------------------------------- | --------- | -------- |
-| `smoke.k6.js`  | Sanity check: verify API availability       | 2         | 30s      |
+| `smoke.k6.js`  | Sanity check: verify API availability       | 5         | 60s      |
 | `load.k6.js`   | Load test: performance under normal traffic | 20→50→0   | 5m       |
 | `stress.k6.js` | Stress test: find system limits             | 50→200→0  | 3.5m     |
-| `spike.k6.js`  | Spike test: sudden burst recovery           | 5→100→5→0 | 1.5m     |
+| `spike.k6.js`    | Spike test: sudden burst recovery           | 5→100→5→0   | 1.5m     |
+| `capacity.k6.js` | Capacity test: binary search max concurrency | 10→200 step | 5.5m     |
 
 ### JMeter Tests (`tests/jmeter/`)
 
 | Test Plan             | Purpose                                     | Threads | Duration | Report      |
 | --------------------- | ------------------------------------------- | ------- | -------- | ----------- |
-| `smoke.jmx`           | Sanity check: verify API availability       | 2       | 30s      | .jtl + HTML |
+| `smoke.jmx`           | Sanity check: verify API availability       | 5       | 60s      | .jtl + HTML |
 | `load.jmx`            | Load test: performance under normal traffic | 50      | 5m       | .jtl + HTML |
 | `stress.jmx`          | Stress test: find system limits             | 200     | 3.5m     | .jtl + HTML |
 | `spike.jmx`           | Spike test: sudden burst recovery           | 100     | 1.5m     | .jtl + HTML |
@@ -282,7 +288,7 @@ The platform has 3 layers with dual-engine support (k6 + JMeter): test scripts (
 | ---------- | ------ | --------------------------------------- |
 | `/health`  | GET    | `{"status": "ok", "timestamp": "..."}`  |
 | `/ready`   | GET    | `{"ready": true}`                       |
-| `/metrics` | GET    | `{"requestCount": N, "avgDuration": N}` |
+| `/metrics` | GET    | `{"requestCount": N, "avgDuration": N, "cpu": {...}, "memory": {...}, "eventLoop": {...}}` |
 
 ### Products API
 
