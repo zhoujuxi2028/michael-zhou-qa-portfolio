@@ -50,13 +50,24 @@ JMeter (多线程) ───────────→├─ Worker 3 ─┼─
 
 ## 测试概览
 
-| 类型 | 数量 | 工具 |
+| 层 | 工具 | 数量 | 目的 |
+|----|------|------|------|
+| 单元测试 | Jest + Supertest | 20 tests | API 功能正确性 |
+| 性能测试 (轻量级) | k6 | 4 脚本 | 延迟、吞吐、错误率 → HTML 报告 |
+| 性能测试 (企业级) | JMeter | 4 测试计划 | 负载测试 + HTML 报告 + Grafana 可视化 |
+| 系统指标采集 | Node.js 采集器 | 1 | CPU / 内存 / 磁盘 I/O / 网络 I/O → CSV |
+| 容量测试 | k6 阶梯递增 | 二分法 | 最大并发承载量 + 瓶颈定位 |
+
+### 性能测试类型覆盖
+
+| 类型 | 目的 | 状态 |
 |------|------|------|
-| 单元测试 | 20 | Jest + Supertest |
-| k6 性能测试 | 4 脚本 | k6 (smoke, load, stress, spike) → HTML 报告 |
-| JMeter 性能测试 | 4 测试计划 | JMeter (.jmx + .properties) → HTML 报告 |
-| 系统指标采集 | 1 采集器 | Node.js (CPU/mem/disk/net → CSV) |
-| 容量测试 | 二分法逼近 | k6 阶梯递增 + 系统指标 → 瓶颈定位 |
+| Smoke Test | 最小负载验证系统可用 | ✅ k6 + JMeter |
+| Load Test | 预期负载下的性能验证 | ✅ k6 + JMeter |
+| Stress Test | 超载行为观察 | ✅ k6 + JMeter |
+| Spike Test | 突发流量应对 | ✅ k6 + JMeter |
+| Capacity Test | 阶梯递增找系统极限 | 🔄 Phase 2 |
+| Soak Test | 长时间运行找内存泄漏 | 📋 Phase 3 |
 
 ## 运行环境要求
 
@@ -112,6 +123,25 @@ npm run k6:smoke             # 运行 smoke test → reports/k6-smoke.html
 docker compose up -d         # API + Grafana + InfluxDB
 npm run k6:load:influx       # 运行 load test，输出到 InfluxDB
 # 打开 http://localhost:3010  → k6 Results dashboard
+```
+
+## 项目结构
+
+```
+performance-testing-platform/
+├── src/                     # 目标 API (Express + SQLite)
+│   ├── routes/              # products, orders, health
+│   ├── middleware/           # metrics tracking
+│   ├── db/                  # SQLite in-memory
+│   └── utils/               # delay simulation
+├── scripts/                 # 工具脚本 (端口检查, 指标采集)
+├── tests/
+│   ├── unit/                # Jest 单元测试 (20 tests)
+│   ├── performance/         # k6 脚本 (smoke, load, stress, spike)
+│   └── jmeter/              # JMeter 测试计划 + config/*.properties
+├── grafana/                 # Dashboard + provisioning
+├── docker-compose.yml       # API + Grafana + InfluxDB
+└── docs/                    # 标准文档结构
 ```
 
 ## 配置说明
