@@ -15,12 +15,15 @@
 ## 快速命令
 
 ```bash
-npm install && npm start &   # 启动目标 API (port 3000)
+npm install && npm start &   # 启动目标 API — Cluster 模式 (port 3000)
+npm run start:single &       # 启动目标 API — 单进程模式
 npm test                     # 单元测试 (20 tests)
 npm run k6:smoke             # k6 smoke test
 npm run jmeter:smoke         # JMeter smoke test
 npm run lint                 # ESLint
 ```
+
+> **启动脚本:** `scripts/start-server.js` 统一管理服务启动，自动检测端口占用：已运行则跳过，被其他进程占用则报错。
 
 > 完整命令列表见 [README.md](README.md#npm-脚本)
 
