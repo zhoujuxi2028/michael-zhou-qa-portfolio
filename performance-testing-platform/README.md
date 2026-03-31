@@ -218,4 +218,12 @@ performance-testing-platform/
 | 需求文档 | [docs/project-management/requirements.md](docs/project-management/requirements.md) |
 | 性能测试参数指南 | [docs/guides/performance-testing-parameters.md](docs/guides/performance-testing-parameters.md) |
 
+## Known Limitations
+
+| 项目 | 说明 | 影响 |
+|------|------|------|
+| 无数据库索引测试 | 被测 API 的 orders 表仅有主键索引，无 `product_id` 索引，但因数据量极小 (5 条商品) 且每轮测试重建 DB，全表扫描与索引查询性能差异不可测 | 无法演示"缺少索引导致性能退化"的场景；如需覆盖，需引入 10 万+ 数据量 |
+
+> 被测对象的完整设计约束说明见 [架构文档 §5](docs/architecture/architecture.md#5-被测对象设计约束intentional-design-constraints)。
+
 属于 [Michael Zhou's QA Portfolio](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio)。
