@@ -2,7 +2,10 @@
 
 ## 项目说明
 
-**分类: 性能测试** | k6 + JMeter 双引擎负载测试 + 系统指标采集 + 容量测试 + Express API + Grafana + InfluxDB 可观测
+**分类: 性能测试** | k6 + JMeter 双引擎负载测试 + Express Cluster (多核) + 系统指标采集 + 容量测试 + Grafana + InfluxDB 可观测
+
+> **Cluster 模式:** 服务端支持 Node.js Cluster，自动 fork N 个 Worker (N = CPU 核数)，充分利用多核 CPU。
+> 单进程模式: `npm run start:single` | Cluster 模式: `npm start`
 
 ## 测试对象
 
