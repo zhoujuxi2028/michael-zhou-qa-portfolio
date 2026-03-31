@@ -315,7 +315,7 @@ const cpuUser = new Trend('server_cpu_user');
 
 ---
 
-### Task 4: npm scripts 集成 (SM-09)
+### Task 4: npm scripts 集成 (SM-09, TQ-01~04)
 
 **修改文件:** `package.json`
 
@@ -333,6 +333,32 @@ const cpuUser = new Trend('server_cpu_user');
 3. 运行 k6 容量测试 → `reports/k6-capacity.html`
 4. k6 完成后 kill 采集器
 5. 输出归档提示
+
+### Task 4.1: 测试质量保障 (TQ-01~04)
+
+在 `capacity.k6.js` 中实现：
+
+**TQ-01 数据膨胀控制 + TQ-03 测试隔离:**
+- 每轮容量测试前重启服务 → 自动重建 SQLite DB (现有 `getDatabase()` 逻辑)
+- 在运行说明中注明：每轮二分法之间需 `kill + npm start`
+
+**TQ-02 预热 (Warm-up):**
+```javascript
+export const options = {
+  stages: [
+    { duration: '30s', target: 10 },   // ← Warm-up 阶段, 不纳入 SLA
+    { duration: '60s', target: 50 },   // ← 正式测试开始
+    // ...
+  ],
+};
+```
+> k6 的 thresholds 会统计全程数据，但分析时需对照 stages 手动排除 warm-up 区间。
+> 在 k6 HTML 报告的时间线图表中可以直观区分 warm-up 和 steady state。
+
+**TQ-04 结果可重复性:**
+- 拐点附近的关键轮次跑 3 次
+- 取 p95 中值作为最终结果
+- 在容量报告中记录每次结果
 
 ---
 
