@@ -6,7 +6,8 @@
 - [2. 数据流](#2-数据流)
 - [3. 模块职责](#3-模块职责)
 - [4. 接口定义](#4-接口定义)
-- [5. 基础设施](#5-基础设施)
+- [5. 被测对象设计约束](#5-被测对象设计约束intentional-design-constraints)
+- [6. 基础设施](#6-基础设施)
 - [English Version](#english-version)
 
 ---
@@ -181,7 +182,31 @@ TestPlan
 - `404` — 产品不存在
 - `409` — 库存不足
 
-## 5. 基础设施
+## 5. 被测对象设计约束（Intentional Design Constraints）
+
+被测 API 作为性能测试平台的目标系统，**刻意保留了若干性能瓶颈点**，使测试能产出有意义的数据。
+
+| # | 约束 | 代码位置 | 刻意保留的原因 | 生产系统中的做法 |
+|---|------|---------|---------------|----------------|
+| C-01 | **无数据库索引** | `src/db/database.js` — orders 表仅有主键，无 `product_id` 索引 | 当前 5 条商品 + 每轮重建 DB，全表扫描与索引差异微秒级，不影响测试目标；保留此约束作为"优化前基线" | 根据查询模式建索引 |
+| C-02 | **无缓存层** | 全局 — 无 Redis / 无应用层缓存 / 无 HTTP Cache-Control | 每次请求直达 DB，测量最差情况基线；`GET /api/products` (60% 流量) 重复查相同数据，吞吐量天花板可测 | Redis / Memcached / CDN |
+| C-03 | **同步阻塞 DB 驱动** | `better-sqlite3` — 所有查询同步执行，阻塞事件循环 | 使 event loop lag 可被 SM-03 采集到，验证瓶颈定位决策树的 CPU-bound 分支 | 异步驱动 (pg, mysql2) 或连接池 |
+| C-04 | **人工延迟注入** | `src/routes/orders.js` — `simulateDelay(ORDER_DELAY_MS)` 默认 50ms | 模拟真实业务处理耗时（支付、风控），使 POST 路径 p95 可测地高于 GET | 真实业务逻辑耗时 |
+| C-05 | **SQLite 写锁串行** | WAL 模式下并发读可行，但写操作串行 | Cluster 多 Worker 竞争写锁，正是 Phase 2 容量测试要观测的 I/O 瓶颈 | PostgreSQL / MySQL (行级锁) |
+
+### 哪些约束能被现有测试暴露？
+
+| 约束 | 暴露方式 | 需求追溯 |
+|------|---------|---------|
+| C-01 无索引 | ⚠️ **难以暴露** — 数据量太小 (5 商品) 且每轮重建 DB (TQ-01)，全表扫描耗时 < 1ms | 无对应需求 |
+| C-02 无缓存 | ✅ stress/capacity 测试中 `GET /api/products` 吞吐量天花板低于有缓存场景 | 间接反映在 SLA 吞吐量指标 |
+| C-03 同步 DB | ✅ capacity 测试中 event loop lag 升高 → 瓶颈决策树 CPU-bound 分支 | SM-03 事件循环延迟 |
+| C-04 人工延迟 | ✅ POST `/api/orders` 的 p95 始终 ≥ 50ms，明显高于 GET 路径 | 需求已记录 (implementation-plan-phase2) |
+| C-05 写锁串行 | ✅ Cluster 模式下高并发写 → disk write bytes/s 升高 → I/O-bound 分支 | SM-06 + SM-11 |
+
+> **C-01 (无索引) 是当前唯一无法被测试暴露的约束**，因为数据量刻意保持在极小规模。如需演示索引影响，可在未来 Phase 中增加大数据量场景 (10 万+ 商品)。
+
+## 6. 基础设施
 
 ### Docker Compose 服务
 
@@ -307,7 +332,29 @@ The platform has 4 layers: test scripts (load generation + capacity test), Targe
 
 Error codes: `400` (missing fields), `404` (product not found), `409` (insufficient stock)
 
-## 5. Infrastructure
+## 5. Intentional Design Constraints (SUT)
+
+The target API deliberately retains performance bottleneck points so that tests produce meaningful data.
+
+| # | Constraint | Location | Why Kept | Production Alternative |
+|---|-----------|----------|----------|----------------------|
+| C-01 | No DB indexes | `db/database.js` — orders table has PK only | 5 products + DB rebuild per round → full scan ≈ indexed; serves as "pre-optimization baseline" | Add indexes per query pattern |
+| C-02 | No cache layer | Global — no Redis, no HTTP Cache-Control | Every request hits DB; measures worst-case baseline | Redis / Memcached / CDN |
+| C-03 | Synchronous DB driver | `better-sqlite3` blocks event loop | Makes event loop lag observable (SM-03) for bottleneck decision tree | Async driver (pg, mysql2) |
+| C-04 | Artificial delay | `orders.js` — `simulateDelay(50ms)` | Simulates real business processing (payment, risk check) | Actual business logic latency |
+| C-05 | SQLite write lock | WAL: concurrent reads OK, writes serialize | Cluster Workers competing for write lock = the I/O bottleneck Phase 2 measures | PostgreSQL / MySQL (row-level locks) |
+
+### Test Exposure
+
+| Constraint | Exposed by Tests? | Requirement Trace |
+|-----------|-------------------|------------------|
+| C-01 No indexes | ⚠️ Hard to expose — data too small, DB rebuilt each round | None |
+| C-02 No cache | ✅ Throughput ceiling visible in stress/capacity | SLA throughput metric |
+| C-03 Sync DB | ✅ Event loop lag rises in capacity test | SM-03 |
+| C-04 Delay | ✅ POST p95 ≥ 50ms, visibly higher than GET | Documented in impl plan |
+| C-05 Write lock | ✅ High concurrent writes → disk I/O spike | SM-06 + SM-11 |
+
+## 6. Infrastructure
 
 ### Docker Compose Services
 
