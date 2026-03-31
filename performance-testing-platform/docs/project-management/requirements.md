@@ -1,9 +1,11 @@
 # Performance Testing Platform — Requirements（需求文档）
 
-**Issue:** [#17 — New project: Performance Testing Platform (k6/JMeter)](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/17)
 **Branch:** `feature/performance-testing`
-**Date:** 2026-03-24
-**Phase:** 1 of 2
+
+| Issue | 描述 | 日期 |
+|-------|------|------|
+| [#17](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/17) | 性能测试平台 (k6 + JMeter 双引擎) | 2026-03-24 |
+| [#54](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/54) | 系统指标采集 + 容量测试 (瓶颈定位) | 2026-03-31 |
 
 ---
 
@@ -178,7 +180,7 @@ UC-05: JMeter 可视化测试分析
 
 ---
 
-## 6. 需求 Checklist
+## 6. 需求 Checklist (#17)
 
 | #   | 检查项                                            | 状态                                     |
 | --- | ------------------------------------------------- | ---------------------------------------- |
@@ -189,3 +191,121 @@ UC-05: JMeter 可视化测试分析
 | 5   | 依赖已识别（需安装的工具、需引入的库）            | ✅ k6 + JMeter + 7 npm 包 + 4 CI Actions |
 | 6   | 需求描述已产出                                    | ✅ 本文档                                |
 | 7   | 基础文档骨架已创建（CLAUDE.md、README.md、docs/） | ✅ 骨架已创建，收尾阶段完善              |
+
+---
+
+## Issue #54 — 系统指标采集 + 容量测试
+
+### 7. 目标 (#54)
+
+在本机环境下，通过阶梯递增 + 系统指标采集，找到电商 API 的**最大并发承载量**及**瓶颈层** (CPU / Memory / I/O / Network)。
+
+### 8. 用户故事 (#54)
+
+| ID | 角色 | 故事 | 验收标准 |
+|---|------|------|---------|
+| US-10 | QA Engineer | 我想在性能测试时同步采集服务端 CPU / 内存 / 磁盘 I/O / 网络 I/O | 采集器每秒记录指标到 CSV |
+| US-11 | QA Engineer | 我想通过 `/metrics` 端点查看进程级指标 | 返回 CPU usage, memory, event loop lag |
+| US-12 | QA Engineer | 我想找到本机环境下 API 的最大并发承载量 | 二分法逼近，输出最大 VUs + 瓶颈层 |
+| US-13 | QA Engineer | 我想一条命令完成"采集 + 测试 + 归档" | `npm run capacity:test` 自动启停采集器 |
+
+### 9. 测试对象 (#54)
+
+| 操作 | API | 流量权重 | 业务含义 |
+|------|-----|---------|---------|
+| 浏览商品列表 | `GET /api/products` | 60% | 读操作，高频 |
+| 查看商品详情 | `GET /api/products/:id` | 30% | 读操作，高频 |
+| 下单购买 | `POST /api/orders` | 10% | 写操作，库存扣减 + 订单创建 |
+
+> `/health` 是运维心跳，不在性能测试范围。
+
+### 10. 本机环境基线 (#54)
+
+| 项目 | 规格 |
+|------|------|
+| 硬件 | MacBook Pro (Intel) |
+| CPU | Intel Core i5-1038NG7 @ 2.00GHz, 4 核 8 线程 |
+| 内存 | 16 GB |
+| 磁盘 | SSD |
+| OS | macOS 26.3.1 (x86_64) |
+| Runtime | Node.js v25.8.1 |
+
+### 11. SLA 定义 (#54)
+
+| 指标 | 阈值 | 含义 |
+|------|------|------|
+| p95 | < 500ms | 95% 请求延迟在可接受范围 |
+| error rate | < 1% | 几乎无错误 |
+| throughput | 持续增长 | 系统未饱和 |
+
+**违反任一条件 → 该并发级别为系统上限**
+
+### 12. 测试参数 (#54)
+
+| 参数 | 值 |
+|------|-----|
+| 流量模型 | 浏览列表 60% + 查看详情 30% + 下单 10% |
+| Think Time | 0.5s ~ 1s |
+| 测试数据 | 5 个商品 (id 1~5), 库存充足 |
+| 阶梯策略 | **二分法逼近** — 初始范围 10~200 VUs，每级持稳 60s，PASS→提高下限，FAIL→降低上限，逐步收敛。具体阶梯值待首轮测试后根据实际数据确定 |
+| 终止条件 | error rate > 5% 或 p95 > 2000ms → 停止递增 |
+
+### 13. 系统指标采集需求 (#54)
+
+| ID | 需求 | 采集数据 | 用途 |
+|---|------|---------|------|
+| SM-01 | 进程级 CPU | `process.cpuUsage()`, `os.loadavg()` | 判断 CPU-bound |
+| SM-02 | 进程级内存 | `process.memoryUsage()`, `os.totalmem()/freemem()` | 判断 memory-bound |
+| SM-03 | 事件循环延迟 | event loop lag (ms) | Node.js 阻塞信号 |
+| SM-04 | 系统 CPU% | user/system/idle | 整机 vs 进程饱和 |
+| SM-05 | 系统内存% | used/free/available | 整机内存压力 |
+| SM-06 | 磁盘 I/O | read/write bytes/s | SQLite 写入瓶颈 |
+| SM-07 | 网络 I/O | rx/tx bytes/s | 带宽饱和 |
+| SM-08 | 数据输出 | CSV → `reports/system-metrics-*.csv` | 事后分析归档 |
+| SM-09 | 测试集成 | npm scripts 自动启停采集器 | 一条命令完成采集+测试+归档 |
+
+### 14. 期望输出 (#54)
+
+1. **最大并发数** — 满足 SLA 的最高 VUs
+2. **瓶颈层** — CPU / Memory / I/O / Network
+3. **容量报告** — 阶梯结果表 + 系统指标趋势 → `reports/` 归档
+
+### 15. 瓶颈定位决策树 (#54)
+
+```
+p95 升高或吞吐下降
+    │
+    ├─ event loop lag > 10ms? ──→ CPU-bound (Node.js 阻塞)
+    │     └─ 验证: CPU user% 高, loadavg > cores
+    │
+    ├─ heapUsed 持续增长? ──→ Memory-bound (GC/泄漏)
+    │     └─ 验证: os.freemem 下降, rss 增长
+    │
+    ├─ disk write bytes/s 高? ──→ I/O-bound (SQLite 写入)
+    │     └─ 验证: 与 POST /api/orders 并发量正相关
+    │
+    └─ network rx/tx 接近带宽上限? ──→ Network-bound
+          └─ 验证: 响应体大时更明显
+```
+
+### 16. Scope 确认 (#54)
+
+| 包含 | 不包含 |
+|------|--------|
+| 扩展 `/metrics` 端点 (进程级指标) | Prometheus 集成 |
+| 系统级采集器脚本 (CPU/mem/disk/net) | Grafana 实时面板 |
+| 容量测试 (二分法逼近) | 分布式采集 |
+| CSV 报告归档 | 云端环境测试 |
+
+### 17. 需求 Checklist (#54)
+
+| # | 检查项 | 状态 |
+|---|--------|------|
+| 1 | Issue 已读取，目标明确 | ✅ Issue #54 |
+| 2 | 完整用户故事 | ✅ US-10~13 |
+| 3 | 测试对象已明确 (3 个 API, 漏斗模型) | ✅ |
+| 4 | 本机环境基线已采集 | ✅ i5-1038NG7, 4C8T, 16GB, SSD |
+| 5 | SLA 定义已明确 | ✅ p95<500ms, error<1%, throughput↑ |
+| 6 | 测试参数已明确 (二分法 + think time) | ✅ |
+| 7 | 系统指标需求已编号 (SM-01~09) | ✅ |
+| 8 | 需求描述已产出 | ✅ 本文档 + Issue #54 |
