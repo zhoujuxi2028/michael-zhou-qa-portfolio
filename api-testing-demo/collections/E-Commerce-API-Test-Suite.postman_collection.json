@@ -789,9 +789,9 @@
           "request": {
             "method": "DELETE",
             "url": {
-              "raw": "{{baseUrl}}/users/1",
+              "raw": "{{baseUrl}}/users/{{createdUserId}}",
               "host": ["{{baseUrl}}"],
-              "path": ["users", "1"]
+              "path": ["users", "{{createdUserId}}"]
             }
           }
         },
@@ -1178,7 +1178,7 @@
                   "pm.test('[Product] Titles should be sorted', function() {",
                   "    const jsonData = pm.response.json();",
                   "    if (jsonData.length > 1) {",
-                  "        const titles = jsonData.map(p => p.title.toLowerCase());",
+                  "        const titles = jsonData.map(p => p.title);",
                   "        const sorted = [...titles].sort();",
                   "        pm.expect(JSON.stringify(titles)).to.eq(JSON.stringify(sorted));",
                   "    }",

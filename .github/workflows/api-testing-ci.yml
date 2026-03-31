@@ -48,7 +48,7 @@ jobs:
         run: git checkout db.json
 
       - name: Start json-server
-        run: npm run server &
+        run: npm run server:test &
 
       - name: Wait for server
         run: |
@@ -59,7 +59,6 @@ jobs:
 
       - name: Run Newman tests
         run: npm test
-        continue-on-error: true  # 32 known failures from test state coupling
 
       - name: Upload test reports
         if: always()
