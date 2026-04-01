@@ -27,6 +27,11 @@ npm run lint                 # ESLint
 
 > **⚠️ 容量/压力测试必读:** 每轮压测的 orders 数据会持续累积到 `data/perf.db`，DB 膨胀会严重影响后续测试结果（实测 24MB DB 导致 3000 VUs 比 4000 VUs 还差）。**每轮压测前必须清理数据库**：`npm run restart:clean` 或手动 `npm stop && rm data/perf.db* && npm start`。
 
+> **⚠️ Capacity 测试前必须执行 Preflight Check:** 孤立进程、多个 Claude 窗口、内存不足会严重干扰测试结果（实测同一 5000 VUs 因环境不同导致 p95 相差 500ms）。**执行 `npm run capacity:test` 已自动内置 preflight**；如手动跑 k6，先执行 `npm run preflight`，全部 ✅ 后再开始。
+>
+> Preflight 检查项：Load Average < 5 ｜ 可用内存 > 2GB ｜ CPU Idle > 50% ｜ 自动清理孤立 `node -e` 进程
+> 任何一项不通过 → 脚本 exit 1，给出修复提示，**不得强行跳过**。
+
 > 完整命令列表见 [README.md](README.md#npm-脚本)
 
 ## CI 工作流
