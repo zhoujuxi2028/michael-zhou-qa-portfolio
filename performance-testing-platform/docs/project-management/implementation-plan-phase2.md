@@ -387,7 +387,7 @@ export const options = {
 | T4 | 容量测试 k6 脚本 (漏斗模型) | T1 | `tests/performance/capacity.k6.js` |
 | T5 | npm scripts 集成 (SM-09) | T3, T4 | `package.json` |
 | T6 | 运行容量测试 + 分析瓶颈 | T0~T5 | 测试报告 |
-| T7 | 更新 RTM + 文档 | T6 | `docs/test-cases/rtm-jmeter.md` |
+| T7 | 更新 RTM + 文档 | T6 | `docs/test-cases/rtm.md` |
 
 **并行可能:** T0+T3 可并行开发（无依赖关系），T1 依赖 T0 完成。
 

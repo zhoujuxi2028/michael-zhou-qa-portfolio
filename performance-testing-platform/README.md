@@ -66,8 +66,45 @@ JMeter (多线程) ───────────→├─ Worker 3 ─┼─
 | Load Test | 预期负载下的性能验证 | ✅ k6 + JMeter |
 | Stress Test | 超载行为观察 | ✅ k6 + JMeter |
 | Spike Test | 突发流量应对 | ✅ k6 + JMeter |
-| Capacity Test | 阶梯递增找系统极限 | 🔄 Phase 2 |
+| Capacity Test | 阶梯递增找系统极限 | ✅ Phase 2 |
 | Soak Test | 长时间运行找内存泄漏 | 📋 Phase 3 |
+
+## 容量测试结论
+
+**MacBook Pro Intel i5-1038NG7 (4C8T, 16GB) + Cluster 模式 (8 Workers)**
+
+### 最终结论
+
+| 指标 | 值 |
+|------|-----|
+| 最大安全并发 | **~6000 VUs** (p95=490ms ✅, error=0%) |
+| 拐点 | **6000~6125 VUs** |
+| 吞吐量天花板 | **~6,800 req/s** |
+| 主要瓶颈 | **Node.js event loop (CPU-bound)** |
+
+### 吞吐量趋势
+
+| VUs | p95 延迟 | 吞吐量 | 判定 |
+|-----|----------|--------|------|
+| 3000 | 214ms | ~4,760/s | ✅ PASS |
+| 4000 | 338ms | ~5,290/s | ✅ PASS |
+| 5000 | 351ms | ~6,490/s | ✅ PASS (高效区间) |
+| **6000** | **490ms** | **~6,796/s** | **✅ PASS (最大安全)** |
+| 6125 | 631ms | ~6,177/s | ❌ FAIL |
+| 6500 | 628ms | ~6,802/s | ❌ FAIL |
+| 7000 | 659ms | ~6,747/s | ❌ FAIL |
+
+### 测试过程摘要
+
+二分法共 28 轮 (R01~R28)，经历三个关键转折：
+
+1. **R01~R10 数据作废** — DB 未清理导致 orders 跨轮累积 (24MB)，WAL checkpoint 阻塞引发 `SQLITE_BUSY`，错误率虚高，结论不可信。
+2. **瓶颈假设排除 (R20 对照组)** — 6000 VUs 纯读 (0% POST)，p95=692ms 与混合流量相近，排除 SQLite 写锁为瓶颈；CPU 持续满载 (99.9~100%)，event loop lag 随 VUs 线性增长，确认为 CPU-bound。
+3. **二分法收敛 (R22~R28)** — 5000 VUs 稳定 PASS (3轮复现)，6250/6125 均 FAIL 且结果有波动性，确认拐点为 6000~6125 VUs，系统在此区间不稳定。
+
+> 如需超过 5000 并发，需水平扩展至多节点 + 替换 SQLite 为 PostgreSQL/MySQL。
+>
+> 完整逐轮数据见 [docs/test-cases/rtm.md](docs/test-cases/rtm.md)
 
 ## 运行环境要求
 
@@ -218,7 +255,7 @@ performance-testing-platform/
 |------|------|
 | 架构设计 | [docs/architecture/](docs/architecture/) |
 | 测试用例 | [docs/test-cases/](docs/test-cases/) |
-| RTM 追溯矩阵 | [docs/test-cases/rtm-jmeter.md](docs/test-cases/rtm-jmeter.md) |
+| RTM 追溯矩阵 | [docs/test-cases/rtm.md](docs/test-cases/rtm.md) |
 | 项目管理 | [docs/project-management/](docs/project-management/) |
 | 需求文档 | [docs/project-management/requirements.md](docs/project-management/requirements.md) |
 | 性能测试参数指南 | [docs/guides/performance-testing-parameters.md](docs/guides/performance-testing-parameters.md) |
