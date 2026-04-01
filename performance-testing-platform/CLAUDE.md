@@ -23,7 +23,7 @@ npm run jmeter:smoke         # JMeter smoke test
 npm run lint                 # ESLint
 ```
 
-> **启动脚本:** `scripts/start-server.js` 统一管理服务启动，自动检测端口占用：已运行则跳过，被其他进程占用则报错。
+> **服务管理:** `scripts/server.sh` 统一管理服务生命周期 (start/stop/restart) + 系统指标采集 (collect)，自动检测端口占用：已运行则跳过，被其他进程占用则报错。
 
 > 完整命令列表见 [README.md](README.md#npm-脚本)
 
