@@ -58,5 +58,5 @@ npm run lint                 # ESLint
 | Phase | 内容 | 状态 |
 |-------|------|------|
 | 1 | k6 + JMeter 双引擎 (smoke/load/stress/spike) | ✅ Done |
-| 2 | 系统指标采集 + 容量测试 + 瓶颈定位 (#54) | 🔄 In progress |
+| 2 | 系统指标采集 + 容量测试 + 瓶颈定位 (#54) | ✅ Done |
 | 3 | Soak Test / Custom Metrics / AlertManager | Planned |
