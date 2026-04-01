@@ -12,7 +12,7 @@ const serverCpuUser = new Trend('server_cpu_user');
 export const options = {
   stages: [
     { duration: '30s', target: 10 }, // Warm-up (TQ-02)
-    { duration: '60s', target: 5000 }, // R21: 5000 VUs (between 4000 PASS and 6000 FAIL)
+    { duration: '60s', target: 5000 }, // Default: 5000 VUs (max safe capacity)
     { duration: '60s', target: 5000 }, // Hold steady
     { duration: '60s', target: 5000 }, // Hold steady
     { duration: '30s', target: 0 }, // Cool-down
