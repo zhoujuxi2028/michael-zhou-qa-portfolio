@@ -25,6 +25,8 @@ npm run lint                 # ESLint
 
 > **服务管理:** `scripts/server.sh` 统一管理服务生命周期 (start/stop/restart) + 系统指标采集 (collect)，自动检测端口占用：已运行则跳过，被其他进程占用则报错。
 
+> **⚠️ 容量/压力测试必读:** 每轮压测的 orders 数据会持续累积到 `data/perf.db`，DB 膨胀会严重影响后续测试结果（实测 24MB DB 导致 3000 VUs 比 4000 VUs 还差）。**每轮压测前必须清理数据库**：`npm run restart:clean` 或手动 `npm stop && rm data/perf.db* && npm start`。
+
 > 完整命令列表见 [README.md](README.md#npm-脚本)
 
 ## CI 工作流
