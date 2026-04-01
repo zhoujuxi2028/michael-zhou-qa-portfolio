@@ -4,6 +4,7 @@
 #   ./scripts/server.sh start [cluster|single]   — 启动服务 (防重复)
 #   ./scripts/server.sh stop                      — 停止服务
 #   ./scripts/server.sh restart [cluster|single]  — 重启服务
+#   ./scripts/server.sh restart [cluster|single] --clean — 重启 + 清理数据库
 #   ./scripts/server.sh collect [interval] [path] — 系统指标采集 → CSV
 
 set -euo pipefail
@@ -11,6 +12,13 @@ set -euo pipefail
 PORT="${PORT:-3000}"
 ACTION="${1:-start}"
 MODE="${2:-cluster}"
+CLEAN=false
+# Parse --clean flag from any position
+for arg in "$@"; do
+  if [ "$arg" = "--clean" ]; then
+    CLEAN=true
+  fi
+done
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
@@ -28,6 +36,12 @@ get_our_pids() {
     fi
   done
   return 0
+}
+
+do_clean_db() {
+  local db_dir="$PROJECT_DIR/data"
+  echo "Cleaning database (removing $db_dir/perf.db*)..."
+  rm -f "$db_dir"/perf.db "$db_dir"/perf.db-shm "$db_dir"/perf.db-wal
 }
 
 do_stop() {
@@ -104,7 +118,7 @@ const { execSync } = require('child_process');
 
 const INTERVAL = ${interval};
 const OUTPUT = '${output}';
-const HEADER = 'timestamp,cpu_user%,cpu_system%,cpu_idle%,mem_total_mb,mem_used_mb,mem_usage%,disk_read_kb_s,disk_write_kb_s,net_rx_kb_s,net_tx_kb_s';
+const HEADER = 'timestamp,cpu_user%,cpu_system%,cpu_idle%,mem_total_mb,mem_available_mb,mem_usage%,disk_io_mb_s,net_rx_kb_s,net_tx_kb_s';
 fs.writeFileSync(OUTPUT, HEADER + '\n');
 console.log('Collecting metrics every ' + INTERVAL + 'ms → ' + OUTPUT);
 
@@ -127,47 +141,67 @@ function getCpuPercent() {
 }
 
 function getMemory() {
-  const total = os.totalmem(), free = os.freemem(), used = total - free;
-  return { totalMb: (total / 1024 / 1024).toFixed(0), usedMb: (used / 1024 / 1024).toFixed(0), usage: ((used / total) * 100).toFixed(1) };
+  try {
+    const out = execSync('vm_stat 2>/dev/null', { encoding: 'utf-8', timeout: 2000 });
+    const page = 4096;
+    const parse = (key) => { const m = out.match(new RegExp(key + ':\\\\s+(\\\\d+)')); return m ? parseInt(m[1]) : 0; };
+    const free = parse('Pages free');
+    const inactive = parse('Pages inactive');
+    const purgeable = parse('Pages purgeable');
+    const speculative = parse('Pages speculative');
+    const availableBytes = (free + inactive + purgeable + speculative) * page;
+    const totalBytes = os.totalmem();
+    const usedBytes = totalBytes - availableBytes;
+    return {
+      totalMb: (totalBytes / 1024 / 1024).toFixed(0),
+      availableMb: (availableBytes / 1024 / 1024).toFixed(0),
+      usage: ((usedBytes / totalBytes) * 100).toFixed(1)
+    };
+  } catch {
+    return { totalMb: (os.totalmem() / 1024 / 1024).toFixed(0), availableMb: '0', usage: '0' };
+  }
 }
 
 function getDiskIO() {
   try {
     const out = execSync('iostat -d -c 2 -w 1 2>/dev/null', { encoding: 'utf-8', timeout: 3000 });
-    const lines = out.trim().split('\n');
+    const lines = out.trim().split('\\n');
     const lastLine = lines[lines.length - 1].trim().split(/\\s+/);
     const mbPerSec = parseFloat(lastLine[2]) || 0;
-    return { readKb: (mbPerSec * 1024 * 0.5).toFixed(1), writeKb: (mbPerSec * 1024 * 0.5).toFixed(1) };
-  } catch { return { readKb: '0', writeKb: '0' }; }
+    return { ioMb: mbPerSec.toFixed(2) };
+  } catch { return { ioMb: '0' }; }
 }
 
 function getNetBytes() {
   try {
-    const out = execSync('netstat -ib 2>/dev/null', { encoding: 'utf-8', timeout: 3000 });
-    const lines = out.trim().split('\n');
-    let rxBytes = 0, txBytes = 0;
+    const out = execSync('netstat -ib 2>/dev/null', { encoding: 'utf-8', timeout: 2000 });
+    const lines = out.trim().split('\\n');
     for (const line of lines) {
-      if (line.startsWith('en0')) {
+      if (line.startsWith('en0') && line.includes('<Link#')) {
         const cols = line.trim().split(/\\s+/);
-        if (cols.length >= 10) { rxBytes += parseInt(cols[6]) || 0; txBytes += parseInt(cols[9]) || 0; }
+        if (cols.length >= 10) {
+          return { rx: BigInt(cols[6] || '0'), tx: BigInt(cols[9] || '0') };
+        }
       }
     }
-    return { rx: rxBytes, tx: txBytes };
-  } catch { return { rx: 0, tx: 0 }; }
+    return { rx: 0n, tx: 0n };
+  } catch { return { rx: 0n, tx: 0n }; }
 }
 
 function getNetRate() {
   const now = Date.now(), elapsed = (now - prevTime) / 1000 || 1;
   const curr = getNetBytes();
-  const rxKb = ((curr.rx - prevNet.rx) / 1024 / elapsed).toFixed(1);
-  const txKb = ((curr.tx - prevNet.tx) / 1024 / elapsed).toFixed(1);
+  const rxDiff = Number(curr.rx - prevNet.rx);
+  const txDiff = Number(curr.tx - prevNet.tx);
+  const rxKb = (rxDiff >= 0 ? rxDiff / 1024 / elapsed : 0).toFixed(1);
+  const txKb = (txDiff >= 0 ? txDiff / 1024 / elapsed : 0).toFixed(1);
   prevNet = curr; prevTime = now;
   return { rxKb, txKb };
 }
 
 function collect() {
   const cpu = getCpuPercent(), mem = getMemory(), disk = getDiskIO(), net = getNetRate();
-  const row = [new Date().toISOString(), cpu.user, cpu.system, cpu.idle, mem.totalMb, mem.usedMb, mem.usage, disk.readKb, disk.writeKb, net.rxKb, net.txKb].join(',');
+  const row = [new Date().toISOString(), cpu.user, cpu.system, cpu.idle, mem.totalMb, mem.availableMb, mem.usage, disk.ioMb, net.rxKb, net.txKb].join(',');
   fs.appendFileSync(OUTPUT, row + '\n');
 }
 
@@ -190,6 +224,9 @@ case "$ACTION" in
   restart)
     do_stop
     sleep 0.5
+    if [ "$CLEAN" = true ]; then
+      do_clean_db
+    fi
     do_start
     ;;
   collect)

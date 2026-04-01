@@ -1,15 +1,16 @@
 const { execSync } = require('child_process');
 const path = require('path');
 const net = require('net');
+const fs = require('fs');
 
 const SCRIPT = path.join(__dirname, '../../../scripts/server.sh');
 const PORT = 3111; // Use non-standard port to avoid conflicts
 
-function run(action, mode) {
-  const args = [action, mode || 'single'].filter(Boolean);
+function run(action, mode, extraArgs) {
+  const args = [action, mode || 'single', extraArgs].filter(Boolean);
   return execSync(`bash ${SCRIPT} ${args.join(' ')}`, {
     encoding: 'utf-8',
-    env: { ...process.env, PORT: String(PORT) },
+    env: { ...process.env, PORT: String(PORT), NODE_ENV: 'development' },
     timeout: 15000,
   }).trim();
 }
@@ -114,5 +115,61 @@ describe('server.sh', () => {
     await waitForPort(PORT);
     const inUse = await isPortInUse(PORT);
     expect(inUse).toBe(true);
+  });
+
+  // --- Restart --clean ---
+  test('restart --clean: deletes DB files before starting', async () => {
+    run('start', 'single');
+    await waitForPort(PORT);
+
+    // Create an order to populate DB
+    execSync(
+      `curl -sf -X POST http://localhost:${PORT}/api/orders -H 'Content-Type: application/json' -d '{"product_id":1,"quantity":1}'`,
+      { encoding: 'utf-8' }
+    );
+
+    // Verify DB file exists and has data
+    const dbDir = path.join(__dirname, '../../../data');
+    const dbFile = path.join(dbDir, 'perf.db');
+    expect(fs.existsSync(dbFile)).toBe(true);
+    const sizeBefore = fs.statSync(dbFile).size;
+
+    // Restart with --clean
+    const output = run('restart', 'single', '--clean');
+    expect(output).toMatch(/[Cc]leaning database/i);
+    expect(output).toMatch(/[Ss]tarting/);
+    await waitForPort(PORT);
+
+    // Trigger DB creation by hitting products endpoint
+    execSync(`curl -sf http://localhost:${PORT}/api/products`, {
+      encoding: 'utf-8',
+    });
+
+    // DB should be recreated (fresh, smaller or equal)
+    expect(fs.existsSync(dbFile)).toBe(true);
+    const sizeAfter = fs.statSync(dbFile).size;
+    expect(sizeAfter).toBeLessThanOrEqual(sizeBefore);
+  });
+
+  test('restart --clean: no DB files → starts normally without error', async () => {
+    // Ensure no DB files
+    const dbDir = path.join(__dirname, '../../../data');
+    try {
+      fs.rmSync(path.join(dbDir, 'perf.db'), { force: true });
+      fs.rmSync(path.join(dbDir, 'perf.db-shm'), { force: true });
+      fs.rmSync(path.join(dbDir, 'perf.db-wal'), { force: true });
+    } catch {
+      // ignore
+    }
+
+    const output = run('restart', 'single', '--clean');
+    expect(output).toMatch(/[Cc]leaning database/i);
+    expect(output).toMatch(/[Ss]tarting/);
+    await waitForPort(PORT);
+
+    const health = execSync(`curl -sf http://localhost:${PORT}/health`, {
+      encoding: 'utf-8',
+    });
+    expect(JSON.parse(health)).toHaveProperty('status', 'ok');
   });
 });
