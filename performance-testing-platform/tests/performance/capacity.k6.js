@@ -9,14 +9,12 @@ const serverEventLoopLag = new Trend('server_event_loop_lag');
 const serverHeapUsedMb = new Trend('server_heap_used_mb');
 const serverCpuUser = new Trend('server_cpu_user');
 
-// Binary search stages: coarse-grained first round (10 → 50 → 100 → 150 → 200)
-// After finding the inflection zone, manually adjust stages for fine-grained search.
 export const options = {
   stages: [
     { duration: '30s', target: 10 }, // Warm-up (TQ-02)
-    { duration: '60s', target: 3000 }, // Default: 3000 VUs (inflection point ~4000 VUs)
-    { duration: '60s', target: 3000 }, // Hold steady
-    { duration: '60s', target: 3000 }, // Hold steady
+    { duration: '60s', target: 5000 }, // R21: 5000 VUs (between 4000 PASS and 6000 FAIL)
+    { duration: '60s', target: 5000 }, // Hold steady
+    { duration: '60s', target: 5000 }, // Hold steady
     { duration: '30s', target: 0 }, // Cool-down
   ],
   thresholds: {
