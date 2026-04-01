@@ -10,10 +10,10 @@
 
 | 需求          | 设计文件     | 测试用例 ID     | Phase 4 验证项           | 状态    |
 | ------------- | ------------ | --------------- | ------------------------ | ------- |
-| **k6 Smoke**  | smoke.k6.js  | PT-SMOKE-01~04  | 运行 `npm run k6:smoke`  | PENDING |
-| **k6 Load**   | load.k6.js   | PT-LOAD-01~03   | 运行 `npm run k6:load`   | PENDING |
-| **k6 Stress** | stress.k6.js | PT-STRESS-01~03 | 运行 `npm run k6:stress` | PENDING |
-| **k6 Spike**  | spike.k6.js  | PT-SPIKE-01~03  | 运行 `npm run k6:spike`  | PENDING |
+| **k6 Smoke**  | smoke.k6.js  | PT-SMOKE-01~04  | 运行 `npm run k6:smoke`  | PASS (p95=2.22ms, error=0%, 5 VUs 1m) |
+| **k6 Load**   | load.k6.js   | PT-LOAD-01~03   | 运行 `npm run k6:load`   | PASS (p95=95.78ms, error=0%, 32 req/s, 50 VUs 5m) |
+| **k6 Stress** | stress.k6.js | PT-STRESS-01~03 | 运行 `npm run k6:stress` | PASS (p95=53.82ms, error=0%, 726 req/s, 200 VUs 3.5m) |
+| **k6 Spike**  | spike.k6.js  | PT-SPIKE-01~03  | 运行 `npm run k6:spike`  | PASS (p95=12.79ms, error=0%, 100 VUs spike) |
 
 ### JMeter (企业级引擎)
 
@@ -25,8 +25,8 @@
 | **J4: Spike Test Plan**    | spike.jmx + spike.properties   | JM-SPIKE-01~03  | 运行 `npm run jmeter:spike`，检查 HTML 报告  | PASS                        |
 | **J5: HTML Report**        | —                              | JM-RPT-01~03    | 每个报告含 index.html + Summary + 图表       | PASS                        |
 | **J5: Grafana Dashboard**  | jmeter-results.json            | JM-GRF-01~04    | Docker 环境下验证面板渲染                    | SKIP (需 Docker)            |
-| **J6: npm Scripts**        | package.json                   | —               | 8 个 k6/jmeter scripts 均可运行              | PASS (JMeter), PENDING (k6) |
-| **J7: CI Pipeline**        | performance-ci.yml             | JM-CI-01~03     | CI 全部 job 通过                             | PENDING                     |
+| **J6: npm Scripts**        | package.json                   | —               | 8 个 k6/jmeter scripts 均可运行              | PASS (k6 + JMeter 全部验证) |
+| **J7: CI Pipeline**        | performance-ci.yml             | JM-CI-01~03     | CI 全部 job 通过                             | PASS (5 次连续 success)     |
 
 ## 测试用例 → 验收标准 → 实际结果
 
