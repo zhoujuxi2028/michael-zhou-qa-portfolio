@@ -52,10 +52,10 @@ JMeter (多线程) ───────────→├─ Worker 3 ─┼─
 
 | 层 | 工具 | 数量 | 目的 |
 |----|------|------|------|
-| 单元测试 | Jest + Supertest | 23 tests | API 功能正确性 |
+| 单元测试 | Jest + Supertest | 30 tests | API 功能正确性 + 脚本测试 |
 | 性能测试 (轻量级) | k6 | 4 脚本 | 延迟、吞吐、错误率 → HTML 报告 |
 | 性能测试 (企业级) | JMeter | 4 测试计划 | 负载测试 + HTML 报告 + Grafana 可视化 |
-| 系统指标采集 | Node.js 采集器 | 1 | CPU / 内存 / 磁盘 I/O / 网络 I/O → CSV |
+| 系统指标采集 | server.sh collect | 1 | CPU / 内存 / 磁盘 I/O / 网络 I/O → CSV |
 | 容量测试 | k6 阶梯递增 | 二分法 | 最大并发承载量 + 瓶颈定位 |
 
 ### 性能测试类型覆盖
@@ -134,9 +134,9 @@ performance-testing-platform/
 │   ├── middleware/           # metrics tracking
 │   ├── db/                  # SQLite in-memory
 │   └── utils/               # delay simulation
-├── scripts/                 # 工具脚本 (端口检查, 指标采集)
+├── scripts/                 # server.sh (服务管理 + 指标采集)
 ├── tests/
-│   ├── unit/                # Jest 单元测试 (20 tests)
+│   ├── unit/                # Jest 单元测试 (30 tests)
 │   ├── performance/         # k6 脚本 (smoke, load, stress, spike)
 │   └── jmeter/              # JMeter 测试计划 + config/*.properties
 ├── grafana/                 # Dashboard + provisioning
@@ -178,7 +178,10 @@ performance-testing-platform/
 |------|------|
 | `npm start` | 启动目标 API — Cluster 模式 (自动检测端口) |
 | `npm run start:single` | 启动目标 API — 单进程模式 |
-| `npm test` | 运行 Jest 单元测试 (23 tests) |
+| `npm stop` | 停止目标 API |
+| `npm restart` | 重启目标 API — Cluster 模式 |
+| `npm run restart:single` | 重启目标 API — 单进程模式 |
+| `npm test` | 运行 Jest 单元测试 (30 tests) |
 | `npm run test:coverage` | 单元测试 + 覆盖率 |
 | `npm run k6:smoke` | k6 smoke 测试 → HTML 报告 |
 | `npm run k6:load` | k6 load 测试 → HTML 报告 |
@@ -225,6 +228,7 @@ performance-testing-platform/
 | 项目 | 说明 | 影响 |
 |------|------|------|
 | 无数据库索引测试 | 被测 API 的 orders 表仅有主键索引，无 `product_id` 索引，但因数据量极小 (5 条商品) 且每轮测试重建 DB，全表扫描与索引查询性能差异不可测 | 无法演示"缺少索引导致性能退化"的场景；如需覆盖，需引入 10 万+ 数据量 |
+| SQLite 写锁争用 | Cluster 模式 (8 Workers) 共享同一 SQLite 文件，`better-sqlite3` 同步写锁导致 4500+ VUs 时 POST /api/orders 100% 失败 (`SQLITE_BUSY`) | 容量测试的 error rate (~9.4%) 全部来自写操作；属架构 §5 C-01 设计约束，非 defect |
 
 > 被测对象的完整设计约束说明见 [架构文档 §5](docs/architecture/architecture.md#5-被测对象设计约束intentional-design-constraints)。
 

@@ -14,11 +14,9 @@ const serverCpuUser = new Trend('server_cpu_user');
 export const options = {
   stages: [
     { duration: '30s', target: 10 }, // Warm-up (TQ-02)
-    { duration: '60s', target: 10 }, // Baseline
-    { duration: '60s', target: 50 },
-    { duration: '60s', target: 100 },
-    { duration: '60s', target: 150 },
-    { duration: '60s', target: 200 },
+    { duration: '60s', target: 4000 }, // TQ-04: repeatability at inflection point
+    { duration: '60s', target: 4000 }, // Hold steady
+    { duration: '60s', target: 4000 }, // Hold steady
     { duration: '30s', target: 0 }, // Cool-down
   ],
   thresholds: {
