@@ -228,7 +228,9 @@ performance-testing-platform/
 | 项目 | 说明 | 影响 |
 |------|------|------|
 | 无数据库索引测试 | 被测 API 的 orders 表仅有主键索引，无 `product_id` 索引，但因数据量极小 (5 条商品) 且每轮测试重建 DB，全表扫描与索引查询性能差异不可测 | 无法演示"缺少索引导致性能退化"的场景；如需覆盖，需引入 10 万+ 数据量 |
-| SQLite 写锁争用 | Cluster 模式 (8 Workers) 共享同一 SQLite 文件，`better-sqlite3` 同步写锁导致 4500+ VUs 时 POST /api/orders 100% 失败 (`SQLITE_BUSY`) | 容量测试的 error rate (~9.4%) 全部来自写操作；属架构 §5 C-01 设计约束，非 defect |
+| SQLite 写锁争用 (DB 膨胀时) | Cluster 模式 (8 Workers) 共享同一 SQLite 文件，DB 累积膨胀后 WAL checkpoint 阻塞导致 `SQLITE_BUSY` 级联失败。**清洁环境 4000 VUs 写入 0% 失败** | 属架构 §5 C-01 设计约束；**每轮压测前必须清理 DB** 避免误判 |
+| DB 数据累积影响性能 | 压测 orders 持续累积到 `data/perf.db`，DB 膨胀严重影响后续测试结果 (实测 24MB DB 导致 3000 VUs p95=969ms 远差于清洁环境 4000 VUs p95=360ms) | **每轮压测前必须清理数据库**: `npm run restart:clean` 或 `npm stop && rm data/perf.db* && npm start` |
+| JMeter 不适合高并发容量测试 | JMeter 每个线程占 ~1MB JVM 堆栈，4000 threads ≈ 4GB+ heap；本机 16GB RAM 下 JMeter 自身成为瓶颈，无法准确测量被测系统极限。k6 使用 Go 协程，单进程可跑数千 VUs 且资源占用极低 | 容量测试 (binary search 找拐点) 使用 k6；JMeter 仅用于 smoke/load/stress/spike 四种标准测试 |
 
 > 被测对象的完整设计约束说明见 [架构文档 §5](docs/architecture/architecture.md#5-被测对象设计约束intentional-design-constraints)。
 
