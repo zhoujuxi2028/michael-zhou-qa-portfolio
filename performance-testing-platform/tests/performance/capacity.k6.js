@@ -12,9 +12,9 @@ const serverCpuUser = new Trend('server_cpu_user');
 export const options = {
   stages: [
     { duration: '30s', target: 10 }, // Warm-up (TQ-02)
-    { duration: '60s', target: 6250 }, // R27: binary search mid(6000,6500)
-    { duration: '60s', target: 6250 }, // Hold steady
-    { duration: '60s', target: 6250 }, // Hold steady
+    { duration: '60s', target: 6125 }, // R28: binary search mid(6000,6250)
+    { duration: '60s', target: 6125 }, // Hold steady
+    { duration: '60s', target: 6125 }, // Hold steady
     { duration: '30s', target: 0 }, // Cool-down
   ],
   thresholds: {
