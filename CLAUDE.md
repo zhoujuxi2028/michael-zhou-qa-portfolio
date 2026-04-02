@@ -165,6 +165,8 @@ grep <tool> package.json       # Node.js: eslint, prettier, newman
 | CI tools must be in dependency files | `command not found` (exit 127) if missing | ISS-007 |
 | Run tests locally before pushing CI | Pre-existing test failures break CI | ISS-008 |
 | Upgrade tasks: scan ALL refs, verify ALL workflows | Partial scan misses third-party actions; partial CI check misses untriggered workflows | ISS-009 |
+| `$(cmd)` 捕获数值必须清洗输出 | Node.js/Python 子进程可能输出 warning，污染 shell 变量导致 `-ge` 比较异常 | ISS-010 |
+| k6 `setup()` 请求必须用 tag 隔离 | setup/teardown 的 HTTP 请求计入全局 metrics，会污染 threshold 判定 | ISS-011 |
 
 ## Wiki & Roadmap
 
