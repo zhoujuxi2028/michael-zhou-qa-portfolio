@@ -1,10 +1,19 @@
 const Database = require('better-sqlite3');
+const path = require('path');
+const fs = require('fs');
 
 let db;
 
+function getDbPath() {
+  if (process.env.NODE_ENV === 'test') return ':memory:';
+  const dataDir = path.join(__dirname, '../../data');
+  fs.mkdirSync(dataDir, { recursive: true });
+  return path.join(dataDir, 'perf.db');
+}
+
 function getDatabase() {
   if (!db) {
-    db = new Database(':memory:');
+    db = new Database(getDbPath());
     db.pragma('journal_mode = WAL');
     initSchema();
     seedData();
