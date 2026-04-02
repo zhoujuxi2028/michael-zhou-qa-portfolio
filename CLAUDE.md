@@ -154,6 +154,15 @@ grep <tool> package.json       # Node.js: eslint, prettier, newman
 # 3. Confirm all steps pass before pushing
 ```
 
+**阶段 3（开发）— 写 CI 时：**
+- 禁止 `|| true` 吞掉测试失败（会导致假绿灯）
+- 禁止 `--collect-only` 作为最终方案（只收集不执行 ≠ 测试通过）
+- Placeholder job 必须标注 `[placeholder]` + 创建 follow-up issue 追踪
+
+**阶段 4（测试）— 验 CI 时：**
+- 故意让测试失败一次，确认 CI 能正确报红（防止 #27 假绿灯）
+- 检查每个 test job 至少执行 ≥1 个真实断言
+
 ### Common Pitfalls
 
 | Check | Why | Learned From |
