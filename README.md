@@ -2,8 +2,10 @@
 
 **Senior QA Engineer | 高级QA工程师**
 
-Test automation and DevOps demonstration projects.
-测试自动化与 DevOps 示范项目。
+Test automation, performance testing, and DevOps demonstration projects.
+测试自动化、性能测试与 DevOps 示范项目。
+
+> **Performance Testing:** k6 + JMeter 双引擎负载测试 | 容量测试二分法定位 ~6000 VUs 拐点 | JWT 认证高并发压测 | Grafana + InfluxDB 可观测
 
 ---
 
@@ -22,18 +24,40 @@ Test automation and DevOps demonstration projects.
 
 ## Projects | 项目
 
-| Category | Project | Description | Tech Stack |
-|----------|---------|-------------|------------|
-| 功能测试 | [iwsva-cypress-e2e](./iwsva-cypress-e2e/) | IWSVA E2E Testing (77 tests) | Cypress, JavaScript |
-| DevOps | [cicd-demo](./cicd-demo/) | DevOps Infrastructure Platform (IaC + GitOps + Monitoring) | Terraform, K8S, ArgoCD, Prometheus |
-| 功能测试 | [api-testing-demo](./api-testing-demo/) | API Testing (280+ assertions) | Newman, Postman, json-server |
-| 功能测试 | [playwright-demo](./playwright-demo/) | Cross-Browser E2E Testing (38 tests) | Playwright, TypeScript, axe-core |
-| 功能测试 | [selenium-demo](./selenium-demo/) | Browser Automation | Selenium, Python, Allure |
-| 安全测试 | [security-testing-demo](./security-testing-demo/) | DAST Security Testing (~182 tests, OWASP Top 10) | OWASP ZAP, Nessus, SQLMap, Pytest |
-| 平台测试 | [sid-iam-testing-platform](./sid-iam-testing-platform/) | IAM + Data + AI Agent Testing (138 tests) | Python, Pytest, FastAPI, networkx |
-| 平台测试 | [microservice-testing-platform](./microservice-testing-platform/) | Microservice Testing (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 |
-| 性能测试 | [performance-testing-platform](./performance-testing-platform/) | k6 + JMeter Dual-Engine (64 unit + 12 perf) | k6, JMeter, Express, Grafana, InfluxDB |
-| 稳定性测试 | [k8s-auto-testing-platform](./k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests) | Python, Pytest, Chaos Mesh |
+### 性能测试 (Performance Testing)
+
+| Project | Description | Tech Stack |
+|---------|-------------|------------|
+| [performance-testing-platform](./performance-testing-platform/) | k6 + JMeter 双引擎 (64 unit + 12 perf) — 容量测试 + JWT 认证压测 | k6, JMeter, Express, Grafana, InfluxDB |
+
+### 自动化测试 (Test Automation)
+
+| Project | Description | Tech Stack |
+|---------|-------------|------------|
+| [playwright-demo](./playwright-demo/) | Cross-Browser E2E Testing (38 tests) | Playwright, TypeScript, axe-core |
+| [selenium-demo](./selenium-demo/) | Browser Automation | Selenium, Python, Allure |
+| [iwsva-cypress-e2e](./iwsva-cypress-e2e/) | IWSVA E2E Testing (77 tests) | Cypress, JavaScript |
+| [api-testing-demo](./api-testing-demo/) | API Testing (280+ assertions) | Newman, Postman, json-server |
+
+### 系统测试 (System Testing)
+
+| Project | Description | Tech Stack |
+|---------|-------------|------------|
+| [security-testing-demo](./security-testing-demo/) | DAST Security Testing (~182 tests, OWASP Top 10) | OWASP ZAP, Nessus, SQLMap, Pytest |
+| [k8s-auto-testing-platform](./k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests) | Python, Pytest, Chaos Mesh |
+
+### 平台测试 (Platform Testing)
+
+| Project | Description | Tech Stack |
+|---------|-------------|------------|
+| [sid-iam-testing-platform](./sid-iam-testing-platform/) | IAM + Data + AI Agent Testing (138 tests) | Python, Pytest, FastAPI, networkx |
+| [microservice-testing-platform](./microservice-testing-platform/) | Microservice Testing (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 |
+
+### DevOps
+
+| Project | Description | Tech Stack |
+|---------|-------------|------------|
+| [cicd-demo](./cicd-demo/) | DevOps Infrastructure Platform (IaC + GitOps + Monitoring) | Terraform, K8S, ArgoCD, Prometheus |
 
 ---
 

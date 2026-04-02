@@ -15,8 +15,8 @@ export const options = {
     { duration: '30s', target: 0 }, // Cool-down
   ],
   thresholds: {
-    http_req_duration: ['p(95)<2000'],
-    http_req_failed: ['rate<0.01'],
+    'http_req_duration{test_type:login}': ['p(95)<2000'],
+    'http_req_failed{test_type:login}': ['rate<0.01'],
   },
 };
 
@@ -43,7 +43,7 @@ export default function (data) {
   const res = http.post(
     `${BASE_URL}/api/auth/login`,
     JSON.stringify({ username: user.username, password: user.password }),
-    { headers: { 'Content-Type': 'application/json' } }
+    { headers: { 'Content-Type': 'application/json' }, tags: { test_type: 'login' } }
   );
 
   check(res, {
