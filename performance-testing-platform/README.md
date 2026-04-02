@@ -2,7 +2,7 @@
 
 **分类: 性能测试 (Performance Testing)**
 
-k6 + JMeter 双引擎性能测试平台：smoke / load / stress / spike 四种模式 + 系统指标采集 + 容量测试，Express 目标 API，JMeter HTML / k6 HTML 报告，Grafana + InfluxDB 可观测。
+k6 + JMeter 双引擎性能测试平台：smoke / load / stress / spike 四种模式 + 系统指标采集 + 容量测试 + JWT 认证压测，Express 目标 API，JMeter HTML / k6 HTML 报告，Grafana + InfluxDB 可观测。
 
 ## 目录
 
@@ -48,13 +48,24 @@ JMeter (多线程) ───────────→├─ Worker 3 ─┼─
 
 > `/health` 是运维心跳，不在性能测试范围。
 
+### 认证接口 (Phase 3)
+
+| API | 方法 | 说明 | 认证 |
+|-----|------|------|------|
+| `/api/auth/register` | POST | 用户注册 (bcrypt 10 rounds) | 无 |
+| `/api/auth/login` | POST | 登录，返回 accessToken + refreshToken | 无 |
+| `/api/auth/refresh` | POST | 刷新 accessToken (JWT only, 无 bcrypt) | 无 |
+| `/api/auth/logout` | POST | 登出，token 加入黑名单 | Bearer Token |
+
+> `AUTH_ENABLED=true` 时 `POST /api/orders` 需要 Bearer Token，默认关闭保持向后兼容。
+
 ## 测试概览
 
 | 层 | 工具 | 数量 | 目的 |
 |----|------|------|------|
-| 单元测试 | Jest + Supertest | 30 tests | API 功能正确性 + 脚本测试 |
-| 性能测试 (轻量级) | k6 | 4 脚本 | 延迟、吞吐、错误率 → HTML 报告 |
-| 性能测试 (企业级) | JMeter | 4 测试计划 | 负载测试 + HTML 报告 + Grafana 可视化 |
+| 单元测试 | Jest + Supertest | 64 tests | API 功能正确性 + 认证测试 + 脚本测试 |
+| 性能测试 (轻量级) | k6 | 7 脚本 | 延迟、吞吐、错误率、认证压测 → HTML 报告 |
+| 性能测试 (企业级) | JMeter | 5 测试计划 | 负载测试 + 认证压测 + HTML 报告 + Grafana 可视化 |
 | 系统指标采集 | server.sh collect | 1 | CPU / 内存 / 磁盘 I/O / 网络 I/O → CSV |
 | 容量测试 | k6 阶梯递增 | 二分法 | 最大并发承载量 + 瓶颈定位 |
 
@@ -67,7 +78,7 @@ JMeter (多线程) ───────────→├─ Worker 3 ─┼─
 | Stress Test | 超载行为观察 | ✅ k6 + JMeter |
 | Spike Test | 突发流量应对 | ✅ k6 + JMeter |
 | Capacity Test | 阶梯递增找系统极限 | ✅ Phase 2 |
-| Auth Load Test | JWT 登录/刷新/鉴权高并发 | 📋 Phase 3 (#56) |
+| Auth Load Test | JWT 登录/刷新/鉴权高并发 | ✅ Phase 3 (#56) |
 | Soak Test | 长时间运行找内存泄漏 | 📋 Phase 4 |
 
 ## 容量测试结论
@@ -213,14 +224,14 @@ npm run k6:load:influx       # 运行 load test，输出到 InfluxDB
 ```
 performance-testing-platform/
 ├── src/                     # 目标 API (Express + SQLite)
-│   ├── routes/              # products, orders, health
-│   ├── middleware/           # metrics tracking
+│   ├── routes/              # products, orders, health, auth
+│   ├── middleware/           # metrics tracking, JWT authenticate
 │   ├── db/                  # SQLite in-memory
 │   └── utils/               # delay simulation
 ├── scripts/                 # server.sh (服务管理 + 指标采集)
 ├── tests/
-│   ├── unit/                # Jest 单元测试 (30 tests)
-│   ├── performance/         # k6 脚本 (smoke, load, stress, spike)
+│   ├── unit/                # Jest 单元测试 (64 tests)
+│   ├── performance/         # k6 脚本 (smoke, load, stress, spike, auth)
 │   └── jmeter/              # JMeter 测试计划 + config/*.properties
 ├── grafana/                 # Dashboard + provisioning
 ├── docker-compose.yml       # API + Grafana + InfluxDB
@@ -236,6 +247,10 @@ performance-testing-platform/
 | `PORT` | `3000` | 目标 API 监听端口 | `src/server.js` |
 | `ORDER_DELAY_MS` | `50` | 订单接口模拟延迟 (ms) | `docker-compose.yml` |
 | `BASE_URL` | `http://localhost:3000` | k6 脚本目标地址 | `tests/performance/helpers/utils.js` |
+| `AUTH_ENABLED` | `false` | 启用订单接口认证保护 | `src/routes/orders.js` |
+| `JWT_SECRET` | `perf-test-secret-key` | JWT 签名密钥 | `src/routes/auth.js` |
+| `JWT_ACCESS_EXPIRES` | `15m` | Access Token 有效期 | `src/routes/auth.js` |
+| `JWT_REFRESH_EXPIRES` | `7d` | Refresh Token 有效期 | `src/routes/auth.js` |
 
 ### k6 测试配置
 
@@ -245,6 +260,9 @@ performance-testing-platform/
 | Load | 渐进 20→50 | 5m | p95 < 2000ms, 错误率 < 1% |
 | Stress | 阶梯至 200 | 3.5m | p95 < 3000ms, 错误率 < 5% |
 | Spike | 5→100 突增 | 1.5m | p95 < 2000ms, 错误率 < 10% |
+| Auth Login | 100 VUs 高并发登录 | 3m | p95 < 2000ms, 错误率 < 1% |
+| Auth Refresh | 200 VUs Token 刷新 | 3m | p95 < 200ms, 错误率 < 1% |
+| Auth Journey | 500 VUs 完整旅程 | 4m | p95 < 500ms, 错误率 < 1% |
 
 ### JMeter 测试配置
 
@@ -254,6 +272,7 @@ performance-testing-platform/
 | Load | 20→50 (2 阶) | 4m | `config/load.properties` |
 | Stress | 50→200 (4 阶) | 3.5m | `config/stress.properties` |
 | Spike | 5→100 突增 | 2m | `config/spike.properties` |
+| Auth Load | 50 threads 认证压测 | 3m | `config/auth-load.properties` |
 
 ### npm 脚本
 
@@ -264,7 +283,7 @@ performance-testing-platform/
 | `npm stop` | 停止目标 API |
 | `npm restart` | 重启目标 API — Cluster 模式 |
 | `npm run restart:single` | 重启目标 API — 单进程模式 |
-| `npm test` | 运行 Jest 单元测试 (30 tests) |
+| `npm test` | 运行 Jest 单元测试 (64 tests) |
 | `npm run test:coverage` | 单元测试 + 覆盖率 |
 | `npm run k6:smoke` | k6 smoke 测试 → HTML 报告 |
 | `npm run k6:load` | k6 load 测试 → HTML 报告 |
@@ -276,6 +295,10 @@ performance-testing-platform/
 | `npm run jmeter:load` | JMeter load 测试 |
 | `npm run jmeter:stress` | JMeter stress 测试 |
 | `npm run jmeter:spike` | JMeter spike 测试 |
+| `npm run k6:auth-login` | k6 高并发登录压测 (100 VUs) |
+| `npm run k6:auth-refresh` | k6 Token 刷新压测 (200 VUs) |
+| `npm run k6:auth-journey` | k6 完整认证旅程 (500 VUs, 需 `AUTH_ENABLED=true`) |
+| `npm run jmeter:auth-load` | JMeter 认证压测 (需 `AUTH_ENABLED=true`) |
 | `npm run capacity:test` | 容量测试 (采集器 + k6 + 报告归档) |
 | `npm run lint` | ESLint 检查 |
 | `npm run format:check` | Prettier 格式检查 |
@@ -288,6 +311,8 @@ performance-testing-platform/
 |------|-----|------|------|
 | 运行时 | `express` | ^4.18.2 | Web 框架 |
 | 运行时 | `better-sqlite3` | ^11.0.0 | 内存 SQLite 数据库 |
+| 运行时 | `bcryptjs` | ^3.0.3 | 密码哈希 (10 rounds) |
+| 运行时 | `jsonwebtoken` | ^9.0.3 | JWT 签发与验证 |
 | 开发 | `jest` | ^29.7.0 | 单元测试 |
 | 开发 | `supertest` | ^6.3.3 | HTTP 断言 |
 | 开发 | `eslint` | ^8.56.0 | 代码检查 |
