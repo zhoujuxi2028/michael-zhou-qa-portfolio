@@ -20,10 +20,11 @@
 - [ ] Scope 已确认（Phase 划分、功能边界）
 - [ ] 可行性评估（本机环境、依赖工具、技术风险）
 - [ ] 依赖已识别（需安装的工具、需引入的库）
-- [ ] 需求描述已产出（Issue 描述 或 需求文档）
+- [ ] 需求已编号（如 `AUTH-01`、`SM-01`），便于后续追溯
+- [ ] 需求描述已写入 `docs/project-management/requirements.md`
 - [ ] 新项目：基础文档骨架已创建（CLAUDE.md、README.md、docs/ 标准结构）
 
-**评审要点：** scope 是否合理、本机环境是否支持、是否有遗漏的依赖、新项目文档骨架是否完整
+**评审要点：** scope 是否合理、本机环境是否支持、是否有遗漏的依赖、需求编号完整且已文档化、新项目文档骨架是否完整
 
 ---
 
@@ -98,10 +99,11 @@ Every new feature/project follows a 5-phase process. Each phase must pause for m
 - [ ] Scope confirmed (phase breakdown, feature boundaries)
 - [ ] Feasibility assessed (local environment, tool dependencies, technical risks)
 - [ ] Dependencies identified (tools to install, libraries to add)
-- [ ] Requirements document produced (Issue description or spec)
+- [ ] Requirements numbered (e.g., `AUTH-01`, `SM-01`) for traceability
+- [ ] Requirements documented in `docs/project-management/requirements.md`
 - [ ] New project: scaffold base docs (CLAUDE.md, README.md, standard docs/ structure)
 
-**Review focus:** Is scope reasonable? Does local environment support it? Any missing dependencies? Are new project doc scaffolds in place?
+**Review focus:** Is scope reasonable? Does local environment support it? Any missing dependencies? Requirements numbered and documented? Are new project doc scaffolds in place?
 
 ---
 
