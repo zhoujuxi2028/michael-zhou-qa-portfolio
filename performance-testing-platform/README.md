@@ -67,7 +67,8 @@ JMeter (多线程) ───────────→├─ Worker 3 ─┼─
 | Stress Test | 超载行为观察 | ✅ k6 + JMeter |
 | Spike Test | 突发流量应对 | ✅ k6 + JMeter |
 | Capacity Test | 阶梯递增找系统极限 | ✅ Phase 2 |
-| Soak Test | 长时间运行找内存泄漏 | 📋 Phase 3 |
+| Auth Load Test | JWT 登录/刷新/鉴权高并发 | 📋 Phase 3 (#56) |
+| Soak Test | 长时间运行找内存泄漏 | 📋 Phase 4 |
 
 ## 容量测试结论
 
