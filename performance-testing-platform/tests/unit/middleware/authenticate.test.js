@@ -14,10 +14,7 @@ describe('authenticate middleware', () => {
       JWT_SECRET,
       { expiresIn: '15m' }
     );
-    // Use a protected endpoint — register user, then order with token
-    const db = getDatabase();
-    // Need AUTH_ENABLED for this test — tested separately in UT-MW-07
-    // Here just verify the middleware function itself by importing it
+    getDatabase(); // ensure DB is initialized
     const { authenticate } = require('../../../src/middleware/authenticate');
     const req = { headers: { authorization: `Bearer ${token}` } };
     const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
