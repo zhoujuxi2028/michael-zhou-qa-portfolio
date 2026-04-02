@@ -32,7 +32,7 @@ Test automation and DevOps demonstration projects.
 | 安全测试 | [security-testing-demo](./security-testing-demo/) | DAST Security Testing (~182 tests, OWASP Top 10) | OWASP ZAP, Nessus, SQLMap, Pytest |
 | 平台测试 | [sid-iam-testing-platform](./sid-iam-testing-platform/) | IAM + Data + AI Agent Testing (138 tests) | Python, Pytest, FastAPI, networkx |
 | 平台测试 | [microservice-testing-platform](./microservice-testing-platform/) | Microservice Testing (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 |
-| 性能测试 | [performance-testing-platform](./performance-testing-platform/) | k6 + JMeter Dual-Engine (47 unit + 9 perf) | k6, JMeter, Express, Grafana, InfluxDB |
+| 性能测试 | [performance-testing-platform](./performance-testing-platform/) | k6 + JMeter Dual-Engine (64 unit + 12 perf) | k6, JMeter, Express, Grafana, InfluxDB |
 | 稳定性测试 | [k8s-auto-testing-platform](./k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests) | Python, Pytest, Chaos Mesh |
 
 ---
