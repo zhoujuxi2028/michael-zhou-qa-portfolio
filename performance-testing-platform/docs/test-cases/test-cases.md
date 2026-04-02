@@ -10,6 +10,7 @@
 - [6. 性能阈值定义](#6-性能阈值定义)
 - [7. 容量测试用例表 (#54)](#7-容量测试用例表-54)
 - [8. 认证场景测试用例表 (#56)](#8-认证场景测试用例表-56)
+- [9. Soak Test 用例表 (#65)](#9-soak-test-用例表-65)
 - [English Version](#english-version)
 
 ---
@@ -432,3 +433,34 @@ Principles: TDD, test isolation (afterEach database reset), dual-engine smoke as
 | Load      | < 500ms           | < 1%       | 50      | 5m       |
 | Stress    | < 1000ms          | < 5%       | 200     | 3.5m     |
 | Spike     | < 2000ms          | < 10%      | 100     | 1.5m     |
+
+---
+
+## 9. Soak Test 用例表 (#65)
+
+### 单元测试
+
+| ID | 描述 | 验证 |
+|----|------|------|
+| UT-SOAK-01 | stable heap (10% growth) → ok | Jest |
+| UT-SOAK-02 | warning (30% growth) → warning | Jest |
+| UT-SOAK-03 | critical leak (60% growth) → leaked | Jest |
+| UT-SOAK-04 | zero baseline → no crash | Jest |
+| UT-SOAK-05 | negative growth (heap shrunk) → ok | Jest |
+| UT-SOAK-06 | LEAK_THRESHOLD = 0.50 | Jest |
+| UT-SOAK-07 | WARN_THRESHOLD = 0.25 | Jest |
+
+### 性能测试
+
+| ID | Test Case | VUs | Duration | Pass Criteria |
+|----|-----------|-----|----------|---------------|
+| SOAK-TC-01 | Short soak (validation) | 10 | 5min | p95 < 500ms, error < 1% |
+| SOAK-TC-02 | Default soak (1h) | 200 | 1h | p95 < 500ms, error < 1%, heap < 50% |
+| SOAK-TC-03 | Full soak (4h) | 500 | 4h | p95 < 500ms, error < 1%, heap < 50% |
+
+### Grafana 验证
+
+| ID | 验证项 | 方法 |
+|----|--------|------|
+| SOAK-TC-04 | Dashboard panels render | `docker compose up` + browser |
+| SOAK-TC-05 | Alert rules fire on breach | Inject artificial load |
