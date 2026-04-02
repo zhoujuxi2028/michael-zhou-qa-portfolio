@@ -37,9 +37,10 @@
 
 | 层 | 组件 | 职责 |
 |----|------|------|
-| 测试层 | k6 脚本 (4 种模式 + 容量测试) | 轻量级负载生成、阈值验证、HTML 报告 |
-| 测试层 | JMeter 测试计划 (4 种模式) | 企业级负载生成、HTML 报告、Backend Listener |
+| 测试层 | k6 脚本 (4 种模式 + 容量测试 + 认证压测) | 轻量级负载生成、阈值验证、HTML 报告 |
+| 测试层 | JMeter 测试计划 (4 种模式 + 认证压测) | 企业级负载生成、HTML 报告、Backend Listener |
 | API 层 | Express Cluster (4 Worker) + SQLite WAL | 被测系统 (SUT)，多核并行，`/metrics` 暴露进程指标 |
+| 认证层 | JWT (HS256) + bcryptjs | 用户认证 (register/login/refresh/logout), `AUTH_ENABLED` 开关 |
 | 可观测层 | InfluxDB + Grafana | 存储双引擎指标、可视化 |
 | 采集层 | collect-metrics.js | 系统级指标 (CPU/mem/disk/net) → CSV |
 
