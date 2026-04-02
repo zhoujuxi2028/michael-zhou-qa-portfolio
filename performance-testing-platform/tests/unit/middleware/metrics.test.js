@@ -19,4 +19,29 @@ describe('metrics middleware', () => {
     const res = await request(app).get('/metrics');
     expect(res.body.avgDuration).toBeGreaterThanOrEqual(0);
   });
+
+  // SM-01: Process-level CPU
+  test('/metrics returns cpu object with user, system, loadavg', async () => {
+    const res = await request(app).get('/metrics');
+    expect(res.body.cpu).toBeDefined();
+    expect(res.body.cpu.user).toBeGreaterThanOrEqual(0);
+    expect(res.body.cpu.system).toBeGreaterThanOrEqual(0);
+    expect(res.body.cpu.loadavg).toHaveLength(3);
+  });
+
+  // SM-02: Process-level memory
+  test('/metrics returns memory object with rss, heapUsed, freeMem', async () => {
+    const res = await request(app).get('/metrics');
+    expect(res.body.memory).toBeDefined();
+    expect(res.body.memory.rss).toBeGreaterThan(0);
+    expect(res.body.memory.heapUsed).toBeGreaterThan(0);
+    expect(res.body.memory.freeMem).toBeGreaterThan(0);
+  });
+
+  // SM-03: Event loop lag
+  test('/metrics returns eventLoop object with lag >= 0', async () => {
+    const res = await request(app).get('/metrics');
+    expect(res.body.eventLoop).toBeDefined();
+    expect(res.body.eventLoop.lag).toBeGreaterThanOrEqual(0);
+  });
 });

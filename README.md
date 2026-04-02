@@ -32,7 +32,32 @@ Test automation and DevOps demonstration projects.
 | 安全测试 | [security-testing-demo](./security-testing-demo/) | DAST Security Testing (~182 tests, OWASP Top 10) | OWASP ZAP, Nessus, SQLMap, Pytest |
 | 平台测试 | [sid-iam-testing-platform](./sid-iam-testing-platform/) | IAM + Data + AI Agent Testing (138 tests) | Python, Pytest, FastAPI, networkx |
 | 平台测试 | [microservice-testing-platform](./microservice-testing-platform/) | Microservice Testing (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 |
+| 性能测试 | [performance-testing-platform](./performance-testing-platform/) | k6 + JMeter Dual-Engine (47 unit + 9 perf) | k6, JMeter, Express, Grafana, InfluxDB |
 | 稳定性测试 | [k8s-auto-testing-platform](./k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests) | Python, Pytest, Chaos Mesh |
+
+---
+
+## Performance Testing Highlights | 性能测试亮点
+
+### [performance-testing-platform](./performance-testing-platform/) — Capacity Test
+
+> k6 + JMeter 双引擎 | Express Cluster (多核) | Grafana + InfluxDB 可观测
+
+**容量测试 (二分法, 28 轮)** 在 MacBook Pro Intel i5-1038NG7 (4C8T, 16GB) 上完成瓶颈定位：
+
+| 指标 | 值 |
+|------|-----|
+| 最大安全并发 | **~6000 VUs** (p95=490ms ✅, error=0%) |
+| 吞吐量天花板 | **~6,800 req/s** |
+| 拐点 | 6000~6125 VUs |
+| 主要瓶颈 | **Node.js event loop (CPU-bound)** |
+
+**瓶颈定位过程 (3层证据):**
+- CPU 持续 99.9~100%；内存 avg 61%、磁盘 avg 9 MB/s（远低于 SSD 上限 ~2,200 MB/s）
+- Event loop lag p95 随 VUs 线性增长：197ms@3000 → 324ms@6000 → 433ms@6125
+- R20 对照组 (0% 写操作) p95 与混合流量相近 → 排除 SQLite 写锁为瓶颈
+
+> 完整逐轮数据 → [performance-testing-platform/docs/test-cases/rtm.md](./performance-testing-platform/docs/test-cases/rtm.md)
 
 ---
 
@@ -41,9 +66,10 @@ Test automation and DevOps demonstration projects.
 - **Test Automation | 测试自动化**: Cypress, Playwright, Selenium, Pytest
 - **API Testing | API测试**: Postman, Newman
 - **Security Testing | 安全测试**: OWASP ZAP, Nessus, DAST, OWASP Top 10 2021
+- **Performance Testing | 性能测试**: k6, JMeter, Load/Stress/Spike Testing
 - **CI/CD**: GitHub Actions, Docker
 - **Cloud/K8S | 云原生**: Kubernetes, HPA, Chaos Mesh
-- **Monitoring | 监控**: Prometheus, Grafana
+- **Monitoring | 监控**: Prometheus, Grafana, InfluxDB
 
 ---
 
@@ -61,6 +87,7 @@ Test automation and DevOps demonstration projects.
 | `playwright-tests.yml` | playwright-demo | Push/PR to main | Cross-browser E2E (Chromium, Firefox, WebKit) |
 | `sid-iam-ci.yml` | sid-iam-testing-platform | Push/PR, manual | Code quality + unit tests + integration (138 tests) |
 | `microservice-ci.yml` | microservice-testing-platform | Push/PR | Lint → unit → contract → integration → E2E (101 tests) |
+| `performance-ci.yml` | performance-testing-platform | Push/PR | Lint → unit tests → k6 + JMeter smoke gate |
 
 ---
 
@@ -84,7 +111,7 @@ Test automation and DevOps demonstration projects.
 | playwright-demo | Playwright browsers | `npx playwright install` |
 | security-testing-demo | OWASP ZAP, Docker | `docker compose up` 自动拉取 |
 | k8s-auto-testing-platform | kubectl, Kubernetes cluster | docker.com/kubernetes |
-| performance-testing-platform | k6 | `brew install k6` (macOS) |
+| performance-testing-platform | k6, JMeter | `brew install k6 jmeter` (macOS) |
 | microservice-testing-platform | Redis (Docker) | `docker compose up` 自动拉取 |
 
 ### 端口占用
@@ -132,6 +159,7 @@ cd cicd-demo && npm install && npm test
 cd playwright-demo && npm install && npx playwright install && npm test
 cd sid-iam-testing-platform && pip install -r requirements.txt && pytest tests/ -v
 cd microservice-testing-platform && npm install && npm run test:all
+cd performance-testing-platform && npm install && npm start & npm run k6:smoke
 ```
 
 ---

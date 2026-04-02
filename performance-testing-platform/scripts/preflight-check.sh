@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+# scripts/preflight-check.sh — Pre-flight environment check before performance testing
+#
+# Usage:
+#   bash scripts/preflight-check.sh
+#
+# Env overrides (for testing):
+#   LOAD_THRESHOLD=5      — fail if 1-min load avg >= this (default: 5)
+#   MEM_MIN_GB=2          — fail if available memory < this GB (default: 2)
+#   CPU_IDLE_MIN=50       — fail if CPU idle% < this (default: 50)
+#
+# Exit codes:
+#   0 — all checks passed, safe to run performance tests
+#   1 — one or more checks failed, do NOT start tests
+
+set -uo pipefail
+
+LOAD_THRESHOLD="${LOAD_THRESHOLD:-5}"
+MEM_MIN_GB="${MEM_MIN_GB:-2}"
+CPU_IDLE_MIN="${CPU_IDLE_MIN:-50}"
+
+PASS=true
+HINTS=""
+
+echo "=================================================="
+echo "  Performance Test Pre-flight Check"
+echo "=================================================="
+
+# ── Step 1: Kill orphaned "node -e" processes ─────────────────────────────────
+echo ""
+echo "[ 1/4 ] Checking for orphaned node -e processes..."
+ORPHAN_PIDS=$(ps aux | grep 'node -e' | grep -v grep | awk '{print $2}' || true)
+if [ -n "$ORPHAN_PIDS" ]; then
+  echo "  Found orphaned processes: $(echo $ORPHAN_PIDS | tr '\n' ' ')"
+  echo "$ORPHAN_PIDS" | xargs kill -9 2>/dev/null || true
+  echo "  Killed. (cluster.js server processes are NOT affected)"
+else
+  echo "  No orphaned processes found."
+fi
+
+# ── Step 2: Check Load Average ────────────────────────────────────────────────
+echo ""
+echo "[ 2/4 ] Checking Load Average (threshold: < ${LOAD_THRESHOLD})..."
+LOAD=$(sysctl -n vm.loadavg 2>/dev/null | awk '{print $2}' || echo "0")
+LOAD_INT=$(echo "$LOAD" | awk '{printf "%d", int($1 + 0.5)}')
+echo "  Current: ${LOAD}"
+if [ "${LOAD_INT}" -lt "${LOAD_THRESHOLD}" ]; then
+  echo "  ✅ Load Average OK"
+else
+  echo "  ❌ Load Average ${LOAD} exceeds threshold ${LOAD_THRESHOLD}"
+  HINTS="${HINTS}\n  → Please wait for system to recover (current load: ${LOAD}, threshold: ${LOAD_THRESHOLD})"
+  PASS=false
+fi
+
+# ── Step 3: Check Available Memory ───────────────────────────────────────────
+echo ""
+echo "[ 3/4 ] Checking Available Memory (min: ${MEM_MIN_GB} GB)..."
+MEM_AVAIL_MB=$(node -e "
+const { execSync } = require('child_process');
+try {
+  const out = execSync('vm_stat', { encoding: 'utf-8' });
+  const page = 4096;
+  const parse = (key) => { const m = out.match(new RegExp(key + ':\\\\s+(\\\\d+)')); return m ? parseInt(m[1]) : 0; };
+  const avail = (parse('Pages free') + parse('Pages inactive') + parse('Pages purgeable') + parse('Pages speculative')) * page;
+  console.log(Math.floor(avail / 1024 / 1024));
+} catch(e) { console.log(0); }
+" 2>/dev/null || echo "0")
+MEM_MIN_MB=$(( MEM_MIN_GB * 1024 ))
+echo "  Available: ${MEM_AVAIL_MB} MB  (required: ${MEM_MIN_MB} MB / ${MEM_MIN_GB} GB)"
+if [ "${MEM_AVAIL_MB:-0}" -ge "${MEM_MIN_MB}" ]; then
+  echo "  ✅ Memory OK"
+else
+  echo "  ❌ Available Memory ${MEM_AVAIL_MB} MB below threshold ${MEM_MIN_MB} MB (${MEM_MIN_GB} GB)"
+  HINTS="${HINTS}\n  → Please close other applications to free memory (available: ${MEM_AVAIL_MB}MB, required: ${MEM_MIN_MB}MB)"
+  PASS=false
+fi
+
+# ── Step 4: Check CPU Idle ────────────────────────────────────────────────────
+echo ""
+echo "[ 4/4 ] Checking CPU Idle (min: ${CPU_IDLE_MIN}%)..."
+CPU_IDLE=$(top -l 1 | grep "CPU usage" | grep -oE '[0-9.]+% idle' | grep -oE '[0-9.]+' || echo "0")
+CPU_IDLE_INT=$(echo "${CPU_IDLE:-0}" | awk '{printf "%d", int($1)}')
+echo "  Current idle: ${CPU_IDLE}%"
+if [ "${CPU_IDLE_INT}" -ge "${CPU_IDLE_MIN}" ]; then
+  echo "  ✅ CPU Idle OK"
+else
+  echo "  ❌ CPU Idle ${CPU_IDLE}% below threshold ${CPU_IDLE_MIN}%"
+  HINTS="${HINTS}\n  → Please close other applications to reduce CPU usage (idle: ${CPU_IDLE}%, required: ${CPU_IDLE_MIN}%)"
+  PASS=false
+fi
+
+# ── Summary ───────────────────────────────────────────────────────────────────
+echo ""
+echo "=================================================="
+if [ "$PASS" = true ]; then
+  echo "  ✅ Preflight passed — environment ready for performance testing"
+  echo "=================================================="
+  exit 0
+else
+  echo "  ❌ Preflight FAILED — do NOT start performance tests until resolved"
+  echo ""
+  echo "  Action required:"
+  echo -e "$HINTS"
+  echo "=================================================="
+  exit 1
+fi
