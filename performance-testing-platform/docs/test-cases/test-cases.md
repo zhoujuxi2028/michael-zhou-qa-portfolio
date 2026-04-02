@@ -9,6 +9,7 @@
 - [5. JMeter 性能测试用例表](#5-jmeter-性能测试用例表)
 - [6. 性能阈值定义](#6-性能阈值定义)
 - [7. 容量测试用例表 (#54)](#7-容量测试用例表-54)
+- [8. 认证场景测试用例表 (#56)](#8-认证场景测试用例表-56)
 - [English Version](#english-version)
 
 ---
@@ -285,6 +286,54 @@
 | p95 | < 500ms | 系统达到上限 |
 | error rate | < 1% | 系统达到上限 |
 | throughput | 持续增长 | 饱和时 throughput 不再增长 |
+
+## 8. 认证场景测试用例表 (#56)
+
+### 单元测试用例
+
+#### 认证路由 (`tests/unit/routes/auth.test.js`)
+
+| 用例 ID | 测试 | 预期 |
+|---------|------|------|
+| UT-AUTH-01 | register 成功 | 201, 返回 id + username |
+| UT-AUTH-02 | register 缺少字段 | 400 |
+| UT-AUTH-03 | register 重复 username | 409 |
+| UT-AUTH-04 | login 成功 | 200, 返回 accessToken + refreshToken |
+| UT-AUTH-05 | login 错误密码 | 401 |
+| UT-AUTH-06 | login 不存在用户 | 401 |
+| UT-AUTH-07 | refresh 成功 | 200, 返回新 accessToken |
+| UT-AUTH-08 | refresh 无效 token | 401 |
+| UT-AUTH-09 | logout 成功 | 200 |
+| UT-AUTH-10 | logout 后 refresh 失败 | 401 (jti 在黑名单) |
+
+#### 认证中间件 (`tests/unit/middleware/authenticate.test.js`)
+
+| 用例 ID | 测试 | 预期 |
+|---------|------|------|
+| UT-MW-01 | 有效 token 放行 | next(), req.user 已注入 |
+| UT-MW-02 | 缺少 Authorization header | 401 |
+| UT-MW-03 | 无效 token | 401 |
+| UT-MW-04 | 过期 token | 401 |
+| UT-MW-05 | 黑名单 token | 401 |
+| UT-MW-06 | AUTH_ENABLED=false 时 orders 不需认证 | 201 |
+| UT-MW-07 | AUTH_ENABLED=true 时 orders 需认证 | 401 (无 token), 201 (有 token) |
+
+### 认证性能测试用例
+
+| 用例 ID | 场景 | VUs | 阈值 | 关注点 |
+|---------|------|-----|------|--------|
+| AUTH-PERF-01 | 高并发登录 | 500 | p95 < 500ms, error < 1% | bcrypt CPU 开销 |
+| AUTH-PERF-02 | Token 刷新 | 200 | p95 < 200ms | JWT 签发速度 |
+| AUTH-PERF-03 | 完整用户旅程 (认证版) | 500 | p95 < 500ms, error < 1% | 端到端认证链路 |
+| AUTH-PERF-04 | 无效 Token 请求 | 100 | 100% 返回 401, 无 5xx | 错误处理性能 |
+
+### 性能对比测试
+
+| 对比项 | 无认证 (Phase 1/2 基准) | 有认证 (Phase 3) |
+|--------|------------------------|------------------|
+| 500 VUs p95 | 待测 | 待测 |
+| 500 VUs throughput | 待测 | 待测 |
+| 主要差异来源 | — | bcrypt ~100ms/login |
 
 ---
 
