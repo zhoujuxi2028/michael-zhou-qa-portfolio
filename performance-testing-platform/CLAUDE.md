@@ -59,4 +59,5 @@ npm run lint                 # ESLint
 |-------|------|------|
 | 1 | k6 + JMeter 双引擎 (smoke/load/stress/spike) | ✅ Done |
 | 2 | 系统指标采集 + 容量测试 + 瓶颈定位 (#54) | ✅ Done |
-| 3 | Soak Test / Custom Metrics / AlertManager | Planned |
+| 3 | JWT 认证场景性能测试 (#56) | Planned |
+| 4 | Soak Test / Custom Metrics / AlertManager | Planned |
