@@ -14,8 +14,8 @@ export const options = {
     { duration: '30s', target: 0 }, // Cool-down
   ],
   thresholds: {
-    http_req_duration: ['p(95)<200'],
-    http_req_failed: ['rate<0.01'],
+    'http_req_duration{test_type:refresh}': ['p(95)<200'],
+    'http_req_failed{test_type:refresh}': ['rate<0.01'],
   },
 };
 
@@ -44,6 +44,7 @@ export default function (data) {
 
   const res = http.post(`${BASE_URL}/api/auth/refresh`, JSON.stringify({ refreshToken }), {
     headers: { 'Content-Type': 'application/json' },
+    tags: { test_type: 'refresh' },
   });
 
   check(res, {

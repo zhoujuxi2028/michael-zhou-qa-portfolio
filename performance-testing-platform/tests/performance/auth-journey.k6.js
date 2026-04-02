@@ -8,6 +8,7 @@ import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 // AUTH-PERF-04: ~10% invalid token requests (verify 401, no 5xx)
 
 export const options = {
+  setupTimeout: '120s',
   stages: [
     { duration: '30s', target: 50 }, // Warm-up
     { duration: '60s', target: 500 }, // Ramp to target
