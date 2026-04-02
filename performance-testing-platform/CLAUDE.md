@@ -59,5 +59,26 @@ npm run lint                 # ESLint
 |-------|------|------|
 | 1 | k6 + JMeter 双引擎 (smoke/load/stress/spike) | ✅ Done |
 | 2 | 系统指标采集 + 容量测试 + 瓶颈定位 (#54) | ✅ Done |
-| 3 | JWT 认证场景性能测试 (#56) | Planned |
-| 4 | Soak Test / Custom Metrics / AlertManager | Planned |
+| 3 | JWT 认证场景 — 登录/刷新/鉴权性能测试 (#56) | Planned |
+| 4 | Soak Test — 长时间运行 + 内存泄漏检测 | Planned |
+
+### Phase 3 — JWT 认证场景性能测试 (#56)
+
+**目标:** 为电商 API 添加 JWT 认证，测试高并发登录/Token 刷新/鉴权链路性能
+
+| 模块 | 内容 |
+|------|------|
+| 后端 | `POST /api/auth/login`, `/register`, `/refresh`, `/logout` + JWT 中间件 |
+| k6 | 认证专项压测 + 现有脚本改造 (login → browse → order 完整旅程) |
+| JMeter | 高并发登录测试计划 (JSON Extractor + Bearer token) |
+| 验收 | login 500 VUs p95 < 500ms, refresh 200 VUs p95 < 200ms |
+
+### Phase 4 — Soak Test + 可观测性增强
+
+**目标:** 长时间运行 (1~4 小时) 检测内存泄漏、连接泄漏、DB 膨胀等稳定性问题
+
+| 模块 | 内容 |
+|------|------|
+| Soak Test | k6 低负载长时间运行 (100~500 VUs, 1~4h)，监控 heapUsed 趋势 |
+| Custom Metrics | 业务级指标 (订单成功率、认证延迟 p99) 导入 InfluxDB |
+| AlertManager | Grafana 告警规则 (p95 > 500ms, error > 1%, heap 持续增长) |
