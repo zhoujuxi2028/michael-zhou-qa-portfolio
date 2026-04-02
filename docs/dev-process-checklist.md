@@ -68,9 +68,11 @@
 - [ ] 集成/E2E 测试通过（如适用）→ `npm run test:integration` / `npm run test:e2e`
 - [ ] 测试报告已产出（如适用）→ `coverage/` 目录、测试结果截图
 - [ ] CI 流水线绿灯 → push 后检查 GitHub Actions → `.github/workflows/*.yml`
+- [ ] CI workaround 复验 → 移除所有 `continue-on-error`、`|| true`、`skip` 后再跑一次，确认真实结果为 0 failures（防止 #27/#34 假绿灯）
+- [ ] CI 报红验证 → 故意让测试失败一次，确认 CI 能正确检测到失败
 - [ ] 本地 pre-commit checklist 全部通过（参考根 CLAUDE.md Pre-commit Checklist）
 
-**评审要点：** lint 通过、所有测试 PASS、覆盖率达标、CI 绿灯
+**评审要点：** lint 通过、所有测试 PASS、覆盖率达标、CI 绿灯且无 workaround 掩盖
 
 ---
 
@@ -147,9 +149,11 @@ Every new feature/project follows a 5-phase process. Each phase must pause for m
 - [ ] Integration/E2E tests pass (if applicable) → `npm run test:integration` / `npm run test:e2e`
 - [ ] Test reports produced (if applicable) → `coverage/` directory, test result screenshots
 - [ ] CI pipeline green → push then check GitHub Actions → `.github/workflows/*.yml`
+- [ ] CI workaround re-verification → remove all `continue-on-error`, `|| true`, `skip`, re-run and confirm 0 failures (prevent #27/#34 false green)
+- [ ] CI failure detection → intentionally break a test, confirm CI reports red
 - [ ] Local pre-commit checklist fully passed (see root CLAUDE.md Pre-commit Checklist)
 
-**Review focus:** Lint passes, all tests PASS, coverage meets threshold, CI green
+**Review focus:** Lint passes, all tests PASS, coverage meets threshold, CI green with no workarounds masking failures
 
 ---
 
