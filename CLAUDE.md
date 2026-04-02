@@ -175,3 +175,4 @@ grep <tool> package.json       # Node.js: eslint, prettier, newman
 
 - Never commit credentials
 - Check `.gitignore` before committing
+- Code scanning alerts (Trivy): CI runner global packages → dismiss as "false positive"; K8S/Helm/Terraform/Dockerfile demo configs → dismiss as "won't fix"
