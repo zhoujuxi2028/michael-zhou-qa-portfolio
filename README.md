@@ -2,8 +2,10 @@
 
 **Senior QA Engineer | 高级QA工程师**
 
-Test automation and DevOps demonstration projects.
-测试自动化与 DevOps 示范项目。
+Test automation, performance testing, and DevOps demonstration projects.
+测试自动化、性能测试与 DevOps 示范项目。
+
+> **Performance Testing:** k6 + JMeter 双引擎负载测试 | 容量测试二分法定位 ~6000 VUs 拐点 | JWT 认证高并发压测 | Grafana + InfluxDB 可观测
 
 ---
 
