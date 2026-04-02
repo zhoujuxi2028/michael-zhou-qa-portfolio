@@ -64,10 +64,11 @@ try {
   const avail = (parse('Pages free') + parse('Pages inactive') + parse('Pages purgeable') + parse('Pages speculative')) * page;
   console.log(Math.floor(avail / 1024 / 1024));
 } catch(e) { console.log(0); }
-" 2>/dev/null || echo "0")
+" 2>/dev/null | tail -1 | tr -dc '0-9' || echo "0")
+MEM_AVAIL_MB="${MEM_AVAIL_MB:-0}"
 MEM_MIN_MB=$(( MEM_MIN_GB * 1024 ))
 echo "  Available: ${MEM_AVAIL_MB} MB  (required: ${MEM_MIN_MB} MB / ${MEM_MIN_GB} GB)"
-if [ "${MEM_AVAIL_MB:-0}" -ge "${MEM_MIN_MB}" ]; then
+if [ "${MEM_AVAIL_MB}" -ge "${MEM_MIN_MB}" ]; then
   echo "  ✅ Memory OK"
 else
   echo "  ❌ Available Memory ${MEM_AVAIL_MB} MB below threshold ${MEM_MIN_MB} MB (${MEM_MIN_GB} GB)"
