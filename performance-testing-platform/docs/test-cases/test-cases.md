@@ -320,12 +320,15 @@
 
 ### 认证性能测试用例
 
-| 用例 ID | 场景 | VUs | 阈值 | 关注点 |
-|---------|------|-----|------|--------|
-| AUTH-PERF-01 | 高并发登录 | 500 | p95 < 500ms, error < 1% | bcrypt CPU 开销 |
-| AUTH-PERF-02 | Token 刷新 | 200 | p95 < 200ms | JWT 签发速度 |
-| AUTH-PERF-03 | 完整用户旅程 (认证版) | 500 | p95 < 500ms, error < 1% | 端到端认证链路 |
-| AUTH-PERF-04 | 无效 Token 请求 | 100 | 100% 返回 401, 无 5xx | 错误处理性能 |
+| 用例 ID | 场景 | 脚本 | VUs | 阈值 | 关注点 |
+|---------|------|------|-----|------|--------|
+| AUTH-PERF-01 | 高并发登录 | auth-login.k6.js | 100 | p95 < 2000ms, error < 1% | bcrypt ~100ms 同步阻塞, 8 Workers 理论上限 ~80 login/s |
+| AUTH-PERF-02 | Token 刷新 | auth-refresh.k6.js | 200 | p95 < 200ms | JWT verify + sign, 无 bcrypt |
+| AUTH-PERF-03 | 完整用户旅程 | auth-journey.k6.js | 500 | p95 < 500ms, error < 1% | login 仅首次, 后续 token-only |
+| AUTH-PERF-04 | 无效 Token | auth-journey.k6.js (辅助) | ~10% 流量 | 100% 返回 401, 无 5xx | 错误处理不降级 |
+
+> AUTH-PERF-01 VUs 从 500 调整为 100: bcrypt 10 rounds 理论上限 ~80 login/s (8 Workers),
+> 500 VUs 全部重复 login 排队 > 5s, 无法产出有意义数据。
 
 ### 性能对比测试
 
@@ -333,7 +336,7 @@
 |--------|------------------------|------------------|
 | 500 VUs p95 | 待测 | 待测 |
 | 500 VUs throughput | 待测 | 待测 |
-| 主要差异来源 | — | bcrypt ~100ms/login |
+| 主要差异来源 | — | bcrypt ~100ms/login (首次) + JWT verify ~0.1ms/req (后续) |
 
 ---
 
