@@ -381,3 +381,26 @@ lint → unit-test → ┬─ k6 smoke gate      (grafana/setup-k6-action)
 ```
 
 Both smoke gates run in parallel; CI passes only when both succeed.
+
+### Phase 4: Soak Test + 可观测性 (#65)
+
+```
+k6 soak.k6.js (100~500 VUs, 1~4h)
+  setup()  → GET /metrics → baseline heapUsed
+  default()
+    ├─ 60% GET /api/products
+    ├─ 30% GET /api/products/:id
+    ├─ 10% POST /api/orders → soak_order_success / soak_order_failure
+    ├─  5% GET /metrics → soak_heap_used_mb, soak_event_loop_lag
+    └─  2% POST /api/auth/login → soak_auth_latency
+  teardown() → GET /metrics → compare heapUsed vs baseline
+               growth > 50% → MEMORY LEAK DETECTED
+```
+
+| Custom Metric | Type | Source |
+|---------------|------|--------|
+| `soak_heap_used_mb` | Trend | `/metrics → memory.heapUsed` |
+| `soak_event_loop_lag` | Trend | `/metrics → eventLoop.lag` |
+| `soak_order_success` | Counter | `POST /api/orders → 201` |
+| `soak_order_failure` | Counter | `POST /api/orders → !201` |
+| `soak_auth_latency` | Trend | `POST /api/auth/login → timings.duration` |
