@@ -39,7 +39,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | 安全测试 | `security-testing-demo/` — Security (~182 tests, OWASP Top 10) | Pytest, OWASP ZAP, Nessus, SQLMap | `security-testing-demo/CLAUDE.md` |
 | 平台测试 | `sid-iam-testing-platform/` — IAM + Data + AI Agent (163 tests) | Python, Pytest, FastAPI, networkx | `sid-iam-testing-platform/CLAUDE.md` |
 | 平台测试 | `microservice-testing-platform/` — Microservice (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 | `microservice-testing-platform/CLAUDE.md` |
-| 性能测试 | `performance-testing-platform/` — k6 + JMeter dual-engine (64 unit + 12 perf) | k6, JMeter, Express, Grafana, InfluxDB | `performance-testing-platform/CLAUDE.md` |
+| 性能测试 | `performance-testing-platform/` — k6 + JMeter dual-engine (71 unit + 15 perf) | k6, JMeter, Express, Grafana, InfluxDB | `performance-testing-platform/CLAUDE.md` |
 | 稳定性测试 | `k8s-auto-testing-platform/` — K8S HPA + Chaos (37 tests) | Python, Pytest, Chaos Mesh | `k8s-auto-testing-platform/CLAUDE.md` |
 
 > **Quick Commands**: 各项目的安装、运行、测试命令详见对应子项目 `CLAUDE.md`。
@@ -154,6 +154,11 @@ grep <tool> package.json       # Node.js: eslint, prettier, newman
 # 3. Confirm all steps pass before pushing
 ```
 
+**CI 防假绿灯规则（详见 `docs/dev-process-checklist.md` 阶段 3/4）：**
+- 禁止 `|| true`、`continue-on-error`、`--collect-only` 作为最终方案
+- 临时 workaround 必须同时创建 follow-up issue 追踪
+- 测试阶段：移除所有 workaround 后再验证一次 + 故意失败确认 CI 能报红
+
 ### Common Pitfalls
 
 | Check | Why | Learned From |
@@ -165,6 +170,9 @@ grep <tool> package.json       # Node.js: eslint, prettier, newman
 | CI tools must be in dependency files | `command not found` (exit 127) if missing | ISS-007 |
 | Run tests locally before pushing CI | Pre-existing test failures break CI | ISS-008 |
 | Upgrade tasks: scan ALL refs, verify ALL workflows | Partial scan misses third-party actions; partial CI check misses untriggered workflows | ISS-009 |
+| `$(cmd)` 捕获数值必须清洗输出 | Node.js/Python 子进程可能输出 warning，污染 shell 变量导致 `-ge` 比较异常 | ISS-010 |
+| k6 `setup()` 请求必须用 tag 隔离 | setup/teardown 的 HTTP 请求计入全局 metrics，会污染 threshold 判定 | ISS-011 |
+| CI 绿灯 ≠ 测试通过，禁止 `continue-on-error` 掩盖失败 | 22 个 Newman 断言失败被隐藏，临时 workaround 变成永久遗留 | ISS-012, ISS-013 |
 
 ## Wiki & Roadmap
 

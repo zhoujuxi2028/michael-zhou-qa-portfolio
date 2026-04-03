@@ -4,6 +4,5 @@ coverage/
 data/
 .env
 results/
-reports/
 *.jtl
 apache-jmeter-*/
