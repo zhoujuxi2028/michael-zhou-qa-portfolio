@@ -17,13 +17,17 @@
 ```bash
 npm install && npm start &   # 启动目标 API — Cluster 模式 (port 3000)
 npm run start:single &       # 启动目标 API — 单进程模式
-npm test                     # 单元测试 (64 tests)
+npm test                     # 单元测试 (71 tests)
 npm run k6:smoke             # k6 smoke test
 npm run jmeter:smoke         # JMeter smoke test
 npm run k6:auth-login        # k6 高并发登录压测 (100 VUs)
 npm run k6:auth-refresh      # k6 Token 刷新压测 (200 VUs)
 npm run k6:auth-journey      # k6 完整认证用户旅程 (500 VUs, 需 AUTH_ENABLED=true 启动服务)
 npm run jmeter:auth-load     # JMeter 认证压测 (需 AUTH_ENABLED=true 启动服务)
+npm run k6:soak:short        # k6 soak 短时测试 (10m, 100 VUs)
+npm run k6:soak              # k6 soak 默认 (1h, 200 VUs)
+npm run k6:soak:full         # k6 soak 完整 (4h, 500 VUs)
+npm run k6:soak:influx       # k6 soak → InfluxDB + Grafana
 npm run lint                 # ESLint
 ```
 
@@ -64,7 +68,7 @@ npm run lint                 # ESLint
 | 1 | k6 + JMeter 双引擎 (smoke/load/stress/spike) | ✅ Done |
 | 2 | 系统指标采集 + 容量测试 + 瓶颈定位 (#54) | ✅ Done |
 | 3 | JWT 认证场景 — 登录/刷新/鉴权性能测试 (#56) | ✅ Done |
-| 4 | Soak Test — 长时间运行 + 内存泄漏检测 | Planned |
+| 4 | Soak Test — 长时间运行 + 内存泄漏检测 (#65) | ✅ Done |
 
 ### Phase 3 — JWT 认证场景性能测试 (#56)
 

@@ -63,8 +63,8 @@ JMeter (多线程) ───────────→├─ Worker 3 ─┼─
 
 | 层 | 工具 | 数量 | 目的 |
 |----|------|------|------|
-| 单元测试 | Jest + Supertest | 64 tests | API 功能正确性 + 认证测试 + 脚本测试 |
-| 性能测试 (轻量级) | k6 | 7 脚本 | 延迟、吞吐、错误率、认证压测 → HTML 报告 |
+| 单元测试 | Jest + Supertest | 71 tests | API 功能正确性 + 认证测试 + 脚本测试 + 泄漏检测 |
+| 性能测试 (轻量级) | k6 | 10 脚本 | 延迟、吞吐、错误率、认证压测、soak 测试 → HTML 报告 |
 | 性能测试 (企业级) | JMeter | 5 测试计划 | 负载测试 + 认证压测 + HTML 报告 + Grafana 可视化 |
 | 系统指标采集 | server.sh collect | 1 | CPU / 内存 / 磁盘 I/O / 网络 I/O → CSV |
 | 容量测试 | k6 阶梯递增 | 二分法 | 最大并发承载量 + 瓶颈定位 |
@@ -79,7 +79,7 @@ JMeter (多线程) ───────────→├─ Worker 3 ─┼─
 | Spike Test | 突发流量应对 | ✅ k6 + JMeter |
 | Capacity Test | 阶梯递增找系统极限 | ✅ Phase 2 |
 | Auth Load Test | JWT 登录/刷新/鉴权高并发 | ✅ Phase 3 (#56) |
-| Soak Test | 长时间运行找内存泄漏 | 📋 Phase 4 |
+| Soak Test | 长时间运行找内存泄漏 | ✅ Phase 4 (#65) |
 
 ## 容量测试结论
 
@@ -230,10 +230,10 @@ performance-testing-platform/
 │   └── utils/               # delay simulation
 ├── scripts/                 # server.sh (服务管理 + 指标采集)
 ├── tests/
-│   ├── unit/                # Jest 单元测试 (64 tests)
-│   ├── performance/         # k6 脚本 (smoke, load, stress, spike, auth)
+│   ├── unit/                # Jest 单元测试 (71 tests)
+│   ├── performance/         # k6 脚本 (smoke, load, stress, spike, auth, soak)
 │   └── jmeter/              # JMeter 测试计划 + config/*.properties
-├── grafana/                 # Dashboard + provisioning
+├── grafana/                 # Dashboard (soak-results + provisioning) + alert rules
 ├── docker-compose.yml       # API + Grafana + InfluxDB
 └── docs/                    # 标准文档结构
 ```
@@ -263,6 +263,9 @@ performance-testing-platform/
 | Auth Login | 100 VUs 高并发登录 | 3m | p95 < 2000ms, 错误率 < 1% |
 | Auth Refresh | 200 VUs Token 刷新 | 3m | p95 < 200ms, 错误率 < 1% |
 | Auth Journey | 500 VUs 完整旅程 | 4m | p95 < 500ms, 错误率 < 1% |
+| Soak Short | 100 VUs 短时稳定性 | 10m | p95 < 500ms, 错误率 < 1% |
+| Soak Default | 200 VUs 默认稳定性 | 1h | p95 < 500ms, 错误率 < 1% |
+| Soak Full | 500 VUs 完整稳定性 | 4h | p95 < 500ms, 错误率 < 1% |
 
 ### JMeter 测试配置
 
@@ -299,6 +302,10 @@ performance-testing-platform/
 | `npm run k6:auth-refresh` | k6 Token 刷新压测 (200 VUs) |
 | `npm run k6:auth-journey` | k6 完整认证旅程 (500 VUs, 需 `AUTH_ENABLED=true`) |
 | `npm run jmeter:auth-load` | JMeter 认证压测 (需 `AUTH_ENABLED=true`) |
+| `npm run k6:soak:short` | k6 soak 短时测试 (10m, 100 VUs) |
+| `npm run k6:soak` | k6 soak 默认 (1h, 200 VUs) |
+| `npm run k6:soak:full` | k6 soak 完整 (4h, 500 VUs) |
+| `npm run k6:soak:influx` | k6 soak → InfluxDB + Grafana |
 | `npm run capacity:test` | 容量测试 (采集器 + k6 + 报告归档) |
 | `npm run lint` | ESLint 检查 |
 | `npm run format:check` | Prettier 格式检查 |
