@@ -14,46 +14,20 @@
 
 ## 目录
 
-- [1. 目标](#1-目标)
-- [2. 用户故事 & Use Cases](#2-用户故事--use-cases)
-- [3. Scope 确认](#3-scope-确认)
-- [4. 可行性评估](#4-可行性评估)
-- [5. 依赖识别](#5-依赖识别)
-- [6. 需求 Checklist (#17)](#6-需求-checklist-17)
-- [7. 目标 (#54)](#7-目标-54)
-- [8. 用户故事 (#54)](#8-用户故事-54)
-- [9. 测试对象 (#54)](#9-测试对象-54)
-- [10. 本机环境基线 (#54)](#10-本机环境基线-54)
-- [11. SLA 定义 (#54)](#11-sla-定义-54)
-- [12. 测试参数 (#54)](#12-测试参数-54)
-- [13. 系统指标采集需求 (#54)](#13-系统指标采集需求-54)
-- [14. 期望输出 (#54)](#14-期望输出-54)
-- [15. 瓶颈定位决策树 (#54)](#15-瓶颈定位决策树-54)
-- [16. Scope 确认 (#54)](#16-scope-确认-54)
-- [17. 需求 Checklist (#54)](#17-需求-checklist-54)
-- [18. 目标 (#56)](#18-目标-56)
-- [19. 用户故事 (#56)](#19-用户故事-56)
-- [20. Use Cases (#56)](#20-use-cases-56)
-- [21. 需求列表 (#56)](#21-需求列表-56)
-- [22. Scope 确认 (#56)](#22-scope-确认-56)
-- [23. 可行性评估 (#56)](#23-可行性评估-56)
-- [24. 依赖识别 (#56)](#24-依赖识别-56)
-- [25. 设计决策 (#56)](#25-设计决策-56)
-- [26. 需求 Checklist (#56)](#26-需求-checklist-56)
-- [27. 目标 (#65)](#27-目标-65)
-- [28. 用户故事 (#65)](#28-用户故事-65)
-- [29. 需求列表 (#65)](#29-需求列表-65)
-- [30. Scope 确认 (#65)](#30-scope-确认-65)
-- [31. 可行性评估 (#65)](#31-可行性评估-65)
-- [32. 依赖识别 (#65)](#32-依赖识别-65)
-- [33. 需求 Checklist (#65)](#33-需求-checklist-65)
-- [34. 目标 (#Phase5)](#34-目标-phase5)
-- [35. 用户故事 (#Phase5)](#35-用户故事-phase5)
-- [36. 需求列表 (#Phase5)](#36-需求列表-phase5)
-- [37. Scope 确认 (#Phase5)](#37-scope-确认-phase5)
-- [38. 可行性评估 (#Phase5)](#38-可行性评估-phase5)
-- [39. 依赖识别 (#Phase5)](#39-依赖识别-phase5)
-- [40. 需求 Checklist (#Phase5)](#40-需求-checklist-phase5)
+**Phase 1 (#17) — 双引擎性能测试** ✅ Done
+- [1. 目标](#1-目标) · [2. 用户故事 & Use Cases](#2-用户故事--use-cases) · [3. Scope 确认](#3-scope-确认) · [4. 可行性评估](#4-可行性评估) · [5. 依赖识别](#5-依赖识别) · [6. 需求 Checklist](#6-需求-checklist-17)
+
+**Phase 2 (#54) — 系统指标采集 + 容量测试** ✅ Done
+- [7. 目标](#7-目标-54) · [8. 用户故事](#8-用户故事-54) · [9. 测试对象](#9-测试对象-54) · [10. 本机环境基线](#10-本机环境基线-54) · [11. SLA 定义](#11-sla-定义-54) · [12. 测试参数](#12-测试参数-54) · [13. 系统指标采集需求](#13-系统指标采集需求-54) · [14. 期望输出](#14-期望输出-54) · [15. 瓶颈定位决策树](#15-瓶颈定位决策树-54) · [16. Scope 确认](#16-scope-确认-54) · [17. 需求 Checklist](#17-需求-checklist-54)
+
+**Phase 3 (#56) — JWT 认证场景性能测试** ✅ Done
+- [18. 目标](#18-目标-56) · [19. 用户故事](#19-用户故事-56) · [20. Use Cases](#20-use-cases-56) · [21. 需求列表](#21-需求列表-56) · [22. Scope 确认](#22-scope-确认-56) · [23. 可行性评估](#23-可行性评估-56) · [24. 依赖识别](#24-依赖识别-56) · [25. 设计决策](#25-设计决策-56) · [26. 需求 Checklist](#26-需求-checklist-56)
+
+**Phase 4 (#65) — Soak Test + 可观测性增强** ✅ Done
+- [27. 目标](#27-目标-65) · [28. 用户故事](#28-用户故事-65) · [29. 需求列表](#29-需求列表-65) · [30. Scope 确认](#30-scope-确认-65) · [31. 可行性评估](#31-可行性评估-65) · [32. 依赖识别](#32-依赖识别-65) · [33. 需求 Checklist](#33-需求-checklist-65)
+
+**Phase 5 — 企业级性能测试模板增强** 📋 Planned
+- [5.1 目标](#51-目标) · [5.2 用户故事](#52-用户故事) · [5.3 需求列表](#53-需求列表) · [5.4 Scope 确认](#54-scope-确认) · [5.5 可行性评估](#55-可行性评估) · [5.6 依赖识别](#56-依赖识别) · [5.7 需求 Checklist](#57-需求-checklist)
 
 ---
 
@@ -609,7 +583,7 @@ UC-09: 无效/过期 Token 请求
 
 > 来源: Postmortem 后对标企业性能测试平台最佳实践，识别 6 项差距
 
-### 34. 目标 (#Phase5)
+### 5.1 目标
 
 将性能测试平台从「Portfolio 演示项目」提升为「企业级性能测试模板」，补全多环境、数据驱动、基线回归、报告、告警 5 个维度的企业能力。
 
@@ -622,44 +596,81 @@ UC-09: 无效/过期 Token 请求
 | 报告 | HTML + Grafana | 新增执行摘要报告（Markdown） |
 | 告警 | Grafana 面板无通知渠道 | webhook 通知 |
 
-### 35. 用户故事 (#Phase5)
+### 5.2 用户故事
 
-| ID | 用户故事 |
-|----|----------|
-| US-23 | 作为性能工程师，我想通过 `--env staging` 切换目标环境，以便在不同环境执行相同测试 |
-| US-24 | 作为性能工程师，我想从 CSV 文件加载测试数据（用户/商品），以便模拟真实业务数据分布 |
-| US-25 | 作为性能工程师，我想复用统一的负载配置（如 "standard-load", "peak-traffic"），以便跨脚本保持一致 |
-| US-26 | 作为性能工程师，我想在 CI 中自动对比当前 p95 与历史基线，以便在性能退化时阻断合并 |
-| US-27 | 作为性能工程师，我想在测试结束后自动生成执行摘要（SLA 达标率、关键指标、对比），以便给管理层汇报 |
-| US-28 | 作为性能工程师，我想在 Grafana 告警触发时收到 webhook 通知，以便及时响应性能问题 |
+| ID | 用户故事 | 关联需求 |
+|----|----------|---------|
+| US-23 | 作为性能工程师，我想通过 `--env staging` 切换目标环境，以便在不同环境执行相同测试 | ENT-ENV |
+| US-24 | 作为性能工程师，我想从 CSV 文件加载测试数据（用户/商品），以便模拟真实业务数据分布 | ENT-DATA |
+| US-25 | 作为性能工程师，我想复用统一的负载配置（如 "standard-load", "peak-traffic"），以便跨脚本保持一致 | ENT-PROFILE |
+| US-26 | 作为性能工程师，我想在 CI 中自动对比当前 p95 与历史基线，以便在性能退化时阻断合并 | ENT-BASELINE |
+| US-27 | 作为性能工程师，我想在测试结束后自动生成执行摘要（SLA 达标率、关键指标、对比），以便给管理层汇报 | ENT-REPORT |
+| US-28 | 作为性能工程师，我想在 Grafana 告警触发时收到 webhook 通知，以便及时响应性能问题 | ENT-ALERT |
 
-### 36. 需求列表 (#Phase5)
+### 5.3 需求列表
+
+#### 5.3.1 多环境配置（ENT-ENV）
 
 | ID | 需求 | 优先级 | 工作量 |
 |----|------|--------|--------|
-| ENT-01 | 多环境配置: 创建 `env/` 目录，含 `local.env` / `staging.env` / `production.env`，k6 通过 `--env` 加载，JMeter 通过 `-q` 加载对应 properties | P0 | 小 |
-| ENT-02 | k6 环境加载器: `helpers/env.js` 解析环境文件，导出 BASE_URL / AUTH_ENABLED / DB 配置 | P0 | 小 |
-| ENT-03 | 测试数据 CSV: `data/users.csv` + `data/products.csv`，k6 用 SharedArray + papaparse 加载 | P0 | 小 |
-| ENT-04 | k6 数据驱动改造: smoke/load/stress 脚本从 CSV 读取商品 ID 和用户凭证，替代硬编码 | P1 | 中 |
-| ENT-05 | 负载配置集中管理: `profiles/` 目录含 `smoke.json` / `load.json` / `stress.json` / `spike.json` / `peak.json`，k6 脚本 import profile | P1 | 小 |
-| ENT-06 | CI 性能基线: smoke gate 运行后将 p95/error rate/throughput 存为 JSON artifact，下次运行时对比 | P1 | 中 |
-| ENT-07 | 基线回归检测: CI 中对比当前 vs 上次 p95，退化超 20% 则 warning，超 50% 则 fail | P1 | 中 |
-| ENT-08 | 执行摘要报告: `scripts/generate-summary.sh` 解析 k6 JSON output 生成 Markdown 摘要（SLA 达标率、Top 5 慢接口、对比基线） | P2 | 中 |
-| ENT-09 | Grafana 告警通知: `docker-compose.yml` 增加 webhook notifier 配置，告警触发时 POST 到指定 URL | P2 | 小 |
-| ENT-10 | 单元测试: env loader、CSV 加载、profile 解析、基线对比逻辑的单元测试 | P0 | 中 |
+| ENT-ENV-01 | 创建 `env/` 目录，含 `local.env` / `staging.env` / `production.env`，定义 BASE_URL / AUTH_ENABLED / DB 等变量 | P0 | 小 |
+| ENT-ENV-02 | k6 环境加载器: `helpers/env.js` 解析环境文件，导出配置对象；k6 通过 `--env ENV=staging` 切换 | P0 | 小 |
+| ENT-ENV-03 | JMeter 环境适配: 对应 `config/staging.properties` / `config/production.properties`，通过 `-q` 加载 | P1 | 小 |
 
-### 37. Scope 确认 (#Phase5)
+#### 5.3.2 测试数据参数化（ENT-DATA）
+
+| ID | 需求 | 优先级 | 工作量 |
+|----|------|--------|--------|
+| ENT-DATA-01 | 创建 `data/users.csv` + `data/products.csv`，k6 用 SharedArray + papaparse 加载 | P0 | 小 |
+| ENT-DATA-02 | k6 数据驱动改造: smoke/load/stress 脚本从 CSV 读取商品 ID 和用户凭证，替代硬编码 | P1 | 中 |
+
+#### 5.3.3 负载配置集中管理（ENT-PROFILE）
+
+| ID | 需求 | 优先级 | 工作量 |
+|----|------|--------|--------|
+| ENT-PROFILE-01 | 创建 `profiles/` 目录，含 `smoke.json` / `load.json` / `stress.json` / `spike.json` / `peak.json`，定义 stages + thresholds | P1 | 小 |
+| ENT-PROFILE-02 | k6 脚本改造: import profile 替代内联 stages 定义，实现跨脚本配置复用 | P1 | 小 |
+
+#### 5.3.4 性能基线回归（ENT-BASELINE）
+
+| ID | 需求 | 优先级 | 工作量 |
+|----|------|--------|--------|
+| ENT-BASELINE-01 | CI 性能基线存储: smoke gate 运行后将 p95 / error rate / throughput 存为 JSON artifact | P1 | 中 |
+| ENT-BASELINE-02 | 基线回归检测: CI 下载上次 baseline artifact，对比当前 p95，退化 >20% 则 warning，>50% 则 fail | P1 | 中 |
+
+#### 5.3.5 执行摘要报告（ENT-REPORT）
+
+| ID | 需求 | 优先级 | 工作量 |
+|----|------|--------|--------|
+| ENT-REPORT-01 | `scripts/generate-summary.sh` 解析 k6 JSON output，生成 Markdown 摘要（SLA 达标率、Top 5 慢接口、对比基线） | P2 | 中 |
+
+#### 5.3.6 Grafana 告警通知（ENT-ALERT）
+
+| ID | 需求 | 优先级 | 工作量 |
+|----|------|--------|--------|
+| ENT-ALERT-01 | `docker-compose.yml` 增加 Grafana webhook notifier 配置，告警触发时 POST 到指定 URL | P2 | 小 |
+
+#### 5.3.7 单元测试（ENT-TEST）
+
+| ID | 需求 | 优先级 | 工作量 |
+|----|------|--------|--------|
+| ENT-TEST-01 | env loader 单元测试: 解析 env 文件、缺失文件兜底、变量覆盖 | P0 | 小 |
+| ENT-TEST-02 | CSV 加载单元测试: SharedArray 加载、空文件处理、字段校验 | P0 | 小 |
+| ENT-TEST-03 | profile 解析单元测试: JSON 加载、缺失 profile 报错、stages 格式校验 | P0 | 小 |
+| ENT-TEST-04 | 基线对比单元测试: 回归检测阈值判定、首次运行无 baseline 兜底 | P1 | 小 |
+
+### 5.4 Scope 确认
 
 | 模块 | In Scope | Out of Scope |
 |------|----------|--------------|
-| **多环境** | env/ 配置文件 + k6 env loader + JMeter properties | 真实 staging/prod 环境部署 |
-| **测试数据** | CSV 参数化 + SharedArray | 数据库 seeding、动态数据生成 API |
-| **负载配置** | profiles/ JSON 集中管理 | GUI 配置界面 |
-| **基线回归** | CI artifact 存储 + JSON 对比 + 阈值判定 | 数据库存储历史趋势、Web UI |
-| **执行摘要** | Markdown 报告 | PDF 生成、邮件自动发送 |
-| **告警通知** | Grafana webhook | Slack/PagerDuty/邮件集成 |
+| **ENT-ENV 多环境** | env/ 配置文件 + k6 env loader + JMeter properties | 真实 staging/prod 环境部署 |
+| **ENT-DATA 测试数据** | CSV 参数化 + SharedArray | 数据库 seeding、动态数据生成 API |
+| **ENT-PROFILE 负载配置** | profiles/ JSON 集中管理 | GUI 配置界面 |
+| **ENT-BASELINE 基线回归** | CI artifact 存储 + JSON 对比 + 阈值判定 | 数据库存储历史趋势、Web UI |
+| **ENT-REPORT 执行摘要** | Markdown 报告 | PDF 生成、邮件自动发送 |
+| **ENT-ALERT 告警通知** | Grafana webhook | Slack/PagerDuty/邮件集成 |
 
-### 38. 可行性评估 (#Phase5)
+### 5.5 可行性评估
 
 | 维度 | 评估 | 结论 |
 |------|------|------|
@@ -667,26 +678,26 @@ UC-09: 无效/过期 Token 请求
 | k6 env 文件加载 | k6 支持 `open()` 读文件 + `__ENV` 变量 | ✅ 可行 |
 | CI baseline 对比 | GitHub Actions artifact 可跨 run 下载 (`actions/download-artifact`) | ✅ 可行 |
 | Grafana webhook | Grafana alerting 原生支持 webhook contact point | ✅ 可行 |
-| 工作量 | 6 个需求均为轻中量级，无重大技术风险 | ✅ 预计 1-2 个 Phase |
+| 工作量 | 6 个需求方向均为轻中量级，无重大技术风险 | ✅ 预计 1-2 个 Phase |
 
-### 39. 依赖识别 (#Phase5)
+### 5.6 依赖识别
 
-| 依赖 | 说明 | 状态 |
-|------|------|------|
-| k6 SharedArray | 内置模块，无需额外安装 | ✅ 已有 |
-| papaparse | CSV 解析，需 k6 bundle (webpack/esbuild) 或 k6 内置 CSV | 需评估 |
-| actions/download-artifact | CI baseline 对比需跨 run 下载 artifact | ✅ 已有 @v7 |
-| Grafana webhook | Docker Compose 中配置 contact point | ✅ 已有 Grafana |
-| jq | CI 中解析 JSON baseline | ✅ GitHub runner 预装 |
+| 依赖 | 说明 | 关联需求 | 状态 |
+|------|------|---------|------|
+| k6 SharedArray | 内置模块，无需额外安装 | ENT-DATA | ✅ 已有 |
+| papaparse | CSV 解析，需 k6 bundle (webpack/esbuild) 或 k6 内置 CSV | ENT-DATA | 需评估 |
+| actions/download-artifact | CI baseline 对比需跨 run 下载 artifact | ENT-BASELINE | ✅ 已有 @v7 |
+| Grafana webhook | Docker Compose 中配置 contact point | ENT-ALERT | ✅ 已有 Grafana |
+| jq | CI 中解析 JSON baseline | ENT-BASELINE | ✅ GitHub runner 预装 |
 
-### 40. 需求 Checklist (#Phase5)
+### 5.7 需求 Checklist
 
 | # | 检查项 | 状态 |
 |---|--------|------|
-| 1 | 目标明确 | ✅ 企业级模板增强 |
-| 2 | 完整用户故事 | ✅ US-23~28 |
+| 1 | 目标明确 | ✅ 企业级模板增强，6 个维度 |
+| 2 | 完整用户故事 | ✅ US-23~28，每条关联需求组 |
 | 3 | Scope 已确认 | ✅ 6 个模块，明确 In/Out |
 | 4 | 可行性评估 | ✅ 5 项评估，全部可行 |
-| 5 | 依赖已识别 | ✅ 5 项依赖 |
-| 6 | 需求已编号 | ✅ ENT-01~10 |
-| 7 | 需求描述已写入 requirements.md | ✅ 本文档 §34~39 |
+| 5 | 依赖已识别 | ✅ 5 项依赖，关联需求组 |
+| 6 | 需求已编号 | ✅ 7 组 15 条: ENT-ENV(3) + ENT-DATA(2) + ENT-PROFILE(2) + ENT-BASELINE(2) + ENT-REPORT(1) + ENT-ALERT(1) + ENT-TEST(4) |
+| 7 | 需求描述已写入 requirements.md | ✅ 本文档 §5.1~5.6 |
