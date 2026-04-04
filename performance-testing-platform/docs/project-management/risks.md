@@ -1,6 +1,6 @@
 # Performance Testing Platform — Risk Assessment（风险清单）
 
-**Branch:** `feature/performance-testing` | **Phase:** 5 — 企业级性能测试模板增强
+**Branch:** `feature/performance-testing` | **Phase:** 5~7 — 企业级性能测试模板增强
 
 ---
 
@@ -14,12 +14,16 @@
 | R-04 | 技术 | CI baseline artifact 过期（GitHub 默认 90 天），长期趋势数据丢失 | 中 | 中 | 🟡 | ENT-BASELINE | trend.json 追加式存储，不依赖单次 artifact；artifact retention 设为 90 天 |
 | R-05 | 技术 | k6 helpers 提取后，现有脚本 import 路径变更导致批量失败 | 中 | 中 | 🟡 | ENT-CONSISTENCY | TDD 先写 helper 单元测试；逐脚本迁移，每次迁移后跑 smoke 验证 |
 | R-06 | 技术 | Breakpoint test 将系统压至崩溃，可能导致 DB 文件损坏 | 高 | 中 | 🔴 | ENT-BREAKPOINT | 测试前 `npm run restart:clean`；perf.db 使用 WAL 模式；崩溃后自动重建 DB |
-| R-07 | 依赖 | papaparse bundle 兼容 k6：k6 非标准 Node.js，需 webpack/esbuild 打包 | 中 | 中 | 🟡 | ENT-DATA | 评估 k6 内置 CSV 解析 (`open()` + split) 作为 fallback，避免引入打包工具链 |
+| R-07 | ~~依赖~~ | ~~papaparse bundle 兼容 k6~~ | — | — | ✅ | ENT-DATA | **已解决**: 改用 `open()+split()` 内置 CSV 解析，完全去除 papaparse CDN 依赖 |
 | R-08 | 依赖 | express-rate-limit 版本与现有 Express 版本不兼容 | 低 | 低 | 🟢 | ENT-RESILIENCE | express-rate-limit v7+ 要求 Express v4.17+；当前项目已满足 |
 | R-09 | 环境 | CI cron 触发时无目标服务运行（Portfolio 无持久基础设施） | 高 | 高 | 🔴 | ENT-SCHEDULE | 降级为 P3 示范性 workflow；cron job 内置 `npm start` + 测试 + `npm stop` 自包含流程 |
 | R-10 | 技术 | CI `continue-on-error` 遗留导致假绿灯，掩盖真实测试失败 | 高 | 低 | 🟡 | ENT-COVERAGE | Issue #76 已清理；checklist 阶段 4 要求移除所有 workaround 后复验 |
 | R-11 | 技术 | Grafana heatmap 面板在 InfluxDB 2.x 需 Flux 查询，与现有 InfluxQL 不一致 | 中 | 中 | 🟡 | ENT-DASHBOARD | 确认 InfluxDB 版本；优先使用 InfluxQL 兼容模式；heatmap 降级为直方图备选 |
 | R-12 | 环境 | 本机硬件不支持高并发压测（大数据量 / 万级 VUs） | 高 | 高 | 🔴 | ENT-BREAKPOINT | 已排除大数据量测试；breakpoint 上限设为 10,000 VUs，超出则标记为硬件瓶颈而非应用瓶颈 |
+| R-13 | 技术 | helpers 重构导致现有 k6 脚本回归（行为变化） | 中 | 中 | 🟡 | ENT-CONSISTENCY | 迁移前后对比 smoke 结果 (p95/error rate)，偏差 <10% 即通过 |
+| R-14 | 技术 | express-rate-limit MemoryStore 在 Cluster 模式下 per-worker 隔离 | 中 | 高 | 🟡 | ENT-RESILIENCE | 文档注明限制；rate-limit.k6.js 使用单进程模式测试；全局限流需 Redis (Out of Scope) |
+| R-15 | 技术 | breakpoint test 持续递增导致系统崩溃后进程残留 | 中 | 中 | 🟡 | ENT-BREAKPOINT | maxDuration 10min 安全阀 + abortOnFail (error>50%) + preflight 清理孤立进程 |
+| R-16 | 技术 | generate-summary.sh 依赖 k6 JSON output 格式，k6 升级后可能 break | 低 | 中 | 🟢 | ENT-REPORT | jq 字段存在性检查，缺失字段输出 warning 而非 crash |
 
 ## 风险等级说明
 
@@ -37,3 +41,6 @@
 | H-02 | k6 setup() metric 污染 | tag 隔离 + threshold 过滤（Issue #69） | 2026-04-03 |
 | H-03 | Newman 断言失败被 `continue-on-error` 掩盖 | 移除 workaround + 添加断言计数验证（Issue #72, #76） | 2026-04-03 |
 | H-04 | Shell `$(cmd)` 捕获值被 warning 污染 | 输出清洗 + `2>/dev/null` 隔离（Issue #78） | 2026-04-03 |
+| H-05 | k6 `open()` 路径解析不一致（函数内 vs 模块级） | 函数调用用 `../../`，模块级用 `../../../`；k6 smoke 自测验证 100% pass | 2026-04-05 |
+| H-06 | papaparse CDN 依赖导致离线环境 k6 脚本失败 | 改用 `open()+split()` 内置解析，彻底移除 CDN 依赖 (R-07) | 2026-04-05 |
+| H-07 | CSV products.csv ID 超出数据库种子范围导致 404 | 对齐 CSV ID (1~5) 与数据库种子数据 | 2026-04-05 |
