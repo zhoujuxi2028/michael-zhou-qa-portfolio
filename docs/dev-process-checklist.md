@@ -35,9 +35,10 @@
 - [ ] Reviewer 问题已全部修复
 - [ ] 架构设计文档已产出 → `docs/architecture/architecture.md`（数据流、模块职责、接口定义）
 - [ ] 测试策略文档已产出 → `docs/test-cases/test-cases.md`（测试类型、用例表、覆盖目标、阈值）
+- [ ] 风险清单已产出 → `docs/project-management/risks.md`（技术风险、环境风险、依赖风险、缓解措施）
 - [ ] 与现有项目模式一致（目录结构、配置文件、命名规范）
 
-**评审要点：** 架构合理、任务拆分清晰、reviewer 问题已修复、交付文档齐全
+**评审要点：** 架构合理、任务拆分清晰、reviewer 问题已修复、交付文档齐全、风险已识别并有缓解方案
 
 ---
 
@@ -55,8 +56,9 @@
 - [ ] 无硬编码路径、密钥、凭证
 - [ ] 配置文件格式一致 → `.properties` / `.env` / `config/*.json` 遵循项目已有命名和注释规范
 - [ ] 自测验证已执行 → 每项功能有实际运行证据（命令输出），不能仅凭文件存在就视为完成
+- [ ] 风险清单已更新 → `docs/project-management/risks.md`（新风险已补充、已解决风险移入历史）
 
-**评审要点：** 代码质量、测试覆盖、commit 规范、源代码与测试代码结构完整、配置文件规范一致、自测证据齐全
+**评审要点：** 代码质量、测试覆盖、commit 规范、源代码与测试代码结构完整、配置文件规范一致、自测证据齐全、风险清单已同步
 
 ---
 
@@ -117,9 +119,10 @@ Every new feature/project follows a 5-phase process. Each phase must pause for m
 - [ ] All reviewer issues resolved
 - [ ] Architecture document produced → `docs/architecture/architecture.md` (data flow, module responsibilities, interface definitions)
 - [ ] Test strategy document produced → `docs/test-cases/test-cases.md` (test types, case table, coverage targets, thresholds)
+- [ ] Risk assessment produced → `docs/project-management/risks.md` (technical risks, environment risks, dependency risks, mitigations)
 - [ ] Consistent with existing project patterns (directory structure, config files, naming conventions)
 
-**Review focus:** Architecture sound, tasks clearly decomposed, reviewer issues fixed, all deliverable documents present
+**Review focus:** Architecture sound, tasks clearly decomposed, reviewer issues fixed, all deliverable documents present, risks identified with mitigations
 
 ---
 
@@ -137,8 +140,9 @@ Every new feature/project follows a 5-phase process. Each phase must pause for m
 - [ ] No hardcoded paths, secrets, or credentials
 - [ ] Config file format consistent → `.properties` / `.env` / `config/*.json` follow project naming and comment conventions
 - [ ] Self-test verification executed → every feature has actual run evidence (command output), not just file existence
+- [ ] Risk assessment updated → `docs/project-management/risks.md` (new risks added, resolved risks moved to history)
 
-**Review focus:** Code quality, test coverage, commit conventions, source and test code structure complete, config files consistent, self-test evidence present
+**Review focus:** Code quality, test coverage, commit conventions, source and test code structure complete, config files consistent, self-test evidence present, risk assessment up to date
 
 ---
 
