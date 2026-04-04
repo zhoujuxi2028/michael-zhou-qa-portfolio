@@ -14,24 +14,67 @@
 
 ## 目录
 
-**Phase 1 (#17) — 双引擎性能测试** ✅ Done
-- [1. 目标](#1-目标) · [2. 用户故事 & Use Cases](#2-用户故事--use-cases) · [3. Scope 确认](#3-scope-确认) · [4. 可行性评估](#4-可行性评估) · [5. 依赖识别](#5-依赖识别) · [6. 需求 Checklist](#6-需求-checklist-17)
+| Phase | Issue | 状态 | 章节 |
+|-------|-------|------|------|
+| **1 — 双引擎性能测试** | [#17](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/17) | ✅ Done | §1.1–1.6 |
+| **2 — 系统指标采集 + 容量测试** | [#54](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/54) | ✅ Done | §2.1–2.11 |
+| **3 — JWT 认证场景性能测试** | [#56](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/56) | ✅ Done | §3.1–3.9 |
+| **4 — Soak Test + 可观测性增强** | [#65](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/65) | ✅ Done | §4.1–4.7 |
+| **5 — 企业级性能测试模板增强** | — | 📋 Planned | §5.1–5.7 |
 
-**Phase 2 (#54) — 系统指标采集 + 容量测试** ✅ Done
-- [7. 目标](#7-目标-54) · [8. 用户故事](#8-用户故事-54) · [9. 测试对象](#9-测试对象-54) · [10. 本机环境基线](#10-本机环境基线-54) · [11. SLA 定义](#11-sla-定义-54) · [12. 测试参数](#12-测试参数-54) · [13. 系统指标采集需求](#13-系统指标采集需求-54) · [14. 期望输出](#14-期望输出-54) · [15. 瓶颈定位决策树](#15-瓶颈定位决策树-54) · [16. Scope 确认](#16-scope-确认-54) · [17. 需求 Checklist](#17-需求-checklist-54)
+**Phase 1 (#17)**
+- [1.1 目标](#11-目标)
+- [1.2 用户故事 & Use Cases](#12-用户故事--use-cases)
+- [1.3 Scope 确认](#13-scope-确认)
+- [1.4 可行性评估](#14-可行性评估)
+- [1.5 依赖识别](#15-依赖识别)
+- [1.6 需求 Checklist](#16-需求-checklist)
 
-**Phase 3 (#56) — JWT 认证场景性能测试** ✅ Done
-- [18. 目标](#18-目标-56) · [19. 用户故事](#19-用户故事-56) · [20. Use Cases](#20-use-cases-56) · [21. 需求列表](#21-需求列表-56) · [22. Scope 确认](#22-scope-确认-56) · [23. 可行性评估](#23-可行性评估-56) · [24. 依赖识别](#24-依赖识别-56) · [25. 设计决策](#25-设计决策-56) · [26. 需求 Checklist](#26-需求-checklist-56)
+**Phase 2 (#54)**
+- [2.1 目标](#21-目标)
+- [2.2 用户故事](#22-用户故事)
+- [2.3 测试对象](#23-测试对象)
+- [2.4 本机环境基线](#24-本机环境基线)
+- [2.5 SLA 定义](#25-sla-定义)
+- [2.6 测试参数](#26-测试参数)
+- [2.7 系统指标采集需求](#27-系统指标采集需求)
+- [2.8 期望输出](#28-期望输出)
+- [2.9 瓶颈定位决策树](#29-瓶颈定位决策树)
+- [2.10 Scope 确认](#210-scope-确认)
+- [2.11 需求 Checklist](#211-需求-checklist)
 
-**Phase 4 (#65) — Soak Test + 可观测性增强** ✅ Done
-- [27. 目标](#27-目标-65) · [28. 用户故事](#28-用户故事-65) · [29. 需求列表](#29-需求列表-65) · [30. Scope 确认](#30-scope-确认-65) · [31. 可行性评估](#31-可行性评估-65) · [32. 依赖识别](#32-依赖识别-65) · [33. 需求 Checklist](#33-需求-checklist-65)
+**Phase 3 (#56)**
+- [3.1 目标](#31-目标)
+- [3.2 用户故事](#32-用户故事)
+- [3.3 Use Cases](#33-use-cases)
+- [3.4 需求列表](#34-需求列表)
+- [3.5 Scope 确认](#35-scope-确认)
+- [3.6 可行性评估](#36-可行性评估)
+- [3.7 依赖识别](#37-依赖识别)
+- [3.8 设计决策](#38-设计决策)
+- [3.9 需求 Checklist](#39-需求-checklist)
 
-**Phase 5 — 企业级性能测试模板增强** 📋 Planned
-- [5.1 目标](#51-目标) · [5.2 用户故事](#52-用户故事) · [5.3 需求列表](#53-需求列表) · [5.4 Scope 确认](#54-scope-确认) · [5.5 可行性评估](#55-可行性评估) · [5.6 依赖识别](#56-依赖识别) · [5.7 需求 Checklist](#57-需求-checklist)
+**Phase 4 (#65)**
+- [4.1 目标](#41-目标)
+- [4.2 用户故事](#42-用户故事)
+- [4.3 需求列表](#43-需求列表)
+- [4.4 Scope 确认](#44-scope-确认)
+- [4.5 可行性评估](#45-可行性评估)
+- [4.6 依赖识别](#46-依赖识别)
+- [4.7 需求 Checklist](#47-需求-checklist)
+
+**Phase 5**
+- [5.1 目标](#51-目标)
+- [5.2 用户故事](#52-用户故事)
+- [5.3 需求列表](#53-需求列表)
+- [5.4 Scope 确认](#54-scope-确认)
+- [5.5 可行性评估](#55-可行性评估)
+- [5.6 依赖识别](#56-依赖识别)
+- [5.7 需求 Checklist](#57-需求-checklist)
 
 ---
 
-## 1. 目标
+## 1.1 目标
 
 构建一个专项性能测试平台，展示 **k6 + JMeter** 双引擎负载测试能力，并通过系统指标采集 + 容量测试定位性能瓶颈。
 
@@ -45,7 +88,7 @@
 
 ---
 
-## 2. 用户故事 & Use Cases
+## 1.2 用户故事 & Use Cases
 
 ### 用户故事
 
@@ -108,7 +151,7 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 
 ---
 
-## 3. Scope 确认
+## 1.3 Scope 确认
 
 ### Phase 1 (#17 — 双引擎性能测试) ✅ Done
 
@@ -135,7 +178,7 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 | 容量测试               | 漏斗模型 (60/30/10) + 二分法逼近最大并发        | US-12    |
 | 测试质量保障             | 数据膨胀控制 / 预热 / 隔离 / 可重复性            | TQ-01~04 |
 
-### Phase 3 (#56 — JWT 认证场景性能测试) 📋 Planned
+### Phase 3 (#56 — JWT 认证场景性能测试) ✅ Done
 
 | 模块 | 内容 | 需求 ID |
 |------|------|---------|
@@ -145,13 +188,16 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 | JMeter 认证压测 | 高并发登录测试计划 | AUTH-10 |
 | 性能对比 | 带认证 vs 不带认证的性能差异报告 | AUTH-11 |
 
-### Phase 4（未来规划，不在本次 scope）
+### Phase 4 (#65 — Soak Test + 可观测性增强) ✅ Done
 
-| 模块 | 内容 |
-|------|------|
-| Soak Test | 长时间低负载测试 (1~4h, memory leak 检测) |
-| Custom Metrics | 业务指标 (订单成功率, 认证延迟 p99) → InfluxDB |
-| AlertManager | Grafana 告警规则 (p95 > 500ms, error > 1%, heap 持续增长) |
+| 模块 | 内容 | 需求 ID |
+|------|------|---------|
+| Soak Test | k6 低负载长时间运行 (100~500 VUs, 1~4h), heapUsed 采集 | SOAK-01~03 |
+| Custom Metrics | 业务指标 (订单成功率, 认证延迟 p99) → InfluxDB | SOAK-04~05 |
+| Grafana Dashboard | heapUsed 趋势面板 + 业务指标面板 | SOAK-06 |
+| Grafana AlertManager | 告警规则 (p95 > 500ms, error > 1%, heap 持续增长) | SOAK-07 |
+| npm scripts | `k6:soak` / `k6:soak:full` / `k6:soak:influx` | SOAK-08 |
+| 单元测试 | metrics 端点 + 泄漏检测逻辑 | SOAK-09 |
 
 ### 功能边界
 
@@ -163,13 +209,17 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 | SQLite 文件模式 + WAL (真实磁盘 I/O) | 其他 CI 平台 |
 | 系统指标采集 (CPU/mem/disk/net → CSV) | Prometheus 集成 |
 | 容量测试 (二分法逼近) | 分布式采集 |
-| 测试质量保障 (预热/隔离/重复性) | Grafana 实时面板 (Phase 2) |
-| Grafana + InfluxDB (k6 + JMeter 双引擎) | |
-| GitHub Actions CI (k6 + JMeter smoke gate) | |
+| 测试质量保障 (预热/隔离/重复性) | 分布式 k6 / JMeter |
+| Grafana + InfluxDB (k6 + JMeter 双引擎) | OAuth2 / SSO / 第三方登录 |
+| GitHub Actions CI (k6 + JMeter smoke gate) | Redis session store |
+| JWT 认证 API + 认证压测 (k6 + JMeter) | PagerDuty / Slack 告警集成 |
+| Soak Test (1~4h 内存泄漏检测) | CI 中跑 soak (太耗时) |
+| Custom Metrics → InfluxDB + Grafana 可视化 | |
+| Grafana AlertManager 告警规则 | |
 
 ---
 
-## 4. 可行性评估
+## 1.4 可行性评估
 
 ### 本机环境
 
@@ -210,7 +260,7 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 
 ---
 
-## 5. 依赖识别
+## 1.5 依赖识别
 
 ### 需安装的工具
 
@@ -242,7 +292,7 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 
 ---
 
-## 6. 需求 Checklist (#17)
+## 1.6 需求 Checklist
 
 | # | 检查项 | 状态 |
 |---|--------|------|
@@ -258,15 +308,15 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 
 ## Issue #54 — 系统指标采集 + 容量测试
 
-### 7. 目标 (#54)
+### 2.1 目标
 
 在本机环境下，通过 Express Cluster (多核) + 阶梯递增 + 系统指标采集，找到电商 API 的**最大并发承载量**及**瓶颈层** (CPU / Memory / I/O / Network)。
 
-### 8. 用户故事 (#54)
+### 2.2 用户故事
 
-见 [§2 用户故事 Phase 2](#phase-2-54)
+见 [§1.2 用户故事 Phase 2](#12-用户故事--use-cases)
 
-### 9. 测试对象 (#54)
+### 2.3 测试对象
 
 电商 API 漏斗模型：
 
@@ -278,11 +328,11 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 
 > `/health` 是运维心跳，不在性能测试范围。
 
-### 10. 本机环境基线 (#54)
+### 2.4 本机环境基线
 
-见 [§4 本机硬件基线](#本机硬件基线)
+见 [§1.4 本机硬件基线](#本机硬件基线)
 
-### 11. SLA 定义 (#54)
+### 2.5 SLA 定义
 
 | 指标 | 阈值 | 含义 |
 |------|------|------|
@@ -292,7 +342,7 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 
 **违反任一条件 → 该并发级别为系统上限**
 
-### 12. 测试参数 (#54)
+### 2.6 测试参数
 
 | 参数 | 值 |
 |------|-----|
@@ -302,7 +352,7 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 | 阶梯策略 | **二分法逼近** — 初始范围 10~200 VUs，每级持稳 60s，PASS→提高下限，FAIL→降低上限，逐步收敛。具体阶梯值待首轮测试后根据实际数据确定 |
 | 终止条件 | error rate > 5% 或 p95 > 2000ms → 停止递增 |
 
-### 13. 系统指标采集需求 (#54)
+### 2.7 系统指标采集需求
 
 | ID | 需求 | 采集数据 | 用途 |
 |---|------|---------|------|
@@ -316,14 +366,14 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 | SM-08 | 数据输出 | CSV → `reports/system-metrics-*.csv` | 事后分析归档 |
 | SM-09 | 测试集成 | npm scripts 自动启停采集器 | 一条命令完成采集+测试+归档 |
 
-#### 13.1 服务端多核支持 (#54)
+#### 2.7.1 服务端多核支持
 
 | ID | 需求 | 说明 |
 |---|------|------|
 | SM-10 | Express Cluster 模式 | Master + N Worker (N = CPU 核数)，充分利用多核 |
 | SM-11 | SQLite 文件模式 + WAL | Cluster 多 Worker 共享 DB 文件，WAL 支持并发读，写锁竞争为真实 I/O 瓶颈 |
 
-#### 13.2 测试质量保障需求 (#54)
+#### 2.7.2 测试质量保障需求
 
 | ID | 需求 | 说明 | 为什么重要 |
 |---|------|------|-----------|
@@ -332,13 +382,13 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 | TQ-03 | 测试隔离 | 每轮二分法测试之间重启服务 (重建 DB + 清空状态) | 上一轮残留的 orders 数据和内存状态影响下一轮结果 |
 | TQ-04 | 结果可重复性 | 关键轮次 (拐点附近) 跑 2~3 次取中值 | 单次结果可能有波动，多次验证确保结论可靠 |
 
-### 14. 期望输出 (#54)
+### 2.8 期望输出
 
 1. **最大并发数** — 满足 SLA 的最高 VUs (Cluster 模式, 4 核)
 2. **瓶颈层** — CPU / Memory / I/O / Network
 3. **容量报告** — 阶梯结果表 + 系统指标趋势 → `reports/` 归档
 
-### 15. 瓶颈定位决策树 (#54)
+### 2.9 瓶颈定位决策树
 
 ```
 p95 升高或吞吐下降
@@ -356,11 +406,11 @@ p95 升高或吞吐下降
           └─ 验证: 响应体大时更明显
 ```
 
-### 16. Scope 确认 (#54)
+### 2.10 Scope 确认
 
-见 [§3 功能边界](#功能边界) — Phase 2 部分已合并到统一的功能边界表。
+见 [§1.3 功能边界](#功能边界) — Phase 2 部分已合并到统一的功能边界表。
 
-### 17. 需求 Checklist (#54)
+### 2.11 需求 Checklist
 
 | # | 检查项 | 状态 |
 |---|--------|------|
@@ -380,7 +430,7 @@ p95 升高或吞吐下降
 
 ## Issue #56 — JWT 认证场景性能测试
 
-### 18. 目标 (#56)
+### 3.1 目标
 
 为电商 API 添加 JWT 认证层，测试高并发下登录/Token 刷新/鉴权链路的性能表现，并与无认证场景进行对比。
 
@@ -390,7 +440,7 @@ p95 升高或吞吐下降
 | 技术价值 | bcrypt CPU 密集型操作对 event loop 瓶颈的放大效应 (延续 Phase 2 CPU-bound 结论) |
 | Portfolio 价值 | 补全"身份认证类业务性能测试"场景覆盖 |
 
-### 19. 用户故事 (#56)
+### 3.2 用户故事
 
 | ID | 角色 | 故事 | 验收标准 |
 |-----|------|------|---------|
@@ -400,7 +450,7 @@ p95 升高或吞吐下降
 | US-17 | QA Engineer | 我需要测试完整用户旅程 (登录→浏览→下单) 的端到端性能 | login → browse → order 完整链路 load test 通过阈值 |
 | US-18 | QA Engineer | 我需要对比认证前后的性能差异 | 输出对比报告：带认证 vs 不带认证 |
 
-### 20. Use Cases (#56)
+### 3.3 Use Cases
 
 ```
 UC-06: 高并发登录
@@ -425,7 +475,7 @@ UC-09: 无效/过期 Token 请求
   预期: 返回 401, 不应导致服务端异常或性能退化
 ```
 
-### 21. 需求列表 (#56)
+### 3.4 需求列表
 
 #### 后端需求
 
@@ -448,7 +498,7 @@ UC-09: 无效/过期 Token 请求
 | AUTH-10 | JMeter 高并发登录 | `tests/jmeter/auth-load.jmx` — Login Sampler + JSON Extractor + HTTP Header Manager |
 | AUTH-11 | 性能对比报告 | 带认证 vs 不带认证的 p95 / 吞吐量 / error rate 对比 |
 
-### 22. Scope 确认 (#56)
+### 3.5 Scope 确认
 
 | 范围 | 包含 | 不包含 |
 |------|------|--------|
@@ -459,7 +509,7 @@ UC-09: 无效/过期 Token 请求
 | k6 | 认证专项脚本 + 现有脚本改造 | 分布式 k6 |
 | JMeter | 高并发登录测试计划 | 分布式 JMeter |
 
-### 23. 可行性评估 (#56)
+### 3.6 可行性评估
 
 | 维度 | 评估 | 风险等级 |
 |------|------|---------|
@@ -469,14 +519,14 @@ UC-09: 无效/过期 Token 请求
 | JWT 签名/验证 | HS256 对称加密, CPU 开销极低 (~0.1ms) | 无 |
 | 现有测试兼容 | `AUTH_ENABLED` 环境变量开关, 默认关闭 | **低** — 现有脚本无需改动即可运行 |
 
-### 24. 依赖识别 (#56)
+### 3.7 依赖识别
 
 | 依赖 | 类型 | 版本 | 用途 |
 |------|------|------|------|
 | `jsonwebtoken` | npm 新增 | ^9.0.0 | JWT 签发/验证 |
 | `bcryptjs` | npm 新增 | ^2.4.3 | 密码哈希 (纯 JS, 无需编译) |
 
-### 25. 设计决策 (#56)
+### 3.8 设计决策
 
 | 决策项 | 决定 | 理由 |
 |--------|------|------|
@@ -485,7 +535,7 @@ UC-09: 无效/过期 Token 请求
 | Token 过期时间 | Access 15min / Refresh 7d | 业界标准; 压测单次 < 15min 不会真正过期, 但需测试 refresh 场景 |
 | Token 黑名单存储 | SQLite 表 | 复用现有 DB, 无需引入 Redis |
 
-### 26. 需求 Checklist (#56)
+### 3.9 需求 Checklist
 
 | # | 检查项 | 状态 |
 |---|--------|------|
@@ -495,14 +545,14 @@ UC-09: 无效/过期 Token 请求
 | 4 | 可行性评估 | ✅ 5 项评估, bcrypt CPU 开销为中风险 |
 | 5 | 依赖已识别 | ✅ jsonwebtoken + bcryptjs |
 | 6 | 需求已编号 | ✅ AUTH-01~11 |
-| 7 | 需求描述已写入 requirements.md | ✅ 本文档 §18~25 |
+| 7 | 需求描述已写入 requirements.md | ✅ 本文档 §3.1~3.8 |
 | 8 | 设计决策已记录 | ✅ 兼容性方案 A + bcrypt 10 + Token 15min/7d |
 
 ---
 
 ## Phase 4: Soak Test + 可观测性增强 (#65)
 
-### 27. 目标 (#65)
+### 4.1 目标
 
 长时间低负载运行 (1~4h)，检测**内存泄漏、连接泄漏、DB 膨胀**等稳定性问题，并通过 Custom Metrics + Grafana AlertManager 增强可观测性。
 
@@ -512,7 +562,7 @@ UC-09: 无效/过期 Token 请求
 | **核心能力** | Soak Test (长时间低负载) + 内存泄漏检测 + 业务指标可视化 + 告警 |
 | **验收标准** | soak 4h 运行完成，heapUsed 无持续增长；Grafana 可视化趋势；告警规则在阈值突破时触发 |
 
-### 28. 用户故事 (#65)
+### 4.2 用户故事
 
 | ID | 用户故事 |
 |----|----------|
@@ -521,7 +571,7 @@ UC-09: 无效/过期 Token 请求
 | US-21 | 作为性能工程师，我想将业务指标 (订单成功率、认证延迟 p99) 导入 InfluxDB，以便在 Grafana 统一查看 |
 | US-22 | 作为性能工程师，我想设置 Grafana 告警规则，以便 p95 > 500ms / error > 1% / heap 持续增长时自动告警 |
 
-### 29. 需求列表 (#65)
+### 4.3 需求列表
 
 | ID | 需求 | 优先级 |
 |----|------|--------|
@@ -536,7 +586,7 @@ UC-09: 无效/过期 Token 请求
 | SOAK-09 | 单元测试: metrics 端点、泄漏检测逻辑的单元测试 | P0 |
 | SOAK-10 | soak test 报告: 生成 HTML/JSON 报告到 `reports/` 目录 | P2 |
 
-### 30. Scope 确认 (#65)
+### 4.4 Scope 确认
 
 | 模块 | In Scope | Out of Scope |
 |------|----------|--------------|
@@ -545,7 +595,7 @@ UC-09: 无效/过期 Token 请求
 | **AlertManager** | Grafana 告警规则 (p95, error rate, heap) | PagerDuty/Slack 告警集成 |
 | **单元测试** | 新模块的单元测试 | CI 中跑 soak (太耗时) |
 
-### 31. 可行性评估 (#65)
+### 4.5 可行性评估
 
 | 维度 | 评估 | 结论 |
 |------|------|------|
@@ -557,17 +607,17 @@ UC-09: 无效/过期 Token 请求
 | 时间风险 | soak test 本身耗时 1~4h, CI 中不可行 | ⚠️ CI 仅跑 smoke, soak 本地手动 |
 | DB 膨胀风险 | 长时间 orders 写入会膨胀 perf.db | ⚠️ 需内置清理或限速策略 |
 
-### 32. 依赖识别 (#65)
+### 4.6 依赖识别
 
 | 依赖 | 说明 | 状态 |
 |------|------|------|
-| Express API (src/app.js) | 需新增 `/api/metrics` 端点 | 需开发 |
+| Express API (src/app.js) | `/api/metrics` 端点 | ✅ 已完成 |
 | InfluxDB | 写入 custom metrics | ✅ 已有 |
-| Grafana | Dashboard + Alert rules | ✅ 已有, 需扩展 |
-| k6 | soak test 脚本 | 需开发 |
-| scripts/server.sh | 可能需要 soak 模式支持 | 需评估 |
+| Grafana | Dashboard + Alert rules | ✅ 已扩展 |
+| k6 | soak test 脚本 | ✅ 已完成 |
+| scripts/server.sh | soak 模式复用现有 start/stop | ✅ 无需改动 |
 
-### 33. 需求 Checklist (#65)
+### 4.7 需求 Checklist
 
 | # | 检查项 | 状态 |
 |---|--------|------|
@@ -577,17 +627,17 @@ UC-09: 无效/过期 Token 请求
 | 4 | 可行性评估 | ✅ 7 项评估, DB 膨胀 + CI 时间为中风险 |
 | 5 | 依赖已识别 | ✅ 5 项依赖 |
 | 6 | 需求已编号 | ✅ SOAK-01~10 |
-| 7 | 需求描述已写入 requirements.md | ✅ 本文档 §27~32 |
+| 7 | 需求描述已写入 requirements.md | ✅ 本文档 §4.1~4.6 |
 
 ---
 
 ## Phase 5 — 企业级性能测试模板增强
 
-> 来源: Postmortem 后对标企业性能测试平台最佳实践，识别 6 项差距
+> 来源: Postmortem 后对标企业性能测试平台最佳实践，识别差距并持续补全
 
 ### 5.1 目标
 
-将性能测试平台从「Portfolio 演示项目」提升为「企业级性能测试模板」，补全 11 个维度的企业能力。
+将性能测试平台从「Portfolio 演示项目」提升为「企业级性能测试模板」，补全 14 个维度的企业能力。
 
 | 维度 | 当前状态 | 目标状态 |
 |------|---------|---------|
@@ -602,22 +652,28 @@ UC-09: 无效/过期 Token 请求
 | 开发者体验 | 无 .env.example，缺 setup/clean 脚本 | 一条命令初始化 + 清理 |
 | CI 覆盖率 | 覆盖率仅本地查看 | CI 强制门禁 + artifact 归档 |
 | Grafana 面板 | 基础 k6/JMeter/soak 面板 | 补充错误分布 + 延迟热力图 + 自定义指标 |
+| 定时调度 | 仅手动触发测试 | CI cron nightly soak + weekly capacity，自动归档 |
+| 历史趋势 | 单次 baseline 对比 | 多次运行趋势可视化，渐进退化预警 |
+| 限流/熔断 | 无弹性工程测试 | rate limiter + 熔断恢复行为验证 |
 
 ### 5.2 用户故事
 
-| ID | 用户故事 | 关联需求 |
-|----|----------|---------|
-| US-23 | 作为性能工程师，我想通过 `--env staging` 切换目标环境，以便在不同环境执行相同测试 | ENT-ENV |
-| US-24 | 作为性能工程师，我想从 CSV 文件加载测试数据（用户/商品），以便模拟真实业务数据分布 | ENT-DATA |
-| US-25 | 作为性能工程师，我想复用统一的负载配置（如 "standard-load", "peak-traffic"），以便跨脚本保持一致 | ENT-PROFILE |
-| US-26 | 作为性能工程师，我想在 CI 中自动对比当前 p95 与历史基线，以便在性能退化时阻断合并 | ENT-BASELINE |
-| US-27 | 作为性能工程师，我想在测试结束后自动生成执行摘要（SLA 达标率、关键指标、对比），以便给管理层汇报 | ENT-REPORT |
-| US-28 | 作为性能工程师，我想在 Grafana 告警触发时收到 webhook 通知，以便及时响应性能问题 | ENT-ALERT |
+| ID    | 用户故事                                                                    | 关联需求            |
+| ----- | ----------------------------------------------------------------------- | --------------- |
+| US-23 | 作为性能工程师，我想通过 `--env staging` 切换目标环境，以便在不同环境执行相同测试                       | ENT-ENV         |
+| US-24 | 作为性能工程师，我想从 CSV 文件加载测试数据（用户/商品），以便模拟真实业务数据分布                            | ENT-DATA        |
+| US-25 | 作为性能工程师，我想复用统一的负载配置（如 "standard-load", "peak-traffic"），以便跨脚本保持一致        | ENT-PROFILE     |
+| US-26 | 作为性能工程师，我想在 CI 中自动对比当前 p95 与历史基线，以便在性能退化时阻断合并                           | ENT-BASELINE    |
+| US-27 | 作为性能工程师，我想在测试结束后自动生成执行摘要（SLA 达标率、关键指标、对比），以便给管理层汇报                      | ENT-REPORT      |
+| US-28 | 作为性能工程师，我想在 Grafana 告警触发时收到 webhook 通知，以便及时响应性能问题                       | ENT-ALERT       |
 | US-29 | 作为性能工程师，我想所有 k6 脚本使用一致的 assertions 和 sleep 模式，以便降低维护成本和减少 copy-paste 错误 | ENT-CONSISTENCY |
-| US-30 | 作为性能工程师，我想找到系统的绝对崩溃点（而非安全上限），以便了解系统的极限行为 | ENT-BREAKPOINT |
-| US-31 | 作为新加入的开发者，我想通过 `npm run setup` 一条命令完成环境初始化，以便快速上手项目 | ENT-DX |
-| US-32 | 作为性能工程师，我想在 CI 中强制覆盖率门禁，以便防止测试覆盖率退化 | ENT-COVERAGE |
-| US-33 | 作为性能工程师，我想在 Grafana 中查看错误分布和延迟热力图，以便快速定位性能瓶颈 | ENT-DASHBOARD |
+| US-30 | 作为性能工程师，我想找到系统的绝对崩溃点（而非安全上限），以便了解系统的极限行为                                | ENT-BREAKPOINT  |
+| US-31 | 作为新加入的开发者，我想通过 `npm run setup` 一条命令完成环境初始化，以便快速上手项目                     | ENT-DX          |
+| US-32 | 作为性能工程师，我想在 CI 中强制覆盖率门禁，以便防止测试覆盖率退化                                     | ENT-COVERAGE    |
+| US-33 | 作为性能工程师，我想在 Grafana 中查看错误分布和延迟热力图，以便快速定位性能瓶颈                            | ENT-DASHBOARD   |
+| US-34 | 作为性能工程师，我想设置定时调度自动运行 nightly soak 和 weekly capacity test，以便持续监控系统稳定性 | ENT-SCHEDULE |
+| US-35 | 作为性能工程师，我想查看最近 N 次运行的性能趋势，以便发现渐进退化 | ENT-TREND |
+| US-36 | 作为性能工程师，我想测试 API 限流和熔断行为，以便验证系统的弹性工程能力 | ENT-RESILIENCE |
 
 ### 5.3 需求列表
 
@@ -713,6 +769,31 @@ UC-09: 无效/过期 Token 请求
 | ENT-DASHBOARD-02 | 新增「延迟热力图」面板：请求延迟分布的 heatmap 可视化 | P2 | 小 |
 | ENT-DASHBOARD-03 | 新增「自定义指标聚合」面板：soak_heap_used_mb、soak_event_loop_lag、soak_order_success 趋势 | P2 | 小 |
 
+#### 5.3.13 定时调度测试（ENT-SCHEDULE）
+
+| ID | 需求 | 优先级 | 工作量 |
+|----|------|--------|--------|
+| ENT-SCHEDULE-01 | GitHub Actions cron workflow: nightly soak-short (10m) + weekly capacity test，自动归档结果 | P2 | 中 |
+| ENT-SCHEDULE-02 | 测试结果自动归档: 每次调度运行的 k6 JSON output 存为 CI artifact，保留 30 天 | P2 | 小 |
+
+#### 5.3.14 测试结果历史趋势（ENT-TREND）
+
+| ID | 需求 | 优先级 | 工作量 |
+|----|------|--------|--------|
+| ENT-TREND-01 | 趋势数据收集: 每次 CI 运行提取 p95/throughput/error rate 追加到 `reports/trend.json` | P2 | 中 |
+| ENT-TREND-02 | 趋势可视化: `scripts/generate-trend.sh` 从 trend.json 生成 Markdown 趋势表（最近 N 次运行的指标对比） | P2 | 中 |
+| ENT-TREND-03 | Grafana 趋势面板: 历史 p95 / throughput 折线图（从 InfluxDB 聚合） | P3 | 小 |
+
+> 注: ENT-BASELINE 是单次对比（当前 vs 上次），ENT-TREND 是多次趋势（最近 N 次运行的走势）。
+
+#### 5.3.15 API 限流/熔断测试（ENT-RESILIENCE）
+
+| ID | 需求 | 优先级 | 工作量 |
+|----|------|--------|--------|
+| ENT-RESILIENCE-01 | Rate limiter 中间件: Express 添加 `express-rate-limit`，可配置 windowMs + max requests | P1 | 小 |
+| ENT-RESILIENCE-02 | k6 限流测试脚本: `rate-limit.k6.js` 验证超限返回 429、窗口过后恢复正常 | P1 | 中 |
+| ENT-RESILIENCE-03 | 熔断行为测试: 验证系统在持续超载后的恢复时间（graceful degradation vs cascading failure） | P2 | 中 |
+
 ### 5.4 Scope 确认
 
 | 模块 | In Scope | Out of Scope |
@@ -728,6 +809,9 @@ UC-09: 无效/过期 Token 请求
 | **ENT-DX 开发者体验** | .env.example + npm run setup/clean/health | GUI 开发工具 |
 | **ENT-COVERAGE CI 覆盖率** | coverage gate + artifact upload | Codecov/Coveralls 集成 |
 | **ENT-DASHBOARD Grafana 面板** | 错误分布 + 延迟热力图 + 自定义指标聚合 | 自定义 Grafana 插件 |
+| **ENT-SCHEDULE 定时调度** | CI cron nightly soak + weekly capacity + artifact 归档 | 外部调度平台 (Jenkins/Airflow) |
+| **ENT-TREND 历史趋势** | trend.json 收集 + Markdown 趋势表 + Grafana 面板 | 数据库存储、Web UI 仪表板 |
+| **ENT-RESILIENCE 限流/熔断** | express-rate-limit + k6 限流脚本 + 熔断恢复测试 | 服务网格 (Istio) 级别限流 |
 
 ### 5.5 可行性评估
 
@@ -741,7 +825,7 @@ UC-09: 无效/过期 Token 请求
 | Breakpoint Test | k6 ramping-arrival-rate executor 支持持续递增，无需额外工具 | ✅ 可行 |
 | CI coverage gate | Jest --coverage 内置阈值检查，CI 中直接 fail on threshold breach | ✅ 可行 |
 | Grafana heatmap | InfluxDB + Grafana 原生 heatmap panel，无需插件 | ✅ 可行 |
-| 工作量 | 12 个需求方向均为轻中量级，无重大技术风险 | ✅ 预计 2-3 个 Phase |
+| 工作量 | 15 个需求方向均为轻中量级，无重大技术风险 | ✅ 预计 2-3 个 Phase |
 
 ### 5.6 依赖识别
 
@@ -752,15 +836,17 @@ UC-09: 无效/过期 Token 请求
 | actions/download-artifact | CI baseline 对比需跨 run 下载 artifact | ENT-BASELINE | ✅ 已有 @v7 |
 | Grafana webhook | Docker Compose 中配置 contact point | ENT-ALERT | ✅ 已有 Grafana |
 | jq | CI 中解析 JSON baseline | ENT-BASELINE | ✅ GitHub runner 预装 |
+| express-rate-limit | Express 限流中间件，npm 安装 | ENT-RESILIENCE | 需安装 |
+| GitHub Actions schedule | cron trigger，无需额外工具 | ENT-SCHEDULE | ✅ 已有 |
 
 ### 5.7 需求 Checklist
 
 | #   | 检查项                     | 状态                                                                                                                   |
 | --- | ----------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | 1   | 目标明确                    | ✅ 企业级模板增强，6 个维度                                                                                                      |
-| 2   | 完整用户故事                  | ✅ US-23~28，每条关联需求组                                                                                                   |
+| 2   | 完整用户故事                  | ✅ US-23~36，每条关联需求组                                                                                                   |
 | 3   | Scope 已确认               | ✅ 6 个模块，明确 In/Out                                                                                                    |
 | 4   | 可行性评估                   | ✅ 5 项评估，全部可行                                                                                                         |
 | 5   | 依赖已识别                   | ✅ 5 项依赖，关联需求组                                                                                                        |
-| 6   | 需求已编号                   | ✅ 12 组 30 条: ENT-ENV(3) + ENT-DATA(2) + ENT-PROFILE(2) + ENT-BASELINE(2) + ENT-REPORT(1) + ENT-ALERT(1) + ENT-TEST(4) + ENT-CONSISTENCY(4) + ENT-BREAKPOINT(2) + ENT-DX(3) + ENT-COVERAGE(3) + ENT-DASHBOARD(3) |
-| 7   | 需求描述已写入 requirements.md | ✅ 本文档 §5.1~5.6                                                                                                       |
+| 6   | 需求已编号                   | ✅ 15 组 37 条: ENT-ENV(3) + ENT-DATA(2) + ENT-PROFILE(2) + ENT-BASELINE(2) + ENT-REPORT(1) + ENT-ALERT(1) + ENT-TEST(4) + ENT-CONSISTENCY(4) + ENT-BREAKPOINT(2) + ENT-DX(3) + ENT-COVERAGE(3) + ENT-DASHBOARD(3) + ENT-SCHEDULE(2) + ENT-TREND(3) + ENT-RESILIENCE(3) |
+| 7   | 需求描述已写入 requirements.md | ✅ 本文档 §5.1~5.6                                                                                                          |
