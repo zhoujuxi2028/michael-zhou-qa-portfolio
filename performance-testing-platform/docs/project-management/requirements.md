@@ -14,13 +14,13 @@
 
 ## 目录
 
-| Phase | Issue | 状态 | 章节 |
-|-------|-------|------|------|
-| **1 — 双引擎性能测试** | [#17](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/17) | ✅ Done | §1.1–1.6 |
-| **2 — 系统指标采集 + 容量测试** | [#54](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/54) | ✅ Done | §2.1–2.11 |
-| **3 — JWT 认证场景性能测试** | [#56](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/56) | ✅ Done | §3.1–3.9 |
-| **4 — Soak Test + 可观测性增强** | [#65](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/65) | ✅ Done | §4.1–4.7 |
-| **5 — 企业级性能测试模板增强** | — | 📋 Planned | §5.1–5.7 |
+| Phase                      | Issue                                                                      | 状态         | 章节        |
+| -------------------------- | -------------------------------------------------------------------------- | ---------- | --------- |
+| **1 — 双引擎性能测试**            | [#17](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/17) | ✅ Done     | §1.1–1.6  |
+| **2 — 系统指标采集 + 容量测试**      | [#54](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/54) | ✅ Done     | §2.1–2.11 |
+| **3 — JWT 认证场景性能测试**       | [#56](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/56) | ✅ Done     | §3.1–3.9  |
+| **4 — Soak Test + 可观测性增强** | [#65](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/65) | ✅ Done     | §4.1–4.7  |
+| **5 — 企业级性能测试模板增强**        | —                                                                          | 📋 Planned | §5.1–5.7  |
 
 **Phase 1 (#17)**
 - [1.1 目标](#11-目标)
@@ -637,23 +637,21 @@ UC-09: 无效/过期 Token 请求
 
 ### 5.1 目标
 
-将性能测试平台从「Portfolio 演示项目」提升为「企业级性能测试模板」，补全 14 个维度的企业能力。
+将性能测试平台从「Portfolio 演示项目」提升为「企业级性能测试模板」，补全 12 个维度的企业能力。
 
 | 维度 | 当前状态 | 目标状态 |
 |------|---------|---------|
 | 环境管理 | 锁定 localhost | dev/staging/prod 配置切换 |
 | 测试数据 | 5 条硬编码商品 | CSV 参数化 + SharedArray 动态加载 |
 | 负载配置 | 每个脚本重复定义 stages | 集中管理可复用 profiles |
-| 基线回归 | CI 仅 pass/fail | 对比历史基线，检测性能退化 |
+| 基线回归 + 历史趋势 | CI 仅 pass/fail，单次对比 | 基线回归检测 + 多次运行趋势可视化 + 渐进退化预警 |
 | 报告 | HTML + Grafana | 新增执行摘要报告（Markdown） |
-| 告警 | Grafana 面板无通知渠道 | webhook 通知 |
 | k6 一致性 | 脚本间 assertions/sleep/funnel 逻辑重复 | 统一 helpers，消除重复代码 |
 | 崩溃测试 | 只有安全上限 (capacity) | 新增 breakpoint test 找绝对崩溃点 |
 | 开发者体验 | 无 .env.example，缺 setup/clean 脚本 | 一条命令初始化 + 清理 |
 | CI 覆盖率 | 覆盖率仅本地查看 | CI 强制门禁 + artifact 归档 |
-| Grafana 面板 | 基础 k6/JMeter/soak 面板 | 补充错误分布 + 延迟热力图 + 自定义指标 |
+| Grafana 面板 + 告警 | 基础面板，无通知渠道 | 错误分布 + 延迟热力图 + 自定义指标 + webhook 告警 |
 | 定时调度 | 仅手动触发测试 | CI cron nightly soak + weekly capacity，自动归档 |
-| 历史趋势 | 单次 baseline 对比 | 多次运行趋势可视化，渐进退化预警 |
 | 限流/熔断 | 无弹性工程测试 | rate limiter + 熔断恢复行为验证 |
 
 ### 5.2 用户故事
@@ -663,17 +661,15 @@ UC-09: 无效/过期 Token 请求
 | US-23 | 作为性能工程师，我想通过 `--env staging` 切换目标环境，以便在不同环境执行相同测试                       | ENT-ENV         |
 | US-24 | 作为性能工程师，我想从 CSV 文件加载测试数据（用户/商品），以便模拟真实业务数据分布                            | ENT-DATA        |
 | US-25 | 作为性能工程师，我想复用统一的负载配置（如 "standard-load", "peak-traffic"），以便跨脚本保持一致        | ENT-PROFILE     |
-| US-26 | 作为性能工程师，我想在 CI 中自动对比当前 p95 与历史基线，以便在性能退化时阻断合并                           | ENT-BASELINE    |
+| US-26 | 作为性能工程师，我想在 CI 中自动对比当前 p95 与历史基线并查看最近 N 次运行趋势，以便在性能退化时阻断合并             | ENT-BASELINE    |
 | US-27 | 作为性能工程师，我想在测试结束后自动生成执行摘要（SLA 达标率、关键指标、对比），以便给管理层汇报                      | ENT-REPORT      |
-| US-28 | 作为性能工程师，我想在 Grafana 告警触发时收到 webhook 通知，以便及时响应性能问题                       | ENT-ALERT       |
-| US-29 | 作为性能工程师，我想所有 k6 脚本使用一致的 assertions 和 sleep 模式，以便降低维护成本和减少 copy-paste 错误 | ENT-CONSISTENCY |
-| US-30 | 作为性能工程师，我想找到系统的绝对崩溃点（而非安全上限），以便了解系统的极限行为                                | ENT-BREAKPOINT  |
-| US-31 | 作为新加入的开发者，我想通过 `npm run setup` 一条命令完成环境初始化，以便快速上手项目                     | ENT-DX          |
-| US-32 | 作为性能工程师，我想在 CI 中强制覆盖率门禁，以便防止测试覆盖率退化                                     | ENT-COVERAGE    |
-| US-33 | 作为性能工程师，我想在 Grafana 中查看错误分布和延迟热力图，以便快速定位性能瓶颈                            | ENT-DASHBOARD   |
-| US-34 | 作为性能工程师，我想设置定时调度自动运行 nightly soak 和 weekly capacity test，以便持续监控系统稳定性 | ENT-SCHEDULE |
-| US-35 | 作为性能工程师，我想查看最近 N 次运行的性能趋势，以便发现渐进退化 | ENT-TREND |
-| US-36 | 作为性能工程师，我想测试 API 限流和熔断行为，以便验证系统的弹性工程能力 | ENT-RESILIENCE |
+| US-28 | 作为性能工程师，我想所有 k6 脚本使用一致的 assertions 和 sleep 模式，以便降低维护成本和减少 copy-paste 错误 | ENT-CONSISTENCY |
+| US-29 | 作为性能工程师，我想找到系统的绝对崩溃点（而非安全上限），以便了解系统的极限行为                                | ENT-BREAKPOINT  |
+| US-30 | 作为新加入的开发者，我想通过 `npm run setup` 一条命令完成环境初始化，以便快速上手项目                     | ENT-DX          |
+| US-31 | 作为性能工程师，我想在 CI 中强制覆盖率门禁，以便防止测试覆盖率退化                                     | ENT-COVERAGE    |
+| US-32 | 作为性能工程师，我想在 Grafana 中查看错误分布、延迟热力图，并在告警触发时收到 webhook 通知                  | ENT-DASHBOARD   |
+| US-33 | 作为性能工程师，我想设置定时调度自动运行 nightly soak 和 weekly capacity test，以便持续监控系统稳定性    | ENT-SCHEDULE    |
+| US-34 | 作为性能工程师，我想测试 API 限流和熔断行为，以便验证系统的弹性工程能力                                  | ENT-RESILIENCE  |
 
 ### 5.3 需求列表
 
@@ -699,26 +695,23 @@ UC-09: 无效/过期 Token 请求
 | ENT-PROFILE-01 | 创建 `profiles/` 目录，含 `smoke.json` / `load.json` / `stress.json` / `spike.json` / `peak.json`，定义 stages + thresholds | P1 | 小 |
 | ENT-PROFILE-02 | k6 脚本改造: import profile 替代内联 stages 定义，实现跨脚本配置复用 | P1 | 小 |
 
-#### 5.3.4 性能基线回归（ENT-BASELINE）
+#### 5.3.4 性能基线回归 + 历史趋势（ENT-BASELINE）
 
 | ID | 需求 | 优先级 | 工作量 |
 |----|------|--------|--------|
 | ENT-BASELINE-01 | CI 性能基线存储: smoke gate 运行后将 p95 / error rate / throughput 存为 JSON artifact | P1 | 中 |
 | ENT-BASELINE-02 | 基线回归检测: CI 下载上次 baseline artifact，对比当前 p95，退化 >20% 则 warning，>50% 则 fail | P1 | 中 |
+| ENT-BASELINE-03 | 趋势数据收集: 每次 CI 运行提取 p95/throughput/error rate 追加到 `reports/trend.json` | P2 | 中 |
+| ENT-BASELINE-04 | 趋势可视化: `scripts/generate-trend.sh` 从 trend.json 生成 Markdown 趋势表（最近 N 次运行的指标对比） | P2 | 中 |
+| ENT-BASELINE-05 | Grafana 趋势面板: 历史 p95 / throughput 折线图（从 InfluxDB 聚合） | P3 | 小 |
 
 #### 5.3.5 执行摘要报告（ENT-REPORT）
 
 | ID | 需求 | 优先级 | 工作量 |
 |----|------|--------|--------|
-| ENT-REPORT-01 | `scripts/generate-summary.sh` 解析 k6 JSON output，生成 Markdown 摘要（SLA 达标率、Top 5 慢接口、对比基线） | P2 | 中 |
+| ENT-REPORT-01 | `scripts/generate-summary.sh` 解析 k6 JSON output，生成 Markdown 摘要（SLA 达标率、Top 5 慢接口、对比基线） | P1 | 中 |
 
-#### 5.3.6 Grafana 告警通知（ENT-ALERT）
-
-| ID | 需求 | 优先级 | 工作量 |
-|----|------|--------|--------|
-| ENT-ALERT-01 | `docker-compose.yml` 增加 Grafana webhook notifier 配置，告警触发时 POST 到指定 URL | P2 | 小 |
-
-#### 5.3.7 单元测试（ENT-TEST）
+#### 5.3.6 单元测试（ENT-TEST）
 
 | ID | 需求 | 优先级 | 工作量 |
 |----|------|--------|--------|
@@ -727,7 +720,7 @@ UC-09: 无效/过期 Token 请求
 | ENT-TEST-03 | profile 解析单元测试: JSON 加载、缺失 profile 报错、stages 格式校验 | P0 | 小 |
 | ENT-TEST-04 | 基线对比单元测试: 回归检测阈值判定、首次运行无 baseline 兜底 | P1 | 小 |
 
-#### 5.3.8 k6 脚本一致性重构（ENT-CONSISTENCY）
+#### 5.3.7 k6 脚本一致性重构（ENT-CONSISTENCY）
 
 | ID | 需求 | 优先级 | 工作量 |
 |----|------|--------|--------|
@@ -735,17 +728,18 @@ UC-09: 无效/过期 Token 请求
 | ENT-CONSISTENCY-02 | 统一 sleep/think time 模式：提取 `helpers/thinkTime.js`，标准化 `sleep(randomIntBetween(0.5, 1))` | P1 | 小 |
 | ENT-CONSISTENCY-03 | 提取漏斗逻辑到 `helpers/funnel.js`：60% browse → 30% detail → 10% order，消除 load/stress/capacity/soak 中的重复代码 | P1 | 中 |
 | ENT-CONSISTENCY-04 | 所有标准测试脚本 (smoke/load/stress/spike) 添加 health check 前置验证 | P2 | 小 |
+| ENT-CONSISTENCY-05 | 现有脚本迁移: load/stress/capacity/soak 统一 import helpers（funnel/checkStatus/thinkTime），移除内联重复代码 | P1 | 中 |
 
-#### 5.3.9 Breakpoint Test（ENT-BREAKPOINT）
+#### 5.3.8 Breakpoint Test（ENT-BREAKPOINT）
 
 | ID | 需求 | 优先级 | 工作量 |
 |----|------|--------|--------|
-| ENT-BREAKPOINT-01 | 新增 `breakpoint.k6.js`：持续递增 VUs 直到系统崩溃（error rate > 50% 或完全不响应），记录崩溃点 VUs 和崩溃行为 | P2 | 中 |
-| ENT-BREAKPOINT-02 | 崩溃行为分类：区分 graceful degradation（渐进退化）vs catastrophic failure（级联崩溃） | P2 | 小 |
+| ENT-BREAKPOINT-01 | 新增 `breakpoint.k6.js`：持续递增 VUs 直到系统崩溃（error rate > 50% 或完全不响应），记录崩溃点 VUs 和崩溃行为 | P1 | 中 |
+| ENT-BREAKPOINT-02 | 崩溃行为分类：区分 graceful degradation（渐进退化）vs catastrophic failure（级联崩溃） | P1 | 小 |
 
 > 注: Breakpoint Test 与 Capacity Test 的区别 — Capacity 找安全上限 (SLA 不违反)，Breakpoint 找绝对崩溃点 (系统不可用)。
 
-#### 5.3.10 开发者体验改进（ENT-DX）
+#### 5.3.9 开发者体验改进（ENT-DX）
 
 | ID | 需求 | 优先级 | 工作量 |
 |----|------|--------|--------|
@@ -753,7 +747,7 @@ UC-09: 无效/过期 Token 请求
 | ENT-DX-02 | 新增 npm scripts: `setup` (install + lint + test)、`clean` (清理 reports/data/coverage)、`health` (preflight + test) | P1 | 小 |
 | ENT-DX-03 | 新增 npm script: `dev` (NODE_ENV=development 启动，watch mode) | P2 | 小 |
 
-#### 5.3.11 CI 覆盖率门禁（ENT-COVERAGE）
+#### 5.3.10 CI 覆盖率门禁（ENT-COVERAGE）
 
 | ID | 需求 | 优先级 | 工作量 |
 |----|------|--------|--------|
@@ -761,37 +755,30 @@ UC-09: 无效/过期 Token 请求
 | ENT-COVERAGE-02 | 上传 coverage 报告为 CI artifact (`actions/upload-artifact`) | P1 | 小 |
 | ENT-COVERAGE-03 | Jest 覆盖率阈值 (statements ≥80%, branches ≥70%, functions ≥80%, lines ≥80%) 在 CI 中强制执行，低于阈值则 fail | P1 | 小 |
 
-#### 5.3.12 Grafana 面板补充（ENT-DASHBOARD）
+#### 5.3.11 Grafana 面板 + 告警（ENT-DASHBOARD）
 
 | ID | 需求 | 优先级 | 工作量 |
 |----|------|--------|--------|
 | ENT-DASHBOARD-01 | 新增「错误分布」面板：按 endpoint 分组的 error rate 时序图 | P2 | 小 |
 | ENT-DASHBOARD-02 | 新增「延迟热力图」面板：请求延迟分布的 heatmap 可视化 | P2 | 小 |
 | ENT-DASHBOARD-03 | 新增「自定义指标聚合」面板：soak_heap_used_mb、soak_event_loop_lag、soak_order_success 趋势 | P2 | 小 |
+| ENT-DASHBOARD-04 | Grafana webhook 告警: `docker-compose.yml` 增加 webhook notifier 配置，告警触发时 POST 到指定 URL | P2 | 小 |
 
-#### 5.3.13 定时调度测试（ENT-SCHEDULE）
+#### 5.3.12 定时调度测试（ENT-SCHEDULE）
 
-| ID | 需求 | 优先级 | 工作量 |
-|----|------|--------|--------|
-| ENT-SCHEDULE-01 | GitHub Actions cron workflow: nightly soak-short (10m) + weekly capacity test，自动归档结果 | P2 | 中 |
-| ENT-SCHEDULE-02 | 测试结果自动归档: 每次调度运行的 k6 JSON output 存为 CI artifact，保留 30 天 | P2 | 小 |
-
-#### 5.3.14 测试结果历史趋势（ENT-TREND）
+> ⚠️ **可行性风险**: CI cron 需要目标服务器持续运行，Portfolio 项目无持久基础设施。降级为 P3，作为示范性 workflow 文件，不保证实际调度效果。
 
 | ID | 需求 | 优先级 | 工作量 |
 |----|------|--------|--------|
-| ENT-TREND-01 | 趋势数据收集: 每次 CI 运行提取 p95/throughput/error rate 追加到 `reports/trend.json` | P2 | 中 |
-| ENT-TREND-02 | 趋势可视化: `scripts/generate-trend.sh` 从 trend.json 生成 Markdown 趋势表（最近 N 次运行的指标对比） | P2 | 中 |
-| ENT-TREND-03 | Grafana 趋势面板: 历史 p95 / throughput 折线图（从 InfluxDB 聚合） | P3 | 小 |
+| ENT-SCHEDULE-01 | GitHub Actions cron workflow: nightly soak-short (10m) + weekly capacity test，自动归档结果 | P3 | 中 |
+| ENT-SCHEDULE-02 | 测试结果自动归档: 每次调度运行的 k6 JSON output 存为 CI artifact，保留 30 天 | P3 | 小 |
 
-> 注: ENT-BASELINE 是单次对比（当前 vs 上次），ENT-TREND 是多次趋势（最近 N 次运行的走势）。
-
-#### 5.3.15 API 限流/熔断测试（ENT-RESILIENCE）
+#### 5.3.13 API 限流/熔断测试（ENT-RESILIENCE）
 
 | ID | 需求 | 优先级 | 工作量 |
 |----|------|--------|--------|
-| ENT-RESILIENCE-01 | Rate limiter 中间件: Express 添加 `express-rate-limit`，可配置 windowMs + max requests | P1 | 小 |
-| ENT-RESILIENCE-02 | k6 限流测试脚本: `rate-limit.k6.js` 验证超限返回 429、窗口过后恢复正常 | P1 | 中 |
+| ENT-RESILIENCE-01 | Rate limiter 中间件: Express 添加 `express-rate-limit`，可配置 windowMs + max requests | P0 | 小 |
+| ENT-RESILIENCE-02 | k6 限流测试脚本: `rate-limit.k6.js` 验证超限返回 429、窗口过后恢复正常 | P0 | 中 |
 | ENT-RESILIENCE-03 | 熔断行为测试: 验证系统在持续超载后的恢复时间（graceful degradation vs cascading failure） | P2 | 中 |
 
 ### 5.4 Scope 确认
@@ -801,16 +788,14 @@ UC-09: 无效/过期 Token 请求
 | **ENT-ENV 多环境** | env/ 配置文件 + k6 env loader + JMeter properties | 真实 staging/prod 环境部署 |
 | **ENT-DATA 测试数据** | CSV 参数化 + SharedArray | 数据库 seeding、动态数据生成 API |
 | **ENT-PROFILE 负载配置** | profiles/ JSON 集中管理 | GUI 配置界面 |
-| **ENT-BASELINE 基线回归** | CI artifact 存储 + JSON 对比 + 阈值判定 | 数据库存储历史趋势、Web UI |
+| **ENT-BASELINE 基线回归 + 历史趋势** | CI artifact 存储 + JSON 对比 + 阈值判定 + trend.json + Markdown 趋势表 + Grafana 趋势面板 | 数据库存储、Web UI 仪表板 |
 | **ENT-REPORT 执行摘要** | Markdown 报告 | PDF 生成、邮件自动发送 |
-| **ENT-ALERT 告警通知** | Grafana webhook | Slack/PagerDuty/邮件集成 |
-| **ENT-CONSISTENCY k6 一致性** | checkStatus 统一、funnel 提取、sleep 标准化 | 全量脚本重写 |
+| **ENT-CONSISTENCY k6 一致性** | checkStatus 统一、funnel 提取、sleep 标准化、现有脚本迁移 | 全量脚本重写 |
 | **ENT-BREAKPOINT 崩溃测试** | breakpoint.k6.js 找绝对崩溃点 | 分布式多节点压测 |
 | **ENT-DX 开发者体验** | .env.example + npm run setup/clean/health | GUI 开发工具 |
 | **ENT-COVERAGE CI 覆盖率** | coverage gate + artifact upload | Codecov/Coveralls 集成 |
-| **ENT-DASHBOARD Grafana 面板** | 错误分布 + 延迟热力图 + 自定义指标聚合 | 自定义 Grafana 插件 |
-| **ENT-SCHEDULE 定时调度** | CI cron nightly soak + weekly capacity + artifact 归档 | 外部调度平台 (Jenkins/Airflow) |
-| **ENT-TREND 历史趋势** | trend.json 收集 + Markdown 趋势表 + Grafana 面板 | 数据库存储、Web UI 仪表板 |
+| **ENT-DASHBOARD Grafana 面板 + 告警** | 错误分布 + 延迟热力图 + 自定义指标聚合 + webhook 告警 | 自定义 Grafana 插件、Slack/PagerDuty 集成 |
+| **ENT-SCHEDULE 定时调度** ⚠️ | CI cron nightly soak + weekly capacity + artifact 归档（示范性，P3） | 外部调度平台 (Jenkins/Airflow) |
 | **ENT-RESILIENCE 限流/熔断** | express-rate-limit + k6 限流脚本 + 熔断恢复测试 | 服务网格 (Istio) 级别限流 |
 
 ### 5.5 可行性评估
@@ -819,13 +804,14 @@ UC-09: 无效/过期 Token 请求
 |------|------|------|
 | k6 SharedArray + papaparse | k6 内置 SharedArray，papaparse 为 npm 包可 bundle | ✅ 可行 |
 | k6 env 文件加载 | k6 支持 `open()` 读文件 + `__ENV` 变量 | ✅ 可行 |
-| CI baseline 对比 | GitHub Actions artifact 可跨 run 下载 (`actions/download-artifact`) | ✅ 可行 |
-| Grafana webhook | Grafana alerting 原生支持 webhook contact point | ✅ 可行 |
+| CI baseline 对比 + 趋势 | GitHub Actions artifact 可跨 run 下载；trend.json 追加式收集 | ✅ 可行 |
+| Grafana webhook + heatmap | alerting 原生支持 webhook；原生 heatmap panel，无需插件 | ✅ 可行 |
 | k6 helpers 提取 | checkStatus/funnel/thinkTime 均为纯 JS 函数，提取无风险 | ✅ 可行 |
 | Breakpoint Test | k6 ramping-arrival-rate executor 支持持续递增，无需额外工具 | ✅ 可行 |
 | CI coverage gate | Jest --coverage 内置阈值检查，CI 中直接 fail on threshold breach | ✅ 可行 |
-| Grafana heatmap | InfluxDB + Grafana 原生 heatmap panel，无需插件 | ✅ 可行 |
-| 工作量 | 15 个需求方向均为轻中量级，无重大技术风险 | ✅ 预计 2-3 个 Phase |
+| express-rate-limit | 成熟 npm 包，零配置集成 Express，支持自定义 windowMs + max | ✅ 可行 |
+| CI cron 定时调度 | GitHub Actions schedule 支持 cron，但 Portfolio 无持久目标服务 | ⚠️ 有限可行（示范性） |
+| 工作量 | 12 组需求均为轻中量级，无重大技术风险 | ✅ 预计 2-3 个 Phase |
 
 ### 5.6 依赖识别
 
@@ -833,9 +819,9 @@ UC-09: 无效/过期 Token 请求
 |------|------|---------|------|
 | k6 SharedArray | 内置模块，无需额外安装 | ENT-DATA | ✅ 已有 |
 | papaparse | CSV 解析，需 k6 bundle (webpack/esbuild) 或 k6 内置 CSV | ENT-DATA | 需评估 |
-| actions/download-artifact | CI baseline 对比需跨 run 下载 artifact | ENT-BASELINE | ✅ 已有 @v7 |
-| Grafana webhook | Docker Compose 中配置 contact point | ENT-ALERT | ✅ 已有 Grafana |
-| jq | CI 中解析 JSON baseline | ENT-BASELINE | ✅ GitHub runner 预装 |
+| actions/download-artifact | CI baseline 对比 + 趋势数据需跨 run 下载 artifact | ENT-BASELINE | ✅ 已有 @v7 |
+| Grafana webhook | Docker Compose 中配置 contact point | ENT-DASHBOARD | ✅ 已有 Grafana |
+| jq | CI 中解析 JSON baseline + trend | ENT-BASELINE | ✅ GitHub runner 预装 |
 | express-rate-limit | Express 限流中间件，npm 安装 | ENT-RESILIENCE | 需安装 |
 | GitHub Actions schedule | cron trigger，无需额外工具 | ENT-SCHEDULE | ✅ 已有 |
 
@@ -843,10 +829,10 @@ UC-09: 无效/过期 Token 请求
 
 | #   | 检查项                     | 状态                                                                                                                   |
 | --- | ----------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| 1   | 目标明确                    | ✅ 企业级模板增强，6 个维度                                                                                                      |
-| 2   | 完整用户故事                  | ✅ US-23~36，每条关联需求组                                                                                                   |
-| 3   | Scope 已确认               | ✅ 6 个模块，明确 In/Out                                                                                                    |
-| 4   | 可行性评估                   | ✅ 5 项评估，全部可行                                                                                                         |
-| 5   | 依赖已识别                   | ✅ 5 项依赖，关联需求组                                                                                                        |
-| 6   | 需求已编号                   | ✅ 15 组 37 条: ENT-ENV(3) + ENT-DATA(2) + ENT-PROFILE(2) + ENT-BASELINE(2) + ENT-REPORT(1) + ENT-ALERT(1) + ENT-TEST(4) + ENT-CONSISTENCY(4) + ENT-BREAKPOINT(2) + ENT-DX(3) + ENT-COVERAGE(3) + ENT-DASHBOARD(3) + ENT-SCHEDULE(2) + ENT-TREND(3) + ENT-RESILIENCE(3) |
+| 1   | 目标明确                    | ✅ 企业级模板增强，12 个维度                                                                                                     |
+| 2   | 完整用户故事                  | ✅ US-23~34，每条关联需求组                                                                                                   |
+| 3   | Scope 已确认               | ✅ 12 个模块，明确 In/Out                                                                                                   |
+| 4   | 可行性评估                   | ✅ 10 项评估，1 项有限可行（ENT-SCHEDULE）                                                                                       |
+| 5   | 依赖已识别                   | ✅ 7 项依赖，关联需求组                                                                                                        |
+| 6   | 需求已编号                   | ✅ 12 组 38 条: ENT-ENV(3) + ENT-DATA(2) + ENT-PROFILE(2) + ENT-BASELINE(5) + ENT-REPORT(1) + ENT-TEST(4) + ENT-CONSISTENCY(5) + ENT-BREAKPOINT(2) + ENT-DX(3) + ENT-COVERAGE(3) + ENT-DASHBOARD(4) + ENT-SCHEDULE(2) + ENT-RESILIENCE(3) |
 | 7   | 需求描述已写入 requirements.md | ✅ 本文档 §5.1~5.6                                                                                                          |
