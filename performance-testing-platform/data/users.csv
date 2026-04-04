@@ -1,0 +1,6 @@
+username,password,role
+testuser1,testpass123,customer
+testuser2,testpass456,customer
+testuser3,testpass789,admin
+loaduser1,loadpass001,customer
+loaduser2,loadpass002,customer
