@@ -8,6 +8,7 @@
 | [#54](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/54) | 系统指标采集 + 容量测试 (瓶颈定位) | 2026-03-31 |
 | [#56](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/56) | JWT 认证场景性能测试 | 2026-04-02 |
 | [#65](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/65) | Soak Test + 可观测性增强 | 2026-04-02 |
+| Phase 5 | 企业级性能测试模板增强 (多环境/数据驱动/基线回归/报告/告警) | 2026-04-04 |
 
 ---
 
@@ -46,6 +47,13 @@
 - [31. 可行性评估 (#65)](#31-可行性评估-65)
 - [32. 依赖识别 (#65)](#32-依赖识别-65)
 - [33. 需求 Checklist (#65)](#33-需求-checklist-65)
+- [34. 目标 (#Phase5)](#34-目标-phase5)
+- [35. 用户故事 (#Phase5)](#35-用户故事-phase5)
+- [36. 需求列表 (#Phase5)](#36-需求列表-phase5)
+- [37. Scope 确认 (#Phase5)](#37-scope-确认-phase5)
+- [38. 可行性评估 (#Phase5)](#38-可行性评估-phase5)
+- [39. 依赖识别 (#Phase5)](#39-依赖识别-phase5)
+- [40. 需求 Checklist (#Phase5)](#40-需求-checklist-phase5)
 
 ---
 
@@ -594,3 +602,91 @@ UC-09: 无效/过期 Token 请求
 | 5 | 依赖已识别 | ✅ 5 项依赖 |
 | 6 | 需求已编号 | ✅ SOAK-01~10 |
 | 7 | 需求描述已写入 requirements.md | ✅ 本文档 §27~32 |
+
+---
+
+## Phase 5 — 企业级性能测试模板增强
+
+> 来源: Postmortem 后对标企业性能测试平台最佳实践，识别 6 项差距
+
+### 34. 目标 (#Phase5)
+
+将性能测试平台从「Portfolio 演示项目」提升为「企业级性能测试模板」，补全多环境、数据驱动、基线回归、报告、告警 5 个维度的企业能力。
+
+| 维度 | 当前状态 | 目标状态 |
+|------|---------|---------|
+| 环境管理 | 锁定 localhost | dev/staging/prod 配置切换 |
+| 测试数据 | 5 条硬编码商品 | CSV 参数化 + SharedArray 动态加载 |
+| 负载配置 | 每个脚本重复定义 stages | 集中管理可复用 profiles |
+| 基线回归 | CI 仅 pass/fail | 对比历史基线，检测性能退化 |
+| 报告 | HTML + Grafana | 新增执行摘要报告（Markdown） |
+| 告警 | Grafana 面板无通知渠道 | webhook 通知 |
+
+### 35. 用户故事 (#Phase5)
+
+| ID | 用户故事 |
+|----|----------|
+| US-23 | 作为性能工程师，我想通过 `--env staging` 切换目标环境，以便在不同环境执行相同测试 |
+| US-24 | 作为性能工程师，我想从 CSV 文件加载测试数据（用户/商品），以便模拟真实业务数据分布 |
+| US-25 | 作为性能工程师，我想复用统一的负载配置（如 "standard-load", "peak-traffic"），以便跨脚本保持一致 |
+| US-26 | 作为性能工程师，我想在 CI 中自动对比当前 p95 与历史基线，以便在性能退化时阻断合并 |
+| US-27 | 作为性能工程师，我想在测试结束后自动生成执行摘要（SLA 达标率、关键指标、对比），以便给管理层汇报 |
+| US-28 | 作为性能工程师，我想在 Grafana 告警触发时收到 webhook 通知，以便及时响应性能问题 |
+
+### 36. 需求列表 (#Phase5)
+
+| ID | 需求 | 优先级 | 工作量 |
+|----|------|--------|--------|
+| ENT-01 | 多环境配置: 创建 `env/` 目录，含 `local.env` / `staging.env` / `production.env`，k6 通过 `--env` 加载，JMeter 通过 `-q` 加载对应 properties | P0 | 小 |
+| ENT-02 | k6 环境加载器: `helpers/env.js` 解析环境文件，导出 BASE_URL / AUTH_ENABLED / DB 配置 | P0 | 小 |
+| ENT-03 | 测试数据 CSV: `data/users.csv` + `data/products.csv`，k6 用 SharedArray + papaparse 加载 | P0 | 小 |
+| ENT-04 | k6 数据驱动改造: smoke/load/stress 脚本从 CSV 读取商品 ID 和用户凭证，替代硬编码 | P1 | 中 |
+| ENT-05 | 负载配置集中管理: `profiles/` 目录含 `smoke.json` / `load.json` / `stress.json` / `spike.json` / `peak.json`，k6 脚本 import profile | P1 | 小 |
+| ENT-06 | CI 性能基线: smoke gate 运行后将 p95/error rate/throughput 存为 JSON artifact，下次运行时对比 | P1 | 中 |
+| ENT-07 | 基线回归检测: CI 中对比当前 vs 上次 p95，退化超 20% 则 warning，超 50% 则 fail | P1 | 中 |
+| ENT-08 | 执行摘要报告: `scripts/generate-summary.sh` 解析 k6 JSON output 生成 Markdown 摘要（SLA 达标率、Top 5 慢接口、对比基线） | P2 | 中 |
+| ENT-09 | Grafana 告警通知: `docker-compose.yml` 增加 webhook notifier 配置，告警触发时 POST 到指定 URL | P2 | 小 |
+| ENT-10 | 单元测试: env loader、CSV 加载、profile 解析、基线对比逻辑的单元测试 | P0 | 中 |
+
+### 37. Scope 确认 (#Phase5)
+
+| 模块 | In Scope | Out of Scope |
+|------|----------|--------------|
+| **多环境** | env/ 配置文件 + k6 env loader + JMeter properties | 真实 staging/prod 环境部署 |
+| **测试数据** | CSV 参数化 + SharedArray | 数据库 seeding、动态数据生成 API |
+| **负载配置** | profiles/ JSON 集中管理 | GUI 配置界面 |
+| **基线回归** | CI artifact 存储 + JSON 对比 + 阈值判定 | 数据库存储历史趋势、Web UI |
+| **执行摘要** | Markdown 报告 | PDF 生成、邮件自动发送 |
+| **告警通知** | Grafana webhook | Slack/PagerDuty/邮件集成 |
+
+### 38. 可行性评估 (#Phase5)
+
+| 维度 | 评估 | 结论 |
+|------|------|------|
+| k6 SharedArray + papaparse | k6 内置 SharedArray，papaparse 为 npm 包可 bundle | ✅ 可行 |
+| k6 env 文件加载 | k6 支持 `open()` 读文件 + `__ENV` 变量 | ✅ 可行 |
+| CI baseline 对比 | GitHub Actions artifact 可跨 run 下载 (`actions/download-artifact`) | ✅ 可行 |
+| Grafana webhook | Grafana alerting 原生支持 webhook contact point | ✅ 可行 |
+| 工作量 | 6 个需求均为轻中量级，无重大技术风险 | ✅ 预计 1-2 个 Phase |
+
+### 39. 依赖识别 (#Phase5)
+
+| 依赖 | 说明 | 状态 |
+|------|------|------|
+| k6 SharedArray | 内置模块，无需额外安装 | ✅ 已有 |
+| papaparse | CSV 解析，需 k6 bundle (webpack/esbuild) 或 k6 内置 CSV | 需评估 |
+| actions/download-artifact | CI baseline 对比需跨 run 下载 artifact | ✅ 已有 @v7 |
+| Grafana webhook | Docker Compose 中配置 contact point | ✅ 已有 Grafana |
+| jq | CI 中解析 JSON baseline | ✅ GitHub runner 预装 |
+
+### 40. 需求 Checklist (#Phase5)
+
+| # | 检查项 | 状态 |
+|---|--------|------|
+| 1 | 目标明确 | ✅ 企业级模板增强 |
+| 2 | 完整用户故事 | ✅ US-23~28 |
+| 3 | Scope 已确认 | ✅ 6 个模块，明确 In/Out |
+| 4 | 可行性评估 | ✅ 5 项评估，全部可行 |
+| 5 | 依赖已识别 | ✅ 5 项依赖 |
+| 6 | 需求已编号 | ✅ ENT-01~10 |
+| 7 | 需求描述已写入 requirements.md | ✅ 本文档 §34~39 |
