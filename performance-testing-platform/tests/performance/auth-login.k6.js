@@ -8,6 +8,7 @@ import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 // 100 VUs sufficient to demonstrate CPU-bound bottleneck
 
 export const options = {
+  setupTimeout: '60s',
   stages: [
     { duration: '30s', target: 10 }, // Warm-up
     { duration: '60s', target: 100 }, // Ramp to target
@@ -28,6 +29,7 @@ export function setup() {
     const password = 'testpass123';
     const res = http.post(`${BASE_URL}/api/auth/register`, JSON.stringify({ username, password }), {
       headers: { 'Content-Type': 'application/json' },
+      tags: { test_phase: 'setup' },
     });
     if (res.status === 201 || res.status === 409) {
       users.push({ username, password });
