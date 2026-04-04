@@ -1,3 +1,4 @@
+#!/bin/sh
 # Validate commit message format (conventional commits)
 # Requires: feat|fix|docs|style|refactor|test|chore|ci|perf
 
