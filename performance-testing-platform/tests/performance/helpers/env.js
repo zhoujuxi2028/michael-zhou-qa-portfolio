@@ -1,5 +1,5 @@
 // k6 environment loader — uses open() and __ENV (NOT Node.js)
-// Path: open() resolves relative to THIS file → ../../../env/<name>.env
+// Path: k6 open() resolves relative to MAIN SCRIPT (tests/performance/) → ../../../env/<name>.env
 
 const ENV_NAME = __ENV.ENV || 'local';
 
