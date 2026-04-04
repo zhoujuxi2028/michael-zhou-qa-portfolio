@@ -23,8 +23,8 @@
 | 3 | JWT 认证场景性能测试 | [#56](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/56) | ✅ Done | AUTH-01~11 | [phase3-auth.md](requirements/phase3-auth.md) |
 | 4 | Soak Test + 可观测性增强 | [#65](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/65) | ✅ Done | SOAK-01~10 | [phase4-soak.md](requirements/phase4-soak.md) |
 | 5 | 基础设施升级 | [#85](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/85) | 📋 Planned | 5 组 13 条 (ENT-ENV/DATA/PROFILE/DX/TEST) | [phase5-infra.md](requirements/phase5-infra.md) |
-| 6 | 测试能力扩展 | — | 📋 Planned | 5 组 12 条 (ENT-CONSISTENCY/BREAKPOINT/RESILIENCE/REPORT/TEST) | [phase6-testing.md](requirements/phase6-testing.md) |
-| 7 | CI/CD + 可观测性 | — | 📋 Planned | 4 组 14 条 (ENT-BASELINE/COVERAGE/DASHBOARD/SCHEDULE) | [phase7-cicd.md](requirements/phase7-cicd.md) |
+| 6 | 测试能力扩展 | — | 📋 Planned | 4 组 11 条 (ENT-CONSISTENCY/BREAKPOINT/RESILIENCE/REPORT) | [phase6-testing.md](requirements/phase6-testing.md) |
+| 7 | CI/CD + 可观测性 | — | 📋 Planned | 5 组 15 条 (ENT-BASELINE/COVERAGE/DASHBOARD/SCHEDULE/TEST) | [phase7-cicd.md](requirements/phase7-cicd.md) |
 
 ## Phase 依赖关系
 

@@ -9,18 +9,18 @@
 | 维度 | 当前状态 | 目标状态 |
 |------|---------|---------|
 | k6 一致性 | 脚本间 assertions/sleep/funnel 逻辑重复 | 统一 helpers，消除重复代码 |
-| 崩溃��试 | 只有安全上限 (capacity) | 新增 breakpoint test 找绝对崩溃点 |
+| 崩溃测试 | 只有安全上限 (capacity) | 新增 breakpoint test 找绝对崩溃点 |
 | 限流/熔断 | 无弹性工程测试 | rate limiter + 熔断恢复行为验证 |
 | 报告 | HTML + Grafana | 新增执行摘要报告（Markdown） |
 
 ## 6.2 用户故事
 
-| ID | 用户故事 | 关联需求 |
-|----|---------|---------|
-| US-28 | 作为性能工程师，我想所有 k6 脚本使用一致的 assertions 和 sleep 模式，以便降低维护成本和减少 copy-paste 错误 | ENT-CONSISTENCY |
-| US-29 | 作为性能工程师，我想找到系统的绝对崩溃点（而非安全上限），以便了解系统的极限行为 | ENT-BREAKPOINT |
-| US-34 | 作为性能工程师，我想测试 API 限流和熔断行为，以便验证系统的弹性工程能力 | ENT-RESILIENCE |
-| US-27 | 作为性能工程师，我想在测试结束后自动生成执行摘要（SLA 达标率、关键指标、对比），以便给管理层汇报 | ENT-REPORT |
+| ID | 用户故事 | 验收标准 | 关联需求 |
+|----|---------|---------|---------|
+| US-28 | 作为性能工程师，我想所有 k6 脚本使用一致的 assertions 和 sleep 模式，以便降低维护成本和减少 copy-paste 错误 | ≥4 个脚本 import 统一 helpers（funnel/checkStatus/thinkTime），无内联重复代码 | ENT-CONSISTENCY |
+| US-29 | 作为性能工程师，我想找到系统的绝对崩溃点（而非安全上限），以便了解系统的极限行为 | breakpoint.k6.js 输出崩溃点 VUs + 崩溃类型（graceful/catastrophic） | ENT-BREAKPOINT |
+| US-34 | 作为性能工程师，我想测试 API 限流和熔断行为，以便验证系统的弹性工程能力 | 超限请求返回 429；窗口过后恢复 200；熔断恢复时间可度量 | ENT-RESILIENCE |
+| US-27 | 作为性能工程师，我想在测试结束后自动生成执行摘要（SLA 达标率、关键指标、对比），以便给管理层汇报 | `scripts/generate-summary.sh` 生成 Markdown 摘要，含 SLA 达标率 + Top 5 慢接口 | ENT-REPORT |
 
 ## 6.3 需求列表
 
@@ -57,12 +57,6 @@
 |----|------|--------|--------|
 | ENT-REPORT-01 | `scripts/generate-summary.sh` 解析 k6 JSON output，生成 Markdown 摘要（SLA 达标率、Top 5 慢接口、对比基线） | P1 | 中 |
 
-### 6.3.5 单元测试（ENT-TEST — Phase 6 部分）
-
-| ID | 需求 | 优先级 | 工作量 |
-|----|------|--------|--------|
-| ENT-TEST-04 | 基线对比单元测试: 回归检测阈值判定、首次运行无 baseline 兜底 | P1 | 小 |
-
 ## 6.4 Scope 确认
 
 | 模块 | In Scope | Out of Scope |
@@ -77,8 +71,19 @@
 | 维度 | 评估 | 结论 |
 |------|------|------|
 | k6 helpers 提取 | checkStatus/funnel/thinkTime 均为纯 JS 函数，提取无风险 | ✅ 可行 |
-| Breakpoint Test | k6 ramping-arrival-rate executor 支持持续递增，无需额外工具 | ✅ 可行 |
-| express-rate-limit | 成熟 npm 包，零配置集成 Express，支持自定义 windowMs + max | ✅ 可行 |
+| Breakpoint Test | k6 `ramping-arrival-rate` executor 支持持续递增，无需额外工具 | ✅ 可行 |
+| express-rate-limit | 成熟 npm 包 (周下载 3M+)，零配置集成 Express，支持自定义 windowMs + max | ✅ 可行 |
+| generate-summary.sh | 依赖 `jq` 解析 k6 JSON output；GitHub runner 预装 jq，本机 `brew install jq` | ✅ 可行 |
+| 现有脚本迁移 | 需逐脚本替换内联代码为 helper import，涉及 load/stress/capacity/soak 4 个文件 | ✅ 可行，但需回归验证 |
+
+### 技术风险
+
+| 风险 | 影响 | 缓解措施 |
+|------|------|---------|
+| helpers 重构导致现有脚本回归 | 重构后 load/stress/capacity/soak 行为可能变化 | 迁移前后对比 smoke 结果（p95/error rate），确保无回归 |
+| express-rate-limit 在 Cluster 模式下的 store | 默认 MemoryStore 是 per-worker，多 Worker 各自独立计数 | 文档注明：Cluster 模式下 rate limit 按 Worker 隔离；如需全局限流需 Redis store (Out of Scope) |
+| breakpoint test 可能导致系统不可用 | 持续递增到崩溃，可能需手动 kill 进程 | 设置 k6 `maxDuration` 上限 (如 10min)；脚本内置 abort threshold (error > 80%) |
+| generate-summary.sh 依赖 k6 JSON output 格式 | k6 版本升级可能改变 JSON 结构 | 脚本内做字段存在性检查，缺失字段输出 warning 而非 crash |
 
 ## 6.6 依赖识别
 
@@ -86,15 +91,17 @@
 |------|------|---------|------|
 | Phase 5 helpers | env.js / profiles / SharedArray 基础设施 | ENT-CONSISTENCY | Phase 5 交付 |
 | express-rate-limit | Express 限流中间件，npm 安装 | ENT-RESILIENCE | 需安装 |
+| jq | shell 脚本解析 k6 JSON output | ENT-REPORT | ✅ 本机已有 / GitHub runner 预装 |
+| k6 `--out json` | k6 JSON output flag，generate-summary.sh 的数据源 | ENT-REPORT | ✅ k6 内置 |
 
 ## 6.7 需求 Checklist
 
 | # | 检查项 | 状态 |
 |---|--------|------|
 | 1 | 目标明确 | ✅ 测试能力扩展，4 个维度 |
-| 2 | 完整用户故事 | ✅ US-27/28/29/34 |
+| 2 | 完整用户故事 + 验收标准 | ✅ US-27/28/29/34，每条含验收标准 |
 | 3 | Scope 已确认 | ✅ 4 个模块，明确 In/Out |
-| 4 | 可行性评估 | ✅ 3 项评估，全部可行 |
-| 5 | 依赖已识别 | ✅ 2 项依赖（含 Phase 5 前置） |
-| 6 | 需求已编号 | ✅ 5 组 12 条: ENT-CONSISTENCY(5) + ENT-BREAKPOINT(2) + ENT-RESILIENCE(3) + ENT-REPORT(1) + ENT-TEST(1) |
-| 7 | 需求描述已写入 requirements.md | ✅ 本文档 §6.1~6.6 |
+| 4 | 可行性评估 | ✅ 5 项评估，全部可行；4 项技术风险已识别 |
+| 5 | 依赖已识别 | ✅ 4 项依赖（含 Phase 5 前置） |
+| 6 | 需求已编号 | ✅ 4 组 11 条: ENT-CONSISTENCY(5) + ENT-BREAKPOINT(2) + ENT-RESILIENCE(3) + ENT-REPORT(1) |
+| 7 | 需求描述已写入 | ✅ 本文档 §6.1~6.6 |
