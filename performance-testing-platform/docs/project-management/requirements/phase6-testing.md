@@ -1,4 +1,4 @@
-# Phase 6 — 测试能力扩展 📋 Planned
+# Phase 6 — 测试能力扩展 📋 Planned ([#86](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/86))
 
 > 依赖 Phase 5 的 helpers/profiles 基础设施，扩展 k6 测试能力
 
