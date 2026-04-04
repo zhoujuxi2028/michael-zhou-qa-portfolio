@@ -73,7 +73,6 @@ jobs:
       # higher severity vulnerabilities."
       - name: Run npm audit (production dependencies)
         run: npm audit --omit=dev --audit-level=moderate
-        continue-on-error: true
 
       - name: Run npm audit (all dependencies with JSON output)
         run: npm audit --json > npm-audit.json || true

@@ -149,39 +149,73 @@ TestPlan
 
 ## 4. 接口定义
 
-### 4.1 健康检查
+> **源码引用规范：** 每个端点标注实现文件和关键行号，便于 Review 时对照验证（Postmortem #12, #13, #50 教训）。
 
-| 端点       | 方法 | 响应                                    |
-| ---------- | ---- | --------------------------------------- |
-| `/health`  | GET  | `{"status": "ok", "timestamp": "..."}`  |
-| `/ready`   | GET  | `{"ready": true}`                       |
-| `/metrics` | GET  | `{"requestCount": N, "avgDuration": N, "cpu": {...}, "memory": {...}, "eventLoop": {...}}` |
+### 4.1 健康检查 — `src/routes/health.js`
 
-### 4.2 商品 API
+| 端点       | 方法 | 源码行号 | 响应                                    |
+| ---------- | ---- | -------- | --------------------------------------- |
+| `/health`  | GET  | `:7`     | `{"status": "ok", "timestamp": "..."}`  |
+| `/ready`   | GET  | `:10`    | `{"ready": true}`                       |
+| `/metrics` | GET  | `:14`    | `{"requestCount": N, "avgDuration": N, "cpu": {...}, "memory": {...}, "eventLoop": {...}}` |
 
-| 端点                | 方法 | 参数                         | 响应                                                            |
-| ------------------- | ---- | ---------------------------- | --------------------------------------------------------------- |
-| `/api/products`     | GET  | `?page=1&limit=10`           | `{"data": [...], "page": 1, "limit": 10, "total": 5}`           |
-| `/api/products/:id` | GET  | path: id                     | `{"id": 1, "name": "Laptop", "price": 999.99, "stock": 100000}` |
-| `/api/products`     | POST | body: `{name, price, stock}` | `201` + 创建的产品对象                                          |
+### 4.2 商品 API — `src/routes/products.js`
+
+| 端点                | 方法 | 源码行号 | 参数                         | 响应                                                            |
+| ------------------- | ---- | -------- | ---------------------------- | --------------------------------------------------------------- |
+| `/api/products`     | GET  | `:8`     | `?page=1&limit=10`           | `{"data": [...], "page": 1, "limit": 10, "total": 5}`           |
+| `/api/products/:id` | GET  | `:16`    | path: id                     | `{"id": 1, "name": "Laptop", "price": 999.99, "stock": 100000}` |
+| `/api/products`     | POST | `:25`    | body: `{name, price, stock}` | `201` + 创建的产品对象                                          |
 
 **错误响应：**
 
 - `404` — 产品不存在
-- `400` — 缺少 name 或 price
+- `400` — 缺少 name 或 price（`:26` 校验）
 
-### 4.3 订单 API
+### 4.3 订单 API — `src/routes/orders.js`
 
-| 端点          | 方法 | 参数                           | 响应                                                  |
-| ------------- | ---- | ------------------------------ | ----------------------------------------------------- |
-| `/api/orders` | GET  | `?page=1&limit=10`             | `{"data": [...], "page": 1, "limit": 10, "total": N}` |
-| `/api/orders` | POST | body: `{product_id, quantity}` | `201` + 创建的订单对象                                |
+| 端点          | 方法 | 源码行号 | 参数                           | 响应                                                  |
+| ------------- | ---- | -------- | ------------------------------ | ----------------------------------------------------- |
+| `/api/orders` | GET  | `:10`    | `?page=1&limit=10`             | `{"data": [...], "page": 1, "limit": 10, "total": N}` |
+| `/api/orders` | POST | `:31`    | body: `{product_id, quantity}` | `201` + 创建的订单对象                                |
+
+**关键实现细节：**
+
+- `:31` — 请求体解构：`const { product_id, quantity } = req.body`（注意：字段名是 **snake_case** `product_id`，非驼峰 `productId`）
+- `:35` — 查询商品：`db.prepare('SELECT * FROM products WHERE id = ?').get(product_id)`
+- `:39` — 延迟注入：`await simulateDelay(ORDER_DELAY_MS)`（默认 50ms，`:7`）
+- `:43` — 库存扣减：`UPDATE products SET stock = stock - ? WHERE id = ?`
 
 **错误响应：**
 
-- `400` — 缺少 product_id 或 quantity
-- `404` — 产品不存在
-- `409` — 库存不足
+- `400` — 缺少 product_id 或 quantity（`:32`）
+- `404` — 产品不存在（`:36`）
+- `409` — 库存不足（`:37`）
+
+### 4.4 认证 API — `src/routes/auth.js`
+
+| 端点                   | 方法 | 源码行号 | 参数                               | 响应                                    |
+| ---------------------- | ---- | -------- | ---------------------------------- | --------------------------------------- |
+| `/api/auth/register`   | POST | `:17`    | body: `{username, email, password}` | `201` + 用户对象（无密码）              |
+| `/api/auth/login`      | POST | `:36`    | body: `{email, password}`           | `{accessToken, refreshToken}`           |
+| `/api/auth/refresh`    | POST | `:54`    | body: `{refreshToken}`              | `{accessToken, refreshToken}`           |
+| `/api/auth/logout`     | POST | `:75`    | body: `{refreshToken}`              | `{message: "Logged out"}`              |
+
+**关键实现细节：**
+
+- `:29` — bcrypt hash: `bcrypt.hashSync(password, 10)`（~100ms/hash，高并发瓶颈点）
+- `:42` — bcrypt verify: `bcrypt.compareSync(password, user.password_hash)`
+- `:14` — JWT 签名：`jwt.sign({...payload, jti: randomUUID()}, JWT_SECRET, {expiresIn})`
+- `:59` — Token 校验：`jwt.verify(refreshToken, JWT_SECRET)`
+
+### 4.5 数据库 Schema — `src/db/database.js`
+
+| 表 | 源码行号 | 关键约束 |
+|----|---------|---------|
+| `products` | `:26` | 主键 id，无额外索引（C-01 约束） |
+| `orders` | `:32` | `product_id INTEGER NOT NULL`，外键引用 products（`:39`） |
+| `users` | `:41` | email UNIQUE |
+| `token_blacklist` | `:47` | jti + expires_at |
 
 ## 5. 被测对象设计约束（Intentional Design Constraints）
 
@@ -308,30 +342,46 @@ The platform has 4 layers: test scripts (load generation + capacity test), Targe
 
 ## 4. API Interface Definitions
 
-### Health Endpoints
+> **Source code references:** Each endpoint includes file path and line numbers for review verification (postmortem lesson from #12, #13, #50).
 
-| Endpoint   | Method | Response                                |
-| ---------- | ------ | --------------------------------------- |
-| `/health`  | GET    | `{"status": "ok", "timestamp": "..."}`  |
-| `/ready`   | GET    | `{"ready": true}`                       |
-| `/metrics` | GET    | `{"requestCount": N, "avgDuration": N, "cpu": {...}, "memory": {...}, "eventLoop": {...}}` |
+### Health Endpoints — `src/routes/health.js`
 
-### Products API
+| Endpoint   | Method | Line | Response                                |
+| ---------- | ------ | ---- | --------------------------------------- |
+| `/health`  | GET    | `:7` | `{"status": "ok", "timestamp": "..."}`  |
+| `/ready`   | GET    | `:10`| `{"ready": true}`                       |
+| `/metrics` | GET    | `:14`| `{"requestCount": N, "avgDuration": N, "cpu": {...}, "memory": {...}, "eventLoop": {...}}` |
 
-| Endpoint            | Method | Params                       | Response                                    |
-| ------------------- | ------ | ---------------------------- | ------------------------------------------- |
-| `/api/products`     | GET    | `?page=1&limit=10`           | `{"data": [...], "page", "limit", "total"}` |
-| `/api/products/:id` | GET    | path: id                     | Product object or `404`                     |
-| `/api/products`     | POST   | body: `{name, price, stock}` | `201` + created product                     |
+### Products API — `src/routes/products.js`
 
-### Orders API
+| Endpoint            | Method | Line  | Params                       | Response                                    |
+| ------------------- | ------ | ----- | ---------------------------- | ------------------------------------------- |
+| `/api/products`     | GET    | `:8`  | `?page=1&limit=10`           | `{"data": [...], "page", "limit", "total"}` |
+| `/api/products/:id` | GET    | `:16` | path: id                     | Product object or `404`                     |
+| `/api/products`     | POST   | `:25` | body: `{name, price, stock}` | `201` + created product                     |
 
-| Endpoint      | Method | Params                         | Response                                    |
-| ------------- | ------ | ------------------------------ | ------------------------------------------- |
-| `/api/orders` | GET    | `?page=1&limit=10`             | `{"data": [...], "page", "limit", "total"}` |
-| `/api/orders` | POST   | body: `{product_id, quantity}` | `201` + created order                       |
+### Orders API — `src/routes/orders.js`
 
-Error codes: `400` (missing fields), `404` (product not found), `409` (insufficient stock)
+| Endpoint      | Method | Line  | Params                         | Response                                    |
+| ------------- | ------ | ----- | ------------------------------ | ------------------------------------------- |
+| `/api/orders` | GET    | `:10` | `?page=1&limit=10`             | `{"data": [...], "page", "limit", "total"}` |
+| `/api/orders` | POST   | `:31` | body: `{product_id, quantity}` | `201` + created order                       |
+
+- `:31` — Field names are **snake_case**: `product_id`, not `productId`
+- `:39` — Delay injection: `simulateDelay(ORDER_DELAY_MS)` default 50ms
+- Error codes: `400` (`:32`), `404` (`:36`), `409` (`:37`)
+
+### Auth API — `src/routes/auth.js`
+
+| Endpoint               | Method | Line  | Params                              | Response                   |
+| ---------------------- | ------ | ----- | ----------------------------------- | -------------------------- |
+| `/api/auth/register`   | POST   | `:17` | body: `{username, email, password}` | `201` + user object        |
+| `/api/auth/login`      | POST   | `:36` | body: `{email, password}`           | `{accessToken, refreshToken}` |
+| `/api/auth/refresh`    | POST   | `:54` | body: `{refreshToken}`              | `{accessToken, refreshToken}` |
+| `/api/auth/logout`     | POST   | `:75` | body: `{refreshToken}`              | `{message: "Logged out"}` |
+
+- `:29` — `bcrypt.hashSync(password, 10)` ~100ms/hash (concurrency bottleneck)
+- `:59` — `jwt.verify(refreshToken, JWT_SECRET)`
 
 ## 5. Intentional Design Constraints (SUT)
 

@@ -41,7 +41,10 @@ fi
 # ── Step 2: Check Load Average ────────────────────────────────────────────────
 echo ""
 echo "[ 2/4 ] Checking Load Average (threshold: < ${LOAD_THRESHOLD})..."
-LOAD=$(sysctl -n vm.loadavg 2>/dev/null | awk '{print $2}' || echo "0")
+# Extract load average — sanitize output to prevent warning pollution (ISS-010)
+LOAD_RAW=$(sysctl -n vm.loadavg 2>/dev/null | awk '{print $2}' || echo "0")
+LOAD=$(echo "$LOAD_RAW" | tail -1 | tr -dc '0-9.' || echo "0")
+LOAD="${LOAD:-0}"
 LOAD_INT=$(echo "$LOAD" | awk '{printf "%d", int($1 + 0.5)}')
 echo "  Current: ${LOAD}"
 if [ "${LOAD_INT}" -lt "${LOAD_THRESHOLD}" ]; then
@@ -79,8 +82,11 @@ fi
 # ── Step 4: Check CPU Idle ────────────────────────────────────────────────────
 echo ""
 echo "[ 4/4 ] Checking CPU Idle (min: ${CPU_IDLE_MIN}%)..."
-CPU_IDLE=$(top -l 1 | grep "CPU usage" | grep -oE '[0-9.]+% idle' | grep -oE '[0-9.]+' || echo "0")
-CPU_IDLE_INT=$(echo "${CPU_IDLE:-0}" | awk '{printf "%d", int($1)}')
+# Extract CPU idle% — sanitize output to prevent warning pollution (ISS-010)
+CPU_IDLE_RAW=$(top -l 1 | grep "CPU usage" | grep -oE '[0-9.]+% idle' | grep -oE '[0-9.]+' || echo "0")
+CPU_IDLE=$(echo "$CPU_IDLE_RAW" | tail -1 | tr -dc '0-9.' || echo "0")
+CPU_IDLE="${CPU_IDLE:-0}"
+CPU_IDLE_INT=$(echo "${CPU_IDLE}" | awk '{printf "%d", int($1)}')
 echo "  Current idle: ${CPU_IDLE}%"
 if [ "${CPU_IDLE_INT}" -ge "${CPU_IDLE_MIN}" ]; then
   echo "  ✅ CPU Idle OK"
