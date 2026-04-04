@@ -1,0 +1,12 @@
+{
+  "stages": [
+    { "duration": "1m", "target": 20 },
+    { "duration": "3m", "target": 50 },
+    { "duration": "1m", "target": 0 }
+  ],
+  "thresholds": {
+    "http_req_duration": ["p(95)<2000", "p(99)<3000"],
+    "http_req_failed": ["rate<0.01"],
+    "http_reqs": ["rate>8"]
+  }
+}
