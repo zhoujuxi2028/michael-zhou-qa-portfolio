@@ -1,4 +1,4 @@
-const { loadProfile, validateProfile } = require('../../../src/utils/profile-parser');
+const { loadProfile } = require('../../../src/utils/profile-parser');
 
 describe('loadProfile', () => {
   test('UT-PROF-01: parses valid profile JSON with stages and thresholds', () => {
