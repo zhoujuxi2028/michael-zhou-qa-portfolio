@@ -7,7 +7,8 @@
 - [3. 模块职责](#3-模块职责)
 - [4. 接口定义](#4-接口定义)
 - [5. 被测对象设计约束](#5-被测对象设计约束intentional-design-constraints)
-- [6. 基础设施](#6-基础设施)
+- [6. Phase 5 — 基础设施层](#6-phase-5--基础设施层-infrastructure-layer)
+- [7. 基础设施](#7-基础设施)
 
 ---
 
@@ -240,9 +241,84 @@ TestPlan
 
 > **C-01 (无索引) 是当前唯一无法被测试暴露的约束**，因为数据量刻意保持在极小规模。如需演示索引影响，可在未来 Phase 中增加大数据量场景 (10 万+ 商品)。
 
-## 6. 基础设施
+## 6. Phase 5 — 基础设施层 (Infrastructure Layer)
 
-### Docker Compose 服务
+### 6.1 三层配置架构
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    配置层 (Phase 5 新增)                      │
+│                                                              │
+│  env/              profiles/           data/                 │
+│  ├─ local.env      ├─ smoke.json       ├─ users.csv          │
+│  ├─ staging.env    ├─ load.json        └─ products.csv       │
+│  └─ production.env ├─ stress.json                            │
+│                    ├─ spike.json                              │
+│                    └─ peak.json                               │
+└────────┬──────────────────┬──────────────────┬───────────────┘
+         │                  │                  │
+         ▼                  ▼                  ▼
+┌─────────────────────────────────────────────────────────────┐
+│              k6 Helpers (tests/performance/helpers/)          │
+│  env.js ──── BASE_URL, ENV config                            │
+│  data.js ─── SharedArray (users, products, randomProduct())  │
+│  profile.js ─ loadProfile('smoke') → {stages, thresholds}   │
+│  utils.js ── checkStatus, checkDuration (re-exports BASE_URL)│
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 6.2 双模块策略
+
+k6 不是 Node.js，无法直接用 Jest 测试。采用 `leak-detection.js` 已验证的模式：
+
+| 层 | 位置 | 运行时 | 用途 |
+|---|---|---|---|
+| Node.js 模块 | `src/utils/env-loader.js`, `csv-loader.js`, `profile-parser.js` | Jest (Node.js) | 纯解析逻辑，单元测试 |
+| k6 helpers | `tests/performance/helpers/env.js`, `data.js`, `profile.js` | k6 runtime | 内联重新实现解析逻辑 + k6 原生 API (`open()`, `SharedArray`, `__ENV`) |
+
+### 6.3 环境切换数据流
+
+```
+k6 run --env ENV=staging smoke.k6.js
+  │
+  ▼
+helpers/env.js
+  ├── 读取 __ENV.ENV → "staging"
+  ├── open('../../../env/staging.env')
+  ├── parseEnvFile() → {BASE_URL: "http://staging:3000", ...}
+  └── export BASE_URL
+         │
+         ▼
+helpers/utils.js (re-export BASE_URL from env.js)
+         │
+         ▼
+smoke.k6.js: http.get(`${BASE_URL}/api/products`)
+```
+
+### 6.4 Profile 双模式支持
+
+| 模式 | 适用场景 | JSON 结构 | 示例 |
+|---|---|---|---|
+| `vus + duration` | 恒定 VU (smoke) | `{vus: 5, duration: "60s", thresholds: {...}}` | `smoke.json` |
+| `stages` | 渐变 VU (load/stress/spike) | `{stages: [...], thresholds: {...}}` | `load.json` |
+
+### 6.5 CSV 数据流 (无 CDN 依赖)
+
+```
+data/products.csv
+  │
+  ▼ open() + split() (不依赖 papaparse CDN)
+  │
+  ▼ SharedArray('products', fn)
+  │
+  ▼ randomProduct() → {id, name, price, category}
+  │
+  ▼ http.get(`${BASE_URL}/api/products/${p.id}`)
+```
+
+## 7. 基础设施
+
+### 7.1 Docker Compose 服务
 
 | 服务     | 镜像                   | 端口 | 用途                         |
 | -------- | ---------------------- | ---- | ---------------------------- |
@@ -250,7 +326,7 @@ TestPlan
 | influxdb | influxdb:1.8           | 8086 | k6 + JMeter 指标存储 (双 DB) |
 | grafana  | grafana/grafana:10.2.0 | 3010 | 可视化 Dashboard (双引擎)    |
 
-### 环境变量
+### 7.2 环境变量
 
 | 变量             | 默认值                | 说明                      |
 | ---------------- | --------------------- | ------------------------- |
@@ -259,7 +335,7 @@ TestPlan
 | `BASE_URL`       | http://localhost:3000 | k6 目标地址               |
 | `INFLUXDB_DB`    | k6                    | InfluxDB 数据库名 (k6 用) |
 
-### CI Pipeline 架构
+### 7.3 CI Pipeline 架构
 
 ```
 lint → unit-test → ┬─ k6 smoke gate      (grafana/setup-k6-action)
