@@ -8,7 +8,7 @@
 | [#54](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/54) | 系统指标采集 + 容量测试 (瓶颈定位)              | 2026-03-31 |
 | [#56](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/56) | JWT 认证场景性能测试                      | 2026-04-02 |
 | [#65](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/65) | Soak Test + 可观测性增强                | 2026-04-02 |
-| Phase 5                                                                    | 基础设施升级 (多环境/数据参数化/负载配置/DX)         | 2026-04-04 |
+| [#85](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/85) | 基础设施升级 (多环境/数据参数化/负载配置/DX)         | 2026-04-04 |
 | Phase 6                                                                    | 测试能力扩展 (k6 一致性/崩溃测试/限流熔断/报告)        | 2026-04-04 |
 | Phase 7                                                                    | CI/CD + 可观测性 (基线回归/覆盖率/Grafana/调度)  | 2026-04-04 |
 
@@ -22,7 +22,7 @@
 | 2 | 系统指标采集 + 容量测试 | [#54](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/54) | ✅ Done | SM-01~11, TQ-01~04 | [phase2-metrics.md](requirements/phase2-metrics.md) |
 | 3 | JWT 认证场景性能测试 | [#56](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/56) | ✅ Done | AUTH-01~11 | [phase3-auth.md](requirements/phase3-auth.md) |
 | 4 | Soak Test + 可观测性增强 | [#65](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/65) | ✅ Done | SOAK-01~10 | [phase4-soak.md](requirements/phase4-soak.md) |
-| 5 | 基础设施升级 | — | 📋 Planned | 5 组 13 条 (ENT-ENV/DATA/PROFILE/DX/TEST) | [phase5-infra.md](requirements/phase5-infra.md) |
+| 5 | 基础设施升级 | [#85](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/85) | 📋 Planned | 5 组 13 条 (ENT-ENV/DATA/PROFILE/DX/TEST) | [phase5-infra.md](requirements/phase5-infra.md) |
 | 6 | 测试能力扩展 | — | 📋 Planned | 5 组 12 条 (ENT-CONSISTENCY/BREAKPOINT/RESILIENCE/REPORT/TEST) | [phase6-testing.md](requirements/phase6-testing.md) |
 | 7 | CI/CD + 可观测性 | — | 📋 Planned | 4 组 14 条 (ENT-BASELINE/COVERAGE/DASHBOARD/SCHEDULE) | [phase7-cicd.md](requirements/phase7-cicd.md) |
 
