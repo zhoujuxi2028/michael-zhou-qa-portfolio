@@ -28,6 +28,8 @@ npm run k6:soak:short        # k6 soak 短时测试 (10m, 100 VUs)
 npm run k6:soak              # k6 soak 默认 (1h, 200 VUs)
 npm run k6:soak:full         # k6 soak 完整 (4h, 500 VUs)
 npm run k6:soak:influx       # k6 soak → InfluxDB + Grafana
+npm run jmeter:dryrun        # JMeter dry-run (1 thread x 10s, 验证字段/状态码)
+npm run jmeter:dryrun:auth   # JMeter auth dry-run (需 AUTH_ENABLED=true)
 npm run lint                 # ESLint
 ```
 
