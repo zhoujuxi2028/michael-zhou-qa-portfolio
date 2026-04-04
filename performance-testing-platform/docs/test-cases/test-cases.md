@@ -11,8 +11,6 @@
 - [7. 容量测试用例表 (#54)](#7-容量测试用例表-54)
 - [8. 认证场景测试用例表 (#56)](#8-认证场景测试用例表-56)
 - [9. Soak Test 用例表 (#65)](#9-soak-test-用例表-65)
-- [English Version](#english-version)
-
 ---
 
 ## 1. 测试策略
@@ -21,7 +19,7 @@
 
 | 层 | 工具 | 数量 | 目的 |
 |----|------|------|------|
-| 单元测试 | Jest + Supertest | 23 | 验证 API 功能正确性 |
+| 单元测试 | Jest + Supertest | 71 | 验证 API 功能正确性 |
 | 性能测试 (轻量级) | k6 | 4 脚本 | 延迟、吞吐、错误率 → HTML 报告 |
 | 性能测试 (企业级) | JMeter | 4 测试计划 | 负载测试 + HTML 报告 + Grafana 可视化 |
 | 系统指标采集 | Node.js 采集器 | SM-01~09 | CPU / 内存 / 磁盘 I/O / 网络 I/O → CSV |
@@ -36,7 +34,7 @@
         │  JMeter: 4 测试计划 (企业级) │
         ├──────────────────────────┤
         │        单元测试             │
-        │  23 Jest tests             │
+        │  71 Jest tests             │
         └──────────────────────────┘
 ```
 
@@ -339,102 +337,6 @@
 | 500 VUs throughput | 待测 | 待测 |
 | 主要差异来源 | — | bcrypt ~100ms/login (首次) + JWT verify ~0.1ms/req (后续) |
 
----
-
-# English Version
-
-## 1. Test Strategy
-
-Three-layer testing with dual-engine performance testing:
-
-| Layer                     | Tool             | Count        | Purpose                                                  |
-| ------------------------- | ---------------- | ------------ | -------------------------------------------------------- |
-| Unit Tests                | Jest + Supertest | 19           | Verify API functional correctness                        |
-| Performance (Lightweight) | k6               | 4 scripts    | Non-functional metrics (latency, throughput, error rate) |
-| Performance (Enterprise)  | JMeter           | 4 test plans | Enterprise load testing + HTML reports + Grafana         |
-
-Principles: TDD, test isolation (afterEach database reset), dual-engine smoke as CI performance gate, JMeter params externalized to .properties.
-
-## 2. Coverage Targets
-
-| Metric                           | Target  | Tool            |
-| -------------------------------- | ------- | --------------- |
-| Statement coverage               | >= 80%  | Jest --coverage |
-| Branch coverage                  | >= 70%  | Jest --coverage |
-| Function coverage                | >= 80%  | Jest --coverage |
-| Line coverage                    | >= 80%  | Jest --coverage |
-| p95 latency (k6 smoke)           | < 500ms | k6 thresholds   |
-| Error rate (k6 smoke)            | < 1%    | k6 thresholds   |
-| p95 response time (JMeter smoke) | < 500ms | .jtl parsing    |
-| Error rate (JMeter smoke)        | < 1%    | .jtl parsing    |
-
-## 3. Unit Test Cases (23 tests)
-
-| ID            | Module             | Test Case                            | Expected                       |
-| ------------- | ------------------ | ------------------------------------ | ------------------------------ |
-| UT-DELAY-01   | utils/delay        | simulateDelay(50) waits ~50ms        | elapsed >= 45ms, < 200ms       |
-| UT-DELAY-02   | utils/delay        | simulateDelay(0) returns immediately | elapsed < 50ms                 |
-| UT-DB-01      | db/database        | getDatabase() returns instance       | has prepare method             |
-| UT-DB-02      | db/database        | Seeds 5 products                     | COUNT(\*) = 5                  |
-| UT-DB-03      | db/database        | resetDatabase() resets singleton     | New instance, still 5 products |
-| UT-HEALTH-01  | routes/health      | GET /health                          | 200, status "ok"               |
-| UT-HEALTH-02  | routes/health      | GET /ready                           | 200, ready true                |
-| UT-PROD-01    | routes/products    | GET /api/products                    | 200, 5 items                   |
-| UT-PROD-02    | routes/products    | Pagination ?page=1&limit=2           | 200, 2 items                   |
-| UT-PROD-03    | routes/products    | GET /api/products/1                  | 200, "Laptop"                  |
-| UT-PROD-04    | routes/products    | GET /api/products/999                | 404                            |
-| UT-PROD-05    | routes/products    | POST create product                  | 201                            |
-| UT-PROD-06    | routes/products    | POST missing name                    | 400                            |
-| UT-ORDER-01   | routes/orders      | GET /api/orders empty                | 200, 0 items                   |
-| UT-ORDER-02   | routes/orders      | POST create order                    | 201, confirmed                 |
-| UT-ORDER-03   | routes/orders      | POST invalid product                 | 404                            |
-| UT-ORDER-04   | routes/orders      | POST insufficient stock              | 409                            |
-| UT-ORDER-05   | routes/orders      | POST missing fields                  | 400                            |
-| UT-METRICS-01 | middleware/metrics | 3 requests → count = 3               | requestCount = 3               |
-| UT-METRICS-02 | middleware/metrics | avgDuration tracked                  | >= 0                           |
-
-## 4. k6 Performance Test Cases (4 scripts)
-
-| ID              | Script       | Scenario                   | VUs | Duration | Threshold                       |
-| --------------- | ------------ | -------------------------- | --- | -------- | ------------------------------- |
-| PT-SMOKE-01~04  | smoke.k6.js  | Health + products + detail | 2   | 30s      | p95 < 500ms, err < 1%           |
-| PT-LOAD-01~03   | load.k6.js   | Mixed CRUD traffic         | 50  | 5m       | p95 < 500ms, p99 < 1s, err < 1% |
-| PT-STRESS-01~03 | stress.k6.js | Ramp to 200 VUs            | 200 | 3.5m     | p95 < 1s, err < 5%              |
-| PT-SPIKE-01~03  | spike.k6.js  | Sudden burst + recovery    | 100 | 1.5m     | p95 < 2s, err < 10%             |
-
-## 5. JMeter Performance Test Cases (4 test plans)
-
-| ID              | Test Plan  | Scenario                   | Threads | Duration | Threshold                   |
-| --------------- | ---------- | -------------------------- | ------- | -------- | --------------------------- |
-| JM-SMOKE-01~04  | smoke.jmx  | Health + products + detail | 2       | 30s      | duration < 500ms, err < 1%  |
-| JM-LOAD-01~03   | load.jmx   | Mixed CRUD traffic         | 50      | 5m       | duration < 500ms, err < 1%  |
-| JM-STRESS-01~03 | stress.jmx | Ramp to 200 threads        | 200     | 3.5m     | duration < 1s, err < 5%     |
-| JM-SPIKE-01~03  | spike.jmx  | Sudden burst + recovery    | 100     | 1.5m     | duration < 2s, err < 10%    |
-| JM-RPT-01~03    | —          | HTML report generation     | —       | —        | index.html + charts         |
-| JM-GRF-01~04    | —          | Grafana dashboard          | —       | —        | 6 panels render             |
-| JM-CI-01~03     | —          | CI smoke gate              | —       | —        | error rate check + artifact |
-
-## 6. Performance Thresholds
-
-### k6
-
-| Script | p95      | p99      | Error Rate | VUs | Duration |
-| ------ | -------- | -------- | ---------- | --- | -------- |
-| Smoke  | < 500ms  | —        | < 1%       | 2   | 30s      |
-| Load   | < 500ms  | < 1000ms | < 1%       | 50  | 5m       |
-| Stress | < 1000ms | —        | < 5%       | 200 | 3.5m     |
-| Spike  | < 2000ms | —        | < 10%      | 100 | 1.5m     |
-
-### JMeter (aligned with k6)
-
-| Test Plan | p95 Response Time | Error Rate | Threads | Duration |
-| --------- | ----------------- | ---------- | ------- | -------- |
-| Smoke     | < 500ms           | < 1%       | 2       | 30s      |
-| Load      | < 500ms           | < 1%       | 50      | 5m       |
-| Stress    | < 1000ms          | < 5%       | 200     | 3.5m     |
-| Spike     | < 2000ms          | < 10%      | 100     | 1.5m     |
-
----
 
 ## 9. Soak Test 用例表 (#65)
 
