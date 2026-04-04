@@ -1,15 +1,10 @@
 import http from 'k6/http';
 import { sleep } from 'k6';
 import { BASE_URL, checkStatus, checkDuration } from './helpers/utils.js';
+import { randomProduct } from './helpers/data.js';
+import { loadProfile } from './helpers/profile.js';
 
-export const options = {
-  vus: 5,
-  duration: '60s',
-  thresholds: {
-    http_req_duration: ['p(95)<500'],
-    http_req_failed: ['rate<0.01'],
-  },
-};
+export const options = loadProfile('smoke');
 
 export default function () {
   const health = http.get(`${BASE_URL}/health`);
@@ -19,7 +14,8 @@ export default function () {
   const products = http.get(`${BASE_URL}/api/products`);
   checkStatus(products, 200, 'products');
 
-  const product = http.get(`${BASE_URL}/api/products/1`);
+  const p = randomProduct();
+  const product = http.get(`${BASE_URL}/api/products/${p.id}`);
   checkStatus(product, 200, 'product');
 
   sleep(1);
