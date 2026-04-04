@@ -1,10 +1,10 @@
 // k6 profile parser — uses open() + JSON.parse (NOT Node.js)
-// Path: open() resolves relative to THIS file → ../../../profiles/<name>.json
+// Path: k6 open() resolves relative to MAIN SCRIPT (tests/performance/) → ../../profiles/<name>.json
 
 export function loadProfile(name) {
   let content;
   try {
-    content = open('../../../profiles/' + name + '.json');
+    content = open('../../profiles/' + name + '.json');
   } catch (e) {
     throw new Error(`Profile not found: profiles/${name}.json`);
   }
