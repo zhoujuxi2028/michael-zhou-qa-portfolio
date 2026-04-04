@@ -1,7 +1,8 @@
 import http from 'k6/http';
 import { check } from 'k6';
+import { BASE_URL } from './env.js';
 
-export const BASE_URL = __ENV.BASE_URL || 'http://localhost:3000';
+export { BASE_URL };
 
 export const LEAK_THRESHOLD = 0.5;
 export const WARN_THRESHOLD = 0.25;
