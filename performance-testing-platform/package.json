@@ -36,6 +36,8 @@
     "jmeter:stress": "export JVM_ARGS=\"${JVM_ARGS:--Dhttp.proxyHost= -Dhttps.proxyHost=}\" && mkdir -p results reports && rm -rf reports/jmeter-stress results/jmeter-stress.jtl && jmeter -n -t tests/jmeter/stress.jmx -q tests/jmeter/config/stress.properties -Jport=${PORT:-3000} -Jbase_url=${HOST:-localhost} -l results/jmeter-stress.jtl -e -o reports/jmeter-stress",
     "jmeter:spike": "export JVM_ARGS=\"${JVM_ARGS:--Dhttp.proxyHost= -Dhttps.proxyHost=}\" && mkdir -p results reports && rm -rf reports/jmeter-spike results/jmeter-spike.jtl && jmeter -n -t tests/jmeter/spike.jmx -q tests/jmeter/config/spike.properties -Jport=${PORT:-3000} -Jbase_url=${HOST:-localhost} -l results/jmeter-spike.jtl -e -o reports/jmeter-spike",
     "jmeter:auth-load": "export JVM_ARGS=\"${JVM_ARGS:--Dhttp.proxyHost= -Dhttps.proxyHost=}\" && mkdir -p results reports && rm -rf reports/jmeter-auth-load results/jmeter-auth-load.jtl && jmeter -n -t tests/jmeter/auth-load.jmx -q tests/jmeter/config/auth-load.properties -Jport=${PORT:-3000} -Jbase_url=${HOST:-localhost} -l results/jmeter-auth-load.jtl -e -o reports/jmeter-auth-load",
+    "jmeter:dryrun": "bash scripts/jmeter-dryrun.sh tests/jmeter/smoke.jmx",
+    "jmeter:dryrun:auth": "bash scripts/jmeter-dryrun.sh tests/jmeter/auth-load.jmx",
     "preflight": "bash scripts/preflight-check.sh",
     "capacity:test": "bash scripts/preflight-check.sh && npm run restart:clean && mkdir -p reports && bash scripts/server.sh collect 1000 reports/system-metrics.csv & COLLECTOR_PID=$! && k6 run --out 'web-dashboard=export=reports/k6-capacity.html' tests/performance/capacity.k6.js; kill $COLLECTOR_PID 2>/dev/null; echo 'Capacity test complete. Reports in reports/'",
     "docker:up": "docker compose up -d",
