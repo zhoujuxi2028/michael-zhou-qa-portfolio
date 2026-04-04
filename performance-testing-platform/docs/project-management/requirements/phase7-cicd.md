@@ -60,6 +60,12 @@
 | ENT-SCHEDULE-01 | GitHub Actions cron workflow: nightly soak-short (10m) + weekly capacity test，自动归档结果 | P3 | 中 |
 | ENT-SCHEDULE-02 | 测试结果自动归档: 每次调度运行的 k6 JSON output 存为 CI artifact，保留 30 天 | P3 | 小 |
 
+### 7.3.5 单元测试（ENT-TEST — Phase 7 部分）
+
+| ID | 需求 | 优先级 | 工作量 |
+|----|------|--------|--------|
+| ENT-TEST-04 | 基线对比单元测试: 回归检测阈值判定、首次运行无 baseline 兜底 | P1 | 小 |
+
 ## 7.4 Scope 确认
 
 | 模块 | In Scope | Out of Scope |
@@ -97,5 +103,5 @@
 | 3 | Scope 已确认 | ✅ 4 个模块，明确 In/Out |
 | 4 | 可行性评估 | ✅ 4 项评估，1 项有限可行（ENT-SCHEDULE） |
 | 5 | 依赖已识别 | ✅ 5 项依赖（含 Phase 6 前置） |
-| 6 | 需求已编号 | ✅ 4 组 14 条: ENT-BASELINE(5) + ENT-COVERAGE(3) + ENT-DASHBOARD(4) + ENT-SCHEDULE(2) |
-| 7 | 需求描述已写入 requirements.md | ✅ 本文档 §7.1~7.6 |
+| 6 | 需求已编号 | ✅ 5 组 15 条: ENT-BASELINE(5) + ENT-COVERAGE(3) + ENT-DASHBOARD(4) + ENT-SCHEDULE(2) + ENT-TEST(1) |
+| 7 | 需求描述已写入 | ✅ 本文档 §7.1~7.6 |
