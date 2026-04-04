@@ -173,6 +173,7 @@ grep <tool> package.json       # Node.js: eslint, prettier, newman
 | `$(cmd)` 捕获数值必须清洗输出 | Node.js/Python 子进程可能输出 warning，污染 shell 变量导致 `-ge` 比较异常 | ISS-010 |
 | k6 `setup()` 请求必须用 tag 隔离 | setup/teardown 的 HTTP 请求计入全局 metrics，会污染 threshold 判定 | ISS-011 |
 | CI 绿灯 ≠ 测试通过，禁止 `continue-on-error` 掩盖失败 | 22 个 Newman 断言失败被隐藏，临时 workaround 变成永久遗留 | ISS-012, ISS-013 |
+| JMeter 正式测试前先 `npm run jmeter:dryrun` | 字段名/状态码错误在 dry-run 阶段拦截，避免全量测试浪费时间 | #50 |
 
 ## Wiki & Roadmap
 
