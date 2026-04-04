@@ -53,9 +53,10 @@
 - [ ] 代码符合项目 lint 规范（ESLint/Prettier 或 black/flake8）
 - [ ] 新依赖已添加到 `package.json` 或 `requirements.txt`
 - [ ] 无硬编码路径、密钥、凭证
+- [ ] 配置文件格式一致 → `.properties` / `.env` / `config/*.json` 遵循项目已有命名和注释规范
 - [ ] 自测验证已执行 → 每项功能有实际运行证据（命令输出），不能仅凭文件存在就视为完成
 
-**评审要点：** 代码质量、测试覆盖、commit 规范、源代码与测试代码结构完整、自测证据齐全
+**评审要点：** 代码质量、测试覆盖、commit 规范、源代码与测试代码结构完整、配置文件规范一致、自测证据齐全
 
 ---
 
@@ -135,9 +136,10 @@ Every new feature/project follows a 5-phase process. Each phase must pause for m
 - [ ] Code passes project lint rules (ESLint/Prettier or black/flake8)
 - [ ] New dependencies added to `package.json` or `requirements.txt`
 - [ ] No hardcoded paths, secrets, or credentials
+- [ ] Config file format consistent → `.properties` / `.env` / `config/*.json` follow project naming and comment conventions
 - [ ] Self-test verification executed → every feature has actual run evidence (command output), not just file existence
 
-**Review focus:** Code quality, test coverage, commit conventions, source and test code structure complete, self-test evidence present
+**Review focus:** Code quality, test coverage, commit conventions, source and test code structure complete, config files consistent, self-test evidence present
 
 ---
 
