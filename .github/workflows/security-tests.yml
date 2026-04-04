@@ -222,7 +222,6 @@ jobs:
           mkdir -p reports
           safety check --json > reports/dependency-scan.json
           cat reports/dependency-scan.json
-        continue-on-error: true
 
       - name: Upload dependency report
         uses: actions/upload-artifact@v7
