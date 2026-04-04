@@ -31,6 +31,7 @@ export function setup() {
     const password = 'testpass123';
     http.post(`${BASE_URL}/api/auth/register`, JSON.stringify({ username, password }), {
       headers: { 'Content-Type': 'application/json' },
+      tags: { test_phase: 'setup' },
     });
     users.push({ username, password });
   }
