@@ -11,6 +11,7 @@
 - [7. 容量测试用例表 (#54)](#7-容量测试用例表-54)
 - [8. 认证场景测试用例表 (#56)](#8-认证场景测试用例表-56)
 - [9. Soak Test 用例表 (#65)](#9-soak-test-用例表-65)
+- [10. Phase 5 基础设施 Helper 用例表 (#85)](#10-phase-5-基础设施-helper-用例表-85)
 ---
 
 ## 1. 测试策略
@@ -19,7 +20,7 @@
 
 | 层 | 工具 | 数量 | 目的 |
 |----|------|------|------|
-| 单元测试 | Jest + Supertest | 71 | 验证 API 功能正确性 |
+| 单元测试 | Jest + Supertest | 71 + 24 (Phase 5) | 验证 API 功能正确性 + 基础设施 helpers |
 | 性能测试 (轻量级) | k6 | 4 脚本 | 延迟、吞吐、错误率 → HTML 报告 |
 | 性能测试 (企业级) | JMeter | 4 测试计划 | 负载测试 + HTML 报告 + Grafana 可视化 |
 | 系统指标采集 | Node.js 采集器 | SM-01~09 | CPU / 内存 / 磁盘 I/O / 网络 I/O → CSV |
@@ -366,3 +367,60 @@
 |----|--------|------|
 | SOAK-TC-04 | Dashboard panels render | `docker compose up` + browser |
 | SOAK-TC-05 | Alert rules fire on breach | Inject artificial load |
+
+## 10. Phase 5 基础设施 Helper 用例表 (#85)
+
+### 10.1 测试策略
+
+Phase 5 新增 3 个 helper 模块（env loader、CSV loader、profile parser），采用双模块策略：
+- **Node.js 模块** (`src/utils/`) — 纯解析逻辑，Jest 单元测试覆盖
+- **k6 helpers** (`tests/performance/helpers/`) — 内联重新实现，通过 k6 smoke run 手动验证
+
+### 10.2 Env Loader (`tests/unit/helpers/env.test.js`)
+
+| ID | 测试用例 | 预期结果 |
+|----|---------|---------|
+| UT-ENV-01 | 解析含 BASE_URL, AUTH_ENABLED, PORT 的 env 文件 | 返回 3 个 key-value 对 |
+| UT-ENV-02 | 跳过 `#` 开头的注释行 | 注释不出现在结果中 |
+| UT-ENV-03 | 跳过空行和纯空白行 | 空行不产生 key |
+| UT-ENV-04 | 输入 null/undefined 返回空对象 | `{}` |
+| UT-ENV-05 | 值中包含 `=` (如 `DB_URL=postgres://host?opt=1`) | 仅按第一个 `=` 分割 |
+| UT-ENV-06 | key/value 前后有空白 | 自动 trim |
+| UT-ENV-07 | `getEnvConfig()` 文件不存在时返回 DEFAULTS | 包含默认 BASE_URL, AUTH_ENABLED, PORT |
+
+### 10.3 CSV Loader (`tests/unit/helpers/data.test.js`)
+
+| ID | 测试用例 | 预期结果 |
+|----|---------|---------|
+| UT-DATA-01 | 解析含 header 行的 CSV 为对象数组 | `[{col1: val1, col2: val2}, ...]` |
+| UT-DATA-02 | 空字符串输入 | 返回 `[]` |
+| UT-DATA-03 | null/undefined 输入 | 抛出描述性错误 |
+| UT-DATA-04 | 仅 header 行无数据行 | 返回 `[]` |
+| UT-DATA-05 | `validateColumns` 全部必需列存在 | 不抛错 |
+| UT-DATA-06 | `validateColumns` 缺少必需列 | 抛出含缺失列名的错误 |
+| UT-DATA-07 | 解析 products.csv 格式 (id, name, price, category) | 正确解析 4 列 |
+| UT-DATA-08 | 解析 users.csv 格式 (username, password, role) | 正确解析 3 列 |
+
+### 10.4 Profile Parser (`tests/unit/helpers/profile.test.js`)
+
+| ID | 测试用例 | 预期结果 |
+|----|---------|---------|
+| UT-PROF-01 | 解析含 stages + thresholds 的有效 profile | 返回完整 profile 对象 |
+| UT-PROF-02 | 无效 JSON 字符串 | 抛出 "Invalid profile JSON" 错误 |
+| UT-PROF-03 | 缺少 stages 且缺少 vus | 抛出错误 |
+| UT-PROF-04 | stages 为空数组 `[]` | 抛出 "must not be empty" 错误 |
+| UT-PROF-05 | stage 缺少 duration 或 target | 抛出含 stage index 的错误 |
+| UT-PROF-06 | 缺少 thresholds 对象 | 抛出错误 |
+| UT-PROF-07 | 返回完整 options 对象 (stages + thresholds) | 可直接赋值给 `export const options` |
+| UT-PROF-08 | 保留可选字段 (如 `setupTimeout`) | 不丢失额外字段 |
+| UT-PROF-09 | `vus + duration` 模式 (无 stages) | 返回 `{vus, duration, thresholds}`，不报错 |
+
+### 10.5 k6 集成验证 (手动)
+
+| ID | 验证项 | 命令 | 预期 |
+|----|--------|------|------|
+| K6-INT-01 | env loader 默认 | `k6 run tests/performance/smoke.k6.js` | localhost 正常运行 |
+| K6-INT-02 | env loader staging | `k6 run --env ENV=staging tests/performance/smoke.k6.js` | 加载 staging.env 的 BASE_URL |
+| K6-INT-03 | CSV 数据加载 | `k6 run tests/performance/load.k6.js` | 商品 ID 从 CSV 随机选取 |
+| K6-INT-04 | Profile 加载 | `k6 run tests/performance/smoke.k6.js` | stages/thresholds 匹配 smoke.json |
+| K6-INT-05 | CSV 缺失报错 | 移走 products.csv 后运行 | 明确的初始化错误 |
