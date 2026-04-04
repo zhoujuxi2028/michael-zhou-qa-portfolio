@@ -1,0 +1,77 @@
+# ============================================================================
+# CI Workflow Template — Standard defaults for new workflows
+# ============================================================================
+# Copy this file to .github/workflows/<project>-ci.yml and customize.
+#
+# Standard defaults (from postmortem issues #38, #41):
+#   - workflow_dispatch always included
+#   - NO continue-on-error on test/lint/security steps
+#   - NO environment: unless real deployment exists
+#   - Artifact upload with v7+
+# ============================================================================
+
+name: <Project> CI
+
+on:
+  workflow_dispatch:          # Always include — enables manual trigger
+  push:
+    branches: [main, 'feature/<branch>']
+    paths: ['<project>/**']
+  pull_request:
+    branches: [main]
+    paths: ['<project>/**']
+
+defaults:
+  run:
+    working-directory: <project>
+
+jobs:
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v6
+
+      # --- Node.js projects ---
+      # - uses: actions/setup-node@v6
+      #   with:
+      #     node-version: '22'
+      #     cache: 'npm'
+      #     cache-dependency-path: <project>/package-lock.json
+      # - run: npm ci
+      # - run: npx eslint .
+
+      # --- Python projects ---
+      # - uses: actions/setup-python@v6
+      #   with:
+      #     python-version: '3.11'
+      # - run: pip install -r requirements.txt
+      # - run: black --check src/ tests/
+      # - run: isort --check-only src/ tests/
+      # - run: flake8 src/ tests/ --max-line-length=120
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: code-quality
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v6
+
+      # - uses: actions/setup-node@v6
+      #   with:
+      #     node-version: '22'
+      #     cache: 'npm'
+      #     cache-dependency-path: <project>/package-lock.json
+      # - run: npm ci
+      # - run: npm test          # Do NOT add continue-on-error: true
+
+      # --- Upload artifacts (always, for debugging failed runs) ---
+      # - uses: actions/upload-artifact@v7
+      #   if: always()
+      #   with:
+      #     name: test-results
+      #     path: <project>/coverage/
