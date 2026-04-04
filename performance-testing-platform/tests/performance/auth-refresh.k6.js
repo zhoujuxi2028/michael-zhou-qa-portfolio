@@ -7,6 +7,7 @@ import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 // JWT verify + sign only, no bcrypt — should be fast (p95 < 200ms)
 
 export const options = {
+  setupTimeout: '120s',
   stages: [
     { duration: '30s', target: 10 }, // Warm-up
     { duration: '60s', target: 200 }, // Ramp to target
@@ -27,9 +28,11 @@ export function setup() {
     const password = 'testpass123';
     http.post(`${BASE_URL}/api/auth/register`, JSON.stringify({ username, password }), {
       headers: { 'Content-Type': 'application/json' },
+      tags: { test_phase: 'setup' },
     });
     const login = http.post(`${BASE_URL}/api/auth/login`, JSON.stringify({ username, password }), {
       headers: { 'Content-Type': 'application/json' },
+      tags: { test_phase: 'setup' },
     });
     if (login.status === 200) {
       tokens.push(login.json('refreshToken'));

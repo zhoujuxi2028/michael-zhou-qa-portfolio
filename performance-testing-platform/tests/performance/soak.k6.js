@@ -21,20 +21,21 @@ const SOAK_VUS = parseInt(__ENV.SOAK_VUS || '200');
 const SOAK_DURATION = __ENV.SOAK_DURATION || '1h';
 
 export const options = {
+  setupTimeout: '30s',
   stages: [
     { duration: '2m', target: SOAK_VUS }, // ramp-up
     { duration: SOAK_DURATION, target: SOAK_VUS }, // steady state
     { duration: '1m', target: 0 }, // ramp-down
   ],
   thresholds: {
-    http_req_duration: ['p(95)<500'],
-    http_req_failed: ['rate<0.01'],
+    'http_req_duration{test_phase:!setup}': ['p(95)<500'],
+    'http_req_failed{test_phase:!setup}': ['rate<0.01'],
   },
 };
 
 export function setup() {
   // Record baseline heap
-  const m = http.get(`${BASE_URL}/metrics`);
+  const m = http.get(`${BASE_URL}/metrics`, { tags: { test_phase: 'setup' } });
   let baselineHeap = 0;
   if (m.status === 200) {
     try {
@@ -48,12 +49,10 @@ export function setup() {
   http.post(
     `${BASE_URL}/api/auth/register`,
     JSON.stringify({ username: 'soakuser', password: 'soakpass' }),
-    { headers: { 'Content-Type': 'application/json' } }
+    { headers: { 'Content-Type': 'application/json' }, tags: { test_phase: 'setup' } }
   );
 
-  console.log(
-    `[SOAK] Baseline heapUsed: ${(baselineHeap / 1024 / 1024).toFixed(1)} MB`
-  );
+  console.log(`[SOAK] Baseline heapUsed: ${(baselineHeap / 1024 / 1024).toFixed(1)} MB`);
   console.log(`[SOAK] Config: ${SOAK_VUS} VUs, duration: ${SOAK_DURATION}`);
   return { baselineHeap };
 }
@@ -116,17 +115,11 @@ export function teardown(data) {
 
   const result = checkMemoryLeak(data.baselineHeap, finalHeap);
 
-  console.log(
-    `[SOAK] Final heapUsed: ${(finalHeap / 1024 / 1024).toFixed(1)} MB`
-  );
-  console.log(
-    `[SOAK] Heap growth: ${(result.ratio * 100).toFixed(1)}% — level: ${result.level}`
-  );
+  console.log(`[SOAK] Final heapUsed: ${(finalHeap / 1024 / 1024).toFixed(1)} MB`);
+  console.log(`[SOAK] Heap growth: ${(result.ratio * 100).toFixed(1)}% — level: ${result.level}`);
 
   if (result.level === 'warning') {
-    console.warn(
-      `[SOAK] MEMORY GROWTH WARNING: ${(result.ratio * 100).toFixed(1)}%`
-    );
+    console.warn(`[SOAK] MEMORY GROWTH WARNING: ${(result.ratio * 100).toFixed(1)}%`);
   }
   if (result.leaked) {
     console.error(

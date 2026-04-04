@@ -75,7 +75,7 @@ jobs:
         run: npm audit --omit=dev --audit-level=moderate
 
       - name: Run npm audit (all dependencies with JSON output)
-        run: npm audit --json > npm-audit.json || true
+        run: npm audit --json > npm-audit.json
 
       - name: Generate npm audit report
         run: |
