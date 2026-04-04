@@ -2,13 +2,13 @@
 
 **Branch:** `feature/performance-testing`
 
-| Issue | 描述 | 日期 |
-|-------|------|------|
-| [#17](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/17) | 性能测试平台 (k6 + JMeter 双引擎) | 2026-03-24 |
-| [#54](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/54) | 系统指标采集 + 容量测试 (瓶颈定位) | 2026-03-31 |
-| [#56](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/56) | JWT 认证场景性能测试 | 2026-04-02 |
-| [#65](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/65) | Soak Test + 可观测性增强 | 2026-04-02 |
-| Phase 5 | 企业级性能测试模板增强 (多环境/数据驱动/基线回归/报告/告警) | 2026-04-04 |
+| Issue                                                                      | 描述                                | 日期         |
+| -------------------------------------------------------------------------- | --------------------------------- | ---------- |
+| [#17](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/17) | 性能测试平台 (k6 + JMeter 双引擎)          | 2026-03-24 |
+| [#54](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/54) | 系统指标采集 + 容量测试 (瓶颈定位)              | 2026-03-31 |
+| [#56](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/56) | JWT 认证场景性能测试                      | 2026-04-02 |
+| [#65](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/65) | Soak Test + 可观测性增强                | 2026-04-02 |
+| Phase 5                                                                    | 企业级性能测试模板增强 (多环境/数据驱动/基线回归/报告/告警) | 2026-04-04 |
 
 ---
 
@@ -125,15 +125,15 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 
 ### Phase 2 (#54 — 系统指标采集 + 容量测试) ✅ Done
 
-| 模块 | 内容 | 需求 ID |
-|------|------|---------|
-| Express Cluster 模式 | Master + N Worker (N = CPU 核数) | SM-10 |
-| SQLite 文件模式 + WAL | 多 Worker 共享 DB，真实磁盘 I/O | SM-11 |
-| `/metrics` 扩展 | 进程级 CPU / 内存 / 事件循环延迟 | SM-01~03 |
-| 系统采集器 | CPU% / 内存% / 磁盘 I/O / 网络 I/O → CSV | SM-04~08 |
-| npm scripts 集成 | 一条命令采集 + 测试 + 归档 | SM-09 |
-| 容量测试 | 漏斗模型 (60/30/10) + 二分法逼近最大并发 | US-12 |
-| 测试质量保障 | 数据膨胀控制 / 预热 / 隔离 / 可重复性 | TQ-01~04 |
+| 模块                 | 内容                                 | 需求 ID    |
+| ------------------ | ---------------------------------- | -------- |
+| Express Cluster 模式 | Master + N Worker (N = CPU 核数)     | SM-10    |
+| SQLite 文件模式 + WAL  | 多 Worker 共享 DB，真实磁盘 I/O            | SM-11    |
+| `/metrics` 扩展      | 进程级 CPU / 内存 / 事件循环延迟              | SM-01~03 |
+| 系统采集器              | CPU% / 内存% / 磁盘 I/O / 网络 I/O → CSV | SM-04~08 |
+| npm scripts 集成     | 一条命令采集 + 测试 + 归档                   | SM-09    |
+| 容量测试               | 漏斗模型 (60/30/10) + 二分法逼近最大并发        | US-12    |
+| 测试质量保障             | 数据膨胀控制 / 预热 / 隔离 / 可重复性            | TQ-01~04 |
 
 ### Phase 3 (#56 — JWT 认证场景性能测试) 📋 Planned
 
@@ -188,11 +188,13 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 
 | 项目 | 规格 |
 |------|------|
-| 硬件 | MacBook Pro (Intel) |
-| CPU | Intel Core i5-1038NG7 @ 2.00GHz, 4 核 8 线程 |
-| 内存 | 16 GB |
-| 磁盘 | SSD |
-| OS | macOS 26.3.1 (x86_64) |
+| 硬件 | MacBook Pro 13″ 2020 (MacBookPro16,2) |
+| CPU | Intel Core i5-1038NG7 @ 2.00GHz, 4 核 8 线程 (HT) |
+| L2 Cache | 512 KB / core |
+| L3 Cache | 6 MB |
+| 内存 | 16 GB DDR4 |
+| 磁盘 | 466 GB SSD (约 58 GB 可用) |
+| OS | macOS 26.3.1 (Build 25D2128) |
 
 ### 技术风险
 
@@ -585,7 +587,7 @@ UC-09: 无效/过期 Token 请求
 
 ### 5.1 目标
 
-将性能测试平台从「Portfolio 演示项目」提升为「企业级性能测试模板」，补全多环境、数据驱动、基线回归、报告、告警 5 个维度的企业能力。
+将性能测试平台从「Portfolio 演示项目」提升为「企业级性能测试模板」，补全 11 个维度的企业能力。
 
 | 维度 | 当前状态 | 目标状态 |
 |------|---------|---------|
@@ -595,6 +597,11 @@ UC-09: 无效/过期 Token 请求
 | 基线回归 | CI 仅 pass/fail | 对比历史基线，检测性能退化 |
 | 报告 | HTML + Grafana | 新增执行摘要报告（Markdown） |
 | 告警 | Grafana 面板无通知渠道 | webhook 通知 |
+| k6 一致性 | 脚本间 assertions/sleep/funnel 逻辑重复 | 统一 helpers，消除重复代码 |
+| 崩溃测试 | 只有安全上限 (capacity) | 新增 breakpoint test 找绝对崩溃点 |
+| 开发者体验 | 无 .env.example，缺 setup/clean 脚本 | 一条命令初始化 + 清理 |
+| CI 覆盖率 | 覆盖率仅本地查看 | CI 强制门禁 + artifact 归档 |
+| Grafana 面板 | 基础 k6/JMeter/soak 面板 | 补充错误分布 + 延迟热力图 + 自定义指标 |
 
 ### 5.2 用户故事
 
@@ -606,6 +613,11 @@ UC-09: 无效/过期 Token 请求
 | US-26 | 作为性能工程师，我想在 CI 中自动对比当前 p95 与历史基线，以便在性能退化时阻断合并 | ENT-BASELINE |
 | US-27 | 作为性能工程师，我想在测试结束后自动生成执行摘要（SLA 达标率、关键指标、对比），以便给管理层汇报 | ENT-REPORT |
 | US-28 | 作为性能工程师，我想在 Grafana 告警触发时收到 webhook 通知，以便及时响应性能问题 | ENT-ALERT |
+| US-29 | 作为性能工程师，我想所有 k6 脚本使用一致的 assertions 和 sleep 模式，以便降低维护成本和减少 copy-paste 错误 | ENT-CONSISTENCY |
+| US-30 | 作为性能工程师，我想找到系统的绝对崩溃点（而非安全上限），以便了解系统的极限行为 | ENT-BREAKPOINT |
+| US-31 | 作为新加入的开发者，我想通过 `npm run setup` 一条命令完成环境初始化，以便快速上手项目 | ENT-DX |
+| US-32 | 作为性能工程师，我想在 CI 中强制覆盖率门禁，以便防止测试覆盖率退化 | ENT-COVERAGE |
+| US-33 | 作为性能工程师，我想在 Grafana 中查看错误分布和延迟热力图，以便快速定位性能瓶颈 | ENT-DASHBOARD |
 
 ### 5.3 需求列表
 
@@ -659,6 +671,48 @@ UC-09: 无效/过期 Token 请求
 | ENT-TEST-03 | profile 解析单元测试: JSON 加载、缺失 profile 报错、stages 格式校验 | P0 | 小 |
 | ENT-TEST-04 | 基线对比单元测试: 回归检测阈值判定、首次运行无 baseline 兜底 | P1 | 小 |
 
+#### 5.3.8 k6 脚本一致性重构（ENT-CONSISTENCY）
+
+| ID | 需求 | 优先级 | 工作量 |
+|----|------|--------|--------|
+| ENT-CONSISTENCY-01 | 统一所有 k6 脚本的 HTTP 断言方式：全部使用 `checkStatus()` helper，替代直接 `check()` 调用 | P1 | 小 |
+| ENT-CONSISTENCY-02 | 统一 sleep/think time 模式：提取 `helpers/thinkTime.js`，标准化 `sleep(randomIntBetween(0.5, 1))` | P1 | 小 |
+| ENT-CONSISTENCY-03 | 提取漏斗逻辑到 `helpers/funnel.js`：60% browse → 30% detail → 10% order，消除 load/stress/capacity/soak 中的重复代码 | P1 | 中 |
+| ENT-CONSISTENCY-04 | 所有标准测试脚本 (smoke/load/stress/spike) 添加 health check 前置验证 | P2 | 小 |
+
+#### 5.3.9 Breakpoint Test（ENT-BREAKPOINT）
+
+| ID | 需求 | 优先级 | 工作量 |
+|----|------|--------|--------|
+| ENT-BREAKPOINT-01 | 新增 `breakpoint.k6.js`：持续递增 VUs 直到系统崩溃（error rate > 50% 或完全不响应），记录崩溃点 VUs 和崩溃行为 | P2 | 中 |
+| ENT-BREAKPOINT-02 | 崩溃行为分类：区分 graceful degradation（渐进退化）vs catastrophic failure（级联崩溃） | P2 | 小 |
+
+> 注: Breakpoint Test 与 Capacity Test 的区别 — Capacity 找安全上限 (SLA 不违反)，Breakpoint 找绝对崩溃点 (系统不可用)。
+
+#### 5.3.10 开发者体验改进（ENT-DX）
+
+| ID | 需求 | 优先级 | 工作量 |
+|----|------|--------|--------|
+| ENT-DX-01 | 创建 `.env.example` 文件，列出所有环境变量及默认值 | P1 | 小 |
+| ENT-DX-02 | 新增 npm scripts: `setup` (install + lint + test)、`clean` (清理 reports/data/coverage)、`health` (preflight + test) | P1 | 小 |
+| ENT-DX-03 | 新增 npm script: `dev` (NODE_ENV=development 启动，watch mode) | P2 | 小 |
+
+#### 5.3.11 CI 覆盖率门禁（ENT-COVERAGE）
+
+| ID | 需求 | 优先级 | 工作量 |
+|----|------|--------|--------|
+| ENT-COVERAGE-01 | `performance-ci.yml` unit-test job 添加 `--coverage` 参数，生成覆盖率报告 | P1 | 小 |
+| ENT-COVERAGE-02 | 上传 coverage 报告为 CI artifact (`actions/upload-artifact`) | P1 | 小 |
+| ENT-COVERAGE-03 | Jest 覆盖率阈值 (statements ≥80%, branches ≥70%, functions ≥80%, lines ≥80%) 在 CI 中强制执行，低于阈值则 fail | P1 | 小 |
+
+#### 5.3.12 Grafana 面板补充（ENT-DASHBOARD）
+
+| ID | 需求 | 优先级 | 工作量 |
+|----|------|--------|--------|
+| ENT-DASHBOARD-01 | 新增「错误分布」面板：按 endpoint 分组的 error rate 时序图 | P2 | 小 |
+| ENT-DASHBOARD-02 | 新增「延迟热力图」面板：请求延迟分布的 heatmap 可视化 | P2 | 小 |
+| ENT-DASHBOARD-03 | 新增「自定义指标聚合」面板：soak_heap_used_mb、soak_event_loop_lag、soak_order_success 趋势 | P2 | 小 |
+
 ### 5.4 Scope 确认
 
 | 模块 | In Scope | Out of Scope |
@@ -669,6 +723,11 @@ UC-09: 无效/过期 Token 请求
 | **ENT-BASELINE 基线回归** | CI artifact 存储 + JSON 对比 + 阈值判定 | 数据库存储历史趋势、Web UI |
 | **ENT-REPORT 执行摘要** | Markdown 报告 | PDF 生成、邮件自动发送 |
 | **ENT-ALERT 告警通知** | Grafana webhook | Slack/PagerDuty/邮件集成 |
+| **ENT-CONSISTENCY k6 一致性** | checkStatus 统一、funnel 提取、sleep 标准化 | 全量脚本重写 |
+| **ENT-BREAKPOINT 崩溃测试** | breakpoint.k6.js 找绝对崩溃点 | 分布式多节点压测 |
+| **ENT-DX 开发者体验** | .env.example + npm run setup/clean/health | GUI 开发工具 |
+| **ENT-COVERAGE CI 覆盖率** | coverage gate + artifact upload | Codecov/Coveralls 集成 |
+| **ENT-DASHBOARD Grafana 面板** | 错误分布 + 延迟热力图 + 自定义指标聚合 | 自定义 Grafana 插件 |
 
 ### 5.5 可行性评估
 
@@ -678,7 +737,11 @@ UC-09: 无效/过期 Token 请求
 | k6 env 文件加载 | k6 支持 `open()` 读文件 + `__ENV` 变量 | ✅ 可行 |
 | CI baseline 对比 | GitHub Actions artifact 可跨 run 下载 (`actions/download-artifact`) | ✅ 可行 |
 | Grafana webhook | Grafana alerting 原生支持 webhook contact point | ✅ 可行 |
-| 工作量 | 6 个需求方向均为轻中量级，无重大技术风险 | ✅ 预计 1-2 个 Phase |
+| k6 helpers 提取 | checkStatus/funnel/thinkTime 均为纯 JS 函数，提取无风险 | ✅ 可行 |
+| Breakpoint Test | k6 ramping-arrival-rate executor 支持持续递增，无需额外工具 | ✅ 可行 |
+| CI coverage gate | Jest --coverage 内置阈值检查，CI 中直接 fail on threshold breach | ✅ 可行 |
+| Grafana heatmap | InfluxDB + Grafana 原生 heatmap panel，无需插件 | ✅ 可行 |
+| 工作量 | 12 个需求方向均为轻中量级，无重大技术风险 | ✅ 预计 2-3 个 Phase |
 
 ### 5.6 依赖识别
 
@@ -692,12 +755,12 @@ UC-09: 无效/过期 Token 请求
 
 ### 5.7 需求 Checklist
 
-| # | 检查项 | 状态 |
-|---|--------|------|
-| 1 | 目标明确 | ✅ 企业级模板增强，6 个维度 |
-| 2 | 完整用户故事 | ✅ US-23~28，每条关联需求组 |
-| 3 | Scope 已确认 | ✅ 6 个模块，明确 In/Out |
-| 4 | 可行性评估 | ✅ 5 项评估，全部可行 |
-| 5 | 依赖已识别 | ✅ 5 项依赖，关联需求组 |
-| 6 | 需求已编号 | ✅ 7 组 15 条: ENT-ENV(3) + ENT-DATA(2) + ENT-PROFILE(2) + ENT-BASELINE(2) + ENT-REPORT(1) + ENT-ALERT(1) + ENT-TEST(4) |
-| 7 | 需求描述已写入 requirements.md | ✅ 本文档 §5.1~5.6 |
+| #   | 检查项                     | 状态                                                                                                                   |
+| --- | ----------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| 1   | 目标明确                    | ✅ 企业级模板增强，6 个维度                                                                                                      |
+| 2   | 完整用户故事                  | ✅ US-23~28，每条关联需求组                                                                                                   |
+| 3   | Scope 已确认               | ✅ 6 个模块，明确 In/Out                                                                                                    |
+| 4   | 可行性评估                   | ✅ 5 项评估，全部可行                                                                                                         |
+| 5   | 依赖已识别                   | ✅ 5 项依赖，关联需求组                                                                                                        |
+| 6   | 需求已编号                   | ✅ 12 组 30 条: ENT-ENV(3) + ENT-DATA(2) + ENT-PROFILE(2) + ENT-BASELINE(2) + ENT-REPORT(1) + ENT-ALERT(1) + ENT-TEST(4) + ENT-CONSISTENCY(4) + ENT-BREAKPOINT(2) + ENT-DX(3) + ENT-COVERAGE(3) + ENT-DASHBOARD(3) |
+| 7   | 需求描述已写入 requirements.md | ✅ 本文档 §5.1~5.6                                                                                                       |
