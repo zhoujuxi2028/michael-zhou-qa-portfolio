@@ -1,5 +1,5 @@
 // k6 CSV data loader — uses open() + split() (NOT Node.js, no CDN dependency)
-// Path: open() resolves relative to THIS file → ../../../data/<file>.csv
+// Path: k6 open() resolves relative to MAIN SCRIPT (tests/performance/) → ../../../data/<file>.csv
 import { SharedArray } from 'k6/data';
 
 function parseCSV(content) {
