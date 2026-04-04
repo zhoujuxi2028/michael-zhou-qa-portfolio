@@ -1,11 +1,19 @@
 # Validate Postman files on commit
 cd api-testing-demo && npm run validate
+cd ..
 
 # Lint Python files with ruff
-cd ..
 CHANGED_PY=$(git diff --cached --name-only --diff-filter=ACM -- '*.py' | grep -v 'venv/')
 if [ -n "$CHANGED_PY" ]; then
     echo "Running ruff on staged Python files..."
     ./venv/bin/ruff check $CHANGED_PY
     ./venv/bin/ruff format --check $CHANGED_PY
+fi
+
+# Lint JS files in performance-testing-platform
+CHANGED_JS=$(git diff --cached --name-only --diff-filter=ACM -- 'performance-testing-platform/src/*.js' 'performance-testing-platform/tests/*.js')
+if [ -n "$CHANGED_JS" ]; then
+    echo "Running eslint on staged JS files (performance-testing-platform)..."
+    cd performance-testing-platform && npx eslint $CHANGED_JS --no-warn-ignored
+    cd ..
 fi

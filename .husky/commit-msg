@@ -1,2 +1,15 @@
-# Validate commit message format
+# Validate commit message format (conventional commits)
 # Requires: feat|fix|docs|style|refactor|test|chore|ci|perf
+
+MSG=$(cat "$1")
+PATTERN="^(feat|fix|docs|style|refactor|test|chore|ci|perf)(\(.+\))?!?: .+"
+
+if ! echo "$MSG" | grep -qE "$PATTERN"; then
+  echo "❌ Invalid commit message format."
+  echo "   Expected: <type>(<scope>): <subject>"
+  echo "   Types: feat|fix|docs|style|refactor|test|chore|ci|perf"
+  echo "   Example: feat(perf): add soak test scripts"
+  echo ""
+  echo "   Got: $MSG"
+  exit 1
+fi

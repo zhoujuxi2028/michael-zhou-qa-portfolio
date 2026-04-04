@@ -80,8 +80,7 @@ jobs:
           pylint tests/ tools/ app/ \
             --max-line-length=120 \
             --fail-under=8.0 \
-            --disable=C0114,C0115,C0116,C0415,W1203,R0801,R0902,W0718 \
-        continue-on-error: true
+            --disable=C0114,C0115,C0116,C0415,W1203,R0801,R0902,W0718
 
   unit-tests:
     name: Unit Tests
