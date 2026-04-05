@@ -2,6 +2,18 @@
 
 每个新功能/项目遵循 5 阶段流程，每阶段结束必须暂停等待人工评审。
 
+### 风险管理（贯穿全流程）
+
+风险管理不是某个阶段的专属任务，**每个阶段都必须审视风险**：
+
+| 阶段 | 风险活动 |
+|------|---------|
+| 需求 | 识别初始风险 → 写入 `risks.md` |
+| 设计 | 评估架构风险 → 更新 `risks.md` |
+| 开发 | 新发现风险补充 → 已解决风险移入历史 |
+| 测试 | 测试暴露的风险 → 评估是否阻塞发布 |
+| 收尾 | 最终风险确认 → 遗留风险记录到 Issue |
+
 ## 目录 / Table of Contents
 
 - [1. 需求阶段](#1-需求阶段)
@@ -22,9 +34,10 @@
 - [ ] 依赖已识别（需安装的工具、需引入的库）
 - [ ] 需求已编号（如 `AUTH-01`、`SM-01`），便于后续追溯
 - [ ] 需求描述已写入 `docs/project-management/requirements.md`
+- [ ] 初始风险已识别 → `docs/project-management/risks.md`（技术风险、环境风险、依赖风险）
 - [ ] 新项目：基础文档骨架已创建（CLAUDE.md、README.md、docs/ 标准结构）
 
-**评审要点：** scope 是否合理、本机环境是否支持、是否有遗漏的依赖、需求编号完整且已文档化、新项目文档骨架是否完整
+**评审要点：** scope 是否合理、本机环境是否支持、是否有遗漏的依赖、需求编号完整且已文档化、初始风险已识别、新项目文档骨架是否完整
 
 ---
 
@@ -75,8 +88,9 @@
 - [ ] CI 报红验证 → 故意让测试失败一次，确认 CI 能正确检测到失败
 - [ ] JMeter dry-run 通过（如适用）→ `npm run jmeter:dryrun` 验证字段名和状态码正确（防止 #50 字段名错误）
 - [ ] 本地 pre-commit checklist 全部通过（参考根 CLAUDE.md Pre-commit Checklist）
+- [ ] 测试暴露的风险已评估 → `docs/project-management/risks.md`（是否阻塞发布）
 
-**评审要点：** lint 通过、所有测试 PASS、覆盖率达标、CI 绿灯且无 workaround 掩盖
+**评审要点：** lint 通过、所有测试 PASS、覆盖率达标、CI 绿灯且无 workaround 掩盖、测试暴露的风险已评估
 
 ---
 
@@ -88,15 +102,29 @@
 - [ ] 根 CLAUDE.md 已注册 → `CLAUDE.md`（Projects 表、Quick Commands、GitHub Actions 三处）
 - [ ] 根 README.md 已注册 → `README.md`（项目列表）
 - [ ] Wiki 已同步（如需要）→ GitHub Wiki 页面
+- [ ] 最终风险确认 → `docs/project-management/risks.md`（遗留风险记录到 Issue）
 - [ ] PR merged → `gh pr merge`
+- [ ] Issue 已关闭 → `gh issue close <number>` 并附完成摘要（防止 #85 遗漏）
 
-**评审要点：** 文档完整、root 文件三处已注册、Wiki 同步
+**评审要点：** 文档完整、root 文件三处已注册、Wiki 同步、遗留风险已记录、Issue 已关闭
 
 ---
 
 # English Version
 
 Every new feature/project follows a 5-phase process. Each phase must pause for manual review before proceeding to the next.
+
+### Risk Management (Across All Phases)
+
+Risk management is not owned by a single phase — **every phase must review risks**:
+
+| Phase | Risk Activity |
+|-------|--------------|
+| Requirements | Identify initial risks → write to `risks.md` |
+| Design | Assess architecture risks → update `risks.md` |
+| Development | Add newly discovered risks → move resolved risks to history |
+| Testing | Assess risks exposed by testing → evaluate if they block release |
+| Closing | Final risk confirmation → record remaining risks as Issues |
 
 ## 1. Requirements Phase
 
@@ -107,9 +135,10 @@ Every new feature/project follows a 5-phase process. Each phase must pause for m
 - [ ] Dependencies identified (tools to install, libraries to add)
 - [ ] Requirements numbered (e.g., `AUTH-01`, `SM-01`) for traceability
 - [ ] Requirements documented in `docs/project-management/requirements.md`
+- [ ] Initial risks identified → `docs/project-management/risks.md` (technical, environment, dependency risks)
 - [ ] New project: scaffold base docs (CLAUDE.md, README.md, standard docs/ structure)
 
-**Review focus:** Is scope reasonable? Does local environment support it? Any missing dependencies? Requirements numbered and documented? Are new project doc scaffolds in place?
+**Review focus:** Is scope reasonable? Does local environment support it? Any missing dependencies? Requirements numbered and documented? Initial risks identified? Are new project doc scaffolds in place?
 
 ---
 
@@ -160,8 +189,9 @@ Every new feature/project follows a 5-phase process. Each phase must pause for m
 - [ ] CI failure detection → intentionally break a test, confirm CI reports red
 - [ ] JMeter dry-run passes (if applicable) → `npm run jmeter:dryrun` verifies field names and status codes (prevent #50 field name mismatch)
 - [ ] Local pre-commit checklist fully passed (see root CLAUDE.md Pre-commit Checklist)
+- [ ] Risks exposed by testing assessed → `docs/project-management/risks.md` (evaluate if they block release)
 
-**Review focus:** Lint passes, all tests PASS, coverage meets threshold, CI green with no workarounds masking failures
+**Review focus:** Lint passes, all tests PASS, coverage meets threshold, CI green with no workarounds masking failures, testing risks assessed
 
 ---
 
@@ -173,6 +203,8 @@ Every new feature/project follows a 5-phase process. Each phase must pause for m
 - [ ] Root CLAUDE.md registered → `CLAUDE.md` (Projects table, Quick Commands, GitHub Actions — all three sections)
 - [ ] Root README.md registered → `README.md` (project listing)
 - [ ] Wiki synced (if needed) → GitHub Wiki pages
+- [ ] Final risk confirmation → `docs/project-management/risks.md` (remaining risks recorded as Issues)
 - [ ] PR merged → `gh pr merge`
+- [ ] Issue closed → `gh issue close <number>` with completion summary (prevent #85 oversight)
 
-**Review focus:** Documentation complete, root files registered in all three sections, Wiki synced
+**Review focus:** Documentation complete, root files registered in all three sections, Wiki synced, remaining risks recorded, Issue closed
