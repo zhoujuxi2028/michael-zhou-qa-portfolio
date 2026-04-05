@@ -1,0 +1,8 @@
+lint	Run actions/setup-node@v6	2026-04-05T12:48:25.3444389Z Received 14628412 of 14628412 (100.0%), 15.2 MBs/sec
+unit-test	Run actions/setup-node@v6	2026-04-05T12:48:44.3552491Z Received 14628412 of 14628412 (100.0%), 19.3 MBs/sec
+unit-test	Run npx jest tests/unit/ --coverage --coverageReporters=text --coverageReporters=lcov	2026-04-05T12:48:52.5498509Z FAIL tests/unit/routes/health.test.js
+unit-test	Run npx jest tests/unit/ --coverage --coverageReporters=text --coverageReporters=lcov	2026-04-05T12:48:52.5508006Z     Expected: "INTENTIONAL_FAILURE_FOR_CI_RED_VERIFICATION"
+unit-test	Run npx jest tests/unit/ --coverage --coverageReporters=text --coverageReporters=lcov	2026-04-05T12:48:52.5510340Z     Received: "ok"
+unit-test	Run npx jest tests/unit/ --coverage --coverageReporters=text --coverageReporters=lcov	2026-04-05T12:48:52.5526441Z     [31m[1m>[22m[39m[90m  8 |[39m     expect(res[33m.[39mbody[33m.[39mstatus)[33m.[39mtoBe([32m'INTENTIONAL_FAILURE_FOR_CI_RED_VERIFICATION'[39m)[33m;[39m
+unit-test	Run npx jest tests/unit/ --coverage --coverageReporters=text --coverageReporters=lcov	2026-04-05T12:49:00.0187136Z Test Suites: 1 failed, 13 passed, 14 total
+unit-test	Run npx jest tests/unit/ --coverage --coverageReporters=text --coverageReporters=lcov	2026-04-05T12:49:00.0187763Z Tests:       1 failed, 94 passed, 95 total
