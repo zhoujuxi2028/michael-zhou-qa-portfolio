@@ -49,7 +49,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 ```
 docs/
 ├── architecture/           # ARCHITECTURE.md, design decisions, API specs
-├── test-cases/             # TEST-CASES.md, test reports, strategies
+├── qa/                     # test-plan, test-cases/, rtm, reports/
 ├── project-management/     # WBS.md, ISSUES.md, requirements, defects
 └── guides/                 # FAQ, troubleshooting, learning guides (optional)
 ```

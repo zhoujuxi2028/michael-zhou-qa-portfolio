@@ -146,7 +146,7 @@ data/products.csv
 | T3 | k6 脚本改造: smoke/load/stress 使用 CSV + profile | `smoke.k6.js`, `load.k6.js`, `stress.k6.js` | T0, T1, T2 |
 | T4 | JMeter 环境适配: staging/production properties | `config/staging.properties`, `config/production.properties` | — |
 | T5 | 开发者体验: .env.example + npm scripts | `.env.example`, `package.json` | — |
-| T6 | 文档更新 | architecture.md, test-cases.md | T0~T5 |
+| T6 | 文档更新 | architecture.md, qa/test-cases/index.md | T0~T5 |
 
 ---
 
@@ -453,20 +453,20 @@ git commit -m "feat(dx): add .env.example + setup/clean/health/dev scripts (#85)
 
 **Files:**
 - Modify: `docs/architecture/architecture.md`
-- Modify: `docs/test-cases/test-cases.md`
+- Modify: `docs/qa/test-cases/index.md`
 
 - [x] **Step 1: Update architecture.md**
 
 新增 §6 Phase 5 基础设施层 (三层配置架构、双模块策略、环境切换数据流、CSV 数据流)
 
-- [x] **Step 2: Update test-cases.md**
+- [x] **Step 2: Update qa/test-cases/index.md**
 
 新增 Phase 5 单元测试用例 (UT-ENV-01~07, UT-DATA-01~08, UT-PROF-01~09)
 
 - [x] **Step 3: Commit**
 
 ```bash
-git add docs/architecture/architecture.md docs/test-cases/test-cases.md
+git add docs/architecture/architecture.md docs/qa/test-cases/index.md
 git commit -m "docs(perf): add Phase 5 architecture + test cases for design review (#85)"
 ```
 
