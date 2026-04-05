@@ -37,11 +37,11 @@
 
 | Phase | 主题 | Jest 单元测试 | 性能测试 | 集成测试 | 其他 | 合计 | 详细文档 |
 |-------|------|-------------|---------|---------|------|------|---------|
-| 1 | 双引擎性能测试 | 24 | 13 | 4 | 13 | **54** | [phase1-dual-engine.md](cases/phase1-dual-engine.md) |
-| 2 | 系统指标采集 + 容量测试 | 23 | 6 | 9 | 4 | **42** | [phase2-metrics.md](cases/phase2-metrics.md) |
-| 3 | JWT 认证场景 | 17 | 4 | 3 | 0 | **24** | [phase3-auth.md](cases/phase3-auth.md) |
-| 4 | Soak Test + 可观测性 | 7 | 3 | 2 | 0 | **12** | [phase4-soak.md](cases/phase4-soak.md) |
-| 5 | 基础设施 Helper | 24 | 0 | 5 | 0 | **29** | [phase5-infra.md](cases/phase5-infra.md) |
+| 1 | 双引擎性能测试 | 24 | 13 | 4 | 13 | **54** | [phase1-dual-engine.md](phase1-dual-engine.md) |
+| 2 | 系统指标采集 + 容量测试 | 23 | 6 | 9 | 4 | **42** | [phase2-metrics.md](phase2-metrics.md) |
+| 3 | JWT 认证场景 | 17 | 4 | 3 | 0 | **24** | [phase3-auth.md](phase3-auth.md) |
+| 4 | Soak Test + 可观测性 | 7 | 3 | 2 | 0 | **12** | [phase4-soak.md](phase4-soak.md) |
+| 5 | 基础设施 Helper | 24 | 0 | 5 | 0 | **29** | [phase5-infra.md](phase5-infra.md) |
 | | **小计** | **95** | **26** | **23** | **17** | **161** | |
 
 > **注:** Phase 6/7 为 📋 Planned，用例待开发阶段补充。

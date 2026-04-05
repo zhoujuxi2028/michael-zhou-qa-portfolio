@@ -161,7 +161,7 @@ JMeter (多线程) ───────────→├─ Worker 3 ─┼─
 
 > 如需超过 5000 并发，需水平扩展至多节点 + 替换 SQLite 为 PostgreSQL/MySQL。
 >
-> 完整逐轮数据见 [docs/test-cases/rtm.md](docs/test-cases/rtm.md)
+> 完整逐轮数据见 [docs/qa/rtm.md](docs/qa/rtm.md)
 
 ## 运行环境要求
 
@@ -332,8 +332,8 @@ performance-testing-platform/
 | 文档 | 路径 |
 |------|------|
 | 架构设计 | [docs/architecture/](docs/architecture/) |
-| 测试用例 | [docs/test-cases/](docs/test-cases/) |
-| RTM 追溯矩阵 | [docs/test-cases/rtm.md](docs/test-cases/rtm.md) |
+| 质量保障 (QA) | [docs/qa/](docs/qa/) |
+| RTM 追溯矩阵 | [docs/qa/rtm.md](docs/qa/rtm.md) |
 | 项目管理 | [docs/project-management/](docs/project-management/) |
 | 需求文档 | [docs/project-management/requirements.md](docs/project-management/requirements.md) |
 | 性能测试参数指南 | [docs/guides/performance-testing-parameters.md](docs/guides/performance-testing-parameters.md) |
