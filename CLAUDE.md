@@ -39,7 +39,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | 安全测试 | `security-testing-demo/` — Security (~182 tests, OWASP Top 10) | Pytest, OWASP ZAP, Nessus, SQLMap | `security-testing-demo/CLAUDE.md` |
 | 平台测试 | `sid-iam-testing-platform/` — IAM + Data + AI Agent (163 tests) | Python, Pytest, FastAPI, networkx | `sid-iam-testing-platform/CLAUDE.md` |
 | 平台测试 | `microservice-testing-platform/` — Microservice (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 | `microservice-testing-platform/CLAUDE.md` |
-| 性能测试 | `performance-testing-platform/` — k6 + JMeter dual-engine (71 unit + 15 perf) | k6, JMeter, Express, Grafana, InfluxDB | `performance-testing-platform/CLAUDE.md` |
+| 性能测试 | `performance-testing-platform/` — k6 + JMeter dual-engine (95 unit + 23 integration + 26 perf) | k6, JMeter, Express, Grafana, InfluxDB | `performance-testing-platform/CLAUDE.md` |
 | 稳定性测试 | `k8s-auto-testing-platform/` — K8S HPA + Chaos (37 tests) | Python, Pytest, Chaos Mesh | `k8s-auto-testing-platform/CLAUDE.md` |
 
 > **Quick Commands**: 各项目的安装、运行、测试命令详见对应子项目 `CLAUDE.md`。
@@ -99,7 +99,7 @@ python3 -m venv venv && source venv/bin/activate
 | `fix/api-testing-defects` | API testing bug fixes | In development |
 | `feature/sid-iam-testing` | SID IAM + Data Platform + AI Agent testing (138 tests) | In development |
 | `feature/microservice-testing` | Microservice testing platform (101 tests, 5 layers) | In development |
-| `feature/performance-testing` | Performance testing platform (k6 + JMeter dual-engine) | In development |
+| `feature/performance-testing` | Performance testing platform (k6 + JMeter dual-engine, Phase 1-5 done) | In development |
 
 ## GitHub Actions
 
