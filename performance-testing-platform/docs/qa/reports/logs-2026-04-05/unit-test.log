@@ -1,0 +1,24 @@
+
+> performance-testing-platform@1.0.0 test
+> NODE_ENV=test jest
+
+PASS tests/unit/routes/health.test.js
+PASS tests/unit/middleware/metrics.test.js
+PASS tests/unit/routes/products.test.js
+PASS tests/unit/db/database.test.js
+PASS tests/unit/utils/delay.test.js
+PASS tests/unit/helpers/data.test.js
+PASS tests/unit/helpers/profile.test.js
+PASS tests/unit/middleware/authenticate.test.js
+PASS tests/unit/routes/orders.test.js
+PASS tests/unit/scripts/soak-leak-detection.test.js
+PASS tests/unit/helpers/env.test.js
+PASS tests/unit/routes/auth.test.js
+PASS tests/unit/scripts/server-sh.test.js (18.109 s)
+PASS tests/unit/scripts/preflight-check.test.js (40.981 s)
+
+Test Suites: 14 passed, 14 total
+Tests:       95 passed, 95 total
+Snapshots:   0 total
+Time:        41.633 s, estimated 43 s
+Ran all test suites.
