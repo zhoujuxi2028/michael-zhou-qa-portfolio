@@ -42,9 +42,9 @@
 | 3 | JWT 认证场景 | 17 | 4 | 3 | 0 | **24** | [phase3-auth.md](phase3-auth.md) |
 | 4 | Soak Test + 可观测性 | 7 | 3 | 2 | 0 | **12** | [phase4-soak.md](phase4-soak.md) |
 | 5 | 基础设施 Helper | 24 | 0 | 5 | 0 | **29** | [phase5-infra.md](phase5-infra.md) |
-| | **小计** | **95** | **26** | **23** | **17** | **161** | |
-
-> **注:** Phase 6/7 为 📋 Planned，用例待开发阶段补充。
+| 6 | 测试能力扩展 | 6 | 7 | 0 | 8 | **21** | [phase6-testing.md](phase6-testing.md) |
+| 7 | CI/CD + 可观测性 | 6 | 0 | 0 | 18 | **24** | [phase7-cicd.md](phase7-cicd.md) |
+| | **小计** | **107** | **33** | **23** | **43** | **206** | |
 
 > **Release 验证规则:** 每次大版本发布前，需逐 Phase 确认所有用例已执行且通过。用例变更记录见下方 §4。
 
@@ -57,6 +57,8 @@
 | 2026-04-05 | 3 | 新增 | AUTH-INT-01~03 | Phase 3 补充认证端到端集成测试 (register→login→token 访问→无 token 拒绝) |
 | 2026-04-05 | 1 | 新增 | K6-RPT-01~07 | Phase 1 补充 k6 报告验证 (生成完整性 4 + 内容完整性 3) |
 | 2026-04-05 | — | 重构 | — | TEST-CASES.md 精简为索引，详细用例下沉到 per-phase 文件 |
+| 2026-04-05 | 6 | 新增 | UT-RL/K6-RL/K6-BP/K6-MIG/K6-RPT | Phase 6 测试用例 21 条 (限流 6+4, 崩溃 3, 迁移 4, 摘要 4) |
+| 2026-04-05 | 7 | 新增 | UT-BL/CI-COV/CI-BL/TREND/GRF/SCHED | Phase 7 测试用例 24 条 (基线 6+4, 覆盖率 4, 趋势 3, Grafana 4, 调度 4) |
 
 > **变更类型:** `新增` / `修改` / `删除` / `初始化` / `重构`
 >
