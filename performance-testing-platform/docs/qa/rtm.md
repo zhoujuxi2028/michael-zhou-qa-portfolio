@@ -100,7 +100,7 @@
 | AUTH-08 | Token 刷新 (200 VUs) | `auth-refresh.k6.js` | AUTH-PERF-02 | ✅ |
 | AUTH-09 | 完整用户旅程 (500 VUs) | `auth-journey.k6.js` | AUTH-PERF-03 | ✅ |
 | AUTH-10 | JMeter 认证压测 | `auth-load.jmx` | AUTH-PERF-04 | ✅ |
-| AUTH-11 | 性能对比报告 | — | — | ⏳ 待完整压测 |
+| AUTH-11 | 性能对比报告 | [`auth-comparison-report.md`](../test-cases/auth-comparison-report.md) | — | ✅ |
 
 ---
 
@@ -147,17 +147,16 @@
 |-------|--------|--------|--------|--------|
 | 1 | 13 (US-01~09 + UC-01~04) | 12 | 1 (Grafana 需 Docker) | 92% |
 | 2 | 15 (SM-01~11 + TQ-01~04) | 15 | 0 | 100% |
-| 3 | 11 (AUTH-01~11) | 10 | 1 (AUTH-11 对比报告) | 91% |
+| 3 | 11 (AUTH-01~11) | 11 | 0 | 100% |
 | 4 | 10 (SOAK-01~10) | 10 | 0 | 100% |
 | 5 | 13 (ENT-*) | 13 | 0 | 100% |
-| **合计** | **62** | **60** | **2** | **97%** |
+| **合计** | **62** | **61** | **1** | **98%** |
 
 ### 未覆盖项说明
 
 | 需求 | 原因 | 计划 |
 |------|------|------|
 | Grafana Dashboard (Phase 1) | 需 Docker + InfluxDB 环境 | 本地手动验证 |
-| AUTH-11 性能对比报告 | 待完整压测后产出 | Phase 6+ |
 
 ---
 
