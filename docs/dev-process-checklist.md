@@ -34,7 +34,7 @@
 - [ ] Plan Reviewer 已执行
 - [ ] Reviewer 问题已全部修复
 - [ ] 架构设计文档已产出 → `docs/architecture/architecture.md`（数据流、模块职责、接口定义）
-- [ ] 测试策略文档已产出 → `docs/test-cases/test-cases.md`（测试类型、用例表、覆盖目标、阈值）
+- [ ] 测试策略文档已产出 → `docs/qa/test-plan.md`（测试类型、用例表、覆盖目标、阈值）
 - [ ] 风险清单已产出 → `docs/project-management/risks.md`（技术风险、环境风险、依赖风险、缓解措施）
 - [ ] 与现有项目模式一致（目录结构、配置文件、命名规范）
 
@@ -119,7 +119,7 @@ Every new feature/project follows a 5-phase process. Each phase must pause for m
 - [ ] Plan Reviewer executed
 - [ ] All reviewer issues resolved
 - [ ] Architecture document produced → `docs/architecture/architecture.md` (data flow, module responsibilities, interface definitions)
-- [ ] Test strategy document produced → `docs/test-cases/test-cases.md` (test types, case table, coverage targets, thresholds)
+- [ ] Test strategy document produced → `docs/qa/test-plan.md` (test types, case table, coverage targets, thresholds)
 - [ ] Risk assessment produced → `docs/project-management/risks.md` (technical risks, environment risks, dependency risks, mitigations)
 - [ ] Consistent with existing project patterns (directory structure, config files, naming conventions)
 

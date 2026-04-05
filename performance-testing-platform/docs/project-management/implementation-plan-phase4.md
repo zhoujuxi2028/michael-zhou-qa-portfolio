@@ -105,7 +105,7 @@ if growth_ratio > 0.25 → console.warn("MEMORY GROWTH WARNING")
 | T3 | npm scripts | `package.json` | T1, T2 |
 | T4 | Grafana soak dashboard | `grafana/dashboards/soak-results.json` | — |
 | T5 | Grafana alert rules | 内嵌于 soak dashboard JSON | T4 |
-| T6 | 文档更新 | architecture.md, test-cases.md | T0~T5 |
+| T6 | 文档更新 | architecture.md, qa/test-cases/index.md | T0~T5 |
 
 ---
 
@@ -636,7 +636,7 @@ git commit -m "feat(perf): add Grafana alert rules (p95, error rate, heap growth
 
 **Files:**
 - Modify: `docs/architecture/architecture.md`
-- Modify: `docs/test-cases/test-cases.md`
+- Modify: `docs/qa/test-cases/index.md`
 
 - [ ] **Step 1: Update architecture.md**
 
@@ -645,7 +645,7 @@ Add Phase 4 section:
 - Custom metrics 表 (from §1.3)
 - Grafana dashboard 描述
 
-- [ ] **Step 2: Update test-cases.md**
+- [ ] **Step 2: Update qa/test-cases/index.md**
 
 Add soak test cases:
 
@@ -658,7 +658,7 @@ Add soak test cases:
 - [ ] **Step 3: Commit**
 
 ```bash
-git add docs/architecture/architecture.md docs/test-cases/test-cases.md
+git add docs/architecture/architecture.md docs/qa/test-cases/index.md
 git commit -m "docs(perf): update architecture and test cases for Phase 4 soak (#65)"
 ```
 

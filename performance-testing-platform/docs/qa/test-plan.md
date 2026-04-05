@@ -42,21 +42,21 @@
 
 ### P0 — 必须通过 (阻塞发布)
 
-| 检查项 | 命令 | 通过标准 |
-|--------|------|---------|
-| 单元测试 | `npm test` | 95/95 PASS |
-| Lint | `npx eslint .` | 0 errors |
-| 覆盖率 | `npm test -- --coverage` | stmt ≥ 80%, branch ≥ 70%, func ≥ 80%, line ≥ 80% |
-| JMeter dry-run | `npm run jmeter:dryrun` | 0 errors, 字段名/状态码正确 |
+| 检查项            | 命令                       | 通过标准                                             |
+| -------------- | ------------------------ | ------------------------------------------------ |
+| 单元测试           | `npm test`               | 95/95 PASS                                       |
+| Lint           | `npx eslint .`           | 0 errors                                         |
+| 覆盖率            | `npm test -- --coverage` | stmt ≥ 80%, branch ≥ 70%, func ≥ 80%, line ≥ 80% |
+| JMeter dry-run | `npm run jmeter:dryrun`  | 0 errors, 字段名/状态码正确                              |
 
 ### P1 — 应该通过 (强烈建议)
 
-| 检查项 | 命令 | 通过标准 |
-|--------|------|---------|
-| 集成测试 | `bash scripts/integration-test.sh` | 21 Pass, 0 Fail (2 Skip 为 soak 手动项) |
-| k6 smoke | `npm run k6:smoke` | p95 < 500ms, error < 1% |
-| JMeter smoke | `npm run jmeter:smoke` | error < 1% |
-| CI 流水线 | push → GitHub Actions | 4 jobs 全绿 |
+| 检查项          | 命令                                 | 通过标准                                |
+| ------------ | ---------------------------------- | ----------------------------------- |
+| 集成测试         | `bash scripts/integration-test.sh` | 21 Pass, 0 Fail (2 Skip 为 soak 手动项) |
+| k6 smoke     | `npm run k6:smoke`                 | p95 < 500ms, error < 1%             |
+| JMeter smoke | `npm run jmeter:smoke`             | error < 1%                          |
+| CI 流水线       | push → GitHub Actions              | 4 jobs 全绿                           |
 
 ### P2 — 建议执行 (发布前完成)
 
@@ -192,7 +192,7 @@ npm run k6:soak:full                        # 4h, 500 VUs
   │   └── 不阻塞 → 记录 risks.md + 创建 Issue
   │
   └── 文档/计数不一致？
-      └── 更新 test-cases.md + 同步 CLAUDE.md/README.md
+      └── 更新 qa/test-cases/index.md + 同步 CLAUDE.md/README.md
 ```
 
 ### 7.3 禁止事项
@@ -281,7 +281,7 @@ npm run k6:soak:full                        # 4h, 500 VUs
 
 | 文档 | 路径 | 关系 |
 |------|------|------|
-| 用例索引 | [test-cases.md](test-cases.md) | 161 条用例清单 + per-phase 详情 |
+| 用例索引 | [test-cases/index.md](test-cases/index.md) | 161 条用例清单 + per-phase 详情 |
 | 架构设计 | [architecture.md](../architecture/architecture.md) | 系统架构 + 数据流 |
 | 风险清单 | [risks.md](../project-management/risks.md) | 技术风险 + 缓解措施 |
 | 需求文档 | [requirements.md](../project-management/requirements.md) | Phase 1~5 需求编号 |
