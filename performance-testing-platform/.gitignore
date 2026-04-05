@@ -10,3 +10,6 @@ env/production.env
 results/
 *.jtl
 apache-jmeter-*/
+reports/
+jmeter.log
+index.html
