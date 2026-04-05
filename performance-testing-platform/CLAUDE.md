@@ -17,7 +17,10 @@
 ```bash
 npm install && npm start &   # 启动目标 API — Cluster 模式 (port 3000)
 npm run start:single &       # 启动目标 API — 单进程模式
-npm test                     # 单元测试 (71 tests)
+npm test                     # 单元测试 (95 tests)
+npm run setup                # 安装 + lint + 测试 (一键初始化)
+npm run clean                # 清理 reports/results/coverage/db
+npm run health               # preflight + 测试 (健康检查)
 npm run k6:smoke             # k6 smoke test
 npm run jmeter:smoke         # JMeter smoke test
 npm run k6:auth-login        # k6 高并发登录压测 (100 VUs)
@@ -31,6 +34,7 @@ npm run k6:soak:influx       # k6 soak → InfluxDB + Grafana
 npm run jmeter:dryrun        # JMeter dry-run (1 thread x 10s, 验证字段/状态码)
 npm run jmeter:dryrun:auth   # JMeter auth dry-run (需 AUTH_ENABLED=true)
 npm run lint                 # ESLint
+bash scripts/integration-test.sh  # 集成测试 (23 cases, 需 Docker)
 ```
 
 > **服务管理:** `scripts/server.sh` 统一管理服务生命周期 (start/stop/restart) + 系统指标采集 (collect)，自动检测端口占用：已运行则跳过，被其他进程占用则报错。
@@ -71,6 +75,19 @@ npm run lint                 # ESLint
 | 2 | 系统指标采集 + 容量测试 + 瓶颈定位 (#54) | ✅ Done |
 | 3 | JWT 认证场景 — 登录/刷新/鉴权性能测试 (#56) | ✅ Done |
 | 4 | Soak Test — 长时间运行 + 内存泄漏检测 (#65) | ✅ Done |
+| 5 | 基础设施 Helper — env/data/profile 三层抽象 (#85) | ✅ Done |
+
+### Phase 5 — 基础设施 Helper (#85)
+
+**目标:** 消除 k6 脚本中的硬编码，通过 env/data/profile 三层抽象为 Phase 6/7 打基础
+
+| 模块 | 内容 |
+|------|------|
+| env-loader | 多环境配置 (local/staging/production)，`__ENV.ENV` 切换 |
+| csv-loader | CSV 参数化 + SharedArray，替代 `Math.random()` 硬编码 |
+| profile-parser | 负载 profile 集中管理，支持 stages + vus/duration 双模式 |
+| k6 改造 | smoke/load/stress 使用 CSV 数据 + profile 配置 |
+| DX | `.env.example`, npm scripts (setup/clean/health/dev) |
 
 ### Phase 3 — JWT 认证场景性能测试 (#56)
 
