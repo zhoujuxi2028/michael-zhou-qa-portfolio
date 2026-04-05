@@ -1,18 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep -E \"\\\\.\\(yml|yaml|json|js|md\\)$\")",
       "Bash(npx jest:*)",
       "Bash(npx eslint:*)",
       "Bash(npx prettier:*)",
-      "Read(//Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio/**)",
-      "Bash(python3 -c \"import yaml; yaml.safe_load\\(open\\(''.github/workflows/performance-ci.yml''\\)\\)\")",
-      "Bash(k6 version:*)",
-      "Bash(brew install:*)",
-      "Bash(k6 run:*)",
-      "Bash(gh run:*)",
-      "Bash(npx --version)",
-      "Bash(node:*)"
+      "Bash(env)",
+      "Bash(git:*)"
     ]
   }
 }
