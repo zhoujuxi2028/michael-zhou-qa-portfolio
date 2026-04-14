@@ -1,25 +1,14 @@
-import http from 'k6/http';
-import { sleep } from 'k6';
-import { BASE_URL, checkStatus } from './helpers/utils.js';
-import { randomProduct } from './helpers/data.js';
+import { BASE_URL } from './helpers/utils.js';
+import { executeFunnel } from './helpers/funnel.js';
 import { loadProfile } from './helpers/profile.js';
 
 export const options = loadProfile('load');
 
 export default function () {
-  const products = http.get(`${BASE_URL}/api/products?page=1&limit=5`);
-  checkStatus(products, 200, 'list products');
-
-  const p = randomProduct();
-  const detail = http.get(`${BASE_URL}/api/products/${p.id}`);
-  checkStatus(detail, 200, 'product detail');
-
-  const order = http.post(
-    `${BASE_URL}/api/orders`,
-    JSON.stringify({ product_id: p.id, quantity: 1 }),
-    { headers: { 'Content-Type': 'application/json' } }
-  );
-  checkStatus(order, 201, 'create order');
-
-  sleep(0.5);
+  // Load test: 100% browse → 100% detail → 100% order (扁平模型，保持原始行为)
+  // 通过设置 detailProb=1.0, orderProb=1.0 覆盖默认的嵌套概率
+  executeFunnel(BASE_URL, {
+    detailProb: 1.0, // 100% of iterations view detail
+    orderProb: 1.0, // 100% of detail viewers place order
+  });
 }
