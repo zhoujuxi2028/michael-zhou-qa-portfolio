@@ -24,6 +24,11 @@
 | R-14 | 技术 | express-rate-limit MemoryStore 在 Cluster 模式下 per-worker 隔离 | 中 | 高 | 🟡 | ENT-RESILIENCE | 文档注明限制；rate-limit.k6.js 使用单进程模式测试；全局限流需 Redis (Out of Scope) |
 | R-15 | 技术 | breakpoint test 持续递增导致系统崩溃后进程残留 | 中 | 中 | 🟡 | ENT-BREAKPOINT | maxDuration 10min 安全阀 + abortOnFail (error>50%) + preflight 清理孤立进程 |
 | R-16 | 技术 | generate-summary.sh 依赖 k6 JSON output 格式，k6 升级后可能 break | 低 | 中 | 🟢 | ENT-REPORT | jq 字段存在性检查，缺失字段输出 warning 而非 crash |
+| **R-17** | **技术** | **9 个 k6 脚本迁移（load/stress/capacity/soak/auth）后兼容性风险** | **高** | **高** | **🔴** | **ENT-CONSISTENCY** | **PoC 只验证了 smoke，需逐脚本对标 before/after 回归测试；p95 差异 < 10% 时方可合入** |
+| **R-18** | **技术** | **Rate Limiter Jest 单元测试缺失（6 cases: 正常请求/超限/恢复/开关/环变/headers）** | **高** | **高** | **🔴** | **ENT-RESILIENCE** | **Task 3 强制实现 UT-RL-01~06，必须通过 Jest 才能进 CI** |
+| **R-19** | **集成** | **generate-summary.sh 脚本完成，但 performance-ci.yml 未集成** | **中** | **中** | **🟡** | **ENT-REPORT** | **Task 6 完成后更新 CI workflow；明确何时调用报告脚本 + 如何展示结果** |
+| **R-20** | **技术** | **healthCheck 在 setup() 中 fail 导致 Cluster 模式下半启动状态** | **中** | **中** | **🟡** | **ENT-CONSISTENCY** | **healthCheck.js 添加 retry 逻辑（3 次尝试，间隔 1s）避免瞬时故障误判** |
+| **R-21** | **技术** | **Breakpoint test ramping-arrival-rate 递增策略/abort threshold 实现细节未验证** | **中** | **中** | **🟡** | **ENT-BREAKPOINT** | **Task 5 实现时需与设计文档对标；abort (error>50%) 应能正确触发；maxDuration 10min 安全阀** |
 
 ## 风险等级说明
 
