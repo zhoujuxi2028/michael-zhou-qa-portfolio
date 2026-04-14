@@ -28,7 +28,11 @@
       "Bash(curl -s -X POST http://localhost:3000/api/products -H 'Content-Type: application/json' -d '{\"name\":\"TestProduct\",\"price\":-999,\"stock\":100}')",
       "Bash(curl -s -X POST http://localhost:3000/api/products -H 'Content-Type: application/json' -d '{\"name\":\"TestProduct2\",\"price\":99.99,\"stock\":999999999999}')",
       "Bash(curl -s -X POST http://localhost:3000/api/products -H 'Content-Type: application/json' -d '{\"name\":\"FreeProduct\",\"price\":0,\"stock\":50}')",
-      "Bash(curl -s -X POST http://localhost:3000/api/products -H 'Content-Type: application/json' -d '{\"name\":\"TestProduct3\",\"price\":\"invalid\",\"stock\":50}')"
+      "Bash(curl -s -X POST http://localhost:3000/api/products -H 'Content-Type: application/json' -d '{\"name\":\"TestProduct3\",\"price\":\"invalid\",\"stock\":50}')",
+      "Bash(gh copilot suggest '为下列 Python 方法生成 Google 风格的 Docstring。:*)",
+      "Bash(gh copilot suggest -p '为下列 Python 方法生成 Google 风格的 Docstring。:*)",
+      "Bash(gh copilot:*)",
+      "Bash(copilot suggest '为下列 Python 方法生成 Google 风格的 Docstring。:*)"
     ]
   }
 }
