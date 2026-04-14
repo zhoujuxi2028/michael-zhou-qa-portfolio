@@ -1,8 +1,8 @@
 # 测试计划 (Test Plan)
 
 **项目:** Performance Testing Platform
-**版本:** Phase 1~5
-**日期:** 2026-04-05
+**版本:** Phase 1~6
+**日期:** 2026-04-05 (Phase 6 更新)
 
 ---
 
@@ -17,10 +17,11 @@
 | 3 | JWT 认证 | 注册/登录/刷新/登出、中间件鉴权、高并发认证压测 |
 | 4 | Soak Test + 可观测性 | 长时间运行稳定性、内存泄漏检测、Grafana 告警 |
 | 5 | 基础设施 Helper | env-loader、csv-loader、profile-parser、k6 脚本改造 |
+| 6 | 测试能力扩展 | k6 helpers 统一、breakpoint 崩溃测试、API 限流/熔断、执行摘要报告 |
 
 ### 1.2 范围外 (Out of Scope)
 
-- Phase 6/7 (Planned，用例待开发)
+- Phase 7 (Planned，用例待开发)
 - 第三方服务可用性 (InfluxDB/Grafana 自身 Bug)
 - 跨项目端口冲突排查
 
@@ -30,7 +31,7 @@
 
 | 类型 | 工具 | 用例数 | 职责 | 执行方式 |
 |------|------|--------|------|---------|
-| 单元测试 | Jest + Supertest | 95 | API 功能正确性、helpers 解析逻辑、中间件行为 | `npm test` 自动 |
+| 单元测试 | Jest + Supertest | 95+4 | API 功能正确性、helpers 解析逻辑、中间件行为、rate limiter | `npm test` 自动 |
 | 集成测试 | Shell + curl + Docker | 23 | 端到端链路验证 (k6→InfluxDB→Grafana、认证流程、k6 helpers) | `bash scripts/integration-test.sh` |
 | 性能测试 | k6 + JMeter | 26 | 延迟/吞吐/错误率、SLA 达标、瓶颈定位 | npm scripts 手动触发 |
 | 其他 | 手动验证 | 17 | 报告完整性、脚本行为、CI 门禁 | 人工检查 |
@@ -134,6 +135,7 @@ npx jest tests/unit/middleware/             # Phase 1: 中间件 (delay/metrics)
 npx jest tests/unit/scripts/               # Phase 2: 脚本 (server-sh/preflight/soak)
 npx jest tests/unit/auth/                   # Phase 3: 认证 (register/login/middleware)
 npx jest tests/unit/helpers/               # Phase 5: Helpers (env/data/profile)
+npx jest tests/unit/middleware/rateLimiter  # Phase 6: Rate limiter
 npm test -- --coverage                      # 含覆盖率报告
 ```
 
@@ -166,6 +168,11 @@ npm run k6:auth-journey                     # 500 VUs 完整旅程
 npm run k6:soak:short                       # 10 min, 100 VUs
 npm run k6:soak                             # 1h, 200 VUs
 npm run k6:soak:full                        # 4h, 500 VUs
+
+# Phase 6: 崩溃/限流
+npm run k6:breakpoint                       # 递增到崩溃，找绝对崩溃点
+RATE_LIMIT_ENABLED=true npm run start:single && npm run k6:rate-limit  # 限流测试
+npm run generate-summary                    # 生成执行摘要报告
 ```
 
 ---
@@ -250,6 +257,18 @@ npm run k6:soak:full                        # 4h, 500 VUs
 | profile-parser 解析 | UT-PROF-01~09 |
 | k6 helpers 端到端 | K6-INT-01~05 |
 
+### Phase 6 — 测试能力扩展
+
+| 验证项 | 方法 |
+|--------|------|
+| Rate limiter 中间件 (正常/超限/恢复/开关) | Jest: rateLimiter.test.js (4 tests) |
+| k6 helpers 统一 (funnel/thinkTime/healthCheck) | k6 smoke 迁移前后对比 (p95 偏差 < 10%) |
+| 现有脚本迁移回归 | `npm run k6:smoke` + `npm test` 全部 PASS |
+| Breakpoint 崩溃测试 | `npm run k6:breakpoint` 输出崩溃点 + 类型 |
+| 限流测试 (429/恢复) | `npm run k6:rate-limit` (需 RATE_LIMIT_ENABLED=true) |
+| 执行摘要报告 | `npm run generate-summary` → reports/k6-summary.md |
+| CDN 依赖清除 | `grep -r "jslib.k6.io" tests/performance/` 返回空 |
+
 ---
 
 ## 9. SLA 定义
@@ -273,6 +292,7 @@ npm run k6:soak:full                        # 4h, 500 VUs
 | k6 HTML 报告 | `reports/k6-*.html` | k6 run + handleSummary |
 | JMeter HTML 报告 | `reports/jmeter-*/` | jmeter -g + -o |
 | 系统指标 CSV | `reports/system-metrics-*.csv` | `scripts/server.sh collect` |
+| k6 执行摘要 | `reports/k6-summary.md` | `scripts/generate-summary.sh` |
 | 集成测试结果 | stdout | `scripts/integration-test.sh` |
 
 ---

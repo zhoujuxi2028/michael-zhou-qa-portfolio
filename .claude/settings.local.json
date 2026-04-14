@@ -39,7 +39,10 @@
       "Bash(mv test-cases/cases/phase*.md qa/test-cases/)",
       "Bash(mv test-cases/test-cases.md qa/test-cases/index.md)",
       "Bash(mv test-cases/test-plan.md qa/test-plan.md)",
-      "Bash(mv test-cases/rtm.md qa/rtm.md)"
+      "Bash(mv test-cases/rtm.md qa/rtm.md)",
+      "Bash(tee docs/qa/reports/logs-2026-04-05/unit-test.log)",
+      "Bash(tee docs/qa/reports/logs-2026-04-05/coverage.log)",
+      "Bash(tee docs/qa/reports/logs-2026-04-05/lint.log)"
     ]
   },
   "hooks": {

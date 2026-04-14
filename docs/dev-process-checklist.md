@@ -49,9 +49,11 @@
 - [ ] 架构设计文档已产出 → `docs/architecture/architecture.md`（数据流、模块职责、接口定义）
 - [ ] 测试策略文档已产出 → `docs/qa/test-plan.md`（测试类型、用例表、覆盖目标、阈值）
 - [ ] 风险清单已产出 → `docs/project-management/risks.md`（技术风险、环境风险、依赖风险、缓解措施）
+- [ ] 高风险项已做 PoC 验证 → 把握度 < 70% 的架构决策需先写最小验证代码，用实际运行结果替代直觉判断
+- [ ] 迁移项已完成代码 Diff 分析 → 涉及多文件统一迁移时，逐文件对比差异矩阵，再设计统一方案
 - [ ] 与现有项目模式一致（目录结构、配置文件、命名规范）
 
-**评审要点：** 架构合理、任务拆分清晰、reviewer 问题已修复、交付文档齐全、风险已识别并有缓解方案
+**评审要点：** 架构合理、任务拆分清晰、reviewer 问题已修复、交付文档齐全、风险已识别并有缓解方案、高风险项有 PoC 验证、迁移项有 Diff 分析
 
 ---
 
@@ -150,9 +152,11 @@ Risk management is not owned by a single phase — **every phase must review ris
 - [ ] Architecture document produced → `docs/architecture/architecture.md` (data flow, module responsibilities, interface definitions)
 - [ ] Test strategy document produced → `docs/qa/test-plan.md` (test types, case table, coverage targets, thresholds)
 - [ ] Risk assessment produced → `docs/project-management/risks.md` (technical risks, environment risks, dependency risks, mitigations)
+- [ ] High-risk items validated with PoC → architecture decisions with < 70% confidence need minimal verification code with actual run results
+- [ ] Migration items have code Diff analysis → multi-file unification requires per-file difference matrix before designing unified solution
 - [ ] Consistent with existing project patterns (directory structure, config files, naming conventions)
 
-**Review focus:** Architecture sound, tasks clearly decomposed, reviewer issues fixed, all deliverable documents present, risks identified with mitigations
+**Review focus:** Architecture sound, tasks clearly decomposed, reviewer issues fixed, all deliverable documents present, risks identified with mitigations, high-risk items have PoC, migrations have Diff analysis
 
 ---
 
