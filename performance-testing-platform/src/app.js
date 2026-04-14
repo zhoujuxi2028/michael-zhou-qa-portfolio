@@ -1,4 +1,5 @@
 const express = require('express');
+const helmet = require('helmet');
 const { metricsMiddleware } = require('./middleware/metrics');
 const rateLimiter = require('./middleware/rateLimiter');
 const healthRoutes = require('./routes/health');
@@ -7,6 +8,39 @@ const orderRoutes = require('./routes/orders');
 const authRoutes = require('./routes/auth');
 
 const app = express();
+
+// Security headers via helmet
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+      },
+    },
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true,
+    },
+    frameguard: { action: 'deny' },
+    referrerPolicy: { policy: 'no-referrer' },
+    xssFilter: true,
+    noSniff: true,
+    crossOriginEmbedderPolicy: true,
+    crossOriginOpenerPolicy: true,
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  })
+);
+
+// Hide server information
+app.disable('x-powered-by');
+
+// Trust proxy for proper IP handling
+app.set('trust proxy', 1);
+
 app.use(express.json());
 app.use(rateLimiter);
 app.use(metricsMiddleware);
