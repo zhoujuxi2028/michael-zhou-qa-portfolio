@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { sleep } from 'k6';
 import { Trend } from 'k6/metrics';
 import { BASE_URL, checkStatus } from './helpers/utils.js';
-import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
+import { thinkTime } from './helpers/thinkTime.js';
 
 // Custom metrics: server-side indicators (polled from /metrics)
 const serverEventLoopLag = new Trend('server_event_loop_lag');
@@ -61,5 +61,5 @@ export default function () {
     }
   }
 
-  sleep(randomIntBetween(0.5, 1.0));
+  thinkTime(0.5, 1.0);
 }
