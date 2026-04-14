@@ -67,8 +67,8 @@
 | 模块 | In Scope | Out of Scope |
 |------|----------|--------------|
 | **ENT-ENV 多环境** | env/ 配置文件 + k6 env loader + JMeter properties | 真实 staging/prod 环境部署 |
-| **ENT-DATA 测试数据** | CSV 参数化 + SharedArray | 数据库 seeding、动态数据生成 API |
-| **ENT-PROFILE 负载配置** | profiles/ JSON 集中管理 | GUI 配置界面 |
+| **ENT-DATA 测试数据** | CSV 参数化 + SharedArray (k6) | 数据库 seeding、动态数据生成 API、JMeter CSV Data Set Config（JMeter `.jmx` 原生支持，无需额外封装） |
+| **ENT-PROFILE 负载配置** | profiles/ JSON 集中管理 (k6) | GUI 配置界面、JMeter 负载配置重构（Phase 1 已通过 `config/*.properties` 外置，无需重复建设） |
 | **ENT-DX 开发者体验** | .env.example + npm run setup/clean/health | GUI 开发工具 |
 | **ENT-TEST 单元测试** | env/CSV/profile 模块的单元测试 | 集成测试、E2E 测试 |
 

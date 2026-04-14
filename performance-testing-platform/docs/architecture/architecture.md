@@ -355,8 +355,8 @@ tests/performance/helpers/
 ├── env.js            ← Phase 5: 环境配置
 ├── data.js           ← Phase 5: CSV 数据
 ├── profile.js        ← Phase 5: 负载 profile
-├── thinkTime.js      ← Phase 6 新增: 统一 sleep(randomIntBetween(min, max))
-├── funnel.js         ← Phase 6 新增: executeFunnel(baseUrl) — 60/30/10 漏斗
+├── thinkTime.js      ← Phase 6 新增: thinkTime(min,max) + randomIntBetween (去 CDN)
+├── funnel.js         ← Phase 6 新增: executeFunnel(baseUrl) — 嵌套漏斗 + onOrder hook
 └── healthCheck.js    ← Phase 6 新增: verifyHealth(baseUrl) — setup() 前置验证
 ```
 
@@ -370,8 +370,15 @@ tests/performance/helpers/
 | soak.k6.js | ✅ 迁移 | ✅ 迁移 | ✅ 已有 | — |
 | smoke.k6.js | — | — | ✅ 已有 | ✅ 迁移 |
 | spike.k6.js | — | — | ✅ 已有 | ✅ 迁移 |
-| auth-login.k6.js | — | ✅ 已有 | ⚠️ 需迁移 (直接 check→helper) | — |
-| auth-journey.k6.js | ✅ 已有 | ✅ 已有 | ⚠️ 需迁移 | — |
+| auth-login.k6.js | — | ✅ 迁移 (去 CDN) | ⚠️ 需迁移 (check→checkStatus) | — |
+| auth-refresh.k6.js | — | ✅ 迁移 (去 CDN) | ⚠️ 需迁移 | — |
+| auth-journey.k6.js | ✅ 已有 | ✅ 迁移 (去 CDN) | ⚠️ 需迁移 | — |
+
+**关键设计决策：**
+- **funnel 嵌套模型**: 100% browse → 50% detail → 33% order（与现有脚本行为一致）
+- **onOrder 回调 hook**: soak 脚本通过 `onOrder` 参数记录自定义 metrics，避免 funnel 耦合业务指标
+- **去 CDN**: thinkTime.js 内联 `randomIntBetween`，替代所有 `jslib.k6.io` CDN import
+- **data.js 复用**: funnel.js import `randomProduct()` from data.js，复用 Phase 5 CSV 参数化
 
 ### 7.2 Rate Limiter 中间件
 

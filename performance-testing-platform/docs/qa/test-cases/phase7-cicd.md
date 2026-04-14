@@ -1,0 +1,56 @@
+# Phase 7 测试用例 — CI/CD + 可观测性
+
+## 基线回归单元测试 (`tests/unit/utils/baseline.test.js`)
+
+| 用例 ID | 测试 | 预期 |
+|---------|------|------|
+| UT-BL-01 | 当前 p95 与 baseline 偏差 < 20% | 结果: pass |
+| UT-BL-02 | 当前 p95 退化 > 20% | 结果: warning |
+| UT-BL-03 | 当前 p95 退化 > 50% | 结果: fail |
+| UT-BL-04 | 首次运行无 baseline 文件 | 跳过对比，结果: pass (首次建基线) |
+| UT-BL-05 | baseline JSON 格式异常 | 报错提示，不 crash |
+| UT-BL-06 | 趋势数据追加 | trend.json 新增一行，保留历史 |
+
+## CI 覆盖率门禁
+
+| 用例 ID | 验证项 | 预期 |
+|---------|--------|------|
+| CI-COV-01 | `npm test -- --coverage` 生成覆盖率报告 | `coverage/` 目录生成 lcov + HTML |
+| CI-COV-02 | statements ≥ 80% 通过 | CI job pass |
+| CI-COV-03 | statements < 80% 失败 | CI job fail (故意删测试验证) |
+| CI-COV-04 | coverage 报告上传为 artifact | Actions Artifacts 可下载 |
+
+## CI 基线回归
+
+| 用例 ID | 验证项 | 预期 |
+|---------|--------|------|
+| CI-BL-01 | smoke gate 后存储 baseline JSON artifact | artifact 包含 p95/error_rate/throughput |
+| CI-BL-02 | 下次 CI 运行下载上次 baseline 并对比 | 对比结果输出到 CI log |
+| CI-BL-03 | p95 退化 > 50% 时 CI fail | job 失败，日志含退化百分比 |
+| CI-BL-04 | 首次运行无 baseline 时正常通过 | 不报错，存储当前为基线 |
+
+## 趋势报告
+
+| 用例 ID | 验证项 | 预期 |
+|---------|--------|------|
+| TREND-01 | `scripts/generate-trend.sh` 生成趋势表 | reports/trend.md 包含最近 N 次指标 |
+| TREND-02 | trend.json 累积多次运行数据 | JSON 数组长度递增 |
+| TREND-03 | 空 trend.json 时不 crash | 输出 "No trend data" 提示 |
+
+## Grafana 面板验证
+
+| 用例 ID | 验证项 | 方法 |
+|---------|--------|------|
+| GRF-ERR-01 | 错误分布面板渲染 | `docker compose up` + 浏览器，按 endpoint 分组 |
+| GRF-HEAT-01 | 延迟热力图面板渲染 | heatmap panel，颜色梯度正确 |
+| GRF-CUSTOM-01 | 自定义指标面板 (heap/event_loop/order_success) | 3 个指标时序图均有数据 |
+| GRF-ALERT-01 | webhook 告警触发 | 注入高延迟 → Grafana POST webhook URL |
+
+## 定时调度 (示范性)
+
+| 用例 ID | 验证项 | 预期 |
+|---------|--------|------|
+| SCHED-01 | cron workflow 文件语法正确 | `actionlint` 通过 |
+| SCHED-02 | nightly soak-short 配置 | cron: 每天 03:00 UTC |
+| SCHED-03 | weekly capacity 配置 | cron: 每周日 06:00 UTC |
+| SCHED-04 | artifact 归档保留 30 天 | retention-days: 30 |
