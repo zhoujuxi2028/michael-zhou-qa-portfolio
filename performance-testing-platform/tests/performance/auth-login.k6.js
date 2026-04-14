@@ -1,7 +1,6 @@
 import http from 'k6/http';
-import { sleep, check } from 'k6';
-import { BASE_URL } from './helpers/utils.js';
-import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
+import { BASE_URL, checkStatus } from './helpers/utils.js';
+import { thinkTime } from './helpers/thinkTime.js';
 
 // AUTH-PERF-01: High-concurrency login
 // bcrypt 10 rounds ~100ms/call, 8 Workers → ~80 login/s max
@@ -48,10 +47,6 @@ export default function (data) {
     { headers: { 'Content-Type': 'application/json' }, tags: { test_type: 'login' } }
   );
 
-  check(res, {
-    'login status 200': (r) => r.status === 200,
-    'login has accessToken': (r) => r.json('accessToken') !== undefined,
-  });
-
-  sleep(randomIntBetween(0.5, 1.0));
+  checkStatus(res, 200, 'login');
+  thinkTime(0.5, 1.0);
 }

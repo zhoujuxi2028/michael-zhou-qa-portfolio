@@ -1,7 +1,6 @@
 import http from 'k6/http';
-import { sleep, check } from 'k6';
 import { BASE_URL, checkStatus } from './helpers/utils.js';
-import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
+import { thinkTime } from './helpers/thinkTime.js';
 
 // AUTH-PERF-03: Complete authenticated user journey
 // login (once per VU) → browse → detail → order (with Bearer token)
@@ -51,7 +50,7 @@ export default function (data) {
       JSON.stringify({ username: user.username, password: user.password }),
       { headers: { 'Content-Type': 'application/json' }, ...normalTags }
     );
-    check(login, { 'login status 200': (r) => r.status === 200 });
+    checkStatus(login, 200, 'login');
     if (login.status === 200) {
       tokenCache[vuId] = login.json('accessToken');
     }
@@ -70,7 +69,7 @@ export default function (data) {
       tags: { test_type: 'invalid_token' },
     });
     // Public endpoint should still return 200 even with bad token
-    check(badRes, { 'public endpoint with bad token still 200': (r) => r.status === 200 });
+    checkStatus(badRes, 200, 'public endpoint with bad token');
 
     const badOrder = http.post(
       `${BASE_URL}/api/orders`,
@@ -80,11 +79,8 @@ export default function (data) {
         tags: { test_type: 'invalid_token' },
       }
     );
-    check(badOrder, {
-      'invalid token order returns 401': (r) => r.status === 401,
-      'no 5xx on invalid token': (r) => r.status < 500,
-    });
-    sleep(randomIntBetween(0.5, 1.0));
+    checkStatus(badOrder, 401, 'invalid token order');
+    thinkTime(0.5, 1.0);
     return;
   }
 
@@ -107,5 +103,5 @@ export default function (data) {
     }
   }
 
-  sleep(randomIntBetween(0.5, 1.0));
+  thinkTime(0.5, 1.0);
 }
