@@ -45,7 +45,8 @@
       "Bash(tee docs/qa/reports/logs-2026-04-05/lint.log)",
       "Bash(pkill -f \"npm start\")",
       "Bash(RATE_LIMIT_ENABLED=true npm start)",
-      "Bash(tee /tmp/k6-smoke-migration.log)"
+      "Bash(tee /tmp/k6-smoke-migration.log)",
+      "Bash(jq --version)"
     ]
   },
   "hooks": {
