@@ -187,30 +187,30 @@ TestPlan
 
 > **源码引用规范：** 每个端点标注实现文件，便于 Review 时对照验证。
 
-### 4.1 健康检查 — `src/routes/health.js`
+### 4.1 健康检查 — `src/routes/health.js:6-18`
 
-| 端点 | 方法 | 响应 |
-|------|------|------|
-| `/health` | GET | `{"status": "ok", "timestamp": "..."}` |
-| `/ready` | GET | `{"ready": true}` |
-| `/metrics` | GET | `{"requestCount": N, "avgDuration": N, "cpu": {...}, "memory": {...}, "eventLoop": {...}}` |
-
-### 4.2 商品 API — `src/routes/products.js`
-
-| 端点 | 方法 | 参数 | 响应 |
+| 端点 | 方法 | 响应 | 行号 |
 |------|------|------|------|
-| `/api/products` | GET | `?page=1&limit=10` | `{"data": [...], "page": 1, "limit": 10, "total": 5}` |
-| `/api/products/:id` | GET | path: id | `{"id": 1, "name": "Laptop", "price": 999.99, "stock": 100000}` |
-| `/api/products` | POST | body: `{name, price, stock}` | `201` + 创建的产品对象 |
+| `/health` | GET | `{"status": "ok", "timestamp": "..."}` | 6 |
+| `/ready` | GET | `{"ready": true}` | 10 |
+| `/metrics` | GET | `{"requestCount": N, "avgDuration": N, "cpu": {...}, "memory": {...}, "eventLoop": {...}}` | 14 |
+
+### 4.2 商品 API — `src/routes/products.js:6-34`
+
+| 端点 | 方法 | 参数 | 响应 | 行号 |
+|------|------|------|------|------|
+| `/api/products` | GET | `?page=1&limit=10` | `{"data": [...], "page": 1, "limit": 10, "total": 5}` | 6 |
+| `/api/products/:id` | GET | path: id | `{"id": 1, "name": "Laptop", "price": 999.99, "stock": 100000}` | 16 |
+| `/api/products` | POST | body: `{name, price, stock}` | `201` + 创建的产品对象 | 23 |
 
 **错误响应：** `404` 产品不存在 · `400` 缺少 name 或 price
 
-### 4.3 订单 API — `src/routes/orders.js`
+### 4.3 订单 API — `src/routes/orders.js:9-54`
 
-| 端点 | 方法 | 参数 | 响应 |
-|------|------|------|------|
-| `/api/orders` | GET | `?page=1&limit=10` | `{"data": [...], "page": 1, "limit": 10, "total": N}` |
-| `/api/orders` | POST | body: `{product_id, quantity}` | `201` + 创建的订单对象 |
+| 端点 | 方法 | 参数 | 响应 | 行号 |
+|------|------|------|------|------|
+| `/api/orders` | GET | `?page=1&limit=10` | `{"data": [...], "page": 1, "limit": 10, "total": N}` | 9 |
+| `/api/orders` | POST | body: `{product_id, quantity}` | `201` + 创建的订单对象 | 21 |
 
 **关键实现细节：**
 
@@ -221,14 +221,14 @@ TestPlan
 
 **错误响应：** `400` 缺少 product_id/quantity · `404` 产品不存在 · `409` 库存不足 · `401` 未认证 (AUTH_ENABLED 开启时)
 
-### 4.4 认证 API — `src/routes/auth.js`
+### 4.4 认证 API — `src/routes/auth.js:17-107`
 
-| 端点 | 方法 | 参数 | 响应 |
-|------|------|------|------|
-| `/api/auth/register` | POST | body: `{username, email, password}` | `201` + 用户对象（无密码） |
-| `/api/auth/login` | POST | body: `{email, password}` | `{accessToken, refreshToken}` |
-| `/api/auth/refresh` | POST | body: `{refreshToken}` | `{accessToken, refreshToken}` |
-| `/api/auth/logout` | POST | body: `{refreshToken}` | `{message: "Logged out"}` |
+| 端点 | 方法 | 参数 | 响应 | 行号 |
+|------|------|------|------|------|
+| `/api/auth/register` | POST | body: `{username, email, password}` | `201` + 用户对象（无密码） | 17 |
+| `/api/auth/login` | POST | body: `{email, password}` | `{accessToken, refreshToken}` | 36 |
+| `/api/auth/refresh` | POST | body: `{refreshToken}` | `{accessToken, refreshToken}` | 54 |
+| `/api/auth/logout` | POST | body: `{refreshToken}` | `{message: "Logged out"}` | 75 |
 
 **关键实现细节：**
 
@@ -237,14 +237,14 @@ TestPlan
 - JWT 签名：`jwt.sign({...payload, jti: randomUUID()}, JWT_SECRET, {expiresIn})`
 - Token 黑名单：logout 将 jti 写入 `token_blacklist` 表，authenticate 中间件检查
 
-### 4.5 数据库 Schema — `src/db/database.js`
+### 4.5 数据库 Schema — `src/db/database.js:26-52`
 
-| 表 | 关键约束 | Phase |
-|----|---------|-------|
-| `products` | 主键 id，无额外索引（C-01 约束） | 1 |
-| `orders` | `product_id INTEGER NOT NULL`，外键引用 products | 1 |
-| `users` | email UNIQUE | 3 |
-| `token_blacklist` | jti + expires_at | 3 |
+| 表 | 关键约束 | Phase | 行号 |
+|----|---------|-------|------|
+| `products` | 主键 id，无额外索引（C-01 约束） | 1 | 26 |
+| `orders` | `product_id INTEGER NOT NULL`，外键引用 products | 1 | 32 |
+| `users` | email UNIQUE | 3 | 41 |
+| `token_blacklist` | jti + expires_at | 3 | 47 |
 
 ## 5. 被测对象设计约束（Intentional Design Constraints）
 
