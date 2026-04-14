@@ -1,18 +1,25 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep -E \"\\\\.\\(yml|yaml|json|js|md\\)$\")",
       "Bash(npx jest:*)",
       "Bash(npx eslint:*)",
       "Bash(npx prettier:*)",
-      "Read(//Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio/**)",
-      "Bash(python3 -c \"import yaml; yaml.safe_load\\(open\\(''.github/workflows/performance-ci.yml''\\)\\)\")",
-      "Bash(k6 version:*)",
-      "Bash(brew install:*)",
+      "Bash(env)",
+      "Bash(git:*)",
+      "Bash(ls -lh /Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio/performance-testing-platform/reports/*.json)",
+      "Bash(grep -r \"p95\\\\|threshold\\\\|VU\\\\|error.*rate\" /Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio/performance-testing-platform/tests/performance/*.k6.js)",
+      "Bash(gh issue:*)",
+      "Bash(ls:*)",
+      "Bash(python3 -c ':*)",
+      "Bash(python3:*)",
+      "Bash(curl -s http://localhost:3000/health)",
+      "Bash(npm start:*)",
       "Bash(k6 run:*)",
-      "Bash(gh run:*)",
-      "Bash(npx --version)",
-      "Bash(node:*)"
+      "Bash(npm stop:*)",
+      "Bash(AUTH_ENABLED=true npm start)",
+      "Bash(npm run:*)",
+      "Bash(npm test:*)",
+      "Bash(grep -E \"\\(doc|md|txt\\)$\")"
     ]
   }
 }

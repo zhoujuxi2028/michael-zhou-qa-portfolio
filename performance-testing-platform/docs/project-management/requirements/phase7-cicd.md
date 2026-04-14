@@ -1,4 +1,4 @@
-# Phase 7 — CI/CD + 可观测性 📋 Planned
+# Phase 7 — CI/CD + 可观测性 📋 Planned ([#88](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/88))
 
 > 依赖 Phase 6 的测试产出，构建 CI 门禁、可视化和自动调度
 

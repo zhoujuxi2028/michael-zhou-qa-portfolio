@@ -39,7 +39,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | 安全测试 | `security-testing-demo/` — Security (~182 tests, OWASP Top 10) | Pytest, OWASP ZAP, Nessus, SQLMap | `security-testing-demo/CLAUDE.md` |
 | 平台测试 | `sid-iam-testing-platform/` — IAM + Data + AI Agent (163 tests) | Python, Pytest, FastAPI, networkx | `sid-iam-testing-platform/CLAUDE.md` |
 | 平台测试 | `microservice-testing-platform/` — Microservice (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 | `microservice-testing-platform/CLAUDE.md` |
-| 性能测试 | `performance-testing-platform/` — k6 + JMeter dual-engine (71 unit + 15 perf) | k6, JMeter, Express, Grafana, InfluxDB | `performance-testing-platform/CLAUDE.md` |
+| 性能测试 | `performance-testing-platform/` — k6 + JMeter dual-engine (95 unit + 23 integration + 26 perf) | k6, JMeter, Express, Grafana, InfluxDB | `performance-testing-platform/CLAUDE.md` |
 | 稳定性测试 | `k8s-auto-testing-platform/` — K8S HPA + Chaos (37 tests) | Python, Pytest, Chaos Mesh | `k8s-auto-testing-platform/CLAUDE.md` |
 
 > **Quick Commands**: 各项目的安装、运行、测试命令详见对应子项目 `CLAUDE.md`。
@@ -49,7 +49,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 ```
 docs/
 ├── architecture/           # ARCHITECTURE.md, design decisions, API specs
-├── test-cases/             # TEST-CASES.md, test reports, strategies
+├── qa/                     # test-plan, test-cases/, rtm, reports/
 ├── project-management/     # WBS.md, ISSUES.md, requirements, defects
 └── guides/                 # FAQ, troubleshooting, learning guides (optional)
 ```
@@ -99,7 +99,7 @@ python3 -m venv venv && source venv/bin/activate
 | `fix/api-testing-defects` | API testing bug fixes | In development |
 | `feature/sid-iam-testing` | SID IAM + Data Platform + AI Agent testing (138 tests) | In development |
 | `feature/microservice-testing` | Microservice testing platform (101 tests, 5 layers) | In development |
-| `feature/performance-testing` | Performance testing platform (k6 + JMeter dual-engine) | In development |
+| `feature/performance-testing` | Performance testing platform (k6 + JMeter dual-engine, Phase 1-5 done) | In development |
 
 ## GitHub Actions
 
@@ -173,6 +173,8 @@ grep <tool> package.json       # Node.js: eslint, prettier, newman
 | `$(cmd)` 捕获数值必须清洗输出 | Node.js/Python 子进程可能输出 warning，污染 shell 变量导致 `-ge` 比较异常 | ISS-010 |
 | k6 `setup()` 请求必须用 tag 隔离 | setup/teardown 的 HTTP 请求计入全局 metrics，会污染 threshold 判定 | ISS-011 |
 | CI 绿灯 ≠ 测试通过，禁止 `continue-on-error` 掩盖失败 | 22 个 Newman 断言失败被隐藏，临时 workaround 变成永久遗留 | ISS-012, ISS-013 |
+| JMeter 正式测试前先 `npm run jmeter:dryrun` | 字段名/状态码错误在 dry-run 阶段拦截，避免全量测试浪费时间 | #50 |
+| 报告采集步骤需显式抑制 exit code | `npm audit --json > file` 因漏洞返回 exit 1，导致报告步骤误判为安全门控失败 | ISS-014 |
 
 ## Wiki & Roadmap
 
