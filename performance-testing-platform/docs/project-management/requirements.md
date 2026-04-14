@@ -10,7 +10,7 @@
 | [#65](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/65) | Soak Test + 可观测性增强                | 2026-04-02 |
 | [#85](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/85) | 基础设施升级 (多环境/数据参数化/负载配置/DX)         | 2026-04-04 |
 | [#86](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/86) | 测试能力扩展 (k6 一致性/崩溃测试/限流熔断/报告)        | 2026-04-04 |
-| Phase 7                                                                    | CI/CD + 可观测性 (基线回归/覆盖率/Grafana/调度)  | 2026-04-04 |
+| [#88](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/88) | CI/CD + 可观测性 (基线回归/覆盖率/Grafana/调度)  | 2026-04-05 |
 
 ---
 
@@ -24,7 +24,7 @@
 | 4 | Soak Test + 可观测性增强 | [#65](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/65) | ✅ Done | SOAK-01~10 | [phase4-soak.md](requirements/phase4-soak.md) |
 | 5 | 基础设施升级 | [#85](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/85) | ✅ Done | 5 组 13 条 (ENT-ENV/DATA/PROFILE/DX/TEST) | [phase5-infra.md](requirements/phase5-infra.md) |
 | 6 | 测试能力扩展 | [#86](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/86) | 📋 Planned | 4 组 11 条 (ENT-CONSISTENCY/BREAKPOINT/RESILIENCE/REPORT) | [phase6-testing.md](requirements/phase6-testing.md) |
-| 7 | CI/CD + 可观测性 | — | 📋 Planned | 5 组 15 条 (ENT-BASELINE/COVERAGE/DASHBOARD/SCHEDULE/TEST) | [phase7-cicd.md](requirements/phase7-cicd.md) |
+| 7 | CI/CD + 可观测性 | [#88](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/88) | 📋 Planned | 5 组 15 条 (ENT-BASELINE/COVERAGE/DASHBOARD/SCHEDULE/TEST) | [phase7-cicd.md](requirements/phase7-cicd.md) |
 
 ## Phase 依赖关系
 

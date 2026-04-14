@@ -6,21 +6,21 @@
 
 在 Phase 5 基础设施之上，统一 k6 脚本架构、新增 breakpoint 崩溃测试和 API 限流/熔断测试、自动生成执行摘要报告。
 
-| 维度 | 当前状态 | 目标状态 |
-|------|---------|---------|
-| k6 一致性 | 脚本间 assertions/sleep/funnel 逻辑重复 | 统一 helpers，消除重复代码 |
-| 崩溃测试 | 只有安全上限 (capacity) | 新增 breakpoint test 找绝对崩溃点 |
-| 限流/熔断 | 无弹性工程测试 | rate limiter + 熔断恢复行为验证 |
-| 报告 | HTML + Grafana | 新增执行摘要报告（Markdown） |
+| 维度     | 当前状态                             | 目标状态                      |
+| ------ | -------------------------------- | ------------------------- |
+| k6 一致性 | 脚本间 assertions/sleep/funnel 逻辑重复 | 统一 helpers，消除重复代码         |
+| 崩溃测试   | 只有安全上限 (capacity)                | 新增 breakpoint test 找绝对崩溃点 |
+| 限流/熔断  | 无弹性工程测试                          | rate limiter + 熔断恢复行为验证   |
+| 报告     | HTML + Grafana                   | 新增执行摘要报告（Markdown）        |
 
 ## 6.2 用户故事
 
-| ID | 用户故事 | 验收标准 | 关联需求 |
-|----|---------|---------|---------|
-| US-28 | 作为性能工程师，我想所有 k6 脚本使用一致的 assertions 和 sleep 模式，以便降低维护成本和减少 copy-paste 错误 | ≥4 个脚本 import 统一 helpers（funnel/checkStatus/thinkTime），无内联重复代码 | ENT-CONSISTENCY |
-| US-29 | 作为性能工程师，我想找到系统的绝对崩溃点（而非安全上限），以便了解系统的极限行为 | breakpoint.k6.js 输出崩溃点 VUs + 崩溃类型（graceful/catastrophic） | ENT-BREAKPOINT |
-| US-34 | 作为性能工程师，我想测试 API 限流和熔断行为，以便验证系统的弹性工程能力 | 超限请求返回 429；窗口过后恢复 200；熔断恢复时间可度量 | ENT-RESILIENCE |
-| US-27 | 作为性能工程师，我想在测试结束后自动生成执行摘要（SLA 达标率、关键指标、对比），以便给管理层汇报 | `scripts/generate-summary.sh` 生成 Markdown 摘要，含 SLA 达标率 + Top 5 慢接口 | ENT-REPORT |
+| ID    | 用户故事                                                                    | 验收标准                                                               | 关联需求            |
+| ----- | ----------------------------------------------------------------------- | ------------------------------------------------------------------ | --------------- |
+| US-28 | 作为性能工程师，我想所有 k6 脚本使用一致的 assertions 和 sleep 模式，以便降低维护成本和减少 copy-paste 错误 | ≥4 个脚本 import 统一 helpers（funnel/checkStatus/thinkTime），无内联重复代码     | ENT-CONSISTENCY |
+| US-29 | 作为性能工程师，我想找到系统的绝对崩溃点（而非安全上限），以便了解系统的极限行为                                | breakpoint.k6.js 输出崩溃点 VUs + 崩溃类型（graceful/catastrophic）           | ENT-BREAKPOINT  |
+| US-34 | 作为性能工程师，我想测试 API 限流和熔断行为，以便验证系统的弹性工程能力                                  | 超限请求返回 429；窗口过后恢复 200；熔断恢复时间可度量                                    | ENT-RESILIENCE  |
+| US-27 | 作为性能工程师，我想在测试结束后自动生成执行摘要（SLA 达标率、关键指标、对比），以便给管理层汇报                      | `scripts/generate-summary.sh` 生成 Markdown 摘要，含 SLA 达标率 + Top 5 慢接口 | ENT-REPORT      |
 
 ## 6.3 需求列表
 
