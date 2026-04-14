@@ -61,5 +61,9 @@
     "express-rate-limit": "^7.1.5",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3"
+  },
+  "lint-staged": {
+    "src/**/*.js": "eslint --fix",
+    "tests/**/*.js": "eslint --fix"
   }
 }
