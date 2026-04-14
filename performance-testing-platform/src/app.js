@@ -1,5 +1,6 @@
 const express = require('express');
 const { metricsMiddleware } = require('./middleware/metrics');
+const rateLimiter = require('./middleware/rateLimiter');
 const healthRoutes = require('./routes/health');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
@@ -7,6 +8,7 @@ const authRoutes = require('./routes/auth');
 
 const app = express();
 app.use(express.json());
+app.use(rateLimiter);
 app.use(metricsMiddleware);
 app.use(healthRoutes);
 app.use(productRoutes);
