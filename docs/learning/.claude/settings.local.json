@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mv M1-copilot-cli-basics.md modules/phase1/)",
+      "Bash(mv M2-prompting-fundamentals.md modules/phase1/)",
+      "Bash(mv M3-cli-ecosystem.md modules/phase1/)",
+      "Bash(mv PHASE1-COMPLETION-REPORT.md docs/phase1/)",
+      "Bash(mv PHASE1-FINAL-SUMMARY.md docs/phase1/)",
+      "Read(//Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio/**)",
+      "Bash(gh issue:*)"
+    ]
+  }
+}
