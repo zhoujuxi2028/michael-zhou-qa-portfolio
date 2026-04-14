@@ -214,7 +214,12 @@ scripts/generate-summary.sh reports/k6-result.json
   - UT-RL-04: RATE_LIMIT_ENABLED=false 时不启用
   - UT-RL-05: 自定义 windowMs + max 环境变量覆盖默认值
   - UT-RL-06: 返回标准 RateLimit headers (RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset)
-- [ ] **3.5** commit: `feat(perf): add express-rate-limit middleware with env toggle (#86)`
+- [ ] **3.4b** 集成测试 `RL-INT-01~03` 添加到 `scripts/integration-test.sh` 的 Phase 6 section（Stage 3 DoD）
+  - RL-INT-01: RATE_LIMIT_ENABLED=true, RATE_LIMIT_MAX=3，发 4 次请求 → 前 3 次 200，第 4 次 429
+  - RL-INT-02: 同上，检查 ratelimit-remaining header 递减 (2 → 1 → 0)
+  - RL-INT-03: 耗尽限额后 sleep 6s（窗口过期），恢复 200
+- [ ] **3.4c** 本地验证：`bash scripts/integration-test.sh | grep -A 1 "RL-INT"`，确认 3 cases PASS
+- [ ] **3.5** commit: `feat(perf): add express-rate-limit middleware with env toggle + RL-INT-01~03 (#86)`
 
 ### Task 4: k6 限流测试脚本 (ENT-RESILIENCE-02~03)
 
@@ -249,7 +254,12 @@ scripts/generate-summary.sh reports/k6-result.json
   - Top 5 慢接口 (按 p95 排序)
   - 输出: Markdown 到 `reports/k6-summary.md`
 - [ ] **6.2** npm script: `"generate-summary": "bash scripts/generate-summary.sh"`
-- [ ] **6.3** commit: `feat(perf): add generate-summary.sh for k6 execution report (#86)`
+- [ ] **6.2b** 集成测试 `GEN-INT-01~03` 添加到 `scripts/integration-test.sh` 的 Phase 6 section（Stage 3 DoD）
+  - GEN-INT-01: 有效 k6 JSON fixture → exit 0，输出含 `# k6 Execution Summary`
+  - GEN-INT-02: 不存在的文件路径 → exit 1，stderr 含 usage 提示
+  - GEN-INT-03: 2/10 错误率 fixture → 输出 Markdown 含 `20%`
+- [ ] **6.2c** 本地验证：`bash scripts/integration-test.sh | grep -A 1 "GEN-INT"`，确认 3 cases PASS
+- [ ] **6.3** commit: `feat(perf): add generate-summary.sh for k6 execution report + GEN-INT-01~03 (#86)`
 
 ### Task 7: 文档更新
 

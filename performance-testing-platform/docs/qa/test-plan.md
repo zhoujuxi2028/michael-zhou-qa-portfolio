@@ -31,8 +31,8 @@
 
 | 类型 | 工具 | 用例数 | 职责 | 执行方式 |
 |------|------|--------|------|---------|
-| 单元测试 | Jest + Supertest | 95+4 | API 功能正确性、helpers 解析逻辑、中间件行为、rate limiter | `npm test` 自动 |
-| 集成测试 | Shell + curl + Docker | 23 | 端到端链路验证 (k6→InfluxDB→Grafana、认证流程、k6 helpers) | `bash scripts/integration-test.sh` |
+| 单元测试 | Jest + Supertest | 99 | API 功能正确性、helpers 解析逻辑、中间件行为、rate limiter | `npm test` 自动 |
+| 集成测试 | Shell + curl + Docker | 28 | 端到端链路验证 (k6→InfluxDB→Grafana、认证流程、k6 helpers、限流中间件、摘要报告)；Stage 3 完成时实现，Stage 4 验证通过 | `bash scripts/integration-test.sh` |
 | 性能测试 | k6 + JMeter | 26 | 延迟/吞吐/错误率、SLA 达标、瓶颈定位 | npm scripts 手动触发 |
 | 其他 | 手动验证 | 17 | 报告完整性、脚本行为、CI 门禁 | 人工检查 |
 | **合计** | | **161** | | |
@@ -54,7 +54,7 @@
 
 | 检查项          | 命令                                 | 通过标准                                |
 | ------------ | ---------------------------------- | ----------------------------------- |
-| 集成测试         | `bash scripts/integration-test.sh` | 21 Pass, 0 Fail (2 Skip 为 soak 手动项) |
+| 集成测试         | `bash scripts/integration-test.sh` | 26 Pass, 0 Fail (2 Skip 为 k6 模块兼容性) |
 | k6 smoke     | `npm run k6:smoke`                 | p95 < 500ms, error < 1%             |
 | JMeter smoke | `npm run jmeter:smoke`             | error < 1%                          |
 | CI 流水线       | push → GitHub Actions              | 4 jobs 全绿                           |
