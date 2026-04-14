@@ -62,7 +62,8 @@
 - [ ] 前置条件已验证 → 实施计划 Prerequisites 中的工具已安装、依赖版本正确（`which <tool>` / `<tool> --version`）
 - [ ] TDD：先写失败测试，再写实现（RED → GREEN → REFACTOR）
 - [ ] 源代码已产出 → `src/` 目录（按实施计划的模块结构）
-- [ ] 测试代码已产出 → `tests/` 目录（单元测试、集成测试等）
+- [ ] 单元测试已实现（TDD） → `tests/unit/`，先写失败用例，再写实现代码（RED → GREEN → REFACTOR）
+- [ ] 集成测试已实现（DoD） → 每个新功能/中间件需有端到端行为验证，写入 `scripts/integration-test.sh` 或 `tests/integration/`；用例 ID 来自 Stage 2 的 `test-cases/` 设计文档
 - [ ] 配置文件已产出 → `package.json` / `requirements.txt`、`jest.config.js` / `pytest.ini`、`.eslintrc.*` / `.prettierrc` 等
 - [ ] 每个 Task 完成后独立 commit
 - [ ] Commit message 遵循 conventional commits（`feat:`, `fix:`, `test:`, `docs:`）
@@ -73,11 +74,15 @@
 - [ ] 自测验证已执行 → 每项功能有实际运行证据（命令输出），不能仅凭文件存在就视为完成
 - [ ] 风险清单已更新 → `docs/project-management/risks.md`（新风险已补充、已解决风险移入历史）
 
-**评审要点：** 代码质量、测试覆盖、commit 规范、源代码与测试代码结构完整、配置文件规范一致、自测证据齐全、风险清单已同步
+**评审要点：** 代码质量、测试覆盖（单元+集成）、commit 规范、源代码与测试代码结构完整、配置文件规范一致、自测证据齐全、风险清单已同步、**集成测试已实现（非 Stage 4 补写）**
 
 ---
 
 ## 4. 测试阶段
+
+> ⚠️ **Important:** Stage 4 不写新测试——只运行已有测试并验证通过标准。如果在 Stage 4 仍需要新增用例或集成测试，说明 Stage 3 的 Definition of Done 未完成，需回退重做。
+
+
 
 - [ ] 所有单元测试 PASS → `npm test` / `pytest tests/ -v`
 - [ ] Lint 检查通过 → `npx eslint .` 或 `black --check src/ tests/`
@@ -163,9 +168,9 @@ Risk management is not owned by a single phase — **every phase must review ris
 ## 3. Development Phase
 
 - [ ] Prerequisites verified → all tools from implementation plan installed and version-checked (`which <tool>` / `<tool> --version`)
-- [ ] TDD: write failing test first, then implement (RED → GREEN → REFACTOR)
+- [ ] Unit tests implemented (TDD) → `tests/unit/`, write failing test first, then implement code (RED → GREEN → REFACTOR)
+- [ ] Integration tests implemented (DoD) → each new feature/middleware requires end-to-end behavior verification, written to `scripts/integration-test.sh` or `tests/integration/`; test IDs from Stage 2 `test-cases/` design docs
 - [ ] Source code produced → `src/` directory (per implementation plan module structure)
-- [ ] Test code produced → `tests/` directory (unit tests, integration tests, etc.)
 - [ ] Config files produced → `package.json` / `requirements.txt`, `jest.config.js` / `pytest.ini`, `.eslintrc.*` / `.prettierrc`, etc.
 - [ ] Independent commit after each task
 - [ ] Commit messages follow conventional commits (`feat:`, `fix:`, `test:`, `docs:`)
@@ -176,11 +181,15 @@ Risk management is not owned by a single phase — **every phase must review ris
 - [ ] Self-test verification executed → every feature has actual run evidence (command output), not just file existence
 - [ ] Risk assessment updated → `docs/project-management/risks.md` (new risks added, resolved risks moved to history)
 
-**Review focus:** Code quality, test coverage, commit conventions, source and test code structure complete, config files consistent, self-test evidence present, risk assessment up to date
+**Review focus:** Code quality, test coverage (unit + integration), commit conventions, source and test code structure complete, config files consistent, self-test evidence present, risk assessment up to date, **integration tests implemented (not added in Stage 4)**
 
 ---
 
 ## 4. Testing Phase
+
+> ⚠️ **Important:** Stage 4 does not write new tests — it only runs existing tests and verifies pass criteria. If you still need to write new test cases or integration tests in Stage 4, it means Stage 3's Definition of Done was not met; regression and redo is required.
+
+
 
 - [ ] All unit tests PASS → `npm test` / `pytest tests/ -v`
 - [ ] Lint check passes → `npx eslint .` or `black --check src/ tests/`
