@@ -45,3 +45,26 @@
 | K6-RPT-02 | SLA 判定正确 | 检查输出 | p95 < 500ms → ✅, error < 1% → ✅ |
 | K6-RPT-03 | Top 5 慢接口 | 检查输出 | 按 p95 排序，含 endpoint 名 |
 | K6-RPT-04 | 无 JSON 输入时报错 | 不传参数 | 输出 usage 提示，exit 1 |
+
+## Rate Limiter 集成测试 (`scripts/integration-test.sh` — Stage 3 新增)
+
+| 用例 ID | 测试步骤 | 预期结果 | 实现阶段 |
+|---------|---------|---------|---------|
+| RL-INT-01 | 启动 `RATE_LIMIT_ENABLED=true RATE_LIMIT_MAX=3 RATE_LIMIT_WINDOW_MS=5000`，发 4 次 HTTP 请求 | 前 3 次返回 200，第 4 次返回 429 | Stage 3 Task 3 |
+| RL-INT-02 | 同上，检查 `ratelimit-remaining` 响应头递减 | 第 1 次: `2`，第 2 次: `1`，第 3 次: `0` | Stage 3 Task 3 |
+| RL-INT-03 | 耗尽限额后 `sleep 6s`（窗口过期），再发新请求 | 恢复返回 200 | Stage 3 Task 3 |
+
+## generate-summary.sh 集成测试 (`scripts/integration-test.sh` — Stage 3 新增)
+
+| 用例 ID | 测试步骤 | 预期结果 | 实现阶段 |
+|---------|---------|---------|---------|
+| GEN-INT-01 | 传入有效 k6 JSON Lines fixture，运行脚本 | exit 0，生成的 Markdown 输出含 `# k6 Execution Summary` | Stage 3 Task 6 |
+| GEN-INT-02 | 传入不存在的文件路径，运行脚本 | exit 1，stderr 输出 usage 提示 | Stage 3 Task 6 |
+| GEN-INT-03 | 10 条 `http_reqs` 记录、其中 2 条 `status=404`，运行脚本 | 输出 Markdown 含 `20%` 错误率计算 | Stage 3 Task 6 |
+
+## k6 Helpers 集成测试说明
+
+| 用例 ID | 说明 | 状态 | 理由 |
+|---------|------|------|------|
+| K6-HLP-INT-01 | thinkTime/funnel/healthCheck 端到端（k6 ES 模块脚本） | **SKIP** | k6 ES module 系统不兼容 Bash/curl 集成测试；通过 Stage 4 `npm run k6:smoke` 间接验证，p95 偏差 <10% 即通过 |
+| K6-HLP-INT-02 | k6 helpers 单元测试（Jest） | **SKIP** | k6 ES module 无法在 Node.js/Jest 环境中 require；已通过 k6 smoke 脚本验证 |
