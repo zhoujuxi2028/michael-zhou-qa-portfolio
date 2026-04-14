@@ -42,7 +42,10 @@
       "Bash(mv test-cases/rtm.md qa/rtm.md)",
       "Bash(tee docs/qa/reports/logs-2026-04-05/unit-test.log)",
       "Bash(tee docs/qa/reports/logs-2026-04-05/coverage.log)",
-      "Bash(tee docs/qa/reports/logs-2026-04-05/lint.log)"
+      "Bash(tee docs/qa/reports/logs-2026-04-05/lint.log)",
+      "Bash(pkill -f \"npm start\")",
+      "Bash(RATE_LIMIT_ENABLED=true npm start)",
+      "Bash(tee /tmp/k6-smoke-migration.log)"
     ]
   },
   "hooks": {

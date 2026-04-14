@@ -7,7 +7,24 @@
       "Bash(mv PHASE1-COMPLETION-REPORT.md docs/phase1/)",
       "Bash(mv PHASE1-FINAL-SUMMARY.md docs/phase1/)",
       "Read(//Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio/**)",
-      "Bash(gh issue:*)"
+      "Bash(gh issue:*)",
+      "Bash(cat)",
+      "Bash(chmod +x /tmp/verify_links.sh)",
+      "Bash(/tmp/verify_links.sh)",
+      "Bash(wc:*)",
+      "Bash(head -50 src/utils/*.js)",
+      "Bash(npm test:*)",
+      "Bash(grep -L \"/**\" src/routes/*.js)",
+      "Bash(npm install:*)",
+      "Bash(timeout 5 npm start)",
+      "Bash(pkill -f \"node.*server.js\")",
+      "Bash(npm start:*)",
+      "Bash(kill 2552)",
+      "Bash(curl -s -I http://localhost:3000/api-docs)",
+      "Bash(curl -s http://localhost:3000/api-docs/)",
+      "Bash(curl -s http://localhost:3000/api-docs.json)",
+      "Bash(curl -s http://localhost:3000/api/products)",
+      "Bash(node -e ':*)"
     ]
   }
 }
