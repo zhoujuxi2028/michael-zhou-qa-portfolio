@@ -1,71 +1,102 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # generate-summary.sh — Parse k6 JSON output and generate Markdown execution summary
+# Usage: ./scripts/generate-summary.sh <k6-result.json>
+# Output: reports/k6-summary.md
 
-set -euo pipefail
+set -e
 
 # Input validation
-if [ $# -lt 1 ] || [ ! -f "$1" ]; then
-  cat <<'EOF'
-Usage: generate-summary.sh <k6-json-output> [output-file]
-
-  <k6-json-output>  Path to k6 JSON output file (required, must exist)
-  [output-file]     Output Markdown path (default: reports/k6-summary.md)
-
-Example:
-  k6 run smoke.k6.js --out json=reports/k6-result.json
-  ./scripts/generate-summary.sh reports/k6-result.json reports/k6-summary.md
-EOF
+if [[ -z "$1" ]]; then
+  echo "Usage: $0 <k6-result.json>"
+  echo ""
+  echo "Example:"
+  echo "  $0 reports/k6-result.json"
+  echo "  npm run generate-summary"
   exit 1
 fi
 
-K6_JSON="$1"
-OUTPUT_FILE="${2:-reports/k6-summary.md}"
-OUTPUT_DIR=$(dirname "$OUTPUT_FILE")
-mkdir -p "$OUTPUT_DIR"
+JSON_FILE="$1"
 
-# Parse k6 JSON Lines format
-total_reqs=$(grep -c '"metric":"http_reqs".*"type":"Point"' "$K6_JSON" 2>/dev/null || true)
-total_reqs=${total_reqs:-0}
-error_count=$(grep -c '"status":"[45][0-9][0-9]"' "$K6_JSON" 2>/dev/null || true)
-error_count=${error_count:-0}
-
-# Simple error rate calculation
-if [ "$total_reqs" -gt 0 ]; then
-  error_pct=$((error_count * 100 / total_reqs))
-else
-  error_pct=0
+if [[ ! -f "$JSON_FILE" ]]; then
+  echo "❌ Error: File not found: $JSON_FILE"
+  exit 1
 fi
 
-# Extract unique endpoints
-endpoints=$(grep '"name":"http' "$K6_JSON" 2>/dev/null | jq -r '.data.tags.name' 2>/dev/null | sort -u | head -10 || echo "N/A")
+if ! command -v jq &> /dev/null; then
+  echo "❌ Error: jq is required but not installed"
+  exit 1
+fi
 
-# Generate summary
-cat > "$OUTPUT_FILE" <<EOF
+OUTPUT_DIR="$(dirname "$JSON_FILE")"
+OUTPUT_FILE="${OUTPUT_DIR}/k6-summary.md"
+
+# Validate JSON
+if ! jq empty "$JSON_FILE" 2>/dev/null; then
+  echo "❌ Error: Invalid JSON file: $JSON_FILE"
+  exit 1
+fi
+
+# Extract metrics using jq
+P95=$(jq '.metrics.http_req_duration.values.p95 // 0' "$JSON_FILE" | awk '{printf "%.0f", $1}')
+P99=$(jq '.metrics.http_req_duration.values.p99 // 0' "$JSON_FILE" | awk '{printf "%.0f", $1}')
+AVG=$(jq '.metrics.http_req_duration.values.avg // 0' "$JSON_FILE" | awk '{printf "%.0f", $1}')
+ERROR_RATE=$(jq '.metrics.http_req_failed.values.value // 0' "$JSON_FILE")
+THROUGHPUT=$(jq '.metrics.http_reqs.values.rate // 0' "$JSON_FILE" | awk '{printf "%.1f", $1}')
+TOTAL_REQS=$(jq '.metrics.http_reqs.values.count // 0' "$JSON_FILE" | awk '{printf "%.0f", $1}')
+TOTAL_CHECKS=$(jq '.metrics.checks.values.count // 0' "$JSON_FILE" | awk '{printf "%.0f", $1}')
+FAILED_CHECKS=$(jq '.metrics.checks.values.fails // 0' "$JSON_FILE" | awk '{printf "%.0f", $1}')
+
+# SLA compliance
+SLA_P95_OK=$(awk "BEGIN {print ($P95 < 500) ? 1 : 0}")
+SLA_ERROR_OK=$(awk "BEGIN {print ($ERROR_RATE < 0.01) ? 1 : 0}")
+
+# Calculate error rate percentage
+ERROR_RATE_PCT=$(awk "BEGIN {printf \"%.2f\", $ERROR_RATE * 100}")
+CHECK_RATE_PCT=$(awk "BEGIN {printf \"%.1f\", ($TOTAL_CHECKS - $FAILED_CHECKS) / ($TOTAL_CHECKS > 0 ? $TOTAL_CHECKS : 1) * 100}")
+
+# SLA icons
+SLA_P95_ICON=$([ "$SLA_P95_OK" -eq 1 ] && echo "✅" || echo "❌")
+SLA_ERROR_ICON=$([ "$SLA_ERROR_OK" -eq 1 ] && echo "✅" || echo "❌")
+SLA_CHECK_ICON=$([ "$FAILED_CHECKS" -eq 0 ] && echo "✅" || echo "❌")
+
+# Determine summary
+SUMMARY_TEXT="Test execution completed. "
+if [ "$SLA_P95_OK" -eq 1 ] && [ "$SLA_ERROR_OK" -eq 1 ] && [ "$FAILED_CHECKS" -eq 0 ]; then
+  SUMMARY_TEXT+="All SLAs met. ✅"
+else
+  SUMMARY_TEXT+="Some SLAs not met. ❌"
+fi
+
+# Generate Markdown
+cat > "$OUTPUT_FILE" << EOF
 # k6 Execution Summary
 
-**Generated:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+## Metrics Summary
 
-## SLA Status
+| Metric | Value |
+|--------|-------|
+| **p95 Latency** | ${P95}ms |
+| **p99 Latency** | ${P99}ms |
+| **Avg Latency** | ${AVG}ms |
+| **Error Rate** | ${ERROR_RATE_PCT}% |
+| **Throughput** | ${THROUGHPUT}/s |
+| **Total Requests** | ${TOTAL_REQS} |
+| **Passed Checks** | $((TOTAL_CHECKS - FAILED_CHECKS))/${TOTAL_CHECKS} |
 
-| Metric | Threshold | Actual | Status |
-|--------|-----------|--------|--------|
-| Error Rate | < 1% | ${error_pct}% | $([ "$error_pct" -lt 1 ] && echo "✅ PASS" || echo "⚠️ CHECK") |
+## SLA Compliance
 
-## Execution Statistics
+| SLA | Target | Result | Status |
+|-----|--------|--------|--------|
+| p95 Latency | < 500ms | ${P95}ms | ${SLA_P95_ICON} |
+| Error Rate | < 1% | ${ERROR_RATE_PCT}% | ${SLA_ERROR_ICON} |
+| Check Pass Rate | 100% | ${CHECK_RATE_PCT}% | ${SLA_CHECK_ICON} |
 
-- **Total Requests:** $total_reqs
-- **Failed Requests:** $error_count
-- **Error Rate:** ${error_pct}%
+## Summary
 
-## Top Endpoints
-
-\`\`\`
-$endpoints
-\`\`\`
+${SUMMARY_TEXT}
 
 ---
-
-**Note:** PoC summary — validates jq parsing and script execution.
+Generated: $(date '+%Y-%m-%d %H:%M:%S')
 EOF
 
 echo "✅ Summary generated: $OUTPUT_FILE"
