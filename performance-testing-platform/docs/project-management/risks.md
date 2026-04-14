@@ -21,7 +21,7 @@
 | R-11 | 技术 | Grafana heatmap 面板在 InfluxDB 2.x 需 Flux 查询，与现有 InfluxQL 不一致 | 中 | 中 | 🟡 | ENT-DASHBOARD | 确认 InfluxDB 版本；优先使用 InfluxQL 兼容模式；heatmap 降级为直方图备选 |
 | R-12 | 环境 | 本机硬件不支持高并发压测（大数据量 / 万级 VUs） | 高 | 高 | 🔴 | ENT-BREAKPOINT | 已排除大数据量测试；breakpoint 上限设为 10,000 VUs，超出则标记为硬件瓶颈而非应用瓶颈 |
 | ~~R-13~~ | ~~技术~~ | ~~helpers 重构导致现有 k6 脚本回归~~ | — | — | ✅ | ENT-CONSISTENCY | **已解决**: Phase 5 迁移后 smoke 100% checks pass，CI 绿灯 |
-| R-14 | 技术 | express-rate-limit MemoryStore 在 Cluster 模式下 per-worker 隔离 | 中 | 高 | 🟡 | ENT-RESILIENCE | 文档注明限制；rate-limit.k6.js 使用单进程模式测试；全局限流需 Redis (Out of Scope) |
+| ~~R-14~~ | ~~技术~~ | ~~express-rate-limit MemoryStore 在 Cluster 模式下 per-worker 隔离~~ | — | — | ✅ | ENT-RESILIENCE | **已解决**: Cluster 诊断验证通过，MemoryStore 隔离符合非分布式限流场景需求 (H-11) |
 | R-15 | 技术 | breakpoint test 持续递增导致系统崩溃后进程残留 | 中 | 中 | 🟡 | ENT-BREAKPOINT | maxDuration 10min 安全阀 + abortOnFail (error>50%) + preflight 清理孤立进程 |
 | R-16 | 技术 | generate-summary.sh 依赖 k6 JSON output 格式，k6 升级后可能 break | 低 | 中 | 🟢 | ENT-REPORT | jq 字段存在性检查，缺失字段输出 warning 而非 crash |
 | **R-17** | **技术** | **9 个 k6 脚本迁移（load/stress/capacity/soak/auth）后兼容性风险** | **高** | **高** | **🔴** | **ENT-CONSISTENCY** | **PoC 只验证了 smoke，需逐脚本对标 before/after 回归测试；p95 差异 < 10% 时方可合入** |
@@ -52,3 +52,4 @@
 | H-08 | k6 helpers 重构后 import 路径批量失败 (R-05) | Phase 5 TDD + 逐脚本迁移 + smoke 验证通过 | 2026-04-05 |
 | H-09 | CI `continue-on-error` 假绿灯 (R-10) | Phase 5 CI 报红验证通过 (Run #24001840882) | 2026-04-05 |
 | H-10 | helpers 迁移导致 k6 脚本回归 (R-13) | Phase 5 迁移后 smoke 100% pass + CI 绿灯 | 2026-04-05 |
+| H-11 | express-rate-limit Cluster 模式 per-worker 隔离可接受 (R-14) | Cluster 诊断测试验证：5×200 + 15×429 响应正确，MemoryStore 隔离符合非分布式限流场景需求 | 2026-04-14 |
