@@ -102,8 +102,9 @@ scripts/generate-summary.sh reports/k6-result.json
 | `tests/performance/capacity.k6.js` | 同上 | ENT-CONSISTENCY-05 |
 | `tests/performance/soak.k6.js` | 同上 | ENT-CONSISTENCY-05 |
 | `tests/performance/soak-short.k6.js` | 同上 | ENT-CONSISTENCY-05 |
-| `tests/performance/auth-login.k6.js` | 替换直接 check() 为 checkStatus() | ENT-CONSISTENCY-01 |
-| `tests/performance/auth-journey.k6.js` | 替换直接 check() 为 checkStatus() | ENT-CONSISTENCY-01 |
+| `tests/performance/auth-login.k6.js` | 替换直接 check() 为 checkStatus() + 移除 CDN import | ENT-CONSISTENCY-01 |
+| `tests/performance/auth-refresh.k6.js` | 替换直接 check() 为 checkStatus() + 移除 CDN import | ENT-CONSISTENCY-01 |
+| `tests/performance/auth-journey.k6.js` | 替换直接 check() 为 checkStatus() + 移除 CDN import | ENT-CONSISTENCY-01 |
 
 ---
 
@@ -113,42 +114,53 @@ scripts/generate-summary.sh reports/k6-result.json
 
 - [ ] **1.1** 新增 `helpers/thinkTime.js`
   ```javascript
-  import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
   import { sleep } from 'k6';
+  // 内联实现，不依赖 jslib CDN（同 Phase 5 去 CDN 策略）
+  export function randomIntBetween(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
   export function thinkTime(min = 0.5, max = 1.0) {
-    sleep(randomIntBetween(min, max));
+    sleep(min + Math.random() * (max - min));
   }
   ```
+  > **Note:** `randomIntBetween` 也导出，替代所有脚本中的 jslib CDN import。
 - [ ] **1.2** 新增 `helpers/funnel.js`
   ```javascript
   import http from 'k6/http';
   import { checkStatus } from './utils.js';
   import { thinkTime } from './thinkTime.js';
+  import { randomProduct } from './data.js';
   
+  // 嵌套漏斗模型（与现有脚本行为一致）：
+  // 嵌套概率：100% browse → 50% detail → 33% order
+  // 实际流量占比：browse 100%, detail ~50%, order ~16.5%
+  // 注: 需求文档 "60/30/10" 指的是电商漏斗设计意图，
+  //     实际概率使用嵌套模型以匹配现有脚本行为。
   export function executeFunnel(baseUrl, options = {}) {
-    const { browseWeight = 0.6, detailWeight = 0.3 } = options;
-    const rand = Math.random();
+    const { detailProb = 0.5, orderProb = 0.33, onOrder = null } = options;
+    const p = randomProduct();  // Phase 5 CSV 数据，避免硬编码
     
-    // 60% browse
-    const listRes = http.get(`${baseUrl}/api/products?page=1&limit=10`);
+    // 100% browse
+    const listRes = http.get(`${baseUrl}/api/products`);
     checkStatus(listRes, 200, 'browse products');
     thinkTime();
     
-    // 30% detail
-    if (rand < browseWeight + detailWeight) {
-      const id = Math.ceil(Math.random() * 5);
-      const detailRes = http.get(`${baseUrl}/api/products/${id}`);
+    // ~50% detail (嵌套)
+    if (Math.random() < detailProb) {
+      const detailRes = http.get(`${baseUrl}/api/products/${p.id}`);
       checkStatus(detailRes, 200, 'product detail');
       thinkTime();
-    }
-    
-    // 10% order
-    if (rand >= browseWeight + detailWeight) {
-      const orderRes = http.post(`${baseUrl}/api/orders`,
-        JSON.stringify({ product_id: Math.ceil(Math.random() * 5), quantity: 1 }),
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-      checkStatus(orderRes, 201, 'create order');
+      
+      // ~33% of detail viewers → order (嵌套)
+      if (Math.random() < orderProb) {
+        const orderRes = http.post(`${baseUrl}/api/orders`,
+          JSON.stringify({ product_id: Number(p.id), quantity: 1 }),
+          { headers: { 'Content-Type': 'application/json' } }
+        );
+        checkStatus(orderRes, 201, 'create order');
+        // 回调 hook：soak 脚本用于记录自定义 metrics
+        if (onOrder) onOrder(orderRes);
+      }
     }
   }
   ```
@@ -167,10 +179,10 @@ scripts/generate-summary.sh reports/k6-result.json
 
 - [ ] **2.1** `load.k6.js` — import funnel + thinkTime，移除内联漏斗逻辑
 - [ ] **2.2** `stress.k6.js` — 同上
-- [ ] **2.3** `capacity.k6.js` — import funnel，保留 custom metrics polling
+- [ ] **2.3** `capacity.k6.js` — import funnel + thinkTime，**移除 jslib CDN import**，保留 custom metrics polling
 - [ ] **2.4** `soak.k6.js` + `soak-short.k6.js` — import funnel，保留 auth sampling + leak detection
-- [ ] **2.5** `auth-login.k6.js` + `auth-journey.k6.js` — 替换直接 `check()` 为 `checkStatus()`
-- [ ] **2.6** `smoke.k6.js` + `spike.k6.js` — 添加 `verifyHealth()` 到 setup()（已有 inline health check，改为 helper 调用）
+- [ ] **2.5** `auth-login.k6.js` + `auth-refresh.k6.js` + `auth-journey.k6.js` — 替换直接 `check()` 为 `checkStatus()` + **移除 jslib CDN import**，改用 `thinkTime()` from helpers
+- [ ] **2.6** `smoke.k6.js` + `spike.k6.js` — **新增** `verifyHealth()` 到 setup() 作为前置验证；smoke 的 default() 中的 health check **保留**（每轮迭代监控）
 - [ ] **2.7** 回归验证：`npm run k6:smoke` 确认 p95/error rate 无变化
 - [ ] **2.8** commit: `refactor(perf): migrate k6 scripts to shared helpers (#86)`
 
@@ -195,11 +207,13 @@ scripts/generate-summary.sh reports/k6-result.json
     app.use(require('./middleware/rateLimiter'));
   }
   ```
-- [ ] **3.4** 单元测试 `tests/unit/middleware/rateLimiter.test.js`
-  - 正常请求返回 200
-  - 超过 max 后返回 429 + 正确 error message
-  - 窗口过后恢复 200
-  - RATE_LIMIT_ENABLED=false 时不启用
+- [ ] **3.4** 单元测试 `tests/unit/middleware/rateLimiter.test.js` (UT-RL-01~06)
+  - UT-RL-01: 正常请求返回 200
+  - UT-RL-02: 超过 max 后返回 429 + 正确 error message
+  - UT-RL-03: 窗口过后恢复 200
+  - UT-RL-04: RATE_LIMIT_ENABLED=false 时不启用
+  - UT-RL-05: 自定义 windowMs + max 环境变量覆盖默认值
+  - UT-RL-06: 返回标准 RateLimit headers (RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset)
 - [ ] **3.5** commit: `feat(perf): add express-rate-limit middleware with env toggle (#86)`
 
 ### Task 4: k6 限流测试脚本 (ENT-RESILIENCE-02~03)
@@ -229,7 +243,7 @@ scripts/generate-summary.sh reports/k6-result.json
 ### Task 6: 执行摘要报告 (ENT-REPORT-01)
 
 - [ ] **6.1** 新增 `scripts/generate-summary.sh`
-  - 输入: k6 JSON output 文件路径
+  - 输入校验: 检查 `$1` 是否存在且为有效 JSON 文件，否则输出 usage 提示并 exit 1
   - 解析: jq 提取 p95, error_rate, throughput, http_req_duration 分布
   - SLA 判定: p95 < 500ms ✅/❌, error < 1% ✅/❌
   - Top 5 慢接口 (按 p95 排序)
@@ -257,7 +271,7 @@ scripts/generate-summary.sh reports/k6-result.json
 | ENT-RESILIENCE-01 | Rate limiter 单元测试通过 | `npm test -- rateLimiter` |
 | ENT-RESILIENCE-02 | 超限返回 429，窗口后恢复 200 | `RATE_LIMIT_ENABLED=true npm start && npm run k6:rate-limit` |
 | ENT-REPORT-01 | 生成 Markdown 摘要 | `npm run generate-summary` 输出 reports/k6-summary.md |
-| 回归 | 现有测试不受影响 | `npm test` (71+ tests PASS) + `npm run k6:smoke` (thresholds PASS) |
+| 回归 | 现有测试不受影响 | `npm test` (95 tests PASS) + `npm run k6:smoke` (thresholds PASS) |
 
 ---
 
@@ -288,3 +302,21 @@ diff <(grep 'p(95)' /tmp/smoke-before.txt) <(grep 'p(95)' /tmp/smoke-after.txt)
 ```
 
 无显著差异 (p95 偏差 < 10%, error rate 不变) 即为迁移成功。
+
+---
+
+## 7. Plan Review 修复记录
+
+| ID | 级别 | 问题 | 修复 |
+|---|---|---|---|
+| C-01 | CRITICAL | capacity.k6.js 的 jslib CDN import 未在迁移计划中提及 | Task 2.3 明确标注移除 CDN import |
+| C-02 | CRITICAL | auth-login/refresh/journey 的 jslib CDN import 未提及；auth-refresh.k6.js 完全遗漏 | Task 2.5 扩展范围，覆盖 3 个 auth 脚本；修改文件表新增 auth-refresh |
+| C-03 | CRITICAL | 测试数量过时 (71+ → 95) | 验收标准已更新 |
+| W-01 | WARNING | funnel.js 逻辑与现有脚本不一致（扁平 vs 嵌套模型） | 重写为嵌套模型：100% browse → 50% detail → 33% order |
+| W-02 | WARNING | soak 脚本的自定义 metrics (soakOrderSuccess/Failure) 会在 funnel 迁移后丢失 | executeFunnel() 新增 `onOrder` 回调 hook |
+| W-03 | WARNING | smoke.k6.js health check 迁移歧义 (replace vs add) | 明确：setup() 新增 verifyHealth()，default() 保留原有 health check |
+| W-04 | WARNING | thinkTime.js 未导出 randomIntBetween | 改为 named export，替代所有 CDN import |
+| W-05 | WARNING | product_id parseInt 不一致 | 统一使用 `Number(p.id)` |
+| W-06 | WARNING | funnel 概率注释与需求 "60/30/10" 不一致 | 注释补充说明：需求是设计意图，实际使用嵌套模型匹配现有脚本行为 |
+| W-07 | WARNING | Task 3.4 只列 4 个测试，测试用例表有 6 个 (UT-RL-01~06) | 补充 UT-RL-05 (自定义环境变量) + UT-RL-06 (RateLimit headers) |
+| W-08 | WARNING | generate-summary.sh 未提及输入校验 | Task 6.1 补充：检查 $1 存在且为有效文件，否则 usage + exit 1 |
