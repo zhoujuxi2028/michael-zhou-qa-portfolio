@@ -1,7 +1,6 @@
 import http from 'k6/http';
-import { sleep, check } from 'k6';
-import { BASE_URL } from './helpers/utils.js';
-import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
+import { BASE_URL, checkStatus } from './helpers/utils.js';
+import { thinkTime } from './helpers/thinkTime.js';
 
 // AUTH-PERF-02: Token refresh performance
 // JWT verify + sign only, no bcrypt — should be fast (p95 < 200ms)
@@ -50,10 +49,6 @@ export default function (data) {
     tags: { test_type: 'refresh' },
   });
 
-  check(res, {
-    'refresh status 200': (r) => r.status === 200,
-    'refresh has accessToken': (r) => r.json('accessToken') !== undefined,
-  });
-
-  sleep(randomIntBetween(0.5, 1.0));
+  checkStatus(res, 200, 'refresh');
+  thinkTime(0.5, 1.0);
 }
