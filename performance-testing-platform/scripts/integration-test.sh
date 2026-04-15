@@ -279,14 +279,19 @@ RATE_LIMIT_ENABLED=true RATE_LIMIT_MAX=2 RATE_LIMIT_WINDOW_MS=5000 npm run k6:ra
   log_result "RL-INT-01" "PASS" "Rate limit: 3rd request returns 429" || \
   log_result "RL-INT-01" "FAIL" "Rate limiter did not return 429"
 
-# RL-INT-02: RateLimit headers present (via rate-limit test which checks headers)
+# RL-INT-02: RateLimit headers present
 echo "Testing RateLimit headers..."
 npm stop > /dev/null 2>&1 || true
 sleep 2
-# Run k6:rate-limit test and check if header checks pass
-RATE_LIMIT_ENABLED=true RATE_LIMIT_MAX=100 RATE_LIMIT_WINDOW_MS=60000 npm run k6:rate-limit 2>&1 | grep -q "has ratelimit-limit header" && \
-  log_result "RL-INT-02" "PASS" "Headers: ratelimit-limit/remaining/reset present" || \
-  log_result "RL-INT-02" "FAIL" "RateLimit headers not found"
+RATE_LIMIT_ENABLED=true npm start > /dev/null 2>&1 &
+sleep 2
+# Use curl to verify headers are present in response (case-insensitive check)
+HEADERS=$(curl -s -i http://localhost:3000/api/products 2>&1 | grep -iE "ratelimit-limit|ratelimit-remaining|ratelimit-reset" | wc -l)
+if [[ "$HEADERS" -ge 3 ]]; then
+  log_result "RL-INT-02" "PASS" "Headers: RateLimit-Limit/Remaining/Reset present"
+else
+  log_result "RL-INT-02" "FAIL" "RateLimit headers not found (found $HEADERS of 3)"
+fi
 npm stop > /dev/null 2>&1 || true
 
 # RL-INT-03: Window expiry allows recovery
