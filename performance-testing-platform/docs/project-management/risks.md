@@ -62,3 +62,4 @@
 | H-15 | k6 JSONL 输出格式 (R-23) | Stage 4 integration test 发现 generate-summary.sh 假设 JSON，但 k6 实际输出 JSONL；修复添加格式检测 + graceful fallback；issue #106 | 2026-04-15 |
 | H-16 | 集成测试服务生命周期 (R-24) | Stage 4 integration test 发现多个 npm start 竞争端口导致失败；修复显式 stop/start 序列 + sleep 延迟；issue #107 | 2026-04-15 |
 | H-17 | k6 helpers 端到端验证 (K6-HLP-INT-01/02) | Phase 6 Stage 4：创建 helpers-test.k6.js 在 k6 runtime 中直接验证 thinkTime/randomIntBetween/executeFunnel/verifyHealth 函数存在性和可调用性；4/4 checks pass；integration-test.sh 验证通过 | 2026-04-15 |
+| H-18 | Helmet v8 X-XSS-Protection 头禁用 | Phase 6 Stage 4 手工验证发现：helmet v8 返回 `X-XSS-Protection: 0` 而非 `1; mode=block`，尽管配置设为 true。根本原因：helmet v8 行为改变。修复：禁用 helmet 的 xssFilter，添加显式中间件设置正确的头。commit 1b0c93e6 | 2026-04-15 |
