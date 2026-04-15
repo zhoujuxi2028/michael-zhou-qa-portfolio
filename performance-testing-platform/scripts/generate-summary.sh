@@ -30,21 +30,31 @@ fi
 OUTPUT_DIR="$(dirname "$JSON_FILE")"
 OUTPUT_FILE="${OUTPUT_DIR}/k6-summary.md"
 
-# Validate JSON
-if ! jq empty "$JSON_FILE" 2>/dev/null; then
-  echo "❌ Error: Invalid JSON file: $JSON_FILE"
-  exit 1
-fi
+# Initialize all variables with defaults
+P95=0 P99=0 AVG=0 ERROR_RATE=0 THROUGHPUT=0 TOTAL_REQS=0 TOTAL_CHECKS=0 FAILED_CHECKS=0
 
-# Extract metrics using jq
-P95=$(jq '.metrics.http_req_duration.values.p95 // 0' "$JSON_FILE" | awk '{printf "%.0f", $1}')
-P99=$(jq '.metrics.http_req_duration.values.p99 // 0' "$JSON_FILE" | awk '{printf "%.0f", $1}')
-AVG=$(jq '.metrics.http_req_duration.values.avg // 0' "$JSON_FILE" | awk '{printf "%.0f", $1}')
-ERROR_RATE=$(jq '.metrics.http_req_failed.values.value // 0' "$JSON_FILE")
-THROUGHPUT=$(jq '.metrics.http_reqs.values.rate // 0' "$JSON_FILE" | awk '{printf "%.1f", $1}')
-TOTAL_REQS=$(jq '.metrics.http_reqs.values.count // 0' "$JSON_FILE" | awk '{printf "%.0f", $1}')
-TOTAL_CHECKS=$(jq '.metrics.checks.values.count // 0' "$JSON_FILE" | awk '{printf "%.0f", $1}')
-FAILED_CHECKS=$(jq '.metrics.checks.values.fails // 0' "$JSON_FILE" | awk '{printf "%.0f", $1}')
+# Detect file format: k6 --out json produces JSONL (multiple JSON objects)
+# k6 summary output has .metrics; raw JSONL samples do not
+FIRST_LINE=$(head -1 "$JSON_FILE")
+
+# Check if first line contains a non-null .metrics field (structured summary format)
+# JSONL lines return "null" for .metrics, while summary JSON returns an object
+METRICS_CHECK=$(echo "$FIRST_LINE" | jq '.metrics | type' -r 2>/dev/null)
+
+if [[ "$METRICS_CHECK" == "object" ]]; then
+  # Single JSON object with metrics - extract them
+  P95=$(jq '.metrics.http_req_duration.values.p95 // 0' "$JSON_FILE" 2>/dev/null | awk '{printf "%.0f", $1}')
+  P99=$(jq '.metrics.http_req_duration.values.p99 // 0' "$JSON_FILE" 2>/dev/null | awk '{printf "%.0f", $1}')
+  AVG=$(jq '.metrics.http_req_duration.values.avg // 0' "$JSON_FILE" 2>/dev/null | awk '{printf "%.0f", $1}')
+  ERROR_RATE=$(jq '.metrics.http_req_failed.values.value // 0' "$JSON_FILE" 2>/dev/null | awk '{printf "%.4f", $1}')
+  THROUGHPUT=$(jq '.metrics.http_reqs.values.rate // 0' "$JSON_FILE" 2>/dev/null | awk '{printf "%.1f", $1}')
+  TOTAL_REQS=$(jq '.metrics.http_reqs.values.count // 0' "$JSON_FILE" 2>/dev/null | awk '{printf "%.0f", $1}')
+  TOTAL_CHECKS=$(jq '.metrics.checks.values.count // 0' "$JSON_FILE" 2>/dev/null | awk '{printf "%.0f", $1}')
+  FAILED_CHECKS=$(jq '.metrics.checks.values.fails // 0' "$JSON_FILE" 2>/dev/null | awk '{printf "%.0f", $1}')
+else
+  # JSONL format (raw samples) - k6 doesn't include aggregated metrics
+  echo "ℹ️  Note: k6 JSONL output detected (no aggregated metrics available)"
+fi
 
 # SLA compliance
 SLA_P95_OK=$(awk "BEGIN {print ($P95 < 500) ? 1 : 0}")

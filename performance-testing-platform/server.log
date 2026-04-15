@@ -1,0 +1,6 @@
+
+> performance-testing-platform@1.0.0 start
+> bash scripts/server.sh start cluster
+
+Starting server in cluster mode on port 3000...
+Server is running on port 3000.

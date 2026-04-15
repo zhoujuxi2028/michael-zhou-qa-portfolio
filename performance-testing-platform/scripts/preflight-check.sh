@@ -96,11 +96,25 @@ else
   PASS=false
 fi
 
+# ── Step 5: Stage 4 Docker Check (optional, --stage4 flag) ──────────────────
+if [[ "$*" == *"--stage4"* ]]; then
+  echo ""
+  echo "[ 5/5 ] Checking Docker for Stage 4 Integration Tests..."
+  if ! docker info > /dev/null 2>&1; then
+    echo "  ❌ Docker daemon not running"
+    HINTS="${HINTS}\n  → Start Docker: open -a Docker (or OrbStack/colima)"
+    PASS=false
+  else
+    echo "  ✅ Docker daemon OK"
+  fi
+fi
+
 # ── Summary ───────────────────────────────────────────────────────────────────
 echo ""
 echo "=================================================="
 if [ "$PASS" = true ]; then
   echo "  ✅ Preflight passed — environment ready for performance testing"
+  [[ "$*" == *"--stage4"* ]] && echo "  ✅ Stage 4 integration test environment ready"
   echo "=================================================="
   exit 0
 else
