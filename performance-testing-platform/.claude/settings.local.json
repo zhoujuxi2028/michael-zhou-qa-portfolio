@@ -36,7 +36,17 @@
       "Bash(/tmp/test-server-env.sh)",
       "Bash(open -a OrbStack sleep 5 docker ps)",
       "Bash(tee /tmp/final-int-test.log)",
-      "Bash(grep -E \"\\\\.\\(md|json|csv\\)$\")"
+      "Bash(grep -E \"\\\\.\\(md|json|csv\\)$\")",
+      "Bash(bash scripts/stage4-selftest.sh)",
+      "Bash(bash scripts/stage4-selftest.sh 2>&1)",
+      "Bash(curl -si http://localhost:3000/*)",
+      "Bash(curl -s -o /dev/null -w:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh run view:*)",
+      "Bash(rmdir /tmp/integration-test.lock)",
+      "Bash(sleep *)",
+      "Bash(mkdir -p *)",
+      "Bash(tee docs/qa/reports/logs-stage4/*)"
     ]
   }
 }
