@@ -143,6 +143,8 @@
 
 ## Phase 6 — 测试能力扩展 ([#88](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/88))
 
+**前置条件:** Docker daemon 运行中（集成测试需 Docker 环境）。验证：`bash scripts/preflight-check.sh --stage4`
+
 | 需求 ID | 需求 | 实现文件 | 测试用例 ID | 状态 |
 |---------|------|---------|------------|------|
 | ENT-CONSISTENCY-01 | k6 共享 helpers (thinkTime, funnel, healthCheck) | `helpers/thinkTime.js`, `helpers/funnel.js`, `helpers/healthCheck.js` | K6-INT-01~05 (Phase 5), K6-HLP-INT-01~02 (Phase 6 Skip) | ✅ |

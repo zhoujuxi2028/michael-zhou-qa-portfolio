@@ -88,6 +88,7 @@ P0 (本地快速反馈，~2 min)
 | 开发阶段自测已执行 | commit history 中有测试证据 |
 | 风险清单已更新 | `docs/project-management/risks.md` 已同步 |
 | 依赖已安装 | `npm install` 无 error |
+| **Stage 4 专用：环境检测通过** | `bash scripts/preflight-check.sh --stage4` exit 0 |
 
 ### 4.2 退出标准 (Exit Criteria)
 
@@ -113,7 +114,7 @@ P0 (本地快速反馈，~2 min)
 
 ### Preflight Check
 
-容量/压力测试前必须执行 `npm run preflight`：
+**Stage 3 (性能测试)** — 执行 `npm run preflight`：
 
 | 检查项 | 阈值 |
 |--------|------|
@@ -121,6 +122,14 @@ P0 (本地快速反馈，~2 min)
 | 可用内存 | > 2 GB |
 | CPU Idle | > 50% |
 | 孤立进程 | 自动清理 |
+
+**Stage 4 (集成测试)** — 执行 `bash scripts/preflight-check.sh --stage4`，额外检查：
+
+| 检查项 | 要求 | 修复 |
+|--------|------|------|
+| Docker daemon | 运行中 | `open -a Docker` 或启动 OrbStack/colima |
+
+集成测试 (`bash scripts/integration-test.sh`) 自动调用 Stage 4 检测。
 
 ---
 
