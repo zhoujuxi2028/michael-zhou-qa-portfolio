@@ -7,7 +7,6 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const os = require('os');
 
 describe('Lock Mechanism (scripts/lock.sh)', () => {
   const LOCK_DIR = '/tmp/integration-test.lock.test';

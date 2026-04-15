@@ -19,7 +19,20 @@
       "Bash(AUTH_ENABLED=true npm start)",
       "Bash(npm run:*)",
       "Bash(npm test:*)",
-      "Bash(grep -E \"\\(doc|md|txt\\)$\")"
+      "Bash(grep -E \"\\(doc|md|txt\\)$\")",
+      "Bash(k6 version *)",
+      "Bash(jq --version)",
+      "Bash(npm list *)",
+      "Bash(bash scripts/integration-test.sh)",
+      "Bash(LOAD_THRESHOLD=10 bash scripts/integration-test.sh)",
+      "Bash(tee /tmp/integration-test.log)",
+      "Bash(LOAD_THRESHOLD=15 CPU_IDLE_THRESHOLD=30 bash scripts/integration-test.sh)",
+      "Bash(CPU_IDLE_MIN=10 LOAD_THRESHOLD=15 bash scripts/integration-test.sh)",
+      "Bash(grep -i \"ratelimit\" killall -9 node)",
+      "Bash(killall -9 node)",
+      "Bash(cat)",
+      "Bash(chmod +x /tmp/test-server-env.sh)",
+      "Bash(/tmp/test-server-env.sh)"
     ]
   }
 }
