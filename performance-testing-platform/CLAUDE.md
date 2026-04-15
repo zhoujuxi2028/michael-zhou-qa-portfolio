@@ -1,5 +1,19 @@
 # CLAUDE.md - 性能测试平台 (Performance Testing Platform)
 
+## ⚠️ 分支规则
+
+**所有开发、测试、验证工作必须在 `feature/performance-testing` 分支上进行，禁止在 `main` 分支上做任何修改。**
+
+```bash
+# 检查当前分支
+git status    # 确保 "On branch feature/performance-testing"
+
+# 如果在 main 上：
+git checkout feature/performance-testing
+```
+
+---
+
 ## 项目说明
 
 **分类: 性能测试** | k6 + JMeter 双引擎负载测试 + Express Cluster (多核) + Grafana + InfluxDB 可观测
