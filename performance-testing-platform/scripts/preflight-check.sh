@@ -26,14 +26,15 @@ echo "=================================================="
 echo "  Performance Test Pre-flight Check"
 echo "=================================================="
 
-# ── Step 1: Kill orphaned "node -e" processes ─────────────────────────────────
+# ── Step 1: Kill orphaned "node -e" and cluster processes ────────────────────
 echo ""
-echo "[ 1/4 ] Checking for orphaned node -e processes..."
-ORPHAN_PIDS=$(ps aux | grep 'node -e' | grep -v grep | awk '{print $2}' || true)
+echo "[ 1/4 ] Checking for orphaned node processes..."
+ORPHAN_PIDS=$(ps aux | grep -E 'node -e|cluster\.js' | grep -v grep | awk '{print $2}' || true)
 if [ -n "$ORPHAN_PIDS" ]; then
   echo "  Found orphaned processes: $(echo $ORPHAN_PIDS | tr '\n' ' ')"
   echo "$ORPHAN_PIDS" | xargs kill -9 2>/dev/null || true
-  echo "  Killed. (cluster.js server processes are NOT affected)"
+  echo "  Killed."
+  sleep 1
 else
   echo "  No orphaned processes found."
 fi
