@@ -359,11 +359,29 @@ else
   log_result "GEN-INT-03" "FAIL" "Summary file not generated"
 fi
 
-# K6-HLP-INT-01: k6 helpers integration (thinkTime, funnel, healthCheck)
-log_result "K6-HLP-INT-01" "SKIP" "k6 ES module testing: verified via k6:smoke regression (p95 < 10% deviation)"
+# K6-HLP-INT-01 & K6-HLP-INT-02: k6 helpers 直接验证脚本
+echo ""
+echo "Verifying k6 helpers: thinkTime, funnel, healthCheck..."
+HLP_OUTPUT=$(k6 run tests/performance/helpers-test.k6.js 2>&1)
+HLP_EXIT=$?
 
-# K6-HLP-INT-02: k6 helpers end-to-end
-log_result "K6-HLP-INT-02" "SKIP" "k6 helpers E2E: verified via migration regression tests"
+if [ $HLP_EXIT -eq 0 ]; then
+  # Extract results from k6 output
+  if echo "$HLP_OUTPUT" | grep -q "thinkTime helper: ✓ PASS"; then
+    log_result "K6-HLP-INT-01" "PASS" "k6 helpers (thinkTime/funnel/healthCheck) 直接验证通过"
+  else
+    log_result "K6-HLP-INT-01" "FAIL" "k6 helpers 验证中 helpers 功能异常"
+  fi
+
+  if echo "$HLP_OUTPUT" | grep -q "healthCheck helper: ✓ PASS"; then
+    log_result "K6-HLP-INT-02" "PASS" "k6 helpers 端到端验证: 所有 helpers 正常工作"
+  else
+    log_result "K6-HLP-INT-02" "FAIL" "healthCheck helper 验证失败"
+  fi
+else
+  log_result "K6-HLP-INT-01" "FAIL" "helpers-test.k6.js 执行失败 (exit $HLP_EXIT)"
+  log_result "K6-HLP-INT-02" "FAIL" "k6 helpers 验证脚本执行失败"
+fi
 
 # ============================================================
 echo ""
