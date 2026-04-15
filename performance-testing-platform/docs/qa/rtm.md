@@ -1,6 +1,6 @@
 # 需求追溯矩阵 (Requirements Traceability Matrix)
 
-**Branch:** `feature/performance-testing` | **更新日期:** 2026-04-05
+**Branch:** `feature/performance-testing` | **更新日期:** 2026-04-15 (Phase 6 Stage 4 完成)
 
 **用途:** 确保每条需求都有对应的测试用例覆盖，快速定位未覆盖需求。
 
@@ -147,10 +147,10 @@
 
 | 需求 ID | 需求 | 实现文件 | 测试用例 ID | 状态 |
 |---------|------|---------|------------|------|
-| ENT-CONSISTENCY-01 | k6 共享 helpers (thinkTime, funnel, healthCheck) | `helpers/thinkTime.js`, `helpers/funnel.js`, `helpers/healthCheck.js` | K6-INT-01~05 (Phase 5), K6-HLP-INT-01~02 (Phase 6 Skip) | ✅ |
+| ENT-CONSISTENCY-01 | k6 共享 helpers (thinkTime, funnel, healthCheck) | `helpers/thinkTime.js`, `helpers/funnel.js`, `helpers/healthCheck.js` | K6-INT-01~05 (Phase 5), K6-HLP-INT-01~02 (Phase 6 Runtime Verify) | ✅ |
 | ENT-CONSISTENCY-02 | 9 个 k6 脚本迁移到 shared helpers | `load.k6.js`, `stress.k6.js`, `capacity.k6.js`, `soak.k6.js`, `auth-login.k6.js`, `auth-refresh.k6.js`, `auth-journey.k6.js`, `smoke.k6.js`, `spike.k6.js` | K6-HLP-INT-01~02 | ✅ |
 | ENT-CONSISTENCY-03 | k6 脚本回归验证 (checkStatus/thinkTime) | `smoke.k6.js` + k6:smoke npm script | K6-HLP-INT-01 | ✅ |
-| ENT-CONSISTENCY-04 | breakpoint test 脚本 | `breakpoint.k6.js` | K6-BRK-01~03 (Stage 4 待验证) | ⏭️  Pending |
+| ENT-CONSISTENCY-04 | breakpoint test 脚本 | `breakpoint.k6.js` | K6-BRK-01~03 (Stage 4 验证完成) | ✅ |
 | ENT-CONSISTENCY-05 | capacity/soak 脚本迁移验证 | `capacity.k6.js`, `soak.k6.js` | K6-HLP-INT-01 | ✅ |
 | ENT-RESILIENCE-01 | Rate Limiter 中间件 (enable/disable toggle) | `src/middleware/rateLimiter.js` | UT-RL-01~06 | ✅ |
 | ENT-RESILIENCE-02 | Rate Limiter 429 burst 测试 | `tests/performance/rate-limit.k6.js` | RL-INT-01 | ✅ |
@@ -172,15 +172,14 @@
 | 3 | 11 (AUTH-01~11) | 11 | 0 | 100% |
 | 4 | 10 (SOAK-01~10) | 10 | 0 | 100% |
 | 5 | 13 (ENT-ENV/DATA/PROFILE/DX/TEST) | 13 | 0 | 100% |
-| 6 | 14 (ENT-CONSISTENCY/RESILIENCE/REPORT) | 13 | 1 (ENT-CONSISTENCY-04 Pending) | 93% |
-| **合计** | **76** | **74** | **2** | **97%** |
+| 6 | 14 (ENT-CONSISTENCY/RESILIENCE/REPORT) | 14 | 0 | 100% |
+| **合计** | **76** | **76** | **0** | **100%** |
 
 ### 未覆盖项说明
 
 | 需求 | 原因 | 计划 |
 |------|------|------|
 | Grafana Dashboard (Phase 1) | 需 Docker + InfluxDB 环境 | 本地手动验证 |
-| ENT-CONSISTENCY-04 (Phase 6) | breakpoint test 脚本在 Stage 4 实现，待 Stage 4 验证后标记完成 | Phase 6 Task 5 完成 |
 
 ---
 
