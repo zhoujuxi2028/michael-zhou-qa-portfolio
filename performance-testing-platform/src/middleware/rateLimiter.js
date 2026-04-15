@@ -8,7 +8,6 @@
  */
 const rateLimit = require('express-rate-limit');
 
-const enabled = process.env.RATE_LIMIT_ENABLED === 'true';
 const windowMs = parseInt(process.env.RATE_LIMIT_WINDOW_MS || '60000', 10);
 const max = parseInt(process.env.RATE_LIMIT_MAX || '100', 10);
 
@@ -20,7 +19,7 @@ const limiter = rateLimit({
   statusCode: 429, // HTTP 429 Too Many Requests
   standardHeaders: true, // RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset headers
   legacyHeaders: false, // Disable X-RateLimit-* headers
-  skip: () => !enabled, // Skip if disabled
+  skip: () => process.env.RATE_LIMIT_ENABLED !== 'true', // Check at request time, not initialization
 });
 
 module.exports = limiter;
