@@ -2,7 +2,7 @@
  * CSV Loader Jest Tests (UT-CSV-01~12 + optimizations)
  * Unit tests for parseCSV: null/undefined handling, empty lines, missing values, trimming
  * validateColumns: required column validation
- *
+ * 
  * M4 Optimization Applied:
  * - Constants extracted for DRY principle (avoid duplicate CSV strings)
  * - Parametrized tests using test.each (eliminate code duplication)
@@ -15,31 +15,30 @@ const { parseCSV, validateColumns } = require('../../../src/utils/csv-loader');
 const FIXTURES = {
   // Valid CSVs
   SINGLE_USER: 'id,name,email\n1,John,john@example.com',
-  THREE_USERS:
-    'id,name,email\n1,John,john@example.com\n2,Jane,jane@example.com\n3,Bob,bob@example.com',
+  THREE_USERS: 'id,name,email\n1,John,john@example.com\n2,Jane,jane@example.com\n3,Bob,bob@example.com',
   HEADER_ONLY: 'id,name,email',
   HEADER_TRAILING_NEWLINE: 'id,name,email\n',
-
+  
   // Edge cases
   EMPTY_STRING: '',
   WHITESPACE_ONLY: '   \n   \n   ',
   EMPTY_LINES_CSV: 'id,name\n1,John\n\n2,Jane\n\n3,Bob',
   WHITESPACE_LINES_CSV: 'id,name\n1,John\n   \n2,Jane',
-
+  
   // Whitespace handling
   WHITESPACE_HEADERS: ' id , name , email \n1,John,john@example.com',
   WHITESPACE_VALUES: 'id,name,email\n 1 , John , john@example.com ',
   PRESERVE_INTERNAL_WHITESPACE: 'id,name,email\n1,John Doe,john doe@example.com',
-
+  
   // Missing/Extra values
   MISSING_VALUES: 'id,name,email,phone\n1,John,john@example.com',
   EMPTY_FIELD: 'id,name,email\n1,,john@example.com',
   EXTRA_VALUES: 'id,name,email\n1,John,john@example.com,extra1,extra2',
-
+  
   // Column variations
   SINGLE_COLUMN: 'id\n1\n2\n3',
   MANY_COLUMNS: 'col1,col2,col3,col4,col5,col6,col7,col8\na,b,c,d,e,f,g,h',
-
+  
   // Special characters
   SPECIAL_CHARS: 'id,name,notes\n1,John@Domain,Note with @ and .',
   NUMERIC_STRINGS: 'id,count,active\n1,100,true',
@@ -115,7 +114,7 @@ describe('parseCSV Function', () => {
       const result = parseCSV(csv);
       if (Array.isArray(expected)) {
         // Check properties
-        expected.forEach((prop) => expect(result[0]).toHaveProperty(prop));
+        expected.forEach(prop => expect(result[0]).toHaveProperty(prop));
       } else {
         // Check values
         Object.entries(expected).forEach(([key, value]) => {
@@ -128,8 +127,8 @@ describe('parseCSV Function', () => {
   // UT-CSV-07: Empty lines are filtered (PARAMETRIZED)
   describe('UT-CSV-07: Empty lines are filtered', () => {
     test.each([
-      ['blank lines between data', FIXTURES.EMPTY_LINES_CSV, 3], // 3 rows: John, Jane, Bob
-      ['whitespace-only lines', FIXTURES.WHITESPACE_LINES_CSV, 2], // 2 rows: John, Jane
+      ['blank lines between data', FIXTURES.EMPTY_LINES_CSV, 3],  // 3 rows: John, Jane, Bob
+      ['whitespace-only lines', FIXTURES.WHITESPACE_LINES_CSV, 2],  // 2 rows: John, Jane
     ])('should skip %s', (label, csv, expectedLength) => {
       const result = parseCSV(csv);
       expect(result).toHaveLength(expectedLength);
@@ -201,7 +200,7 @@ describe('parseCSV Function', () => {
     test.each([
       ['special characters', FIXTURES.SPECIAL_CHARS, 'John@Domain'],
       ['numeric and boolean strings', FIXTURES.NUMERIC_STRINGS, '100'],
-    ])('should preserve %s', (label, csv) => {
+    ])('should preserve %s', (label, csv, _expectedNameOrCount) => {
       const result = parseCSV(csv);
       expect(result[0]).toHaveProperty('id');
       expect(result[0]).toBeDefined();
@@ -258,8 +257,7 @@ describe('Integration: parseCSV + validateColumns', () => {
   // UT-INT-01: Complete workflow
   describe('UT-INT-01: Complete workflow', () => {
     it('should parse CSV and validate all required columns present', () => {
-      const csv =
-        'id,name,email,phone\n1,John,john@example.com,555-1234\n2,Jane,jane@example.com,555-5678';
+      const csv = 'id,name,email,phone\n1,John,john@example.com,555-1234\n2,Jane,jane@example.com,555-5678';
       const rows = parseCSV(csv);
 
       expect(() => validateColumns(rows, ['id', 'name', 'email'])).not.toThrow();
@@ -317,30 +315,30 @@ describe('UT-CSV-13: Boundary & Edge Cases (NEW)', () => {
 describe('UT-CSV-14: Performance Baseline (NEW)', () => {
   test('should parse 100 rows within 50ms', () => {
     const headers = 'id,name,email';
-    const rows = Array.from({ length: 100 }, (_, i) => `${i},user${i},user${i}@example.com`).join(
-      '\n'
-    );
+    const rows = Array.from({ length: 100 }, (_, i) => 
+      `${i},user${i},user${i}@example.com`
+    ).join('\n');
     const csv = headers + '\n' + rows;
-
+    
     const start = performance.now();
     const result = parseCSV(csv);
     const elapsed = performance.now() - start;
-
+    
     expect(result).toHaveLength(100);
     expect(elapsed).toBeLessThan(50);
   });
 
   test('should parse 500 rows within 100ms', () => {
     const headers = 'id,name,email';
-    const rows = Array.from({ length: 500 }, (_, i) => `${i},user${i},user${i}@example.com`).join(
-      '\n'
-    );
+    const rows = Array.from({ length: 500 }, (_, i) => 
+      `${i},user${i},user${i}@example.com`
+    ).join('\n');
     const csv = headers + '\n' + rows;
-
+    
     const start = performance.now();
     const result = parseCSV(csv);
     const elapsed = performance.now() - start;
-
+    
     expect(result).toHaveLength(500);
     expect(elapsed).toBeLessThan(100);
   });
