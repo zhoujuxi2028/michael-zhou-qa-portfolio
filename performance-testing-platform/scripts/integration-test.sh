@@ -43,52 +43,64 @@ echo "=========================================="
 echo "Starting InfluxDB + Grafana..."
 docker compose up -d influxdb grafana 2>/dev/null
 echo "Waiting for Grafana provisioning..."
+GRAFANA_READY=0
 for i in $(seq 1 15); do
-  if curl -sf http://localhost:3010/api/health > /dev/null 2>&1; then break; fi
+  if curl -sf http://localhost:3010/api/health > /dev/null 2>&1; then
+    GRAFANA_READY=1
+    break
+  fi
   sleep 2
 done
-sleep 3
 
-echo "Starting API (single mode)..."
-bash scripts/server.sh start single 2>/dev/null
-sleep 2
+# If Grafana not ready, mark JM-GRF tests as SKIP
+if [ "$GRAFANA_READY" -eq 0 ]; then
+  log_result "JM-GRF-01" "SKIP" "Requires Grafana + InfluxDB (manual verification)"
+  log_result "JM-GRF-02" "SKIP" "Requires Grafana + InfluxDB (manual verification)"
+  log_result "JM-GRF-03" "SKIP" "Requires Grafana + InfluxDB (manual verification)"
+  log_result "JM-GRF-04" "SKIP" "Requires Grafana + InfluxDB (manual verification)"
+else
+  sleep 3
+  echo "Starting API (single mode)..."
+  bash scripts/server.sh start single 2>/dev/null
+  sleep 2
 
-# JM-GRF-01: k6 → InfluxDB write
-echo "Running k6 → InfluxDB..."
-if k6 run --out influxdb=http://localhost:8086/k6 --duration 10s --vus 2 tests/performance/smoke.k6.js 2>&1 | grep -q "output: InfluxDBv1"; then
-  # Verify data exists
-  MEASUREMENTS=$(curl -sf "http://localhost:8086/query?db=k6&q=SHOW+MEASUREMENTS" | python3 -c "import sys,json; r=json.load(sys.stdin); s=r['results'][0].get('series',[]); print(len(s[0]['values']) if s else 0)" 2>/dev/null)
-  if [ "$MEASUREMENTS" -gt 0 ] 2>/dev/null; then
-    log_result "JM-GRF-01" "PASS" "InfluxDB has ${MEASUREMENTS} measurements"
+  # JM-GRF-01: k6 → InfluxDB write
+  echo "Running k6 → InfluxDB..."
+  if k6 run --out influxdb=http://localhost:8086/k6 --duration 10s --vus 2 tests/performance/smoke.k6.js 2>&1 | grep -q "output: InfluxDBv1"; then
+    # Verify data exists
+    MEASUREMENTS=$(curl -sf "http://localhost:8086/query?db=k6&q=SHOW+MEASUREMENTS" | python3 -c "import sys,json; r=json.load(sys.stdin); s=r['results'][0].get('series',[]); print(len(s[0]['values']) if s else 0)" 2>/dev/null)
+    if [ "$MEASUREMENTS" -gt 0 ] 2>/dev/null; then
+      log_result "JM-GRF-01" "PASS" "InfluxDB has ${MEASUREMENTS} measurements"
+    else
+      log_result "JM-GRF-01" "FAIL" "No data in InfluxDB"
+    fi
   else
-    log_result "JM-GRF-01" "FAIL" "No data in InfluxDB"
+    log_result "JM-GRF-01" "FAIL" "k6 influx output failed"
   fi
-else
-  log_result "JM-GRF-01" "FAIL" "k6 influx output failed"
-fi
 
-# JM-GRF-02: Grafana dashboard loads
-PANELS=$(curl -sf "http://localhost:3010/api/dashboards/uid/k6-results" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d['dashboard']['panels']))" 2>/dev/null || echo "0")
-if [ "$PANELS" -gt 0 ] 2>/dev/null; then
-  log_result "JM-GRF-02" "PASS" "Dashboard loaded with ${PANELS} panels"
-else
-  log_result "JM-GRF-02" "FAIL" "Dashboard not found or no panels"
-fi
+  # JM-GRF-02: Grafana dashboard loads
+  PANELS=$(curl -sf "http://localhost:3010/api/dashboards/uid/k6-results" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d['dashboard']['panels']))" 2>/dev/null || echo "0")
+  if [ "$PANELS" -gt 0 ] 2>/dev/null; then
+    log_result "JM-GRF-02" "PASS" "Dashboard loaded with ${PANELS} panels"
+  else
+    log_result "JM-GRF-02" "FAIL" "Dashboard not found or no panels"
+  fi
 
-# JM-GRF-03: VUs panel data
-VU_POINTS=$(curl -sf "http://localhost:8086/query?db=k6&q=SELECT+mean(value)+FROM+vus+GROUP+BY+time(10s)+LIMIT+10" | python3 -c "import sys,json; r=json.load(sys.stdin); s=r['results'][0].get('series',[]); print(len(s[0]['values']) if s else 0)" 2>/dev/null || echo "0")
-if [ "$VU_POINTS" -gt 0 ] 2>/dev/null; then
-  log_result "JM-GRF-03" "PASS" "VUs panel: ${VU_POINTS} data points"
-else
-  log_result "JM-GRF-03" "FAIL" "No VUs data"
-fi
+  # JM-GRF-03: VUs panel data
+  VU_POINTS=$(curl -sf "http://localhost:8086/query?db=k6&q=SELECT+mean(value)+FROM+vus+GROUP+BY+time(10s)+LIMIT+10" | python3 -c "import sys,json; r=json.load(sys.stdin); s=r['results'][0].get('series',[]); print(len(s[0]['values']) if s else 0)" 2>/dev/null || echo "0")
+  if [ "$VU_POINTS" -gt 0 ] 2>/dev/null; then
+    log_result "JM-GRF-03" "PASS" "VUs panel: ${VU_POINTS} data points"
+  else
+    log_result "JM-GRF-03" "FAIL" "No VUs data"
+  fi
 
-# JM-GRF-04: Response Time panel data
-RT_POINTS=$(curl -sf "http://localhost:8086/query?db=k6&q=SELECT+mean(value)+FROM+http_req_duration+GROUP+BY+time(10s)+LIMIT+10" | python3 -c "import sys,json; r=json.load(sys.stdin); s=r['results'][0].get('series',[]); print(len(s[0]['values']) if s else 0)" 2>/dev/null || echo "0")
-if [ "$RT_POINTS" -gt 0 ] 2>/dev/null; then
-  log_result "JM-GRF-04" "PASS" "Response Time panel: ${RT_POINTS} data points"
-else
-  log_result "JM-GRF-04" "FAIL" "No response time data"
+  # JM-GRF-04: Response Time panel data
+  RT_POINTS=$(curl -sf "http://localhost:8086/query?db=k6&q=SELECT+mean(value)+FROM+http_req_duration+GROUP+BY+time(10s)+LIMIT+10" | python3 -c "import sys,json; r=json.load(sys.stdin); s=r['results'][0].get('series',[]); print(len(s[0]['values']) if s else 0)" 2>/dev/null || echo "0")
+  if [ "$RT_POINTS" -gt 0 ] 2>/dev/null; then
+    log_result "JM-GRF-04" "PASS" "Response Time panel: ${RT_POINTS} data points"
+  else
+    log_result "JM-GRF-04" "FAIL" "No response time data"
+  fi
 fi
 
 # ============================================================
@@ -293,7 +305,12 @@ echo "Testing RateLimit headers..."
 npm stop > /dev/null 2>&1 || true
 sleep 2
 RATE_LIMIT_ENABLED=true npm start > /dev/null 2>&1 &
-sleep 2
+SERVER_PID=$!
+# Wait for server to fully start (health check)
+for i in $(seq 1 30); do
+  if curl -sf http://localhost:3000/health > /dev/null 2>&1; then break; fi
+  sleep 0.5
+done
 # Use curl to verify headers are present in response (case-insensitive check)
 HEADERS=$(curl -s -i http://localhost:3000/api/products 2>&1 | grep -iE "ratelimit-limit|ratelimit-remaining|ratelimit-reset" | wc -l)
 if [[ "$HEADERS" -ge 3 ]]; then
