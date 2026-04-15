@@ -3,6 +3,27 @@
 # Executes all integration test cases from test-cases.md automatically
 cd "$(dirname "$0")/.."
 
+# ============================================================
+# Lock mechanism to prevent concurrent execution
+# ============================================================
+LOCK_DIR="/tmp/integration-test.lock"
+
+acquire_lock() {
+  if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+    echo "❌ ERROR: Integration test is already running in another process"
+    echo "   Lock file: $LOCK_DIR"
+    echo "   If the previous run crashed, remove it: rm -rf $LOCK_DIR"
+    exit 1
+  fi
+}
+
+release_lock() {
+  rmdir "$LOCK_DIR" 2>/dev/null || true
+}
+
+# Acquire lock before proceeding
+acquire_lock
+
 PASS=0
 FAIL=0
 SKIP=0
@@ -32,6 +53,7 @@ cleanup() {
   echo "Cleaning up..."
   bash scripts/server.sh stop 2>/dev/null || true
   docker compose down 2>/dev/null || true
+  release_lock
 }
 trap cleanup EXIT
 
