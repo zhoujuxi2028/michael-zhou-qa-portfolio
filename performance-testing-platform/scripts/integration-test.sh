@@ -366,17 +366,14 @@ HLP_OUTPUT=$(k6 run tests/performance/helpers-test.k6.js 2>&1)
 HLP_EXIT=$?
 
 if [ $HLP_EXIT -eq 0 ]; then
-  # Extract results from k6 output
-  if echo "$HLP_OUTPUT" | grep -q "thinkTime helper: ✓ PASS"; then
-    log_result "K6-HLP-INT-01" "PASS" "k6 helpers (thinkTime/funnel/healthCheck) 直接验证通过"
+  # Check if all k6 checks passed (4/4: thinkTime, randomIntBetween, executeFunnel, verifyHealth)
+  if echo "$HLP_OUTPUT" | grep -q "checks_succeeded.*100.00%"; then
+    CHECKS_COUNT=$(echo "$HLP_OUTPUT" | grep "checks_total" | grep -oE "[0-9]+ out of [0-9]+" | head -1)
+    log_result "K6-HLP-INT-01" "PASS" "k6 helpers 导入验证: thinkTime/executeFunnel 函数正常 ($CHECKS_COUNT)"
+    log_result "K6-HLP-INT-02" "PASS" "k6 helpers 导入验证: verifyHealth 函数正常"
   else
-    log_result "K6-HLP-INT-01" "FAIL" "k6 helpers 验证中 helpers 功能异常"
-  fi
-
-  if echo "$HLP_OUTPUT" | grep -q "healthCheck helper: ✓ PASS"; then
-    log_result "K6-HLP-INT-02" "PASS" "k6 helpers 端到端验证: 所有 helpers 正常工作"
-  else
-    log_result "K6-HLP-INT-02" "FAIL" "healthCheck helper 验证失败"
+    log_result "K6-HLP-INT-01" "FAIL" "k6 helpers 验证中部分 check 失败"
+    log_result "K6-HLP-INT-02" "FAIL" "k6 helpers 验证中部分 check 失败"
   fi
 else
   log_result "K6-HLP-INT-01" "FAIL" "helpers-test.k6.js 执行失败 (exit $HLP_EXIT)"
