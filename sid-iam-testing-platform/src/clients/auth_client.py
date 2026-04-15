@@ -234,9 +234,6 @@ class AuthClient:
     def ldap_bind(self, dn, password):
         return self.ldap.bind(dn, password)
 
-    def ldap_search(self, conn_id, base_dn, filter_str, scope="subtree", page_size=0, page_cookie=None):
-        return self.ldap.search(conn_id, base_dn, filter_str, scope=scope, page_size=page_size, page_cookie=page_cookie)
-
     def ldap_modify(self, conn_id, dn, changes):
         return self.ldap.modify(conn_id, dn, changes)
 
@@ -451,11 +448,6 @@ class AuthClient:
         if not self.mfa:
             raise NotImplementedError("MFA provider not configured")
         return self.mfa.register(user_id)
-
-    def mfa_verify(self, user_id, code):
-        if not self.mfa:
-            raise NotImplementedError("MFA provider not configured")
-        return self.mfa.verify(user_id, code)
 
     def mfa_recovery(self, user_id, recovery_code):
         if not self.mfa:
