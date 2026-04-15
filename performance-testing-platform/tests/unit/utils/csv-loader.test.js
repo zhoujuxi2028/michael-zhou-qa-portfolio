@@ -200,7 +200,7 @@ describe('parseCSV Function', () => {
     test.each([
       ['special characters', FIXTURES.SPECIAL_CHARS, 'John@Domain'],
       ['numeric and boolean strings', FIXTURES.NUMERIC_STRINGS, '100'],
-    ])('should preserve %s', (label, csv, expectedNameOrCount) => {
+    ])('should preserve %s', (label, csv, _expectedNameOrCount) => {
       const result = parseCSV(csv);
       expect(result[0]).toHaveProperty('id');
       expect(result[0]).toBeDefined();
