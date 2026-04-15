@@ -6,6 +6,7 @@
       "Bash(npx prettier:*)",
       "Bash(env)",
       "Bash(git:*)",
+      "Bash(git -C:*)",
       "Bash(ls -lh /Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio/performance-testing-platform/reports/*.json)",
       "Bash(grep -r \"p95\\\\|threshold\\\\|VU\\\\|error.*rate\" /Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio/performance-testing-platform/tests/performance/*.k6.js)",
       "Bash(gh issue:*)",
@@ -32,7 +33,10 @@
       "Bash(killall -9 node)",
       "Bash(cat)",
       "Bash(chmod +x /tmp/test-server-env.sh)",
-      "Bash(/tmp/test-server-env.sh)"
+      "Bash(/tmp/test-server-env.sh)",
+      "Bash(open -a OrbStack sleep 5 docker ps)",
+      "Bash(tee /tmp/final-int-test.log)",
+      "Bash(grep -E \"\\\\.\\(md|json|csv\\)$\")"
     ]
   }
 }
