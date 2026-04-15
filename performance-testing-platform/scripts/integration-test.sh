@@ -310,26 +310,36 @@ log_result "RL-INT-03" "PASS" "Window expiry: tested via unit tests (UT-RL-03)"
 
 # GEN-INT-01: Summary script with valid input
 echo "Running k6 test to generate summary..."
-# Clean up before k6 test
+# Clean up before k6 test — important to kill any leftover processes
 npm stop > /dev/null 2>&1 || true
-sleep 2
+pkill -9 -f "node.*cluster.js" 2>/dev/null || true
+sleep 3
 # Ensure server is running for k6 test
 RATE_LIMIT_ENABLED=false npm start > /dev/null 2>&1 &
-sleep 3
-# Run k6 test and capture error details
-K6_OUTPUT=$(k6 run --out json=reports/test-result.json --duration 5s --vus 1 tests/performance/smoke.k6.js 2>&1)
-K6_EXIT=$?
-if [ $K6_EXIT -eq 0 ]; then
-  # Verify summary generation succeeds
-  if bash scripts/generate-summary.sh reports/test-result.json > /dev/null 2>&1; then
-    log_result "GEN-INT-01" "PASS" "Summary generation: valid k6 JSON input"
-  else
-    log_result "GEN-INT-01" "FAIL" "Summary script failed with valid input"
-  fi
+sleep 4
+# Verify server is actually responding
+if ! curl -sf http://localhost:3000/health > /dev/null 2>&1; then
+  log_result "GEN-INT-01" "FAIL" "Server not responding on port 3000"
+  npm stop > /dev/null 2>&1 || true
 else
-  log_result "GEN-INT-01" "FAIL" "k6 test execution failed (exit $K6_EXIT)"
+  # Run k6 test and capture error details
+  K6_TEMP_LOG="/tmp/k6-gen-int-01.log"
+  k6 run --out json=reports/test-result.json --duration 5s --vus 1 tests/performance/smoke.k6.js > "$K6_TEMP_LOG" 2>&1
+  K6_EXIT=$?
+  if [ $K6_EXIT -eq 0 ]; then
+    # Verify summary generation succeeds
+    if bash scripts/generate-summary.sh reports/test-result.json > /dev/null 2>&1; then
+      log_result "GEN-INT-01" "PASS" "Summary generation: valid k6 JSON input"
+    else
+      log_result "GEN-INT-01" "FAIL" "Summary script failed with valid input"
+    fi
+  else
+    # Capture k6 error for debugging
+    K6_ERROR=$(tail -5 "$K6_TEMP_LOG" 2>/dev/null || echo "Unable to capture k6 error")
+    log_result "GEN-INT-01" "FAIL" "k6 test failed (exit $K6_EXIT): $K6_ERROR"
+  fi
+  npm stop > /dev/null 2>&1 || true
 fi
-npm stop > /dev/null 2>&1 || true
 
 # GEN-INT-02: Summary script error handling (missing file)
 echo "Testing error handling..."
