@@ -110,6 +110,29 @@ scripts/generate-summary.sh reports/k6-result.json
 
 ## 3. 任务拆分
 
+### Task 0: 环境检测 — Stage 4 前置条件
+
+**目标:** 验证 Stage 4 集成测试的基础设施准备就绪
+
+- [ ] **0.1** 运行 Stage 4 环境检测脚本
+  ```bash
+  bash scripts/preflight-check.sh --stage4
+  ```
+  **预期结果:** exit 0，所有检查通过（包括 Docker daemon）
+  
+- [ ] **0.2** 本地记录检测结果
+  - Load Average < 5 ✅
+  - 可用内存 > 2 GB ✅
+  - CPU Idle > 50% ✅
+  - Docker daemon 运行 ✅
+
+- [ ] **0.3** 如果任何检查失败
+  - 按脚本输出的修复提示操作
+  - 修复后重新运行 `bash scripts/preflight-check.sh --stage4`
+  - 确保全部 ✅ 后才能进入后续 Tasks
+
+---
+
 ### Task 1: k6 Helpers 提取 (ENT-CONSISTENCY-01~03)
 
 - [ ] **1.1** 新增 `helpers/thinkTime.js`
