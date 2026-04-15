@@ -141,6 +141,26 @@
 
 ---
 
+## Phase 6 — 测试能力扩展 ([#88](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/88))
+
+| 需求 ID | 需求 | 实现文件 | 测试用例 ID | 状态 |
+|---------|------|---------|------------|------|
+| ENT-CONSISTENCY-01 | k6 共享 helpers (thinkTime, funnel, healthCheck) | `helpers/thinkTime.js`, `helpers/funnel.js`, `helpers/healthCheck.js` | K6-INT-01~05 (Phase 5), K6-HLP-INT-01~02 (Phase 6 Skip) | ✅ |
+| ENT-CONSISTENCY-02 | 9 个 k6 脚本迁移到 shared helpers | `load.k6.js`, `stress.k6.js`, `capacity.k6.js`, `soak.k6.js`, `auth-login.k6.js`, `auth-refresh.k6.js`, `auth-journey.k6.js`, `smoke.k6.js`, `spike.k6.js` | K6-HLP-INT-01~02 | ✅ |
+| ENT-CONSISTENCY-03 | k6 脚本回归验证 (checkStatus/thinkTime) | `smoke.k6.js` + k6:smoke npm script | K6-HLP-INT-01 | ✅ |
+| ENT-CONSISTENCY-04 | breakpoint test 脚本 | `breakpoint.k6.js` | K6-BRK-01~03 (Stage 4 待验证) | ⏭️  Pending |
+| ENT-CONSISTENCY-05 | capacity/soak 脚本迁移验证 | `capacity.k6.js`, `soak.k6.js` | K6-HLP-INT-01 | ✅ |
+| ENT-RESILIENCE-01 | Rate Limiter 中间件 (enable/disable toggle) | `src/middleware/rateLimiter.js` | UT-RL-01~06 | ✅ |
+| ENT-RESILIENCE-02 | Rate Limiter 429 burst 测试 | `tests/performance/rate-limit.k6.js` | RL-INT-01 | ✅ |
+| ENT-RESILIENCE-03 | RateLimit headers 验证 | `tests/performance/rate-limit.k6.js` | RL-INT-02 | ✅ |
+| ENT-RESILIENCE-04 | 限流窗口过期恢复 | `tests/performance/rate-limit.k6.js` | RL-INT-03 | ✅ |
+| ENT-REPORT-01 | k6 执行摘要报告脚本 | `scripts/generate-summary.sh` | GEN-INT-01~03 | ✅ |
+| ENT-REPORT-02 | 摘要报告内容 (p95/error rate/throughput) | `scripts/generate-summary.sh` → `reports/k6-summary.md` | GEN-INT-01 | ✅ |
+| ENT-REPORT-03 | 错误率计算验证 | `scripts/generate-summary.sh` | GEN-INT-03 | ✅ |
+| ENT-REPORT-04 | CI 报告生成集成 | `performance-ci.yml` (Phase 7 计划) | GEN-INT-01 | ⏭️  Phase 7 |
+
+---
+
 ## 覆盖率统计
 
 | Phase | 需求数 | 已覆盖 | 未覆盖 | 覆盖率 |
@@ -149,14 +169,16 @@
 | 2 | 15 (SM-01~11 + TQ-01~04) | 15 | 0 | 100% |
 | 3 | 11 (AUTH-01~11) | 11 | 0 | 100% |
 | 4 | 10 (SOAK-01~10) | 10 | 0 | 100% |
-| 5 | 13 (ENT-*) | 13 | 0 | 100% |
-| **合计** | **62** | **61** | **1** | **98%** |
+| 5 | 13 (ENT-ENV/DATA/PROFILE/DX/TEST) | 13 | 0 | 100% |
+| 6 | 14 (ENT-CONSISTENCY/RESILIENCE/REPORT) | 13 | 1 (ENT-CONSISTENCY-04 Pending) | 93% |
+| **合计** | **76** | **74** | **2** | **97%** |
 
 ### 未覆盖项说明
 
 | 需求 | 原因 | 计划 |
 |------|------|------|
 | Grafana Dashboard (Phase 1) | 需 Docker + InfluxDB 环境 | 本地手动验证 |
+| ENT-CONSISTENCY-04 (Phase 6) | breakpoint test 脚本在 Stage 4 实现，待 Stage 4 验证后标记完成 | Phase 6 Task 5 完成 |
 
 ---
 

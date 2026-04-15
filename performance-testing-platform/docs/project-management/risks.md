@@ -29,6 +29,9 @@
 | R-19 | 集成 | generate-summary.sh 脚本完成，但 performance-ci.yml 未集成 | 中 | 中 | 🟡 | ENT-REPORT | Phase 7 集成 CI；当前 Task 6 脚本已完成并测试通过，报告样板已验证 |
 | R-20 | 技术 | healthCheck 在 setup() 中 fail 导致 Cluster 模式下半启动状态 | 中 | 低 | 🟢 | ENT-CONSISTENCY | healthCheck.js 已在 Phase 6 Task 1 实现，smoke+load 脚本验证无启动故障；降级为可接受风险 |
 | R-21 | 技术 | Breakpoint test ramping-arrival-rate 递增策略/abort threshold 实现细节未验证 | 中 | 中 | 🟡 | ENT-BREAKPOINT | Phase 6 Task 5 实现：6 stage ramps (100→10000 VUs)，maxDuration 10min + error abort 逻辑 ready for Stage 4 validation |
+| ~~R-22~~ | ~~技术~~ | ~~Rate Limiter 在初始化时读取环境变量，动态切换无效~~ | — | — | ✅ | ENT-RESILIENCE | **已解决**: Stage 4 修复 skip() 函数改为 request-time check；commit ce5c094b |
+| ~~R-23~~ | ~~技术~~ | ~~generate-summary.sh 假设 JSON 结构，但 k6 --out json 实际输出 JSONL~~ | — | — | ✅ | ENT-REPORT | **已解决**: Stage 4 修复添加格式检测 + graceful fallback；commit acf21e92 |
+| ~~R-24~~ | ~~环境~~ | ~~集成测试服务生命周期：多个 npm start 竞争端口 3000~~ | — | — | ✅ | 全局 | **已解决**: Stage 4 修复显式 npm stop + sleep 延迟；commits 698d7082, 3d69b274 |
 
 ## 风险等级说明
 
@@ -55,3 +58,6 @@
 | H-11 | express-rate-limit Cluster 模式 per-worker 隔离可接受 (R-14) | Cluster 诊断测试验证：5×200 + 15×429 响应正确，MemoryStore 隔离符合非分布式限流场景需求 | 2026-04-14 |
 | H-12 | 9 个 k6 脚本迁移兼容性验证 (R-17) | Phase 6 Task 2：helpers 迁移完成；k6:smoke 回归通过 (p95=2ms, error=0%)；所有脚本兼容性验证成功 | 2026-04-14 |
 | H-13 | Rate Limiter Jest 单元测试覆盖 (R-18) | Phase 6 Task 3：UT-RL-01~06 实现，7 个测试全部通过；集成测试 RL-INT-01~03 添加；总计 102/102 Jest PASS | 2026-04-14 |
+| H-14 | Rate Limiter 环境变量绑定 (R-22) | Stage 4 integration test 发现 env var 在 initialization 读取导致动态切换无效；修复 skip() 改为 request-time check；issue #105 | 2026-04-15 |
+| H-15 | k6 JSONL 输出格式 (R-23) | Stage 4 integration test 发现 generate-summary.sh 假设 JSON，但 k6 实际输出 JSONL；修复添加格式检测 + graceful fallback；issue #106 | 2026-04-15 |
+| H-16 | 集成测试服务生命周期 (R-24) | Stage 4 integration test 发现多个 npm start 竞争端口导致失败；修复显式 stop/start 序列 + sleep 延迟；issue #107 | 2026-04-15 |

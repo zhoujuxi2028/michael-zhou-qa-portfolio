@@ -8,6 +8,22 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 - **No fluff**: Avoid unnecessary explanations, verbose comments, or filler text
 - **Tables over prose**: Use tables/lists instead of paragraphs when possible
 
+## ⚠️ Branch Discipline
+
+**CRITICAL: Never work on `main` branch for development, testing, or verification.**
+
+| Phase | 工作内容 | 分支要求 |
+|-------|---------|----------|
+| 1-5 (需求→收尾) | 代码编写、测试、验证 | ✅ 使用 `feature/*` 分支 |
+| 收尾 (PR 合并后) | 文档同步、Wiki 更新 | ✅ main 已合并，可直接更新 |
+
+**Rule**: 
+- Stage 3 (开发) → Stage 4 (测试) → Stage 5 (收尾 PR) 都必须在 feature 分支上
+- Main 分支仅用于：(1) 接收 PR merge，(2) 生产部署
+- 误操作示例：在 main 上 run tests, commit fixes, git merge —abort ❌
+
+**历史教训**: 2026-04-15 在 main 上触发 merge，导致需要回滚到 feature/performance-testing 重新开始 Stage 4 verification
+
 ## Development Process（开发流程）
 
 每个新功能/项目遵循 5 阶段流程，**每阶段结束必须暂停等待人工评审**，通过后才能进入下一阶段。
