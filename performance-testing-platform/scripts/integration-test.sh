@@ -271,16 +271,24 @@ RATE_LIMIT_ENABLED=false npm start > /dev/null 2>&1 &
 sleep 3
 
 # RL-INT-01: Rate limiter 429 burst (requires RATE_LIMIT_ENABLED=true)
+# Note: npm run k6:rate-limit includes its own npm start/stop, so stop existing server first
 echo "Testing rate limiter: 429 burst..."
+npm stop > /dev/null 2>&1 || true
+sleep 2
 RATE_LIMIT_ENABLED=true RATE_LIMIT_MAX=2 RATE_LIMIT_WINDOW_MS=5000 npm run k6:rate-limit 2>&1 | grep -q "rate limited (429)" && \
   log_result "RL-INT-01" "PASS" "Rate limit: 3rd request returns 429" || \
   log_result "RL-INT-01" "FAIL" "Rate limiter did not return 429"
 
 # RL-INT-02: RateLimit headers present
 echo "Testing RateLimit headers..."
-RATE_LIMIT_ENABLED=true npm run k6:smoke 2>&1 | grep -q "ratelimit-" && \
+npm stop > /dev/null 2>&1 || true
+sleep 1
+RATE_LIMIT_ENABLED=true npm start > /dev/null 2>&1 &
+sleep 2
+npm run k6:smoke 2>&1 | grep -q "ratelimit-" && \
   log_result "RL-INT-02" "PASS" "Headers: ratelimit-limit/remaining/reset present" || \
   log_result "RL-INT-02" "FAIL" "RateLimit headers not found"
+npm stop > /dev/null 2>&1 || true
 
 # RL-INT-03: Window expiry allows recovery
 echo "Testing window expiry recovery..."
@@ -289,6 +297,9 @@ log_result "RL-INT-03" "PASS" "Window expiry: tested via unit tests (UT-RL-03)"
 
 # GEN-INT-01: Summary script with valid input
 echo "Running k6 test to generate summary..."
+# Ensure server is running for k6 test
+RATE_LIMIT_ENABLED=false npm start > /dev/null 2>&1 &
+sleep 2
 if k6 run --out json=reports/test-result.json --duration 5s --vus 1 tests/performance/smoke.k6.js > /dev/null 2>&1; then
   bash scripts/generate-summary.sh reports/test-result.json > /dev/null 2>&1 && \
     log_result "GEN-INT-01" "PASS" "Summary generation: valid k6 JSON input" || \
@@ -296,6 +307,7 @@ if k6 run --out json=reports/test-result.json --duration 5s --vus 1 tests/perfor
 else
   log_result "GEN-INT-01" "FAIL" "k6 test execution failed"
 fi
+npm stop > /dev/null 2>&1 || true
 
 # GEN-INT-02: Summary script error handling (missing file)
 echo "Testing error handling..."
