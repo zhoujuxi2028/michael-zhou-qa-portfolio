@@ -22,6 +22,11 @@ log_result() {
   fi
 }
 
+# Stage 4: Docker prerequisite check
+echo "Running Stage 4 environment checks..."
+bash scripts/preflight-check.sh --stage4 || exit 1
+echo ""
+
 cleanup() {
   echo ""
   echo "Cleaning up..."
