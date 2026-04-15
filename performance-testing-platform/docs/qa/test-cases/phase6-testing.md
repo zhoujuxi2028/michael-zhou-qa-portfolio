@@ -62,9 +62,11 @@
 | GEN-INT-02 | 传入不存在的文件路径，运行脚本 | exit 1，stderr 输出 usage 提示 | Stage 3 Task 6 |
 | GEN-INT-03 | 10 条 `http_reqs` 记录、其中 2 条 `status=404`，运行脚本 | 输出 Markdown 含 `20%` 错误率计算 | Stage 3 Task 6 |
 
-## k6 Helpers 集成测试说明
+## k6 Helpers 集成测试 (Phase 6 直接验证)
 
-| 用例 ID | 说明 | 状态 | 理由 |
-|---------|------|------|------|
-| K6-HLP-INT-01 | thinkTime/funnel/healthCheck 端到端（k6 ES 模块脚本） | **SKIP** | k6 ES module 系统不兼容 Bash/curl 集成测试；通过 Stage 4 `npm run k6:smoke` 间接验证，p95 偏差 <10% 即通过 |
-| K6-HLP-INT-02 | k6 helpers 单元测试（Jest） | **SKIP** | k6 ES module 无法在 Node.js/Jest 环境中 require；已通过 k6 smoke 脚本验证 |
+| 用例 ID | 验证方式 | 预期结果 | 实现阶段 |
+|---------|---------|---------|---------|
+| K6-HLP-INT-01 | `tests/performance/helpers-test.k6.js` 在 k6 runtime 中导入和验证 thinkTime, executeFunnel | 4/4 checks PASS: ✓ thinkTime function ✓ randomIntBetween function ✓ executeFunnel function | Stage 3 Task 1 |
+| K6-HLP-INT-02 | `tests/performance/helpers-test.k6.js` 验证 verifyHealth | ✓ verifyHealth function | Stage 3 Task 1 |
+
+> **解决方案说明:** K6-HLP helpers 依赖 k6 runtime API，无法在 Node.js/Jest 或 Bash/curl 中隔离单元测试。改为在 k6 runtime 本身创建验证脚本，直接调用 helpers 并通过 k6 checks 验证其可用性。这是最真实的验证方式（端到端）。
