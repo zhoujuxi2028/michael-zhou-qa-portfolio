@@ -124,4 +124,4 @@ router.post('/api/products', (req, res) => {
 ## 参考
 
 - Issue #103: M5-002 - 故意关闭，因为是性能测试的设计需求
-- 相关文档: `docs/learning/M5-swagger-ui-guide.md`
+- 相关文档: ../../michael-zhou-portfolio/docs/copilot-cli-journey/M5-TECH-STACK-COMPARISON.md (已迁移到个人 Portfolio)
