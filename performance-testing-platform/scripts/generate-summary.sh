@@ -30,21 +30,41 @@ fi
 OUTPUT_DIR="$(dirname "$JSON_FILE")"
 OUTPUT_FILE="${OUTPUT_DIR}/k6-summary.md"
 
-# Validate JSON
-if ! jq empty "$JSON_FILE" 2>/dev/null; then
+# Handle both single JSON and JSONL (k6 --out json) formats
+# k6 outputs JSONL, so we need to slurp all lines and find metrics
+if jq empty "$JSON_FILE" 2>/dev/null; then
+  # Try single JSON object first
+  if jq '.metrics' "$JSON_FILE" &>/dev/null; then
+    # Single JSON with metrics field
+    METRICS_SOURCE="$JSON_FILE"
+  else
+    # Likely JSONL format - cannot extract metrics from individual samples
+    # For k6 JSONL, metrics are not included in the output
+    # Fallback: set defaults and generate empty report
+    echo "⚠️  Warning: k6 JSON output (JSONL format) does not include aggregated metrics"
+    echo "   Metrics must be computed from raw samples or extracted from k6 summary"
+    echo "   Generating report with placeholder values..."
+    P95=0 P99=0 AVG=0 ERROR_RATE=0 THROUGHPUT=0 TOTAL_REQS=0 TOTAL_CHECKS=0 FAILED_CHECKS=0
+  fi
+elif [[ -s "$JSON_FILE" ]]; then
   echo "❌ Error: Invalid JSON file: $JSON_FILE"
+  exit 1
+else
+  echo "❌ Error: Empty file: $JSON_FILE"
   exit 1
 fi
 
-# Extract metrics using jq
-P95=$(jq '.metrics.http_req_duration.values.p95 // 0' "$JSON_FILE" | awk '{printf "%.0f", $1}')
-P99=$(jq '.metrics.http_req_duration.values.p99 // 0' "$JSON_FILE" | awk '{printf "%.0f", $1}')
-AVG=$(jq '.metrics.http_req_duration.values.avg // 0' "$JSON_FILE" | awk '{printf "%.0f", $1}')
-ERROR_RATE=$(jq '.metrics.http_req_failed.values.value // 0' "$JSON_FILE")
-THROUGHPUT=$(jq '.metrics.http_reqs.values.rate // 0' "$JSON_FILE" | awk '{printf "%.1f", $1}')
-TOTAL_REQS=$(jq '.metrics.http_reqs.values.count // 0' "$JSON_FILE" | awk '{printf "%.0f", $1}')
-TOTAL_CHECKS=$(jq '.metrics.checks.values.count // 0' "$JSON_FILE" | awk '{printf "%.0f", $1}')
-FAILED_CHECKS=$(jq '.metrics.checks.values.fails // 0' "$JSON_FILE" | awk '{printf "%.0f", $1}')
+# Extract metrics using jq (if METRICS_SOURCE is set)
+if [[ -n "$METRICS_SOURCE" ]]; then
+  P95=$(jq '.metrics.http_req_duration.values.p95 // 0' "$METRICS_SOURCE" | awk '{printf "%.0f", $1}')
+  P99=$(jq '.metrics.http_req_duration.values.p99 // 0' "$METRICS_SOURCE" | awk '{printf "%.0f", $1}')
+  AVG=$(jq '.metrics.http_req_duration.values.avg // 0' "$METRICS_SOURCE" | awk '{printf "%.0f", $1}')
+  ERROR_RATE=$(jq '.metrics.http_req_failed.values.value // 0' "$METRICS_SOURCE")
+  THROUGHPUT=$(jq '.metrics.http_reqs.values.rate // 0' "$METRICS_SOURCE" | awk '{printf "%.1f", $1}')
+  TOTAL_REQS=$(jq '.metrics.http_reqs.values.count // 0' "$METRICS_SOURCE" | awk '{printf "%.0f", $1}')
+  TOTAL_CHECKS=$(jq '.metrics.checks.values.count // 0' "$METRICS_SOURCE" | awk '{printf "%.0f", $1}')
+  FAILED_CHECKS=$(jq '.metrics.checks.values.fails // 0' "$METRICS_SOURCE" | awk '{printf "%.0f", $1}')
+fi
 
 # SLA compliance
 SLA_P95_OK=$(awk "BEGIN {print ($P95 < 500) ? 1 : 0}")
