@@ -6,6 +6,16 @@
 
 ---
 
+## 📋 相关文档导航
+
+| 文档 | 用途 | 位置 |
+|------|------|------|
+| **验收报告** | Phase 6 Stage 4 最终验收结果和结论 | [`reports/phase6-stage4-verification-report.md`](reports/phase6-stage4-verification-report.md) |
+| **收尾清单** | Stage 4 完成后的手工验证清单和下一阶段检查项 | [`reports/phase6-stage4-manual-checklist.md`](reports/phase6-stage4-manual-checklist.md) |
+| **自测报告** | stage4-selftest.sh 自动化检查的执行结果 | [`reports/stage4-selftest-report.md`](reports/stage4-selftest-report.md) |
+
+---
+
 ## 测试执行总结
 
 ### 单元测试 (Unit Tests)
