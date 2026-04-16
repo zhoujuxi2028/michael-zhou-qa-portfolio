@@ -1,5 +1,4 @@
 import http from 'k6/http';
-import { sleep, check } from 'k6';
 import { BASE_URL, checkStatus } from './helpers/utils.js';
 import { thinkTime } from './helpers/thinkTime.js';
 
@@ -70,7 +69,7 @@ export default function (data) {
       tags: { test_type: 'invalid_token' },
     });
     // Public endpoint should still return 200 even with bad token
-    check(badRes, { 'public endpoint with bad token still 200': (r) => r.status === 200 });
+    checkStatus(badRes, 200, 'public endpoint with bad token');
 
     const badOrder = http.post(
       `${BASE_URL}/api/orders`,
@@ -80,10 +79,7 @@ export default function (data) {
         tags: { test_type: 'invalid_token' },
       }
     );
-    check(badOrder, {
-      'invalid token order returns 401': (r) => r.status === 401,
-      'no 5xx on invalid token': (r) => r.status < 500,
-    });
+    checkStatus(badOrder, 401, 'invalid token order');
     thinkTime(0.5, 1.0);
     return;
   }

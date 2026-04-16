@@ -1,5 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('../docs/swagger');
 const { metricsMiddleware } = require('./middleware/metrics');
 const rateLimiter = require('./middleware/rateLimiter');
 const healthRoutes = require('./routes/health');
@@ -48,6 +50,10 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+
+// Swagger UI - available at /api-docs
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 app.use(rateLimiter);
 app.use(metricsMiddleware);
 app.use(healthRoutes);

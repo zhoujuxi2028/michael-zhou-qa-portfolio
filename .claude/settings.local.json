@@ -63,7 +63,10 @@
       "Bash(ls -1 *.md)",
       "Bash(ls -d */)",
       "Bash(xargs -n1 basename)",
-      "Bash(EOF)"
+      "Bash(EOF)",
+      "Bash(pkill -f \"npm start\")",
+      "Bash(tee /tmp/k6-smoke-migration.log)",
+      "Bash(jq --version)"
     ]
   },
   "hooks": {
