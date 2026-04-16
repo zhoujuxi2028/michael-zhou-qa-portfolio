@@ -10,6 +10,10 @@ env/production.env
 results/
 *.jtl
 apache-jmeter-*/
-reports/
+# Reports: 忽略日志和临时文件，但保留 archive/ 文档
+docs/qa/reports/logs-*/
+docs/qa/reports/logs-stage*/
+docs/qa/reports/*.log
+docs/qa/reports/test-execution-report-*.md
 jmeter.log
 index.html

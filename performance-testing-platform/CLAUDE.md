@@ -92,6 +92,21 @@ rm -rf /tmp/integration-test.lock
 - 自动释放: 脚本退出时 trap 调用 `release_lock`
 - 单元测试: `tests/unit/scripts/lock.test.js` (9 tests, 100% PASS)
 
+## 文档卫生规则
+
+**每个 Phase 完成后，清理中间过程文件：**
+
+| 类型 | 例子 | 处理方式 |
+|------|------|--------|
+| 可行性/需求文档 | `stage4-auto-verify-feasibility.md` | 移到 `archive/stage4-planning/` |
+| TDD 路线图 | `STAGE4-TDD-ROADMAP.md` | 移到 `archive/stage4-planning/` |
+| 轮次报告 | `stage4-tdd-test-results-round1.md` | 移到 `archive/stage4-planning/` |
+| **最终交付物** | **`phase6-stage4-verification-report.md`** | **✅ 保留在 `reports/` 根目录** |
+
+**目的：** 保持 `docs/qa/reports/` 整洁，防止历史规划文档长期堆积
+
+**存档位置：** `docs/qa/reports/archive/` 及对应子目录（见 `archive/README.md`）
+
 ## CI 工作流
 
 `performance-ci.yml` — lint → unit test → k6/JMeter smoke gate
