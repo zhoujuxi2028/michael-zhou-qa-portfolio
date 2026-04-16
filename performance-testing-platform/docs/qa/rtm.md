@@ -37,7 +37,7 @@
 |          |                                 | `stress.jmx` + `stress.properties` | STRESS-01~03 | ✅                  |
 |          |                                 | `spike.jmx` + `spike.properties`   | SPIKE-01~03  | ✅                  |
 | US-08    | JMeter HTML 报告                | `*.jmx` → `-e -o reports/`         | JM-RPT-01~03 | ✅                  |
-| US-06/09 | Grafana Dashboard (k6 + JMeter) | `grafana/dashboards/*.json`        | JM-GRF-01~04 | ⏭️ SKIP (需 Docker) |
+| US-06/09 | Grafana Dashboard (k6 + JMeter) | `grafana/dashboards/*.json`        | JM-GRF-01~04 | ✅                  |
 | US-05    | CI 性能门禁 (双引擎)            | `performance-ci.yml`               | JM-CI-01~03  | ✅                  |
 
 ---
@@ -184,20 +184,19 @@
 
 | Phase    | 需求数                                            | 已覆盖 | 未覆盖                            | 覆盖率   |
 | -------- | ------------------------------------------------- | ------ | --------------------------------- | -------- |
-| 1        | 13 (US-01~09 + UC-01~04)                          | 12     | 1 (Grafana 需 Docker)             | 92%      |
+| 1        | 13 (US-01~09 + UC-01~04)                          | 13     | 0                                 | 100%     |
 | 2        | 15 (SM-01~11 + TQ-01~04)                          | 15     | 0                                 | 100%     |
 | 3        | 11 (AUTH-01~11)                                   | 11     | 0                                 | 100%     |
 | 4        | 10 (SOAK-01~10)                                   | 10     | 0                                 | 100%     |
 | 5        | 13 (ENT-ENV/DATA/PROFILE/DX/TEST)                 | 13     | 0                                 | 100%     |
 | 6        | 11 (ENT-CONSISTENCY/BREAKPOINT/RESILIENCE/REPORT) | 10     | 1 (ENT-RESILIENCE-03 ⏭️ Phase 7) | 91%      |
 | 7        | 5 (CI7-01~05)                                     | 5      | 0                                 | 100%     |
-| **合计** | **78**                                            | **76** | **2**                             | **97%**  |
+| **合计** | **78**                                            | **77** | **1**                             | **99%**  |
 
 ### 未覆盖项说明
 
 | 需求                        | 原因                                 | 计划                    |
 | --------------------------- | ------------------------------------ | ----------------------- |
-| Grafana Dashboard (Phase 1) | 需 Docker + InfluxDB 环境            | 本地手动验证            |
 | ENT-RESILIENCE-03 (Phase 6) | 熔断恢复行为测试（K6-RL-04）未实现   | Phase 7 (#116) 实现验证 |
 
 ---
