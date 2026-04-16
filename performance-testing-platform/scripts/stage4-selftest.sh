@@ -165,7 +165,7 @@ echo ""
 echo "--- 2.1 集成测试通过率 ---"
 
 if check_system_load; then
-  if bash scripts/integration-test.sh 2>&1 | tee "$LOG_DIR/integration-test.log" | grep -q "PASS.*29"; then
+  if bash scripts/integration-test.sh 2>&1 | tee "$LOG_DIR/integration-test.log" | grep -q "Pass: 29"; then
     log_result "2.1" "PASS" "集成测试 (29/31 通过，2 SKIP)"
   else
     log_result "2.1" "SKIP" "集成测试输出格式异常，详见日志"
