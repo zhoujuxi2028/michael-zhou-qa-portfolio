@@ -24,9 +24,9 @@
 
 | 用例 ID  | 场景               | 预期                                     |
 | -------- | ------------------ | ---------------------------------------- |
-| K6-BP-01 | 递增到崩溃         | 输出崩溃点 RPS + 当时 p95/error rate     |
-| K6-BP-02 | 崩溃类型分类       | handleSummary 输出 graceful/catastrophic |
-| K6-BP-03 | maxDuration 安全阀 | 10min 内未崩溃则正常结束                 |
+| K6-BRK-01 | 递增到崩溃         | 输出崩溃点 RPS + 当时 p95/error rate     |
+| K6-BRK-02 | 崩溃类型分类       | handleSummary 输出 graceful/catastrophic |
+| K6-BRK-03 | maxDuration 安全阀 | 10min 内未崩溃则正常结束                 |
 
 ## k6 Helpers 迁移验证
 
@@ -41,10 +41,10 @@
 
 | 用例 ID   | 验证项             | 命令                       | 预期                              |
 | --------- | ------------------ | -------------------------- | --------------------------------- |
-| K6-RPT-01 | 生成 Markdown 摘要 | `npm run generate-summary` | reports/k6-summary.md 存在        |
-| K6-RPT-02 | SLA 判定正确       | 检查输出                   | p95 < 500ms → ✅, error < 1% → ✅ |
-| K6-RPT-03 | Top 5 慢接口       | 检查输出                   | 按 p95 排序，含 endpoint 名       |
-| K6-RPT-04 | 无 JSON 输入时报错 | 不传参数                   | 输出 usage 提示，exit 1           |
+| K6-SUM-01 | 生成 Markdown 摘要 | `npm run generate-summary` | reports/k6-summary.md 存在        |
+| K6-SUM-02 | SLA 判定正确       | 检查输出                   | p95 < 500ms → ✅, error < 1% → ✅ |
+| K6-SUM-03 | Top 5 慢接口       | 检查输出                   | 按 p95 排序，含 endpoint 名       |
+| K6-SUM-04 | 无 JSON 输入时报错 | 不传参数                   | 输出 usage 提示，exit 1           |
 
 ## Rate Limiter 集成测试 (`scripts/integration-test.sh` — Stage 3 新增)
 
