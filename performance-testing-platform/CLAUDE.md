@@ -1,6 +1,6 @@
 # CLAUDE.md - 性能测试平台 (Performance Testing Platform)
 
-**分类:** 性能测试 | k6 + JMeter 双引擎 | 95 unit + 23 integration + 26 performance tests
+**分类:** 性能测试 | k6 + JMeter 双引擎 | 148 unit + 31 integration + 33 performance tests
 
 ## 🔴 分支规则
 
@@ -14,9 +14,9 @@ git checkout feature/performance-testing
 
 ```bash
 npm install && npm start &        # 启动 API
-npm test                          # 单元测试 (95 tests)
+npm test                          # 单元测试 (148 tests)
 npm run k6:smoke                  # k6 smoke test
-bash scripts/integration-test.sh  # 集成测试 (需 Docker)
+bash scripts/integration-test.sh  # 集成测试 (31 cases，需 Docker)
 ```
 
 > ⚠️ **集成测试锁机制:** `scripts/integration-test.sh` 使用互斥锁防止并发执行
@@ -31,6 +31,7 @@ bash scripts/integration-test.sh  # 集成测试 (需 Docker)
 
 - **架构与设计:** [docs/architecture/architecture.md](docs/architecture/architecture.md)
 - **测试计划:** [docs/qa/test-plan.md](docs/qa/test-plan.md)
+- **测试用例统计:** [docs/qa/test-cases/index.md](docs/qa/test-cases/index.md) ← Phase 1~7 用例数、通过率、详细分类
 - **需求追溯矩阵:** [docs/qa/rtm.md](docs/qa/rtm.md)
 - **实施计划 Phase 6:** [docs/project-management/implementation-plan-phase6.md](docs/project-management/implementation-plan-phase6.md)
 - **风险清单:** [docs/project-management/risks.md](docs/project-management/risks.md)
@@ -66,6 +67,23 @@ ls -la /tmp/integration-test.lock
 # 情况 3: 强制清理（仅在确认无其他进程使用时）
 rm -rf /tmp/integration-test.lock
 ```
+
+## 测试统计数据管理
+
+**原则:** README 只放索引链接，详细统计数据维护在 `docs/qa/test-cases/index.md`
+
+| 位置                          | 内容                                 | 更新频率              |
+| ----------------------------- | ------------------------------------ | --------------------- |
+| `README.md`                   | 测试类型概览表（不含数字）+ 索引链接 | 很少改变              |
+| `docs/qa/test-cases/index.md` | Phase 1~7 用例统计、通过率、变更记录 | 每个 Phase 完成时更新 |
+| `CLAUDE.md`                   | 第一行的项目描述含用例总数           | 每个大版本更新        |
+
+**更新流程:**
+
+1. 当单元测试/集成测试数量有变时，直接编辑 `docs/qa/test-cases/index.md` 表格
+2. 在表格下方的"用例变更记录"添加一行说明变更
+3. 同时更新 `CLAUDE.md` 第一行的项目描述和快速命令部分
+4. 不要用 echo/xargs 脚本查询数据，直接编辑 Markdown 表格
 
 **实现细节:**
 
