@@ -29,7 +29,7 @@ app.use(
     },
     frameguard: { action: 'deny' },
     referrerPolicy: { policy: 'no-referrer' },
-    xssFilter: true,
+    xssFilter: false,
     noSniff: true,
     crossOriginEmbedderPolicy: true,
     crossOriginOpenerPolicy: true,
@@ -42,6 +42,12 @@ app.disable('x-powered-by');
 
 // Trust proxy for proper IP handling
 app.set('trust proxy', 1);
+
+// Ensure XSS Protection header is properly set
+app.use((req, res, next) => {
+  res.set('X-XSS-Protection', '1; mode=block');
+  next();
+});
 
 app.use(express.json());
 

@@ -27,11 +27,11 @@
 
 ### 1.2 被测对象特征分析
 
-| API | 方法 | 数据库操作 | 模拟延迟 | 预期瓶颈 |
-|-----|------|-----------|---------|---------|
-| `/api/products` | GET | SQLite 读 (SELECT + COUNT) | 无 | CPU (高并发序列化) |
-| `/api/products/:id` | GET | SQLite 读 (SELECT by id) | 无 | 轻微 CPU |
-| `/api/orders` | POST | SQLite 写 (UPDATE + INSERT 事务) | 50ms | **主要瓶颈** — 事务锁 + delay |
+| API                 | 方法 | 数据库操作                       | 模拟延迟 | 预期瓶颈                      |
+| ------------------- | ---- | -------------------------------- | -------- | ----------------------------- |
+| `/api/products`     | GET  | SQLite 读 (SELECT + COUNT)       | 无       | CPU (高并发序列化)            |
+| `/api/products/:id` | GET  | SQLite 读 (SELECT by id)         | 无       | 轻微 CPU                      |
+| `/api/orders`       | POST | SQLite 写 (UPDATE + INSERT 事务) | 50ms     | **主要瓶颈** — 事务锁 + delay |
 
 ### 1.3 数据准备
 
@@ -86,15 +86,15 @@ Express (1 进程)                    Master (port 3000, 分发请求)
 
 ### 2.3 模块清单
 
-| 模块 | 文件 | 需求 ID | 类型 |
-|------|------|---------|------|
-| Cluster 启动器 | `src/cluster.js` | — | **新建** |
-| SQLite 文件模式 | `src/db/database.js` | — | 修改 |
-| `/metrics` 扩展 | `src/middleware/metrics.js` | SM-01~03 | 修改 |
-| 系统采集器 | `scripts/collect-metrics.js` | SM-04~08 | **新建** |
-| 容量测试脚本 | `tests/performance/capacity.k6.js` | US-12 | **新建** |
-| npm scripts | `package.json` | SM-09 | 修改 |
-| 单元测试 | `tests/unit/middleware/metrics.test.js` | — | 修改 |
+| 模块            | 文件                                    | 需求 ID  | 类型     |
+| --------------- | --------------------------------------- | -------- | -------- |
+| Cluster 启动器  | `src/cluster.js`                        | —        | **新建** |
+| SQLite 文件模式 | `src/db/database.js`                    | —        | 修改     |
+| `/metrics` 扩展 | `src/middleware/metrics.js`             | SM-01~03 | 修改     |
+| 系统采集器      | `scripts/collect-metrics.js`            | SM-04~08 | **新建** |
+| 容量测试脚本    | `tests/performance/capacity.k6.js`      | US-12    | **新建** |
+| npm scripts     | `package.json`                          | SM-09    | 修改     |
+| 单元测试        | `tests/unit/middleware/metrics.test.js` | —        | 修改     |
 
 ---
 
@@ -119,7 +119,7 @@ if (cluster.isPrimary) {
     cluster.fork();
   });
 } else {
-  require('./server');  // 每个 Worker 运行一个 Express 实例
+  require('./server'); // 每个 Worker 运行一个 Express 实例
 }
 ```
 
@@ -143,12 +143,12 @@ if (cluster.isPrimary) {
 
 **影响分析:**
 
-| 影响项 | 处理方式 |
-|--------|---------|
-| 单元测试 | **无需改动** — 直接 import `app.js`，不经过 cluster |
-| CI 环境 | `start:single` 用于 CI smoke test |
-| `.gitignore` | 已有 `*.db` 规则，data/ 目录需新建 |
-| 每次启动重建 DB | 现有 `getDatabase()` 自动建表 + seed |
+| 影响项          | 处理方式                                            |
+| --------------- | --------------------------------------------------- |
+| 单元测试        | **无需改动** — 直接 import `app.js`，不经过 cluster |
+| CI 环境         | `start:single` 用于 CI smoke test                   |
+| `.gitignore`    | 已有 `*.db` 规则，data/ 目录需新建                  |
+| 每次启动重建 DB | 现有 `getDatabase()` 自动建表 + seed                |
 
 ---
 
@@ -157,6 +157,7 @@ if (cluster.isPrimary) {
 **修改文件:** `src/middleware/metrics.js`
 
 **现有实现:**
+
 ```javascript
 // 只有 requestCount + avgDuration
 function getMetrics() {
@@ -168,6 +169,7 @@ function getMetrics() {
 ```
 
 **扩展后:**
+
 ```javascript
 const os = require('os');
 
@@ -180,9 +182,9 @@ function getMetrics() {
     avgDuration: metrics.requestCount > 0 ? metrics.totalDuration / metrics.requestCount : 0,
     // SM-01: 进程级 CPU
     cpu: {
-      user: cpuUsage.user,       // 微秒
-      system: cpuUsage.system,   // 微秒
-      loadavg: os.loadavg(),     // [1m, 5m, 15m]
+      user: cpuUsage.user, // 微秒
+      system: cpuUsage.system, // 微秒
+      loadavg: os.loadavg(), // [1m, 5m, 15m]
     },
     // SM-02: 进程级内存
     memory: {
@@ -195,7 +197,7 @@ function getMetrics() {
     },
     // SM-03: 事件循环延迟
     eventLoop: {
-      lag: eventLoopLag,         // 通过 setTimeout(0) 采样
+      lag: eventLoopLag, // 通过 setTimeout(0) 采样
     },
   };
 }
@@ -213,15 +215,16 @@ function getMetrics() {
 
 **采集项:**
 
-| 指标 | 采集方式 | 输出字段 |
-|------|---------|---------|
-| SM-04: CPU% | `os.cpus()` 两次采样计算差值 | cpu_user%, cpu_system%, cpu_idle% |
-| SM-05: 内存% | `os.totalmem()`, `os.freemem()` | mem_total_mb, mem_used_mb, mem_usage% |
-| SM-06: 磁盘 I/O | macOS: `iostat` 命令解析 | disk_read_kb/s, disk_write_kb/s |
-| SM-07: 网络 I/O | macOS: `netstat -ib` 解析 | net_rx_kb/s, net_tx_kb/s |
-| SM-08: 输出 | CSV 写入 | `reports/system-metrics-{timestamp}.csv` |
+| 指标            | 采集方式                        | 输出字段                                 |
+| --------------- | ------------------------------- | ---------------------------------------- |
+| SM-04: CPU%     | `os.cpus()` 两次采样计算差值    | cpu_user%, cpu_system%, cpu_idle%        |
+| SM-05: 内存%    | `os.totalmem()`, `os.freemem()` | mem_total_mb, mem_used_mb, mem_usage%    |
+| SM-06: 磁盘 I/O | macOS: `iostat` 命令解析        | disk_read_kb/s, disk_write_kb/s          |
+| SM-07: 网络 I/O | macOS: `netstat -ib` 解析       | net_rx_kb/s, net_tx_kb/s                 |
+| SM-08: 输出     | CSV 写入                        | `reports/system-metrics-{timestamp}.csv` |
 
 **设计:**
+
 ```javascript
 #!/usr/bin/env node
 // Usage: node scripts/collect-metrics.js [interval_ms] [output_path]
@@ -240,6 +243,7 @@ const OUTPUT = process.argv[3] || `reports/system-metrics-${Date.now()}.csv`;
 ```
 
 **磁盘/网络 I/O 采集:**
+
 - macOS 无 `/proc/diskstats`，使用 `child_process.execSync('iostat -d -c 1 -w 1')` 采集磁盘
 - 网络通过 `os.networkInterfaces()` + `/usr/sbin/netstat -ib` 两次采样计算差值
 - 采集失败时输出 0，不中断采集器
@@ -253,6 +257,7 @@ const OUTPUT = process.argv[3] || `reports/system-metrics-${Date.now()}.csv`;
 **设计要点:**
 
 1. **漏斗模型实现:**
+
 ```javascript
 export default function () {
   // 60% 浏览列表
@@ -267,7 +272,8 @@ export default function () {
 
     // 10% 下单 (从详情查看者中 33% 转化)
     if (Math.random() < 0.33) {
-      const order = http.post(`${BASE_URL}/api/orders`,
+      const order = http.post(
+        `${BASE_URL}/api/orders`,
         JSON.stringify({ product_id: id, quantity: 1 }),
         { headers: { 'Content-Type': 'application/json' } }
       );
@@ -275,11 +281,12 @@ export default function () {
     }
   }
 
-  sleep(randomIntBetween(0.5, 1.0));  // Think Time
+  sleep(randomIntBetween(0.5, 1.0)); // Think Time
 }
 ```
 
 2. **二分法阶梯配置:**
+
 ```javascript
 // 第 1 轮: 粗粒度探测 (10 → 50 → 100 → 150 → 200)
 export const options = {
@@ -302,6 +309,7 @@ export const options = {
 > 例如首轮发现 100 PASS / 150 FAIL → 第二轮测 125 → 逐步逼近。
 
 3. **采集服务端指标:**
+
 ```javascript
 // 每 10 秒 poll 一次 /metrics，记录到 k6 custom metrics
 import { Trend } from 'k6/metrics';
@@ -328,6 +336,7 @@ const cpuUser = new Trend('server_cpu_user');
 ```
 
 **运行流程:**
+
 1. `mkdir -p reports` — 确保目录存在
 2. 后台启动系统采集器 → `reports/system-metrics.csv`
 3. 运行 k6 容量测试 → `reports/k6-capacity.html`
@@ -339,23 +348,27 @@ const cpuUser = new Trend('server_cpu_user');
 在 `capacity.k6.js` 中实现：
 
 **TQ-01 数据膨胀控制 + TQ-03 测试隔离:**
+
 - 每轮容量测试前重启服务 → 自动重建 SQLite DB (现有 `getDatabase()` 逻辑)
 - 在运行说明中注明：每轮二分法之间需 `kill + npm start`
 
 **TQ-02 预热 (Warm-up):**
+
 ```javascript
 export const options = {
   stages: [
-    { duration: '30s', target: 10 },   // ← Warm-up 阶段 (额外), 不纳入 SLA
-    { duration: '60s', target: 10 },   // ← 正式测试第 1 阶段 (同 Task 3 stages)
+    { duration: '30s', target: 10 }, // ← Warm-up 阶段 (额外), 不纳入 SLA
+    { duration: '60s', target: 10 }, // ← 正式测试第 1 阶段 (同 Task 3 stages)
     // ... 后续同 Task 3 的 stages 配置
   ],
 };
 ```
+
 > k6 的 thresholds 会统计全程数据，但分析时需对照 stages 手动排除 warm-up 区间。
 > 在 k6 HTML 报告的时间线图表中可以直观区分 warm-up 和 steady state。
 
 **TQ-04 结果可重复性:**
+
 - 拐点附近的关键轮次跑 3 次
 - 取 p95 中值作为最终结果
 - 在容量报告中记录每次结果
@@ -368,26 +381,26 @@ export const options = {
 
 新增测试用例:
 
-| 用例 | 验收标准 |
-|------|---------|
-| `/metrics` 返回 cpu 对象 | `cpu.user >= 0`, `cpu.system >= 0`, `cpu.loadavg` 是长度 3 的数组 |
-| `/metrics` 返回 memory 对象 | `memory.rss > 0`, `memory.heapUsed > 0`, `memory.freeMem > 0` |
-| `/metrics` 返回 eventLoop 对象 | `eventLoop.lag >= 0` |
+| 用例                           | 验收标准                                                          |
+| ------------------------------ | ----------------------------------------------------------------- |
+| `/metrics` 返回 cpu 对象       | `cpu.user >= 0`, `cpu.system >= 0`, `cpu.loadavg` 是长度 3 的数组 |
+| `/metrics` 返回 memory 对象    | `memory.rss > 0`, `memory.heapUsed > 0`, `memory.freeMem > 0`     |
+| `/metrics` 返回 eventLoop 对象 | `eventLoop.lag >= 0`                                              |
 
 ---
 
 ## 4. 任务拆分与执行顺序
 
-| # | Task | 依赖 | 预估文件 |
-|---|------|------|---------|
-| T0 | Express Cluster 模式 + SQLite 文件模式 | 无 | `src/cluster.js`, `src/db/database.js`, `package.json` |
-| T1 | 扩展 `/metrics` 端点 (SM-01~03) | T0 | `src/middleware/metrics.js` |
-| T2 | 单元测试 — `/metrics` 新字段 | T1 | `tests/unit/middleware/metrics.test.js` |
-| T3 | 系统采集器脚本 (SM-04~08) | 无 | `scripts/collect-metrics.js` |
-| T4 | 容量测试 k6 脚本 (漏斗模型) | T1 | `tests/performance/capacity.k6.js` |
-| T5 | npm scripts 集成 (SM-09) | T3, T4 | `package.json` |
-| T6 | 运行容量测试 + 分析瓶颈 | T0~T5 | 测试报告 |
-| T7 | 更新 RTM + 文档 | T6 | `docs/qa/rtm.md` |
+| #   | Task                                   | 依赖   | 预估文件                                               |
+| --- | -------------------------------------- | ------ | ------------------------------------------------------ |
+| T0  | Express Cluster 模式 + SQLite 文件模式 | 无     | `src/cluster.js`, `src/db/database.js`, `package.json` |
+| T1  | 扩展 `/metrics` 端点 (SM-01~03)        | T0     | `src/middleware/metrics.js`                            |
+| T2  | 单元测试 — `/metrics` 新字段           | T1     | `tests/unit/middleware/metrics.test.js`                |
+| T3  | 系统采集器脚本 (SM-04~08)              | 无     | `scripts/collect-metrics.js`                           |
+| T4  | 容量测试 k6 脚本 (漏斗模型)            | T1     | `tests/performance/capacity.k6.js`                     |
+| T5  | npm scripts 集成 (SM-09)               | T3, T4 | `package.json`                                         |
+| T6  | 运行容量测试 + 分析瓶颈                | T0~T5  | 测试报告                                               |
+| T7  | 更新 RTM + 文档                        | T6     | `docs/qa/rtm.md`                                       |
 
 **并行可能:** T0+T3 可并行开发（无依赖关系），T1 依赖 T0 完成。
 
@@ -395,17 +408,17 @@ export const options = {
 
 ## 5. 容量测试用例设计
 
-| 用例 ID | 测试 | 验收标准 |
-|---------|------|---------|
-| CLU-01 | Cluster 模式启动 | `npm start` 输出 Master + 4 Worker PID |
-| CLU-02 | 多 Worker 处理请求 | 并发请求由不同 Worker 处理 |
-| CLU-03 | Worker 崩溃自动重启 | kill Worker → Master 自动 fork 新 Worker |
-| CAP-01 | 容量测试脚本可运行 | `npm run capacity:test` 正常完成 |
-| CAP-02 | 系统指标 CSV 生成 | `reports/system-metrics.csv` 包含 CPU/mem/disk/net 列 |
-| CAP-03 | k6 HTML 报告生成 | `reports/k6-capacity.html` 可打开查看 |
-| CAP-04 | 漏斗模型流量分布接近 60:30:10 | k6 报告中 products/detail/order 请求比例合理 |
-| CAP-05 | 二分法找到最大并发 (Cluster 模式) | 确定满足 SLA 的最大 VUs (4 核) |
-| CAP-06 | 瓶颈层定位 | 根据系统指标判断 CPU/Memory/I-O/Network |
+| 用例 ID | 测试                              | 验收标准                                              |
+| ------- | --------------------------------- | ----------------------------------------------------- |
+| CLU-01  | Cluster 模式启动                  | `npm start` 输出 Master + 4 Worker PID                |
+| CLU-02  | 多 Worker 处理请求                | 并发请求由不同 Worker 处理                            |
+| CLU-03  | Worker 崩溃自动重启               | kill Worker → Master 自动 fork 新 Worker              |
+| CAP-01  | 容量测试脚本可运行                | `npm run capacity:test` 正常完成                      |
+| CAP-02  | 系统指标 CSV 生成                 | `reports/system-metrics.csv` 包含 CPU/mem/disk/net 列 |
+| CAP-03  | k6 HTML 报告生成                  | `reports/k6-capacity.html` 可打开查看                 |
+| CAP-04  | 漏斗模型流量分布接近 60:30:10     | k6 报告中 products/detail/order 请求比例合理          |
+| CAP-05  | 二分法找到最大并发 (Cluster 模式) | 确定满足 SLA 的最大 VUs (4 核)                        |
+| CAP-06  | 瓶颈层定位                        | 根据系统指标判断 CPU/Memory/I-O/Network               |
 
 ---
 
