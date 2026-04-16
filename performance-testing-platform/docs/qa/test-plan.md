@@ -10,14 +10,14 @@
 
 ### 1.1 范围内 (In Scope)
 
-| Phase | 功能模块 | 测试重点 |
-|-------|---------|---------|
-| 1 | k6 + JMeter 双引擎 | smoke/load/stress/spike 四种负载模式、HTML 报告、CI 门禁 |
-| 2 | 系统指标采集 + 容量测试 | /metrics 端点、CSV 采集器、Cluster 模式、二分法容量定位 |
-| 3 | JWT 认证 | 注册/登录/刷新/登出、中间件鉴权、高并发认证压测 |
-| 4 | Soak Test + 可观测性 | 长时间运行稳定性、内存泄漏检测、Grafana 告警 |
-| 5 | 基础设施 Helper | env-loader、csv-loader、profile-parser、k6 脚本改造 |
-| 6 | 测试能力扩展 | k6 helpers 统一、breakpoint 崩溃测试、API 限流/熔断、执行摘要报告 |
+| Phase | 功能模块                | 测试重点                                                          |
+| ----- | ----------------------- | ----------------------------------------------------------------- |
+| 1     | k6 + JMeter 双引擎      | smoke/load/stress/spike 四种负载模式、HTML 报告、CI 门禁          |
+| 2     | 系统指标采集 + 容量测试 | /metrics 端点、CSV 采集器、Cluster 模式、二分法容量定位           |
+| 3     | JWT 认证                | 注册/登录/刷新/登出、中间件鉴权、高并发认证压测                   |
+| 4     | Soak Test + 可观测性    | 长时间运行稳定性、内存泄漏检测、Grafana 告警                      |
+| 5     | 基础设施 Helper         | env-loader、csv-loader、profile-parser、k6 脚本改造               |
+| 6     | 测试能力扩展            | k6 helpers 统一、breakpoint 崩溃测试、API 限流/熔断、执行摘要报告 |
 
 ### 1.2 范围外 (Out of Scope)
 
@@ -29,13 +29,13 @@
 
 ## 2. 测试类型与职责
 
-| 类型 | 工具 | 用例数 | 职责 | 执行方式 |
-|------|------|--------|------|---------|
-| 单元测试 | Jest + Supertest | 99 | API 功能正确性、helpers 解析逻辑、中间件行为、rate limiter | `npm test` 自动 |
-| 集成测试 | Shell + curl + Docker | 28 | 端到端链路验证 (k6→InfluxDB→Grafana、认证流程、k6 helpers、限流中间件、摘要报告)；Stage 3 完成时实现，Stage 4 验证通过 | `bash scripts/integration-test.sh` |
-| 性能测试 | k6 + JMeter | 26 | 延迟/吞吐/错误率、SLA 达标、瓶颈定位 | npm scripts 手动触发 |
-| 其他 | 手动验证 | 17 | 报告完整性、脚本行为、CI 门禁 | 人工检查 |
-| **合计** | | **161** | | |
+| 类型     | 工具                  | 用例数  | 职责                                                                                                                   | 执行方式                           |
+| -------- | --------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| 单元测试 | Jest + Supertest      | 99      | API 功能正确性、helpers 解析逻辑、中间件行为、rate limiter                                                             | `npm test` 自动                    |
+| 集成测试 | Shell + curl + Docker | 28      | 端到端链路验证 (k6→InfluxDB→Grafana、认证流程、k6 helpers、限流中间件、摘要报告)；Stage 3 完成时实现，Stage 4 验证通过 | `bash scripts/integration-test.sh` |
+| 性能测试 | k6 + JMeter           | 26      | 延迟/吞吐/错误率、SLA 达标、瓶颈定位                                                                                   | npm scripts 手动触发               |
+| 其他     | 手动验证              | 17      | 报告完整性、脚本行为、CI 门禁                                                                                          | 人工检查                           |
+| **合计** |                       | **161** |                                                                                                                        |                                    |
 
 ---
 
@@ -43,30 +43,30 @@
 
 ### P0 — 必须通过 (阻塞发布)
 
-| 检查项            | 命令                       | 通过标准                                             |
+| 检查项         | 命令                     | 通过标准                                         |
 | -------------- | ------------------------ | ------------------------------------------------ |
-| 单元测试           | `npm test`               | 95/95 PASS                                       |
+| 单元测试       | `npm test`               | 95/95 PASS                                       |
 | Lint           | `npx eslint .`           | 0 errors                                         |
-| 覆盖率            | `npm test -- --coverage` | stmt ≥ 80%, branch ≥ 70%, func ≥ 80%, line ≥ 80% |
-| JMeter dry-run | `npm run jmeter:dryrun`  | 0 errors, 字段名/状态码正确                              |
+| 覆盖率         | `npm test -- --coverage` | stmt ≥ 80%, branch ≥ 70%, func ≥ 80%, line ≥ 80% |
+| JMeter dry-run | `npm run jmeter:dryrun`  | 0 errors, 字段名/状态码正确                      |
 
 ### P1 — 应该通过 (强烈建议)
 
-| 检查项          | 命令                                 | 通过标准                                |
-| ------------ | ---------------------------------- | ----------------------------------- |
-| 集成测试         | `bash scripts/integration-test.sh` | 26 Pass, 0 Fail (2 Skip 为 k6 模块兼容性) |
-| k6 smoke     | `npm run k6:smoke`                 | p95 < 500ms, error < 1%             |
-| JMeter smoke | `npm run jmeter:smoke`             | error < 1%                          |
-| CI 流水线       | push → GitHub Actions              | 4 jobs 全绿                           |
+| 检查项       | 命令                               | 通过标准                                  |
+| ------------ | ---------------------------------- | ----------------------------------------- |
+| 集成测试     | `bash scripts/integration-test.sh` | 26 Pass, 0 Fail (2 Skip 为 k6 模块兼容性) |
+| k6 smoke     | `npm run k6:smoke`                 | p95 < 500ms, error < 1%                   |
+| JMeter smoke | `npm run jmeter:smoke`             | error < 1%                                |
+| CI 流水线    | push → GitHub Actions              | 4 jobs 全绿                               |
 
 ### P2 — 建议执行 (发布前完成)
 
-| 检查项 | 命令 | 通过标准 |
-|--------|------|---------|
-| CI 报红验证 | 故意让测试失败 | CI 能正确检测到失败 |
-| CI workaround 复验 | 移除 `continue-on-error` / `\|\| true` | 真实结果 0 failures |
-| 性能基线 | load/stress/spike 各跑一轮 | 结果记录到 reports/ |
-| Soak 短时 | `npm run k6:soak:short` | 10 min heap < 50% 增长 |
+| 检查项             | 命令                                   | 通过标准               |
+| ------------------ | -------------------------------------- | ---------------------- |
+| CI 报红验证        | 故意让测试失败                         | CI 能正确检测到失败    |
+| CI workaround 复验 | 移除 `continue-on-error` / `\|\| true` | 真实结果 0 failures    |
+| 性能基线           | load/stress/spike 各跑一轮             | 结果记录到 reports/    |
+| Soak 短时          | `npm run k6:soak:short`                | 10 min heap < 50% 增长 |
 
 ### 执行顺序
 
@@ -82,45 +82,54 @@ P0 (本地快速反馈，~2 min)
 
 ### 4.1 进入标准 (Entry Criteria)
 
-| 条件 | 验证方式 |
-|------|---------|
-| 开发阶段所有 Task 已 commit | `git log` 确认 |
-| 开发阶段自测已执行 | commit history 中有测试证据 |
-| 风险清单已更新 | `docs/project-management/risks.md` 已同步 |
-| 依赖已安装 | `npm install` 无 error |
+| 条件                           | 验证方式                                          |
+| ------------------------------ | ------------------------------------------------- |
+| 开发阶段所有 Task 已 commit    | `git log` 确认                                    |
+| 开发阶段自测已执行             | commit history 中有测试证据                       |
+| 风险清单已更新                 | `docs/project-management/risks.md` 已同步         |
+| 依赖已安装                     | `npm install` 无 error                            |
+| **Stage 4 专用：环境检测通过** | `bash scripts/preflight-check.sh --stage4` exit 0 |
 
 ### 4.2 退出标准 (Exit Criteria)
 
-| 条件 | 验证方式 |
-|------|---------|
-| P0 全部通过 | npm test + lint + coverage 输出 |
-| P1 全部通过 | integration-test.sh 输出 + CI 截图 |
-| 无 P0/P1 级别未修复 Bug | Bug 列表清零或降级为 P2 |
-| 测试报告已归档 | `reports/` 目录、`coverage/` 目录 |
+| 条件                    | 验证方式                           |
+| ----------------------- | ---------------------------------- |
+| P0 全部通过             | npm test + lint + coverage 输出    |
+| P1 全部通过             | integration-test.sh 输出 + CI 截图 |
+| 无 P0/P1 级别未修复 Bug | Bug 列表清零或降级为 P2            |
+| 测试报告已归档          | `reports/` 目录、`coverage/` 目录  |
 
 ---
 
 ## 5. 环境要求
 
-| 工具 | 版本 | 用途 | 验证命令 |
-|------|------|------|---------|
-| Node.js | ≥ 18 | API 服务 + Jest | `node -v` |
-| npm | ≥ 9 | 依赖管理 | `npm -v` |
-| k6 | ≥ 0.50 | 性能测试 | `k6 version` |
-| JMeter | ≥ 5.6 | 企业级负载测试 | `jmeter -v` |
-| Docker | ≥ 24 | InfluxDB + Grafana | `docker -v` |
-| Python3 | ≥ 3.9 | 集成测试脚本辅助 | `python3 --version` |
+| 工具    | 版本   | 用途               | 验证命令            |
+| ------- | ------ | ------------------ | ------------------- |
+| Node.js | ≥ 18   | API 服务 + Jest    | `node -v`           |
+| npm     | ≥ 9    | 依赖管理           | `npm -v`            |
+| k6      | ≥ 0.50 | 性能测试           | `k6 version`        |
+| JMeter  | ≥ 5.6  | 企业级负载测试     | `jmeter -v`         |
+| Docker  | ≥ 24   | InfluxDB + Grafana | `docker -v`         |
+| Python3 | ≥ 3.9  | 集成测试脚本辅助   | `python3 --version` |
 
 ### Preflight Check
 
-容量/压力测试前必须执行 `npm run preflight`：
+**Stage 3 (性能测试)** — 执行 `npm run preflight`：
 
-| 检查项 | 阈值 |
-|--------|------|
-| Load Average | < 5 |
-| 可用内存 | > 2 GB |
-| CPU Idle | > 50% |
-| 孤立进程 | 自动清理 |
+| 检查项       | 阈值     |
+| ------------ | -------- |
+| Load Average | < 5      |
+| 可用内存     | > 2 GB   |
+| CPU Idle     | > 50%    |
+| 孤立进程     | 自动清理 |
+
+**Stage 4 (集成测试)** — 执行 `bash scripts/preflight-check.sh --stage4`，额外检查：
+
+| 检查项        | 要求   | 修复                                    |
+| ------------- | ------ | --------------------------------------- |
+| Docker daemon | 运行中 | `open -a Docker` 或启动 OrbStack/colima |
+
+集成测试 (`bash scripts/integration-test.sh`) 自动调用 Stage 4 检测。
 
 ---
 
@@ -181,11 +190,11 @@ npm run generate-summary                    # 生成执行摘要报告
 
 ### 7.1 Bug 分级
 
-| 级别 | 定义 | 处理方式 |
-|------|------|---------|
-| P0-Blocker | P0 检查项失败 (单元测试/lint/覆盖率) | 当前阶段立即修复，重跑受影响测试 |
-| P1-Major | P1 检查项失败 (集成/性能/CI) | 评估是否阻塞发布，阻塞则修复后重跑 |
-| P2-Minor | P2 检查项失败或非功能问题 | 创建 follow-up Issue，不阻塞发布 |
+| 级别       | 定义                                 | 处理方式                           |
+| ---------- | ------------------------------------ | ---------------------------------- |
+| P0-Blocker | P0 检查项失败 (单元测试/lint/覆盖率) | 当前阶段立即修复，重跑受影响测试   |
+| P1-Major   | P1 检查项失败 (集成/性能/CI)         | 评估是否阻塞发布，阻塞则修复后重跑 |
+| P2-Minor   | P2 检查项失败或非功能问题            | 创建 follow-up Issue，不阻塞发布   |
 
 ### 7.2 处理决策树
 
@@ -214,95 +223,95 @@ npm run generate-summary                    # 生成执行摘要报告
 
 ### Phase 1 — 双引擎性能测试
 
-| 验证项 | 方法 |
-|--------|------|
-| API 路由 CRUD 正确性 | Jest: UT-PROD-01~06, UT-ORDER-01~05 |
-| k6 四种负载模式可运行 | npm run k6:smoke/load/stress/spike |
-| JMeter 报告生成 | npm run jmeter:smoke → reports/ 目录 |
-| k6 报告完整性 | K6-RPT-01~07 |
-| Grafana 可视化 | JM-GRF-01~04 (需 Docker) |
+| 验证项                | 方法                                 |
+| --------------------- | ------------------------------------ |
+| API 路由 CRUD 正确性  | Jest: UT-PROD-01~06, UT-ORDER-01~05  |
+| k6 四种负载模式可运行 | npm run k6:smoke/load/stress/spike   |
+| JMeter 报告生成       | npm run jmeter:smoke → reports/ 目录 |
+| k6 报告完整性         | K6-RPT-01~07                         |
+| Grafana 可视化        | JM-GRF-01~04 (需 Docker)             |
 
 ### Phase 2 — 系统指标 + 容量
 
-| 验证项 | 方法 |
-|--------|------|
-| /metrics 端点返回 CPU/内存/事件循环 | SM-UT-01~03 |
-| CSV 采集器按秒记录 | SM-IT-01~03 |
-| Cluster 模式 + 崩溃恢复 | CLU-01~03 |
-| 容量二分法定位 | CAP-01~06 (手动) |
+| 验证项                              | 方法             |
+| ----------------------------------- | ---------------- |
+| /metrics 端点返回 CPU/内存/事件循环 | SM-UT-01~03      |
+| CSV 采集器按秒记录                  | SM-IT-01~03      |
+| Cluster 模式 + 崩溃恢复             | CLU-01~03        |
+| 容量二分法定位                      | CAP-01~06 (手动) |
 
 ### Phase 3 — JWT 认证
 
-| 验证项 | 方法 |
-|--------|------|
-| 注册/登录/刷新/登出 API | UT-AUTH-01~10 |
-| 中间件鉴权逻辑 | UT-MW-01~07 |
-| 端到端认证流程 | AUTH-INT-01~03 |
-| 高并发认证压测 | AUTH-PERF-01~04 (手动) |
+| 验证项                  | 方法                   |
+| ----------------------- | ---------------------- |
+| 注册/登录/刷新/登出 API | UT-AUTH-01~10          |
+| 中间件鉴权逻辑          | UT-MW-01~07            |
+| 端到端认证流程          | AUTH-INT-01~03         |
+| 高并发认证压测          | AUTH-PERF-01~04 (手动) |
 
 ### Phase 4 — Soak + 可观测性
 
-| 验证项 | 方法 |
-|--------|------|
-| 内存泄漏检测逻辑 | UT-SOAK-01~07 |
-| Soak 短时验证 | SOAK-TC-01 (`npm run k6:soak:short`) |
-| Grafana 面板 + 告警 | SOAK-TC-04~05 (手动, Docker) |
+| 验证项              | 方法                                 |
+| ------------------- | ------------------------------------ |
+| 内存泄漏检测逻辑    | UT-SOAK-01~07                        |
+| Soak 短时验证       | SOAK-TC-01 (`npm run k6:soak:short`) |
+| Grafana 面板 + 告警 | SOAK-TC-04~05 (手动, Docker)         |
 
 ### Phase 5 — 基础设施 Helper
 
-| 验证项 | 方法 |
-|--------|------|
-| env-loader 解析 | UT-ENV-01~07 |
-| csv-loader 解析 | UT-DATA-01~08 |
+| 验证项              | 方法          |
+| ------------------- | ------------- |
+| env-loader 解析     | UT-ENV-01~07  |
+| csv-loader 解析     | UT-DATA-01~08 |
 | profile-parser 解析 | UT-PROF-01~09 |
-| k6 helpers 端到端 | K6-INT-01~05 |
+| k6 helpers 端到端   | K6-INT-01~05  |
 
 ### Phase 6 — 测试能力扩展
 
-| 验证项 | 方法 |
-|--------|------|
-| Rate limiter 中间件 (正常/超限/恢复/开关) | Jest: rateLimiter.test.js (4 tests) |
-| k6 helpers 统一 (funnel/thinkTime/healthCheck) | k6 smoke 迁移前后对比 (p95 偏差 < 10%) |
-| 现有脚本迁移回归 | `npm run k6:smoke` + `npm test` 全部 PASS |
-| Breakpoint 崩溃测试 | `npm run k6:breakpoint` 输出崩溃点 + 类型 |
-| 限流测试 (429/恢复) | `npm run k6:rate-limit` (需 RATE_LIMIT_ENABLED=true) |
-| 执行摘要报告 | `npm run generate-summary` → reports/k6-summary.md |
-| CDN 依赖清除 | `grep -r "jslib.k6.io" tests/performance/` 返回空 |
+| 验证项                                         | 方法                                                 |
+| ---------------------------------------------- | ---------------------------------------------------- |
+| Rate limiter 中间件 (正常/超限/恢复/开关)      | Jest: rateLimiter.test.js (4 tests)                  |
+| k6 helpers 统一 (funnel/thinkTime/healthCheck) | k6 smoke 迁移前后对比 (p95 偏差 < 10%)               |
+| 现有脚本迁移回归                               | `npm run k6:smoke` + `npm test` 全部 PASS            |
+| Breakpoint 崩溃测试                            | `npm run k6:breakpoint` 输出崩溃点 + 类型            |
+| 限流测试 (429/恢复)                            | `npm run k6:rate-limit` (需 RATE_LIMIT_ENABLED=true) |
+| 执行摘要报告                                   | `npm run generate-summary` → reports/k6-summary.md   |
+| CDN 依赖清除                                   | `grep -r "jslib.k6.io" tests/performance/` 返回空    |
 
 ---
 
 ## 9. SLA 定义
 
-| 指标 | 阈值 | 适用场景 |
-|------|------|---------|
-| p95 latency | < 500ms | 所有 API 端点 (smoke/load/stress) |
-| p99 latency | < 2000ms | 认证相关端点 (bcrypt 开销) |
-| Error rate | < 1% | 所有场景 |
-| Heap growth | < 50% | Soak test (1h+) |
-| Coverage (stmt) | ≥ 80% | Jest 单元测试 |
-| Coverage (branch) | ≥ 70% | Jest 单元测试 |
+| 指标              | 阈值     | 适用场景                          |
+| ----------------- | -------- | --------------------------------- |
+| p95 latency       | < 500ms  | 所有 API 端点 (smoke/load/stress) |
+| p99 latency       | < 2000ms | 认证相关端点 (bcrypt 开销)        |
+| Error rate        | < 1%     | 所有场景                          |
+| Heap growth       | < 50%    | Soak test (1h+)                   |
+| Coverage (stmt)   | ≥ 80%    | Jest 单元测试                     |
+| Coverage (branch) | ≥ 70%    | Jest 单元测试                     |
 
 ---
 
 ## 10. 测试报告与产出物
 
-| 产出物 | 路径 | 生成方式 |
-|--------|------|---------|
-| Jest 覆盖率 | `coverage/` | `npm test -- --coverage` |
-| k6 HTML 报告 | `reports/k6-*.html` | k6 run + handleSummary |
-| JMeter HTML 报告 | `reports/jmeter-*/` | jmeter -g + -o |
-| 系统指标 CSV | `reports/system-metrics-*.csv` | `scripts/server.sh collect` |
-| k6 执行摘要 | `reports/k6-summary.md` | `scripts/generate-summary.sh` |
-| 集成测试结果 | stdout | `scripts/integration-test.sh` |
+| 产出物           | 路径                           | 生成方式                      |
+| ---------------- | ------------------------------ | ----------------------------- |
+| Jest 覆盖率      | `coverage/`                    | `npm test -- --coverage`      |
+| k6 HTML 报告     | `reports/k6-*.html`            | k6 run + handleSummary        |
+| JMeter HTML 报告 | `reports/jmeter-*/`            | jmeter -g + -o                |
+| 系统指标 CSV     | `reports/system-metrics-*.csv` | `scripts/server.sh collect`   |
+| k6 执行摘要      | `reports/k6-summary.md`        | `scripts/generate-summary.sh` |
+| 集成测试结果     | stdout                         | `scripts/integration-test.sh` |
 
 ---
 
 ## 文档关联
 
-| 文档 | 路径 | 关系 |
-|------|------|------|
-| 用例索引 | [test-cases/index.md](test-cases/index.md) | 161 条用例清单 + per-phase 详情 |
-| 架构设计 | [architecture.md](../architecture/architecture.md) | 系统架构 + 数据流 |
-| 风险清单 | [risks.md](../project-management/risks.md) | 技术风险 + 缓解措施 |
-| 需求文档 | [requirements.md](../project-management/requirements.md) | Phase 1~5 需求编号 |
-| 开发流程 | [dev-process-checklist.md](../../../../docs/dev-process-checklist.md) | 5 阶段流程 + checklist |
+| 文档     | 路径                                                                  | 关系                            |
+| -------- | --------------------------------------------------------------------- | ------------------------------- |
+| 用例索引 | [test-cases/index.md](test-cases/index.md)                            | 161 条用例清单 + per-phase 详情 |
+| 架构设计 | [architecture.md](../architecture/architecture.md)                    | 系统架构 + 数据流               |
+| 风险清单 | [risks.md](../project-management/risks.md)                            | 技术风险 + 缓解措施             |
+| 需求文档 | [requirements.md](../project-management/requirements.md)              | Phase 1~5 需求编号              |
+| 开发流程 | [dev-process-checklist.md](../../../../docs/dev-process-checklist.md) | 5 阶段流程 + checklist          |
