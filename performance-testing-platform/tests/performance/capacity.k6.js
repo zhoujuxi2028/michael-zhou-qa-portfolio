@@ -1,5 +1,4 @@
 import http from 'k6/http';
-import { sleep } from 'k6';
 import { Trend } from 'k6/metrics';
 import { BASE_URL, checkStatus } from './helpers/utils.js';
 import { thinkTime } from './helpers/thinkTime.js';
