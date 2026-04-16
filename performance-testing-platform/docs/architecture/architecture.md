@@ -46,12 +46,12 @@
 └────────────────────┘ └────────────────────────────────────────────┘
 ```
 
-| 层 | 组件 | 职责 |
-|----|------|------|
-| 测试层 | k6 (10 脚本) + JMeter (5 测试计划) | 双引擎负载生成、阈值验证、HTML 报告 |
-| API 层 | Express Cluster (4 Worker) + SQLite WAL + JWT 认证 | 被测系统 (SUT)，多核并行，`/metrics` 暴露进程指标，`AUTH_ENABLED` 开关 |
-| 采集层 | collect-metrics.js | 系统级指标 (CPU/mem/disk/net) → CSV |
-| 可观测层 | InfluxDB + Grafana + AlertManager | 存储双引擎指标、可视化、告警 |
+| 层       | 组件                                               | 职责                                                                   |
+| -------- | -------------------------------------------------- | ---------------------------------------------------------------------- |
+| 测试层   | k6 (10 脚本) + JMeter (5 测试计划)                 | 双引擎负载生成、阈值验证、HTML 报告                                    |
+| API 层   | Express Cluster (4 Worker) + SQLite WAL + JWT 认证 | 被测系统 (SUT)，多核并行，`/metrics` 暴露进程指标，`AUTH_ENABLED` 开关 |
+| 采集层   | collect-metrics.js                                 | 系统级指标 (CPU/mem/disk/net) → CSV                                    |
+| 可观测层 | InfluxDB + Grafana + AlertManager                  | 存储双引擎指标、可视化、告警                                           |
 
 ## 2. 数据流
 
@@ -118,44 +118,44 @@ k6 VU
 
 ### 3.1 目标 API (`src/`)
 
-| 模块     | 文件                    | 职责                                      |
-| -------- | ----------------------- | ----------------------------------------- |
-| 入口     | `app.js`                | Express 应用组装 (无 listen，可测试)      |
-| Cluster  | `cluster.js`            | Master + N Worker，多核并行 (Phase 2)     |
-| 启动     | `server.js`             | 监听端口，单 Worker 入口                  |
+| 模块     | 文件                    | 职责                                         |
+| -------- | ----------------------- | -------------------------------------------- |
+| 入口     | `app.js`                | Express 应用组装 (无 listen，可测试)         |
+| Cluster  | `cluster.js`            | Master + N Worker，多核并行 (Phase 2)        |
+| 启动     | `server.js`             | 监听端口，单 Worker 入口                     |
 | 健康检查 | `routes/health.js`      | `/health`, `/ready`, `/metrics` (含系统指标) |
-| 商品     | `routes/products.js`    | CRUD `/api/products` (分页、查询、创建)   |
-| 订单     | `routes/orders.js`      | `/api/orders` (下单含库存校验 + 延迟模拟) |
-| 指标     | `middleware/metrics.js` | 请求计数、平均耗时 + CPU/内存/事件循环延迟 |
-| 数据库   | `db/database.js`        | SQLite (Phase 1 内存, Phase 2 文件+WAL)   |
-| 工具     | `utils/delay.js`        | 可配置延迟模拟                            |
+| 商品     | `routes/products.js`    | CRUD `/api/products` (分页、查询、创建)      |
+| 订单     | `routes/orders.js`      | `/api/orders` (下单含库存校验 + 延迟模拟)    |
+| 指标     | `middleware/metrics.js` | 请求计数、平均耗时 + CPU/内存/事件循环延迟   |
+| 数据库   | `db/database.js`        | SQLite (Phase 1 内存, Phase 2 文件+WAL)      |
+| 工具     | `utils/delay.js`        | 可配置延迟模拟                               |
 
 ### 3.2 k6 测试 (`tests/performance/`)
 
-| 脚本 | 目的 | VUs | 时长 | Phase |
-|------|------|-----|------|-------|
-| `smoke.k6.js` | 冒烟测试：验证 API 可用性 | 5 | 60s | 1 |
-| `load.k6.js` | 负载测试：正常流量下性能 | 20→50→0 | 5m | 1 |
-| `stress.k6.js` | 压力测试：找到系统极限 | 50→200→0 | 3.5m | 1 |
-| `spike.k6.js` | 尖峰测试：突发流量恢复能力 | 5→100→5→0 | 1.5m | 1 |
-| `capacity.k6.js` | 容量测试：二分法逼近最大并发 | 10→200 阶梯 | 5.5m | 2 |
-| `auth-login.k6.js` | 高并发登录压测 | 100 | 2m | 3 |
-| `auth-refresh.k6.js` | Token 刷新压测 | 200 | 2m | 3 |
-| `auth-journey.k6.js` | 完整认证用户旅程 | 500 | 5m | 3 |
-| `soak.k6.js` | Soak 默认 (内存泄漏检测) | 200 | 1h | 4 |
-| `soak-short.k6.js` | Soak 短时验证 | 100 | 10m | 4 |
-| `helpers/utils.js` | 共享工具：BASE_URL、check 封装 | — | — | 1 |
+| 脚本                 | 目的                           | VUs         | 时长 | Phase |
+| -------------------- | ------------------------------ | ----------- | ---- | ----- |
+| `smoke.k6.js`        | 冒烟测试：验证 API 可用性      | 5           | 60s  | 1     |
+| `load.k6.js`         | 负载测试：正常流量下性能       | 20→50→0     | 5m   | 1     |
+| `stress.k6.js`       | 压力测试：找到系统极限         | 50→200→0    | 3.5m | 1     |
+| `spike.k6.js`        | 尖峰测试：突发流量恢复能力     | 5→100→5→0   | 1.5m | 1     |
+| `capacity.k6.js`     | 容量测试：二分法逼近最大并发   | 10→200 阶梯 | 5.5m | 2     |
+| `auth-login.k6.js`   | 高并发登录压测                 | 100         | 2m   | 3     |
+| `auth-refresh.k6.js` | Token 刷新压测                 | 200         | 2m   | 3     |
+| `auth-journey.k6.js` | 完整认证用户旅程               | 500         | 5m   | 3     |
+| `soak.k6.js`         | Soak 默认 (内存泄漏检测)       | 200         | 1h   | 4     |
+| `soak-short.k6.js`   | Soak 短时验证                  | 100         | 10m  | 4     |
+| `helpers/utils.js`   | 共享工具：BASE_URL、check 封装 | —           | —    | 1     |
 
 ### 3.3 JMeter 测试 (`tests/jmeter/`)
 
-| 测试计划 | 目的 | Threads | 时长 | 报告 | Phase |
-|----------|------|---------|------|------|-------|
-| `smoke.jmx` | 冒烟测试：验证 API 可用性 | 5 | 60s | .jtl + HTML | 1 |
-| `load.jmx` | 负载测试：正常流量下性能 | 50 | 5m | .jtl + HTML | 1 |
-| `stress.jmx` | 压力测试：找到系统极限 | 200 | 3.5m | .jtl + HTML | 1 |
-| `spike.jmx` | 尖峰测试：突发流量恢复能力 | 100 | 1.5m | .jtl + HTML | 1 |
-| `auth-load.jmx` | 高并发登录 + Bearer token 请求 | 50 | 2m | .jtl + HTML | 3 |
-| `config/*.properties` | 外置参数化配置 | — | — | — | 1 |
+| 测试计划              | 目的                           | Threads | 时长 | 报告        | Phase |
+| --------------------- | ------------------------------ | ------- | ---- | ----------- | ----- |
+| `smoke.jmx`           | 冒烟测试：验证 API 可用性      | 5       | 60s  | .jtl + HTML | 1     |
+| `load.jmx`            | 负载测试：正常流量下性能       | 50      | 5m   | .jtl + HTML | 1     |
+| `stress.jmx`          | 压力测试：找到系统极限         | 200     | 3.5m | .jtl + HTML | 1     |
+| `spike.jmx`           | 尖峰测试：突发流量恢复能力     | 100     | 1.5m | .jtl + HTML | 1     |
+| `auth-load.jmx`       | 高并发登录 + Bearer token 请求 | 50      | 2m   | .jtl + HTML | 3     |
+| `config/*.properties` | 外置参数化配置                 | —       | —    | —           | 1     |
 
 **JMX 结构（每个测试计划）:**
 
@@ -189,28 +189,28 @@ TestPlan
 
 ### 4.1 健康检查 — `src/routes/health.js:6-18`
 
-| 端点 | 方法 | 响应 | 行号 |
-|------|------|------|------|
-| `/health` | GET | `{"status": "ok", "timestamp": "..."}` | 6 |
-| `/ready` | GET | `{"ready": true}` | 10 |
-| `/metrics` | GET | `{"requestCount": N, "avgDuration": N, "cpu": {...}, "memory": {...}, "eventLoop": {...}}` | 14 |
+| 端点       | 方法 | 响应                                                                                       | 行号 |
+| ---------- | ---- | ------------------------------------------------------------------------------------------ | ---- |
+| `/health`  | GET  | `{"status": "ok", "timestamp": "..."}`                                                     | 6    |
+| `/ready`   | GET  | `{"ready": true}`                                                                          | 10   |
+| `/metrics` | GET  | `{"requestCount": N, "avgDuration": N, "cpu": {...}, "memory": {...}, "eventLoop": {...}}` | 14   |
 
 ### 4.2 商品 API — `src/routes/products.js:6-34`
 
-| 端点 | 方法 | 参数 | 响应 | 行号 |
-|------|------|------|------|------|
-| `/api/products` | GET | `?page=1&limit=10` | `{"data": [...], "page": 1, "limit": 10, "total": 5}` | 6 |
-| `/api/products/:id` | GET | path: id | `{"id": 1, "name": "Laptop", "price": 999.99, "stock": 100000}` | 16 |
-| `/api/products` | POST | body: `{name, price, stock}` | `201` + 创建的产品对象 | 23 |
+| 端点                | 方法 | 参数                         | 响应                                                            | 行号 |
+| ------------------- | ---- | ---------------------------- | --------------------------------------------------------------- | ---- |
+| `/api/products`     | GET  | `?page=1&limit=10`           | `{"data": [...], "page": 1, "limit": 10, "total": 5}`           | 6    |
+| `/api/products/:id` | GET  | path: id                     | `{"id": 1, "name": "Laptop", "price": 999.99, "stock": 100000}` | 16   |
+| `/api/products`     | POST | body: `{name, price, stock}` | `201` + 创建的产品对象                                          | 23   |
 
 **错误响应：** `404` 产品不存在 · `400` 缺少 name 或 price
 
 ### 4.3 订单 API — `src/routes/orders.js:9-54`
 
-| 端点 | 方法 | 参数 | 响应 | 行号 |
-|------|------|------|------|------|
-| `/api/orders` | GET | `?page=1&limit=10` | `{"data": [...], "page": 1, "limit": 10, "total": N}` | 9 |
-| `/api/orders` | POST | body: `{product_id, quantity}` | `201` + 创建的订单对象 | 21 |
+| 端点          | 方法 | 参数                           | 响应                                                  | 行号 |
+| ------------- | ---- | ------------------------------ | ----------------------------------------------------- | ---- |
+| `/api/orders` | GET  | `?page=1&limit=10`             | `{"data": [...], "page": 1, "limit": 10, "total": N}` | 9    |
+| `/api/orders` | POST | body: `{product_id, quantity}` | `201` + 创建的订单对象                                | 21   |
 
 **关键实现细节：**
 
@@ -223,12 +223,12 @@ TestPlan
 
 ### 4.4 认证 API — `src/routes/auth.js:17-107`
 
-| 端点 | 方法 | 参数 | 响应 | 行号 |
-|------|------|------|------|------|
-| `/api/auth/register` | POST | body: `{username, email, password}` | `201` + 用户对象（无密码） | 17 |
-| `/api/auth/login` | POST | body: `{email, password}` | `{accessToken, refreshToken}` | 36 |
-| `/api/auth/refresh` | POST | body: `{refreshToken}` | `{accessToken, refreshToken}` | 54 |
-| `/api/auth/logout` | POST | body: `{refreshToken}` | `{message: "Logged out"}` | 75 |
+| 端点                 | 方法 | 参数                                | 响应                          | 行号 |
+| -------------------- | ---- | ----------------------------------- | ----------------------------- | ---- |
+| `/api/auth/register` | POST | body: `{username, email, password}` | `201` + 用户对象（无密码）    | 17   |
+| `/api/auth/login`    | POST | body: `{email, password}`           | `{accessToken, refreshToken}` | 36   |
+| `/api/auth/refresh`  | POST | body: `{refreshToken}`              | `{accessToken, refreshToken}` | 54   |
+| `/api/auth/logout`   | POST | body: `{refreshToken}`              | `{message: "Logged out"}`     | 75   |
 
 **关键实现细节：**
 
@@ -239,34 +239,34 @@ TestPlan
 
 ### 4.5 数据库 Schema — `src/db/database.js:26-52`
 
-| 表 | 关键约束 | Phase | 行号 |
-|----|---------|-------|------|
-| `products` | 主键 id，无额外索引（C-01 约束） | 1 | 26 |
-| `orders` | `product_id INTEGER NOT NULL`，外键引用 products | 1 | 32 |
-| `users` | email UNIQUE | 3 | 41 |
-| `token_blacklist` | jti + expires_at | 3 | 47 |
+| 表                | 关键约束                                         | Phase | 行号 |
+| ----------------- | ------------------------------------------------ | ----- | ---- |
+| `products`        | 主键 id，无额外索引（C-01 约束）                 | 1     | 26   |
+| `orders`          | `product_id INTEGER NOT NULL`，外键引用 products | 1     | 32   |
+| `users`           | email UNIQUE                                     | 3     | 41   |
+| `token_blacklist` | jti + expires_at                                 | 3     | 47   |
 
 ## 5. 被测对象设计约束（Intentional Design Constraints）
 
 被测 API 作为性能测试平台的目标系统，**刻意保留了若干性能瓶颈点**，使测试能产出有意义的数据。
 
-| #    | 约束              | 代码位置                                                             | 刻意保留的原因                                                          | 生产系统中的做法                 |
-| ---- | --------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------ |
-| C-01 | **无数据库索引**      | `src/db/database.js` — orders 表仅有主键，无 `product_id` 索引            | 当前 5 条商品 + 每轮重建 DB，全表扫描与索引差异微秒级，不影响测试目标；保留此约束作为"优化前基线"           | 根据查询模式建索引                |
-| C-02 | **无缓存层**        | 全局 — 无 Redis / 无应用层缓存 / 无 HTTP Cache-Control                     | 每次请求直达 DB，测量最差情况基线；`GET /api/products` (60% 流量) 重复查相同数据，吞吐量天花板可测 | Redis / Memcached / CDN  |
-| C-03 | **同步阻塞 DB 驱动**  | `better-sqlite3` — 所有查询同步执行，阻塞事件循环                               | 使 event loop lag 可被 SM-03 采集到，验证瓶颈定位决策树的 CPU-bound 分支            | 异步驱动 (pg, mysql2) 或连接池   |
-| C-04 | **人工延迟注入**      | `src/routes/orders.js` — `simulateDelay(ORDER_DELAY_MS)` 默认 50ms | 模拟真实业务处理耗时（支付、风控），使 POST 路径 p95 可测地高于 GET                        | 真实业务逻辑耗时                 |
-| C-05 | **SQLite 写锁串行** | WAL 模式下并发读可行，但写操作串行                                              | Cluster 多 Worker 竞争写锁，正是 Phase 2 容量测试要观测的 I/O 瓶颈                 | PostgreSQL / MySQL (行级锁) |
+| #    | 约束                 | 代码位置                                                           | 刻意保留的原因                                                                                     | 生产系统中的做法               |
+| ---- | -------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- | ------------------------------ |
+| C-01 | **无数据库索引**     | `src/db/database.js` — orders 表仅有主键，无 `product_id` 索引     | 当前 5 条商品 + 每轮重建 DB，全表扫描与索引差异微秒级，不影响测试目标；保留此约束作为"优化前基线"  | 根据查询模式建索引             |
+| C-02 | **无缓存层**         | 全局 — 无 Redis / 无应用层缓存 / 无 HTTP Cache-Control             | 每次请求直达 DB，测量最差情况基线；`GET /api/products` (60% 流量) 重复查相同数据，吞吐量天花板可测 | Redis / Memcached / CDN        |
+| C-03 | **同步阻塞 DB 驱动** | `better-sqlite3` — 所有查询同步执行，阻塞事件循环                  | 使 event loop lag 可被 SM-03 采集到，验证瓶颈定位决策树的 CPU-bound 分支                           | 异步驱动 (pg, mysql2) 或连接池 |
+| C-04 | **人工延迟注入**     | `src/routes/orders.js` — `simulateDelay(ORDER_DELAY_MS)` 默认 50ms | 模拟真实业务处理耗时（支付、风控），使 POST 路径 p95 可测地高于 GET                                | 真实业务逻辑耗时               |
+| C-05 | **SQLite 写锁串行**  | WAL 模式下并发读可行，但写操作串行                                 | Cluster 多 Worker 竞争写锁，正是 Phase 2 容量测试要观测的 I/O 瓶颈                                 | PostgreSQL / MySQL (行级锁)    |
 
 ### 哪些约束能被现有测试暴露？
 
-| 约束 | 暴露方式 | 需求追溯 |
-|------|---------|---------|
-| C-01 无索引 | ⚠️ **难以暴露** — 数据量太小 (5 商品) 且每轮重建 DB (TQ-01)，全表扫描耗时 < 1ms | 无对应需求 |
-| C-02 无缓存 | ✅ stress/capacity 测试中 `GET /api/products` 吞吐量天花板低于有缓存场景 | 间接反映在 SLA 吞吐量指标 |
-| C-03 同步 DB | ✅ capacity 测试中 event loop lag 升高 → 瓶颈决策树 CPU-bound 分支 | SM-03 事件循环延迟 |
-| C-04 人工延迟 | ✅ POST `/api/orders` 的 p95 始终 ≥ 50ms，明显高于 GET 路径 | 需求已记录 (implementation-plan-phase2) |
-| C-05 写锁串行 | ✅ Cluster 模式下高并发写 → disk write bytes/s 升高 → I/O-bound 分支 | SM-06 + SM-11 |
+| 约束          | 暴露方式                                                                        | 需求追溯                                |
+| ------------- | ------------------------------------------------------------------------------- | --------------------------------------- |
+| C-01 无索引   | ⚠️ **难以暴露** — 数据量太小 (5 商品) 且每轮重建 DB (TQ-01)，全表扫描耗时 < 1ms | 无对应需求                              |
+| C-02 无缓存   | ✅ stress/capacity 测试中 `GET /api/products` 吞吐量天花板低于有缓存场景        | 间接反映在 SLA 吞吐量指标               |
+| C-03 同步 DB  | ✅ capacity 测试中 event loop lag 升高 → 瓶颈决策树 CPU-bound 分支              | SM-03 事件循环延迟                      |
+| C-04 人工延迟 | ✅ POST `/api/orders` 的 p95 始终 ≥ 50ms，明显高于 GET 路径                     | 需求已记录 (implementation-plan-phase2) |
+| C-05 写锁串行 | ✅ Cluster 模式下高并发写 → disk write bytes/s 升高 → I/O-bound 分支            | SM-06 + SM-11                           |
 
 > **C-01 (无索引) 是当前唯一无法被测试暴露的约束**，因为数据量刻意保持在极小规模。如需演示索引影响，可在未来 Phase 中增加大数据量场景 (10 万+ 商品)。
 
@@ -300,10 +300,10 @@ TestPlan
 
 k6 不是 Node.js，无法直接用 Jest 测试。采用 `leak-detection.js` 已验证的模式：
 
-| 层 | 位置 | 运行时 | 用途 |
-|---|---|---|---|
-| Node.js 模块 | `src/utils/env-loader.js`, `csv-loader.js`, `profile-parser.js` | Jest (Node.js) | 纯解析逻辑，单元测试 |
-| k6 helpers | `tests/performance/helpers/env.js`, `data.js`, `profile.js` | k6 runtime | 内联重新实现解析逻辑 + k6 原生 API (`open()`, `SharedArray`, `__ENV`) |
+| 层           | 位置                                                            | 运行时         | 用途                                                                  |
+| ------------ | --------------------------------------------------------------- | -------------- | --------------------------------------------------------------------- |
+| Node.js 模块 | `src/utils/env-loader.js`, `csv-loader.js`, `profile-parser.js` | Jest (Node.js) | 纯解析逻辑，单元测试                                                  |
+| k6 helpers   | `tests/performance/helpers/env.js`, `data.js`, `profile.js`     | k6 runtime     | 内联重新实现解析逻辑 + k6 原生 API (`open()`, `SharedArray`, `__ENV`) |
 
 ### 6.3 环境切换数据流
 
@@ -326,10 +326,10 @@ smoke.k6.js: http.get(`${BASE_URL}/api/products`)
 
 ### 6.4 Profile 双模式支持
 
-| 模式 | 适用场景 | JSON 结构 | 示例 |
-|---|---|---|---|
-| `vus + duration` | 恒定 VU (smoke) | `{vus: 5, duration: "60s", thresholds: {...}}` | `smoke.json` |
-| `stages` | 渐变 VU (load/stress/spike) | `{stages: [...], thresholds: {...}}` | `load.json` |
+| 模式             | 适用场景                    | JSON 结构                                      | 示例         |
+| ---------------- | --------------------------- | ---------------------------------------------- | ------------ |
+| `vus + duration` | 恒定 VU (smoke)             | `{vus: 5, duration: "60s", thresholds: {...}}` | `smoke.json` |
+| `stages`         | 渐变 VU (load/stress/spike) | `{stages: [...], thresholds: {...}}`           | `load.json`  |
 
 ### 6.5 CSV 数据流 (无 CDN 依赖)
 
@@ -362,19 +362,20 @@ tests/performance/helpers/
 
 **迁移矩阵：** 现有脚本 → 统一 import helpers
 
-| 脚本 | funnel | thinkTime | checkStatus | healthCheck |
-|------|--------|-----------|-------------|-------------|
-| load.k6.js | ✅ 迁移 | ✅ 迁移 | ✅ 已有 | — |
-| stress.k6.js | ✅ 迁移 | ✅ 迁移 | ✅ 已有 | — |
-| capacity.k6.js | ✅ 迁移 | ✅ 迁移 | ✅ 已有 | — |
-| soak.k6.js | ✅ 迁移 | ✅ 迁移 | ✅ 已有 | — |
-| smoke.k6.js | — | — | ✅ 已有 | ✅ 迁移 |
-| spike.k6.js | — | — | ✅ 已有 | ✅ 迁移 |
-| auth-login.k6.js | — | ✅ 迁移 (去 CDN) | ⚠️ 需迁移 (check→checkStatus) | — |
-| auth-refresh.k6.js | — | ✅ 迁移 (去 CDN) | ⚠️ 需迁移 | — |
-| auth-journey.k6.js | ✅ 已有 | ✅ 迁移 (去 CDN) | ⚠️ 需迁移 | — |
+| 脚本               | funnel  | thinkTime        | checkStatus                   | healthCheck |
+| ------------------ | ------- | ---------------- | ----------------------------- | ----------- |
+| load.k6.js         | ✅ 迁移 | ✅ 迁移          | ✅ 已有                       | —           |
+| stress.k6.js       | ✅ 迁移 | ✅ 迁移          | ✅ 已有                       | —           |
+| capacity.k6.js     | ✅ 迁移 | ✅ 迁移          | ✅ 已有                       | —           |
+| soak.k6.js         | ✅ 迁移 | ✅ 迁移          | ✅ 已有                       | —           |
+| smoke.k6.js        | —       | —                | ✅ 已有                       | ✅ 迁移     |
+| spike.k6.js        | —       | —                | ✅ 已有                       | ✅ 迁移     |
+| auth-login.k6.js   | —       | ✅ 迁移 (去 CDN) | ⚠️ 需迁移 (check→checkStatus) | —           |
+| auth-refresh.k6.js | —       | ✅ 迁移 (去 CDN) | ⚠️ 需迁移                     | —           |
+| auth-journey.k6.js | ✅ 已有 | ✅ 迁移 (去 CDN) | ⚠️ 需迁移                     | —           |
 
 **关键设计决策：**
+
 - **funnel 嵌套模型**: 100% browse → 50% detail → 33% order（与现有脚本行为一致）
 - **onOrder 回调 hook**: soak 脚本通过 `onOrder` 参数记录自定义 metrics，避免 funnel 耦合业务指标
 - **去 CDN**: thinkTime.js 内联 `randomIntBetween`，替代所有 `jslib.k6.io` CDN import
@@ -399,10 +400,10 @@ executor: ramping-arrival-rate
   50 req/s ──→ 150 ──→ 250 ──→ 350 ──→ ... ──→ 崩溃点
   │ 30s  │ 30s │ 30s │ 30s │         │
   └──────┴─────┴─────┴─────┴─────────┘
-  
+
   abortOnFail: http_req_failed > 50%
   maxDuration: 10min (安全阀)
-  
+
   崩溃类型判定:
   ├── Graceful: p95 渐进增长, error rate 缓慢上升 (线性)
   └── Catastrophic: error rate 从 <1% 突跳 >50% (阶跃)
@@ -414,28 +415,28 @@ executor: ramping-arrival-rate
 
 ### 7.1 Docker Compose 服务
 
-| 服务     | 镜像                   | 端口 | 用途                         |
-| -------- | ---------------------- | ---- | ---------------------------- |
-| api      | 自建 (node:18)         | 3000 | 目标 API (Cluster 模式)      |
-| influxdb | influxdb:1.8           | 8086 | k6 + JMeter 指标存储 (双 DB) |
+| 服务     | 镜像                   | 端口 | 用途                             |
+| -------- | ---------------------- | ---- | -------------------------------- |
+| api      | 自建 (node:18)         | 3000 | 目标 API (Cluster 模式)          |
+| influxdb | influxdb:1.8           | 8086 | k6 + JMeter 指标存储 (双 DB)     |
 | grafana  | grafana/grafana:10.2.0 | 3010 | 可视化 Dashboard (双引擎 + soak) |
 
 ### 7.2 环境变量
 
-| 变量 | 默认值 | 说明 | Phase |
-|------|--------|------|-------|
-| `PORT` | 3000 | API 端口 | 1 |
-| `ORDER_DELAY_MS` | 50 | 订单处理模拟延迟 (ms) | 1 |
-| `NODE_ENV` | — | `test` 时 SQLite 使用 `:memory:` | 1 |
-| `BASE_URL` | http://localhost:3000 | k6 目标地址 | 1 |
-| `INFLUXDB_DB` | k6 | InfluxDB 数据库名 (k6 用) | 1 |
-| `AUTH_ENABLED` | false | `true` 时 POST /api/orders 需 Bearer token | 3 |
-| `JWT_SECRET` | perf-test-secret-key | JWT 签名密钥 | 3 |
-| `JWT_ACCESS_EXPIRES` | 15m | Access Token 过期时间 | 3 |
-| `JWT_REFRESH_EXPIRES` | 7d | Refresh Token 过期时间 | 3 |
-| `RATE_LIMIT_ENABLED` | false | `true` 时启用 rate limiter 中间件 | 6 |
-| `RATE_LIMIT_WINDOW_MS` | 60000 | Rate limit 时间窗口 (ms) | 6 |
-| `RATE_LIMIT_MAX` | 100 | 时间窗口内最大请求数 | 6 |
+| 变量                   | 默认值                | 说明                                       | Phase |
+| ---------------------- | --------------------- | ------------------------------------------ | ----- |
+| `PORT`                 | 3000                  | API 端口                                   | 1     |
+| `ORDER_DELAY_MS`       | 50                    | 订单处理模拟延迟 (ms)                      | 1     |
+| `NODE_ENV`             | —                     | `test` 时 SQLite 使用 `:memory:`           | 1     |
+| `BASE_URL`             | http://localhost:3000 | k6 目标地址                                | 1     |
+| `INFLUXDB_DB`          | k6                    | InfluxDB 数据库名 (k6 用)                  | 1     |
+| `AUTH_ENABLED`         | false                 | `true` 时 POST /api/orders 需 Bearer token | 3     |
+| `JWT_SECRET`           | perf-test-secret-key  | JWT 签名密钥                               | 3     |
+| `JWT_ACCESS_EXPIRES`   | 15m                   | Access Token 过期时间                      | 3     |
+| `JWT_REFRESH_EXPIRES`  | 7d                    | Refresh Token 过期时间                     | 3     |
+| `RATE_LIMIT_ENABLED`   | false                 | `true` 时启用 rate limiter 中间件          | 6     |
+| `RATE_LIMIT_WINDOW_MS` | 60000                 | Rate limit 时间窗口 (ms)                   | 6     |
+| `RATE_LIMIT_MAX`       | 100                   | 时间窗口内最大请求数                       | 6     |
 
 ### 7.3 CI Pipeline 架构
 
@@ -445,4 +446,3 @@ lint → unit-test → ┬─ k6 smoke gate      (grafana/setup-k6-action)
 ```
 
 两个 smoke gate 并行运行，均通过才算 CI 绿灯。
-

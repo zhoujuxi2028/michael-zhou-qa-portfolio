@@ -80,35 +80,57 @@ scripts/generate-summary.sh reports/k6-result.json
 
 ### 新增文件
 
-| 文件 | 类型 | 需求 ID |
-|------|------|---------|
-| `tests/performance/helpers/thinkTime.js` | k6 helper | ENT-CONSISTENCY-02 |
-| `tests/performance/helpers/funnel.js` | k6 helper | ENT-CONSISTENCY-03 |
-| `tests/performance/helpers/healthCheck.js` | k6 helper | ENT-CONSISTENCY-04 |
-| `tests/performance/breakpoint.k6.js` | k6 脚本 | ENT-BREAKPOINT-01/02 |
-| `tests/performance/rate-limit.k6.js` | k6 脚本 | ENT-RESILIENCE-02 |
-| `src/middleware/rateLimiter.js` | Express 中间件 | ENT-RESILIENCE-01 |
-| `scripts/generate-summary.sh` | Bash 脚本 | ENT-REPORT-01 |
-| `tests/unit/middleware/rateLimiter.test.js` | Jest 测试 | ENT-RESILIENCE-01 |
+| 文件                                        | 类型           | 需求 ID              |
+| ------------------------------------------- | -------------- | -------------------- |
+| `tests/performance/helpers/thinkTime.js`    | k6 helper      | ENT-CONSISTENCY-02   |
+| `tests/performance/helpers/funnel.js`       | k6 helper      | ENT-CONSISTENCY-03   |
+| `tests/performance/helpers/healthCheck.js`  | k6 helper      | ENT-CONSISTENCY-04   |
+| `tests/performance/breakpoint.k6.js`        | k6 脚本        | ENT-BREAKPOINT-01/02 |
+| `tests/performance/rate-limit.k6.js`        | k6 脚本        | ENT-RESILIENCE-02    |
+| `src/middleware/rateLimiter.js`             | Express 中间件 | ENT-RESILIENCE-01    |
+| `scripts/generate-summary.sh`               | Bash 脚本      | ENT-REPORT-01        |
+| `tests/unit/middleware/rateLimiter.test.js` | Jest 测试      | ENT-RESILIENCE-01    |
 
 ### 修改文件
 
-| 文件 | 改动 | 需求 ID |
-|------|------|---------|
-| `src/app.js` | 添加 rateLimiter 中间件（条件加载） | ENT-RESILIENCE-01 |
-| `package.json` | 添加 express-rate-limit 依赖 + npm scripts | ENT-RESILIENCE-01 |
-| `tests/performance/load.k6.js` | import funnel/thinkTime helpers，移除内联代码 | ENT-CONSISTENCY-05 |
-| `tests/performance/stress.k6.js` | 同上 | ENT-CONSISTENCY-05 |
-| `tests/performance/capacity.k6.js` | 同上 | ENT-CONSISTENCY-05 |
-| `tests/performance/soak.k6.js` | 同上 | ENT-CONSISTENCY-05 |
-| `tests/performance/soak-short.k6.js` | 同上 | ENT-CONSISTENCY-05 |
-| `tests/performance/auth-login.k6.js` | 替换直接 check() 为 checkStatus() + 移除 CDN import | ENT-CONSISTENCY-01 |
+| 文件                                   | 改动                                                | 需求 ID            |
+| -------------------------------------- | --------------------------------------------------- | ------------------ |
+| `src/app.js`                           | 添加 rateLimiter 中间件（条件加载）                 | ENT-RESILIENCE-01  |
+| `package.json`                         | 添加 express-rate-limit 依赖 + npm scripts          | ENT-RESILIENCE-01  |
+| `tests/performance/load.k6.js`         | import funnel/thinkTime helpers，移除内联代码       | ENT-CONSISTENCY-05 |
+| `tests/performance/stress.k6.js`       | 同上                                                | ENT-CONSISTENCY-05 |
+| `tests/performance/capacity.k6.js`     | 同上                                                | ENT-CONSISTENCY-05 |
+| `tests/performance/soak.k6.js`         | 同上                                                | ENT-CONSISTENCY-05 |
+| `tests/performance/soak-short.k6.js`   | 同上                                                | ENT-CONSISTENCY-05 |
+| `tests/performance/auth-login.k6.js`   | 替换直接 check() 为 checkStatus() + 移除 CDN import | ENT-CONSISTENCY-01 |
 | `tests/performance/auth-refresh.k6.js` | 替换直接 check() 为 checkStatus() + 移除 CDN import | ENT-CONSISTENCY-01 |
 | `tests/performance/auth-journey.k6.js` | 替换直接 check() 为 checkStatus() + 移除 CDN import | ENT-CONSISTENCY-01 |
 
 ---
 
 ## 3. 任务拆分
+
+### Task 0: 环境检测 — Stage 4 前置条件
+
+**目标:** 验证 Stage 4 集成测试的基础设施准备就绪
+
+- [ ] **0.1** 运行 Stage 4 环境检测脚本
+  ```bash
+  bash scripts/preflight-check.sh --stage4
+  ```
+  **预期结果:** exit 0，所有检查通过（包括 Docker daemon）
+- [ ] **0.2** 本地记录检测结果
+  - Load Average < 5 ✅
+  - 可用内存 > 2 GB ✅
+  - CPU Idle > 50% ✅
+  - Docker daemon 运行 ✅
+
+- [ ] **0.3** 如果任何检查失败
+  - 按脚本输出的修复提示操作
+  - 修复后重新运行 `bash scripts/preflight-check.sh --stage4`
+  - 确保全部 ✅ 后才能进入后续 Tasks
+
+---
 
 ### Task 1: k6 Helpers 提取 (ENT-CONSISTENCY-01~03)
 
@@ -125,12 +147,13 @@ scripts/generate-summary.sh reports/k6-result.json
   ```
   > **Note:** `randomIntBetween` 也导出，替代所有脚本中的 jslib CDN import。
 - [ ] **1.2** 新增 `helpers/funnel.js`
+
   ```javascript
   import http from 'k6/http';
   import { checkStatus } from './utils.js';
   import { thinkTime } from './thinkTime.js';
   import { randomProduct } from './data.js';
-  
+
   // 嵌套漏斗模型（与现有脚本行为一致）：
   // 嵌套概率：100% browse → 50% detail → 33% order
   // 实际流量占比：browse 100%, detail ~50%, order ~16.5%
@@ -138,22 +161,23 @@ scripts/generate-summary.sh reports/k6-result.json
   //     实际概率使用嵌套模型以匹配现有脚本行为。
   export function executeFunnel(baseUrl, options = {}) {
     const { detailProb = 0.5, orderProb = 0.33, onOrder = null } = options;
-    const p = randomProduct();  // Phase 5 CSV 数据，避免硬编码
-    
+    const p = randomProduct(); // Phase 5 CSV 数据，避免硬编码
+
     // 100% browse
     const listRes = http.get(`${baseUrl}/api/products`);
     checkStatus(listRes, 200, 'browse products');
     thinkTime();
-    
+
     // ~50% detail (嵌套)
     if (Math.random() < detailProb) {
       const detailRes = http.get(`${baseUrl}/api/products/${p.id}`);
       checkStatus(detailRes, 200, 'product detail');
       thinkTime();
-      
+
       // ~33% of detail viewers → order (嵌套)
       if (Math.random() < orderProb) {
-        const orderRes = http.post(`${baseUrl}/api/orders`,
+        const orderRes = http.post(
+          `${baseUrl}/api/orders`,
           JSON.stringify({ product_id: Number(p.id), quantity: 1 }),
           { headers: { 'Content-Type': 'application/json' } }
         );
@@ -164,6 +188,7 @@ scripts/generate-summary.sh reports/k6-result.json
     }
   }
   ```
+
 - [ ] **1.3** 新增 `helpers/healthCheck.js`
   ```javascript
   import http from 'k6/http';
@@ -197,7 +222,7 @@ scripts/generate-summary.sh reports/k6-result.json
     max: parseInt(process.env.RATE_LIMIT_MAX) || 100,
     standardHeaders: true,
     legacyHeaders: false,
-    message: { error: 'Too many requests, please try again later.' }
+    message: { error: 'Too many requests, please try again later.' },
   });
   module.exports = limiter;
   ```
@@ -273,26 +298,26 @@ scripts/generate-summary.sh reports/k6-result.json
 
 ## 4. 验收标准
 
-| 需求 ID | 验收方式 | 命令 |
-|---------|---------|------|
+| 需求 ID               | 验收方式                              | 命令                                                                                  |
+| --------------------- | ------------------------------------- | ------------------------------------------------------------------------------------- |
 | ENT-CONSISTENCY-01~05 | ≥4 个脚本使用统一 helpers，无内联重复 | `grep -L "import.*funnel" tests/performance/{load,stress,capacity,soak}.k6.js` 返回空 |
-| ENT-BREAKPOINT-01 | breakpoint.k6.js 输出崩溃点 RPS | `npm run k6:breakpoint` 完成，报告含崩溃点 |
-| ENT-BREAKPOINT-02 | 崩溃类型分类 | handleSummary 输出 graceful/catastrophic |
-| ENT-RESILIENCE-01 | Rate limiter 单元测试通过 | `npm test -- rateLimiter` |
-| ENT-RESILIENCE-02 | 超限返回 429，窗口后恢复 200 | `RATE_LIMIT_ENABLED=true npm start && npm run k6:rate-limit` |
-| ENT-REPORT-01 | 生成 Markdown 摘要 | `npm run generate-summary` 输出 reports/k6-summary.md |
-| 回归 | 现有测试不受影响 | `npm test` (95 tests PASS) + `npm run k6:smoke` (thresholds PASS) |
+| ENT-BREAKPOINT-01     | breakpoint.k6.js 输出崩溃点 RPS       | `npm run k6:breakpoint` 完成，报告含崩溃点                                            |
+| ENT-BREAKPOINT-02     | 崩溃类型分类                          | handleSummary 输出 graceful/catastrophic                                              |
+| ENT-RESILIENCE-01     | Rate limiter 单元测试通过             | `npm test -- rateLimiter`                                                             |
+| ENT-RESILIENCE-02     | 超限返回 429，窗口后恢复 200          | `RATE_LIMIT_ENABLED=true npm start && npm run k6:rate-limit`                          |
+| ENT-REPORT-01         | 生成 Markdown 摘要                    | `npm run generate-summary` 输出 reports/k6-summary.md                                 |
+| 回归                  | 现有测试不受影响                      | `npm test` (95 tests PASS) + `npm run k6:smoke` (thresholds PASS)                     |
 
 ---
 
 ## 5. Prerequisites
 
-| 工具 | 验证命令 | 最低版本 |
-|------|---------|---------|
-| Node.js | `node -v` | v18+ |
-| k6 | `k6 version` | v1.7.0 |
-| jq | `jq --version` | 1.6+ |
-| express-rate-limit | Task 3.1 安装 | v7+ |
+| 工具               | 验证命令       | 最低版本 |
+| ------------------ | -------------- | -------- |
+| Node.js            | `node -v`      | v18+     |
+| k6                 | `k6 version`   | v1.7.0   |
+| jq                 | `jq --version` | 1.6+     |
+| express-rate-limit | Task 3.1 安装  | v7+      |
 
 ---
 
@@ -317,16 +342,16 @@ diff <(grep 'p(95)' /tmp/smoke-before.txt) <(grep 'p(95)' /tmp/smoke-after.txt)
 
 ## 7. Plan Review 修复记录
 
-| ID | 级别 | 问题 | 修复 |
-|---|---|---|---|
-| C-01 | CRITICAL | capacity.k6.js 的 jslib CDN import 未在迁移计划中提及 | Task 2.3 明确标注移除 CDN import |
+| ID   | 级别     | 问题                                                                               | 修复                                                                |
+| ---- | -------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| C-01 | CRITICAL | capacity.k6.js 的 jslib CDN import 未在迁移计划中提及                              | Task 2.3 明确标注移除 CDN import                                    |
 | C-02 | CRITICAL | auth-login/refresh/journey 的 jslib CDN import 未提及；auth-refresh.k6.js 完全遗漏 | Task 2.5 扩展范围，覆盖 3 个 auth 脚本；修改文件表新增 auth-refresh |
-| C-03 | CRITICAL | 测试数量过时 (71+ → 95) | 验收标准已更新 |
-| W-01 | WARNING | funnel.js 逻辑与现有脚本不一致（扁平 vs 嵌套模型） | 重写为嵌套模型：100% browse → 50% detail → 33% order |
-| W-02 | WARNING | soak 脚本的自定义 metrics (soakOrderSuccess/Failure) 会在 funnel 迁移后丢失 | executeFunnel() 新增 `onOrder` 回调 hook |
-| W-03 | WARNING | smoke.k6.js health check 迁移歧义 (replace vs add) | 明确：setup() 新增 verifyHealth()，default() 保留原有 health check |
-| W-04 | WARNING | thinkTime.js 未导出 randomIntBetween | 改为 named export，替代所有 CDN import |
-| W-05 | WARNING | product_id parseInt 不一致 | 统一使用 `Number(p.id)` |
-| W-06 | WARNING | funnel 概率注释与需求 "60/30/10" 不一致 | 注释补充说明：需求是设计意图，实际使用嵌套模型匹配现有脚本行为 |
-| W-07 | WARNING | Task 3.4 只列 4 个测试，测试用例表有 6 个 (UT-RL-01~06) | 补充 UT-RL-05 (自定义环境变量) + UT-RL-06 (RateLimit headers) |
-| W-08 | WARNING | generate-summary.sh 未提及输入校验 | Task 6.1 补充：检查 $1 存在且为有效文件，否则 usage + exit 1 |
+| C-03 | CRITICAL | 测试数量过时 (71+ → 95)                                                            | 验收标准已更新                                                      |
+| W-01 | WARNING  | funnel.js 逻辑与现有脚本不一致（扁平 vs 嵌套模型）                                 | 重写为嵌套模型：100% browse → 50% detail → 33% order                |
+| W-02 | WARNING  | soak 脚本的自定义 metrics (soakOrderSuccess/Failure) 会在 funnel 迁移后丢失        | executeFunnel() 新增 `onOrder` 回调 hook                            |
+| W-03 | WARNING  | smoke.k6.js health check 迁移歧义 (replace vs add)                                 | 明确：setup() 新增 verifyHealth()，default() 保留原有 health check  |
+| W-04 | WARNING  | thinkTime.js 未导出 randomIntBetween                                               | 改为 named export，替代所有 CDN import                              |
+| W-05 | WARNING  | product_id parseInt 不一致                                                         | 统一使用 `Number(p.id)`                                             |
+| W-06 | WARNING  | funnel 概率注释与需求 "60/30/10" 不一致                                            | 注释补充说明：需求是设计意图，实际使用嵌套模型匹配现有脚本行为      |
+| W-07 | WARNING  | Task 3.4 只列 4 个测试，测试用例表有 6 个 (UT-RL-01~06)                            | 补充 UT-RL-05 (自定义环境变量) + UT-RL-06 (RateLimit headers)       |
+| W-08 | WARNING  | generate-summary.sh 未提及输入校验                                                 | Task 6.1 补充：检查 $1 存在且为有效文件，否则 usage + exit 1        |

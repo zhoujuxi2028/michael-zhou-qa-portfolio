@@ -8,13 +8,13 @@
 
 本项目采用三层测试，双引擎性能测试：
 
-| 层 | 工具 | 目的 |
-|----|------|------|
-| 单元测试 | Jest + Supertest | 验证 API 功能正确性 + 基础设施 helpers |
-| 性能测试 (轻量级) | k6 | 延迟、吞吐、错误率 → HTML 报告 |
-| 性能测试 (企业级) | JMeter | 负载测试 + HTML 报告 + Grafana 可视化 |
-| 系统指标采集 | Node.js 采集器 | CPU / 内存 / 磁盘 I/O / 网络 I/O → CSV |
-| 容量测试 | k6 阶梯递增 | 最大并发承载量 + 瓶颈定位 (二分法) |
+| 层                | 工具             | 目的                                   |
+| ----------------- | ---------------- | -------------------------------------- |
+| 单元测试          | Jest + Supertest | 验证 API 功能正确性 + 基础设施 helpers |
+| 性能测试 (轻量级) | k6               | 延迟、吞吐、错误率 → HTML 报告         |
+| 性能测试 (企业级) | JMeter           | 负载测试 + HTML 报告 + Grafana 可视化  |
+| 系统指标采集      | Node.js 采集器   | CPU / 内存 / 磁盘 I/O / 网络 I/O → CSV |
+| 容量测试          | k6 阶梯递增      | 最大并发承载量 + 瓶颈定位 (二分法)     |
 
 ### 原则
 
@@ -25,41 +25,44 @@
 
 ## 2. 覆盖目标
 
-| 指标 | 目标 | 工具 |
-|------|------|------|
-| 语句覆盖率 (statements) | >= 80% | Jest --coverage |
-| 分支覆盖率 (branches) | >= 70% | Jest --coverage |
-| 函数覆盖率 (functions) | >= 80% | Jest --coverage |
-| 行覆盖率 (lines) | >= 80% | Jest --coverage |
-| 性能 SLA | p95 < 500ms, error < 1% | 详见 CLAUDE.md SLA 定义 |
+| 指标                    | 目标                    | 工具                    |
+| ----------------------- | ----------------------- | ----------------------- |
+| 语句覆盖率 (statements) | >= 80%                  | Jest --coverage         |
+| 分支覆盖率 (branches)   | >= 70%                  | Jest --coverage         |
+| 函数覆盖率 (functions)  | >= 80%                  | Jest --coverage         |
+| 行覆盖率 (lines)        | >= 80%                  | Jest --coverage         |
+| 性能 SLA                | p95 < 500ms, error < 1% | 详见 CLAUDE.md SLA 定义 |
 
 ## 3. Phase 用例索引
 
-| Phase | 主题 | Jest 单元测试 | 性能测试 | 集成测试 | 其他 | 合计 | 详细文档 |
-|-------|------|-------------|---------|---------|------|------|---------|
-| 1 | 双引擎性能测试 | 24 | 13 | 4 | 13 | **54** | [phase1-dual-engine.md](phase1-dual-engine.md) |
-| 2 | 系统指标采集 + 容量测试 | 23 | 6 | 9 | 4 | **42** | [phase2-metrics.md](phase2-metrics.md) |
-| 3 | JWT 认证场景 | 17 | 4 | 3 | 0 | **24** | [phase3-auth.md](phase3-auth.md) |
-| 4 | Soak Test + 可观测性 | 7 | 3 | 2 | 0 | **12** | [phase4-soak.md](phase4-soak.md) |
-| 5 | 基础设施 Helper | 24 | 0 | 5 | 0 | **29** | [phase5-infra.md](phase5-infra.md) |
-| 6 | 测试能力扩展 | 6 | 7 | 6 | 8 | **27** | [phase6-testing.md](phase6-testing.md) |
-| 7 | CI/CD + 可观测性 | 6 | 0 | 0 | 18 | **24** | [phase7-cicd.md](phase7-cicd.md) |
-| | **小计** | **107** | **33** | **29** | **43** | **212** | |
+| Phase | 主题                    | Jest 单元测试 | 性能测试 | 集成测试 | 其他   | 合计    | 详细文档                                       |
+| ----- | ----------------------- | ------------- | -------- | -------- | ------ | ------- | ---------------------------------------------- |
+| 1     | 双引擎性能测试          | 24            | 13       | 4        | 13     | **54**  | [phase1-dual-engine.md](phase1-dual-engine.md) |
+| 2     | 系统指标采集 + 容量测试 | 23            | 6        | 9        | 4      | **42**  | [phase2-metrics.md](phase2-metrics.md)         |
+| 3     | JWT 认证场景            | 17            | 4        | 3        | 0      | **24**  | [phase3-auth.md](phase3-auth.md)               |
+| 4     | Soak Test + 可观测性    | 7             | 3        | 2        | 0      | **12**  | [phase4-soak.md](phase4-soak.md)               |
+| 5     | 基础设施 Helper         | 24            | 0        | 5        | 0      | **29**  | [phase5-infra.md](phase5-infra.md)             |
+| 6     | 测试能力扩展            | 41            | 7        | 8        | 8      | **64**  | [phase6-testing.md](phase6-testing.md)         |
+| 7     | CI/CD + 可观测性        | 12            | 0        | 0        | 18     | **30**  | [phase7-cicd.md](phase7-cicd.md)               |
+|       | **小计**                | **148**       | **33**   | **31**   | **43** | **255** |                                                |
 
 > **Release 验证规则:** 每次大版本发布前，需逐 Phase 确认所有用例已执行且通过。用例变更记录见下方 §4。
 
 ## 4. 用例变更记录
 
-| 日期 | Phase | 变更类型 | 用例 ID | 说明 |
-|------|-------|---------|---------|------|
-| 2026-04-05 | 全部 | 初始化 | — | 基线建立: 5 Phase 共 161 条用例 (Jest 95 + 非 Jest 66) |
-| 2026-04-05 | 1,2,3 | 修正 | — | 补录 server-sh (8) + preflight (15) + metrics (+3) + products (+1) + orders (+1) + authenticate (+2) |
-| 2026-04-05 | 3 | 新增 | AUTH-INT-01~03 | Phase 3 补充认证端到端集成测试 (register→login→token 访问→无 token 拒绝) |
-| 2026-04-05 | 1 | 新增 | K6-RPT-01~07 | Phase 1 补充 k6 报告验证 (生成完整性 4 + 内容完整性 3) |
-| 2026-04-05 | — | 重构 | — | TEST-CASES.md 精简为索引，详细用例下沉到 per-phase 文件 |
-| 2026-04-05 | 6 | 新增 | UT-RL/K6-RL/K6-BP/K6-MIG/K6-RPT | Phase 6 测试用例 21 条 (限流 6+4, 崩溃 3, 迁移 4, 摘要 4) |
-| 2026-04-14 | 6 | 新增 | RL-INT-01~03, GEN-INT-01~03, K6-HLP-INT-01~02(SKIP) | Stage 3 DoD 扩展：集成测试覆盖 Rate Limiter 端到端 + generate-summary.sh 正确性；K6 Helpers 因模块系统兼容性 SKIP |
-| 2026-04-05 | 7 | 新增 | UT-BL/CI-COV/CI-BL/TREND/GRF/SCHED | Phase 7 测试用例 24 条 (基线 6+4, 覆盖率 4, 趋势 3, Grafana 4, 调度 4) |
+| 日期       | Phase | 变更类型 | 用例 ID                                             | 说明                                                                                                                                         |
+| ---------- | ----- | -------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-04-05 | 全部  | 初始化   | —                                                   | 基线建立: 5 Phase 共 161 条用例 (Jest 95 + 非 Jest 66)                                                                                       |
+| 2026-04-05 | 1,2,3 | 修正     | —                                                   | 补录 server-sh (8) + preflight (15) + metrics (+3) + products (+1) + orders (+1) + authenticate (+2)                                         |
+| 2026-04-05 | 3     | 新增     | AUTH-INT-01~03                                      | Phase 3 补充认证端到端集成测试 (register→login→token 访问→无 token 拒绝)                                                                     |
+| 2026-04-05 | 1     | 新增     | K6-RPT-01~07                                        | Phase 1 补充 k6 报告验证 (生成完整性 4 + 内容完整性 3)                                                                                       |
+| 2026-04-05 | —     | 重构     | —                                                   | TEST-CASES.md 精简为索引，详细用例下沉到 per-phase 文件                                                                                      |
+| 2026-04-05 | 6     | 新增     | UT-RL/K6-RL/K6-BP/K6-MIG/K6-RPT                     | Phase 6 测试用例 21 条 (限流 6+4, 崩溃 3, 迁移 4, 摘要 4)                                                                                    |
+| 2026-04-14 | 6     | 新增     | RL-INT-01~03, GEN-INT-01~03, K6-HLP-INT-01~02(SKIP) | Stage 3 DoD 扩展：集成测试覆盖 Rate Limiter 端到端 + generate-summary.sh 正确性；K6 Helpers 因模块系统兼容性 SKIP                            |
+| 2026-04-15 | 6     | 修正     | 用例计数                                            | Phase 6 集成测试从 6 个更新为 8 个（K6-HLP-INT-01~02 仍为 SKIP）；合计从 29 更新为 31；阶段用例总数从 212 更新为 214                         |
+| 2026-04-15 | 6     | 确认     | K6-HLP SKIP 理由                                    | K6-HLP-INT-01~02 保持 SKIP 状态（技术限制），暴露问题而非规避；需 Phase 7 在 k6 runtime 或其他方案中正式实现单独验证                         |
+| 2026-04-15 | 6,7   | 修正     | 单元测试计数                                        | Phase 6 单元测试从 6 增加为 41（+35，lock.test.js 等新增）；Phase 7 从 6 增加为 12；总计单元测试从 107 更新为 148；总用例数从 214 更新为 255 |
+| 2026-04-05 | 7     | 新增     | UT-BL/CI-COV/CI-BL/TREND/GRF/SCHED                  | Phase 7 测试用例 24 条 (基线 6+4, 覆盖率 4, 趋势 3, Grafana 4, 调度 4)                                                                       |
 
 > **变更类型:** `新增` / `修改` / `删除` / `初始化` / `重构`
 >
