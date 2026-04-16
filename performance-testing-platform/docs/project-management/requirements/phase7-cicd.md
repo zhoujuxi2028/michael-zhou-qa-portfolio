@@ -21,6 +21,9 @@
 | US-31 | 作为性能工程师，我想在 CI 中强制覆盖率门禁，以便防止测试覆盖率退化                                       | ENT-COVERAGE  |
 | US-32 | 作为性能工程师，我想在 Grafana 中查看错误分布、延迟热力图，并在告警触发时收到 webhook 通知               | ENT-DASHBOARD |
 | US-33 | 作为性能工程师，我想设置定时调度自动运行 nightly soak 和 weekly capacity test，以便持续监控系统稳定性    | ENT-SCHEDULE  |
+| US-34 | 作为性能工程师，我想确保所有 k6 脚本统一使用 funnel helper，以便维护一致的流量漏斗模型且无重复内联逻辑   | ENT-LEGACY    |
+| US-35 | 作为性能工程师，我想在 breakpoint 报告中看到 graceful/catastrophic 崩溃分类，以便区分系统降级方式         | ENT-LEGACY    |
+| US-36 | 作为性能工程师，我想验证系统在持续超载后的熔断恢复行为，以便评估弹性工程能力                             | ENT-LEGACY    |
 
 ## 7.3 需求列表
 
@@ -66,6 +69,18 @@
 | ----------- | ------------------------------------------------------------ | ------ | ------ |
 | ENT-TEST-04 | 基线对比单元测试: 回归检测阈值判定、首次运行无 baseline 兜底 | P1     | 小     |
 
+### 7.3.6 Phase 6 遗留项补完（ENT-LEGACY）
+
+> 来源: Issue #114、#116 — Phase 6 有意推迟、Phase 7 补完的未实现需求
+
+| ID               | 需求                                                                                                                                     | 优先级 | 工作量 | 来源 Issue |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ | ---------- |
+| ENT-LEGACY-01    | funnel helper 迁移补完: `stress.k6.js` 替换内联漏斗逻辑为 `executeFunnel()`                                                             | P1     | 小     | #116       |
+| ENT-LEGACY-02    | funnel helper 迁移补完: `capacity.k6.js` 替换内联漏斗逻辑为 `executeFunnel()`                                                           | P1     | 小     | #116       |
+| ENT-LEGACY-03    | funnel helper 迁移补完: `soak.k6.js` 替换内联漏斗逻辑为 `executeFunnel(baseUrl, { onOrder: cb })`，保留 soakOrderSuccess/Failure metrics | P1     | 中     | #116       |
+| ENT-LEGACY-04    | breakpoint handleSummary 增强: 输出 graceful/catastrophic 崩溃类型分类（graceful = p95 超限先于 error rate；catastrophic = 反之）        | P2     | 小     | #114       |
+| ENT-LEGACY-05    | 熔断恢复行为测试: k6 脚本验证系统在持续超载后的恢复时间（graceful degradation vs cascading failure），补充 UT-RL-07 单元测试             | P2     | 中     | #116       |
+
 ## 7.4 Scope 确认
 
 | 模块                                  | In Scope                                                                                  | Out of Scope                              |
@@ -74,6 +89,7 @@
 | **ENT-COVERAGE CI 覆盖率**            | coverage gate + artifact upload                                                           | Codecov/Coveralls 集成                    |
 | **ENT-DASHBOARD Grafana 面板 + 告警** | 错误分布 + 延迟热力图 + 自定义指标聚合 + webhook 告警                                     | 自定义 Grafana 插件、Slack/PagerDuty 集成 |
 | **ENT-SCHEDULE 定时调度** ⚠️          | CI cron nightly soak + weekly capacity + artifact 归档（示范性，P3）                      | 外部调度平台 (Jenkins/Airflow)            |
+| **ENT-LEGACY Phase 6 遗留补完**       | funnel 迁移(stress/capacity/soak) + breakpoint graceful/catastrophic + 熔断恢复测试       | 重构原有 Phase 6 测试逻辑                 |
 
 ## 7.5 可行性评估
 
@@ -103,5 +119,5 @@
 | 3   | Scope 已确认   | ✅ 4 个模块，明确 In/Out                                                                            |
 | 4   | 可行性评估     | ✅ 4 项评估，1 项有限可行（ENT-SCHEDULE）                                                           |
 | 5   | 依赖已识别     | ✅ 5 项依赖（含 Phase 6 前置）                                                                      |
-| 6   | 需求已编号     | ✅ 5 组 15 条: ENT-BASELINE(5) + ENT-COVERAGE(3) + ENT-DASHBOARD(4) + ENT-SCHEDULE(2) + ENT-TEST(1) |
-| 7   | 需求描述已写入 | ✅ 本文档 §7.1~7.6                                                                                  |
+| 6   | 需求已编号     | ✅ 6 组 20 条: ENT-BASELINE(5) + ENT-COVERAGE(3) + ENT-DASHBOARD(4) + ENT-SCHEDULE(2) + ENT-TEST(1) + ENT-LEGACY(5) |
+| 7   | 需求描述已写入 | ✅ 本文档 §7.1~7.6                                                                                                    |
