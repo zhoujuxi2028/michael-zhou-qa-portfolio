@@ -171,7 +171,7 @@ if check_system_load; then
     log_result "2.1" "SKIP" "集成测试输出格式异常，详见日志"
   fi
 else
-  LOAD=$(uptime | awk -F'load average:' '{print $2}' | cut -d',' -f1 | xargs)
+  LOAD=$(uptime | awk '{print $(NF-2)}' 2>/dev/null || echo "0")
   log_result "2.1" "SKIP" "系统负载过高 (load: $LOAD > 5)，集成测试被跳过"
 fi
 
