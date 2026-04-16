@@ -27,6 +27,7 @@
 | US-02   | Load test (50 VUs, 5m)      | `load.k6.js`   | LOAD-01~03   | ✅   |
 | US-03   | Stress test (200 VUs, 3.5m) | `stress.k6.js` | STRESS-01~03 | ✅   |
 | US-04   | Spike test (100 VUs, 1.5m)  | `spike.k6.js`  | SPIKE-01~03  | ✅   |
+| UC-01   | k6 HTML 报告（生成 + 内容验证） | `npm run k6:*` (`--out web-dashboard`) | K6-RPT-01~07 | ✅ |
 
 ### JMeter 性能测试
 
@@ -170,13 +171,19 @@
 
 ## Phase 7 — CI/CD + 可观测性增强 ([#116](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/116))
 
-| 需求 ID  | 需求                                              | 实现文件                                              | 测试用例 ID                              | 状态                  |
-| -------- | ------------------------------------------------- | ----------------------------------------------------- | ---------------------------------------- | --------------------- |
-| CI7-01   | CI 覆盖率门禁 (statements ≥ 80%)                  | `.github/workflows/performance-ci.yml`                | CI-COV-01~04                             | ✅                    |
-| CI7-02   | 基线回归：单元测试 + CI 自动对比                  | `src/utils/baseline.js`, `performance-ci.yml`         | UT-BL-01~06, CI-BL-01~04                | ✅                    |
-| CI7-03   | 趋势报告：`generate-trend.sh` + trend.json 累积   | `scripts/generate-trend.sh`                           | TREND-01~03                              | ✅                    |
-| CI7-04   | Grafana 面板增强 (错误分布/热力图/自定义/告警)    | `grafana/dashboards/`                                 | GRF-ERR-01, GRF-HEAT-01, GRF-CUSTOM-01, GRF-ALERT-01 | ✅                    |
-| CI7-05   | 定时调度：nightly soak + weekly capacity workflow | `.github/workflows/nightly-soak.yml`                  | SCHED-01~04                              | ✅                    |
+| 需求 ID                | 需求                                              | 实现文件                                              | 测试用例 ID                                           | 状态       |
+| ---------------------- | ------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------- | ---------- |
+| PERF-COV-FR-001~003    | CI 覆盖率门禁 (statements ≥ 80%)                  | `.github/workflows/performance-ci.yml`                | CI-COV-01~04                                          | ✅         |
+| PERF-BL-FR-001~002,006 | 基线回归：单元测试 + CI 自动对比                  | `src/utils/baseline.js`, `performance-ci.yml`         | UT-BL-01~06, CI-BL-01~04                             | ✅         |
+| PERF-BL-FR-003~004     | 趋势报告：`generate-trend.sh` + trend.json 累积   | `scripts/generate-trend.sh`                           | TREND-01~03                                           | ✅         |
+| PERF-BL-FR-005         | Grafana 趋势面板：历史 p95 / throughput 折线图    | `grafana/dashboards/`                                 | GRF-TREND-01                                          | ✅         |
+| PERF-OBS-FR-001~004    | Grafana 面板增强 (错误分布/热力图/自定义/告警)    | `grafana/dashboards/`                                 | GRF-ERR-01, GRF-HEAT-01, GRF-CUSTOM-01, GRF-ALERT-01 | ✅         |
+| PERF-SCHED-FR-001~002  | 定时调度：nightly soak + weekly capacity workflow | `.github/workflows/nightly-soak.yml`                  | SCHED-01~04                                           | ✅         |
+| PERF-K6-FR-001~003     | funnel helper 迁移：stress / capacity / soak      | `stress.k6.js`, `capacity.k6.js`, `soak.k6.js`       | —                                                     | ⬜ Phase 7 |
+| PERF-K6-FR-004         | breakpoint handleSummary graceful/catastrophic 分类 | `tests/performance/breakpoint.k6.js`                | —                                                     | ⬜ Phase 7 |
+| PERF-K6-FR-005         | 熔断恢复行为测试                                  | `tests/performance/rate-limit.k6.js`                  | K6-RL-04                                              | ⬜ Phase 7 |
+| PERF-K6-FR-006         | SOAK-TC-04 集成验证：Grafana Dashboard 实时展示   | `npm run k6:soak:short` + Docker Compose              | SOAK-TC-04                                            | ⬜ Phase 7 |
+| PERF-K6-FR-007         | SOAK-TC-05 集成验证：Grafana 告警规则触发         | `soak.k6.js` 超限场景                                 | SOAK-TC-05                                            | ⬜ Phase 7 |
 
 ---
 
@@ -190,14 +197,16 @@
 | 4        | 10 (SOAK-01~10)                                   | 10     | 0                                 | 100%     |
 | 5        | 13 (ENT-ENV/DATA/PROFILE/DX/TEST)                 | 13     | 0                                 | 100%     |
 | 6        | 11 (ENT-CONSISTENCY/BREAKPOINT/RESILIENCE/REPORT) | 10     | 1 (ENT-RESILIENCE-03 ⏭️ Phase 7) | 91%      |
-| 7        | 5 (CI7-01~05)                                     | 5      | 0                                 | 100%     |
-| **合计** | **78**                                            | **77** | **1**                             | **99%**  |
+| 7        | 22 (PERF-BL/COV/OBS/SCHED/K6-FR)                 | 16     | 6 (PERF-K6-FR-001~007 ⬜ 待实现) | 73%      |
+| **合计** | **80**                                            | **77** | **3**                             | **96%**  |
 
 ### 未覆盖项说明
 
-| 需求                        | 原因                                 | 计划                    |
-| --------------------------- | ------------------------------------ | ----------------------- |
-| ENT-RESILIENCE-03 (Phase 6) | 熔断恢复行为测试（K6-RL-04）未实现   | Phase 7 (#116) 实现验证 |
+| 需求                        | 原因                                          | 计划                    |
+| --------------------------- | --------------------------------------------- | ----------------------- |
+| ENT-RESILIENCE-03 (Phase 6) | 熔断恢复行为测试（K6-RL-04）未实现            | Phase 7 (#116) 实现验证 |
+| CI7-06 (Phase 7)            | SOAK-TC-04 需 Docker 长时间运行，Phase 6 SKIP | Phase 7 (#108) 手动验证 |
+| CI7-07 (Phase 7)            | SOAK-TC-05 需主动触发告警条件，Phase 6 SKIP   | Phase 7 (#108) 手动验证 |
 
 ---
 
