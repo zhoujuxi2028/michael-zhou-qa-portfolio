@@ -66,13 +66,13 @@ CREATE TABLE IF NOT EXISTS token_blacklist (
 
 ### 1.3 接口定义
 
-| 接口 | 方法 | 请求体 | 响应 | 认证 |
-|------|------|--------|------|------|
-| `/api/auth/register` | POST | `{ username, password }` | `201 { id, username }` | 无 |
-| `/api/auth/login` | POST | `{ username, password }` | `200 { accessToken, refreshToken }` | 无 |
-| `/api/auth/refresh` | POST | `{ refreshToken }` | `200 { accessToken }` | 无 |
-| `/api/auth/logout` | POST | — | `200 { message }` | Bearer (authenticate 中间件) |
-| `/api/orders` | POST | `{ product_id, quantity }` | `201 { order }` | Bearer (AUTH_ENABLED=true 时) |
+| 接口                 | 方法 | 请求体                     | 响应                                | 认证                          |
+| -------------------- | ---- | -------------------------- | ----------------------------------- | ----------------------------- |
+| `/api/auth/register` | POST | `{ username, password }`   | `201 { id, username }`              | 无                            |
+| `/api/auth/login`    | POST | `{ username, password }`   | `200 { accessToken, refreshToken }` | 无                            |
+| `/api/auth/refresh`  | POST | `{ refreshToken }`         | `200 { accessToken }`               | 无                            |
+| `/api/auth/logout`   | POST | —                          | `200 { message }`                   | Bearer (authenticate 中间件)  |
+| `/api/orders`        | POST | `{ product_id, quantity }` | `201 { order }`                     | Bearer (AUTH_ENABLED=true 时) |
 
 ### 1.4 JWT 结构
 
@@ -101,12 +101,12 @@ CREATE TABLE IF NOT EXISTS token_blacklist (
 
 ### 1.5 环境变量
 
-| 变量 | 默认值 | 说明 |
-|------|--------|------|
-| `AUTH_ENABLED` | `false` | 是否启用认证保护 |
-| `JWT_SECRET` | `perf-test-secret-key` | JWT 签名密钥 (仅测试用) |
-| `JWT_ACCESS_EXPIRES` | `15m` | Access Token 过期时间 |
-| `JWT_REFRESH_EXPIRES` | `7d` | Refresh Token 过期时间 |
+| 变量                  | 默认值                 | 说明                    |
+| --------------------- | ---------------------- | ----------------------- |
+| `AUTH_ENABLED`        | `false`                | 是否启用认证保护        |
+| `JWT_SECRET`          | `perf-test-secret-key` | JWT 签名密钥 (仅测试用) |
+| `JWT_ACCESS_EXPIRES`  | `15m`                  | Access Token 过期时间   |
+| `JWT_REFRESH_EXPIRES` | `7d`                   | Refresh Token 过期时间  |
 
 ---
 
@@ -133,27 +133,27 @@ tests/
 
 ### 2.2 修改文件
 
-| 文件 | 改动 |
-|------|------|
-| `src/app.js` | 注册 auth 路由 |
-| `src/db/database.js` | 新增 users + token_blacklist 表 |
-| `src/routes/orders.js` | POST /api/orders 条件认证保护 (在路由内部判断 AUTH_ENABLED) |
-| `package.json` | 新增 jsonwebtoken + bcryptjs 依赖, 新增 npm scripts (`k6:auth-login`, `k6:auth-refresh`, `k6:auth-journey`, `jmeter:auth-load`) |
-| `performance-testing-platform/CLAUDE.md` | Phase 3 状态 Planned → In Progress / Done, 新增 auth 相关命令 |
+| 文件                                     | 改动                                                                                                                            |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `src/app.js`                             | 注册 auth 路由                                                                                                                  |
+| `src/db/database.js`                     | 新增 users + token_blacklist 表                                                                                                 |
+| `src/routes/orders.js`                   | POST /api/orders 条件认证保护 (在路由内部判断 AUTH_ENABLED)                                                                     |
+| `package.json`                           | 新增 jsonwebtoken + bcryptjs 依赖, 新增 npm scripts (`k6:auth-login`, `k6:auth-refresh`, `k6:auth-journey`, `jmeter:auth-load`) |
+| `performance-testing-platform/CLAUDE.md` | Phase 3 状态 Planned → In Progress / Done, 新增 auth 相关命令                                                                   |
 
 ---
 
 ## 3. 任务拆分与执行顺序
 
-| # | Task | 依赖 | 产出文件 | 需求 ID |
-|---|------|------|---------|---------|
-| T0 | DB Schema 扩展 (users + token_blacklist) | 无 | `src/db/database.js` | AUTH-01 |
-| T1 | 认证路由 (register/login/refresh/logout) | T0 | `src/routes/auth.js` | AUTH-01~04 |
-| T2 | JWT 中间件 + AUTH_ENABLED 开关 | T1 | `src/middleware/authenticate.js`, `src/routes/orders.js`, `src/app.js` | AUTH-05~06 |
-| T3 | 单元测试 (auth routes + middleware) | T1, T2 | `tests/unit/routes/auth.test.js`, `tests/unit/middleware/authenticate.test.js` | — |
-| T4 | k6 认证压测脚本 (3 个场景) | T2 | `auth-login.k6.js`, `auth-refresh.k6.js`, `auth-journey.k6.js` | AUTH-07~09 |
-| T5 | JMeter 认证压测 | T2 | `tests/jmeter/auth-load.jmx`, `tests/jmeter/config/auth-load.properties` | AUTH-10 |
-| T6 | 性能对比 + 文档更新 + CI 验证 | T4, T5 | RTM + README + CLAUDE.md | AUTH-11 |
+| #   | Task                                     | 依赖   | 产出文件                                                                       | 需求 ID    |
+| --- | ---------------------------------------- | ------ | ------------------------------------------------------------------------------ | ---------- |
+| T0  | DB Schema 扩展 (users + token_blacklist) | 无     | `src/db/database.js`                                                           | AUTH-01    |
+| T1  | 认证路由 (register/login/refresh/logout) | T0     | `src/routes/auth.js`                                                           | AUTH-01~04 |
+| T2  | JWT 中间件 + AUTH_ENABLED 开关           | T1     | `src/middleware/authenticate.js`, `src/routes/orders.js`, `src/app.js`         | AUTH-05~06 |
+| T3  | 单元测试 (auth routes + middleware)      | T1, T2 | `tests/unit/routes/auth.test.js`, `tests/unit/middleware/authenticate.test.js` | —          |
+| T4  | k6 认证压测脚本 (3 个场景)               | T2     | `auth-login.k6.js`, `auth-refresh.k6.js`, `auth-journey.k6.js`                 | AUTH-07~09 |
+| T5  | JMeter 认证压测                          | T2     | `tests/jmeter/auth-load.jmx`, `tests/jmeter/config/auth-load.properties`       | AUTH-10    |
+| T6  | 性能对比 + 文档更新 + CI 验证            | T4, T5 | RTM + README + CLAUDE.md                                                       | AUTH-11    |
 
 **执行顺序:** T0 → T1 → T2 → T3 → T4 → T5 → T6
 
@@ -219,6 +219,7 @@ CREATE TABLE IF NOT EXISTS token_blacklist (
 ```
 
 **设计决策 — bcrypt 同步 vs 异步:**
+
 - 使用 `bcrypt.hashSync` / `bcrypt.compareSync` (同步)
 - 原因: 同步操作会阻塞 event loop，这正是我们要测试的 CPU 密集型场景
 - 如果用异步版本 (bcrypt.hash)，会委托给 libuv 线程池，无法体现 event loop 瓶颈
@@ -242,14 +243,18 @@ CREATE TABLE IF NOT EXISTS token_blacklist (
 const { authenticate } = require('../middleware/authenticate');
 
 // 在 POST /api/orders 路由内部判断 AUTH_ENABLED
-router.post('/api/orders', (req, res, next) => {
-  if (process.env.AUTH_ENABLED === 'true') {
-    return authenticate(req, res, next);
+router.post(
+  '/api/orders',
+  (req, res, next) => {
+    if (process.env.AUTH_ENABLED === 'true') {
+      return authenticate(req, res, next);
+    }
+    next();
+  },
+  async (req, res) => {
+    // 现有订单逻辑不变
   }
-  next();
-}, async (req, res) => {
-  // 现有订单逻辑不变
-});
+);
 ```
 
 > **为什么在 orders.js 内部判断，而不在 app.js 中 `app.post`？**
@@ -259,7 +264,7 @@ router.post('/api/orders', (req, res, next) => {
 
 ```javascript
 const authRoutes = require('./routes/auth');
-app.use(authRoutes);  // 认证路由始终可用 (不受 AUTH_ENABLED 影响)
+app.use(authRoutes); // 认证路由始终可用 (不受 AUTH_ENABLED 影响)
 ```
 
 **T2 验收标准:** 现有 k6/JMeter smoke 脚本在 AUTH_ENABLED=false (默认) 下仍全部 PASS。
@@ -268,30 +273,30 @@ app.use(authRoutes);  // 认证路由始终可用 (不受 AUTH_ENABLED 影响)
 
 **新增文件:** `tests/unit/routes/auth.test.js`
 
-| 用例 ID | 测试 | 预期 |
-|---------|------|------|
-| UT-AUTH-01 | register 成功 | 201, 返回 id + username |
-| UT-AUTH-02 | register 缺少字段 | 400 |
-| UT-AUTH-03 | register 重复 username | 409 |
-| UT-AUTH-04 | login 成功 | 200, 返回 accessToken + refreshToken |
-| UT-AUTH-05 | login 错误密码 | 401 |
-| UT-AUTH-06 | login 不存在用户 | 401 |
-| UT-AUTH-07 | refresh 成功 | 200, 返回新 accessToken |
-| UT-AUTH-08 | refresh 无效 token | 401 |
-| UT-AUTH-09 | logout 成功 (需 Bearer token) | 200 |
-| UT-AUTH-10 | logout 后 refresh 失败 | 401 (jti 在黑名单) |
+| 用例 ID    | 测试                          | 预期                                 |
+| ---------- | ----------------------------- | ------------------------------------ |
+| UT-AUTH-01 | register 成功                 | 201, 返回 id + username              |
+| UT-AUTH-02 | register 缺少字段             | 400                                  |
+| UT-AUTH-03 | register 重复 username        | 409                                  |
+| UT-AUTH-04 | login 成功                    | 200, 返回 accessToken + refreshToken |
+| UT-AUTH-05 | login 错误密码                | 401                                  |
+| UT-AUTH-06 | login 不存在用户              | 401                                  |
+| UT-AUTH-07 | refresh 成功                  | 200, 返回新 accessToken              |
+| UT-AUTH-08 | refresh 无效 token            | 401                                  |
+| UT-AUTH-09 | logout 成功 (需 Bearer token) | 200                                  |
+| UT-AUTH-10 | logout 后 refresh 失败        | 401 (jti 在黑名单)                   |
 
 **新增文件:** `tests/unit/middleware/authenticate.test.js`
 
-| 用例 ID | 测试 | 预期 |
-|---------|------|------|
-| UT-MW-01 | 有效 token 放行 | next() 被调用, req.user 已注入 |
-| UT-MW-02 | 缺少 Authorization header | 401 |
-| UT-MW-03 | 无效 token | 401 |
-| UT-MW-04 | 过期 token | 401 |
-| UT-MW-05 | 黑名单 token | 401 |
-| UT-MW-06 | AUTH_ENABLED=false 时 orders 不需认证 | 201 (无 token 也可下单) |
-| UT-MW-07 | AUTH_ENABLED=true 时 orders 需认证 | 401 (无 token), 201 (有 token) |
+| 用例 ID  | 测试                                  | 预期                           |
+| -------- | ------------------------------------- | ------------------------------ |
+| UT-MW-01 | 有效 token 放行                       | next() 被调用, req.user 已注入 |
+| UT-MW-02 | 缺少 Authorization header             | 401                            |
+| UT-MW-03 | 无效 token                            | 401                            |
+| UT-MW-04 | 过期 token                            | 401                            |
+| UT-MW-05 | 黑名单 token                          | 401                            |
+| UT-MW-06 | AUTH_ENABLED=false 时 orders 不需认证 | 201 (无 token 也可下单)        |
+| UT-MW-07 | AUTH_ENABLED=true 时 orders 需认证    | 401 (无 token), 201 (有 token) |
 
 ### Task 4: k6 认证压测脚本 (3 个独立脚本)
 
@@ -305,13 +310,13 @@ app.use(authRoutes);  // 认证路由始终可用 (不受 AUTH_ENABLED 影响)
 
 export const options = {
   stages: [
-    { duration: '30s', target: 10 },   // Warm-up
-    { duration: '60s', target: 100 },  // Ramp (bcrypt ~100ms/login, 8 Workers → ~80 login/s max)
-    { duration: '60s', target: 100 },  // Hold steady
-    { duration: '30s', target: 0 },    // Cool-down
+    { duration: '30s', target: 10 }, // Warm-up
+    { duration: '60s', target: 100 }, // Ramp (bcrypt ~100ms/login, 8 Workers → ~80 login/s max)
+    { duration: '60s', target: 100 }, // Hold steady
+    { duration: '30s', target: 0 }, // Cool-down
   ],
   thresholds: {
-    http_req_duration: ['p(95)<2000'],  // bcrypt 阻塞预期 p95 > 500ms
+    http_req_duration: ['p(95)<2000'], // bcrypt 阻塞预期 p95 > 500ms
     http_req_failed: ['rate<0.01'],
   },
 };
@@ -336,7 +341,7 @@ export const options = {
     { duration: '30s', target: 0 },
   ],
   thresholds: {
-    http_req_duration: ['p(95)<200'],  // JWT verify + sign, 无 bcrypt，应极快
+    http_req_duration: ['p(95)<200'], // JWT verify + sign, 无 bcrypt，应极快
     http_req_failed: ['rate<0.01'],
   },
 };
@@ -408,6 +413,7 @@ port=3000
 ### Task 6: 性能对比 + 文档更新 + CI 验证
 
 输出:
+
 - RTM 新增 AUTH-01~11 追溯行
 - README 更新认证场景使用方法
 - CLAUDE.md 更新 Phase 3 状态 + 新增 auth 命令
@@ -421,12 +427,12 @@ port=3000
 
 ### 5.1 认证性能测试用例
 
-| 用例 ID | 场景 | 脚本 | VUs | 阈值 | 关注点 |
-|---------|------|------|-----|------|--------|
-| AUTH-PERF-01 | 高并发登录 | auth-login.k6.js | 100 | p95 < 2000ms, error < 1% | bcrypt ~100ms 同步阻塞, 8 Workers 理论上限 ~80 login/s |
-| AUTH-PERF-02 | Token 刷新 | auth-refresh.k6.js | 200 | p95 < 200ms | JWT verify + sign, 无 bcrypt, 应极快 |
-| AUTH-PERF-03 | 完整用户旅程 | auth-journey.k6.js | 500 | p95 < 500ms, error < 1% | login 仅首次, 后续 token-only (快) |
-| AUTH-PERF-04 | 无效 Token | auth-journey.k6.js (辅助) | ~10% 流量 | 100% 返回 401, 无 5xx | 错误处理不降级 |
+| 用例 ID      | 场景         | 脚本                      | VUs       | 阈值                     | 关注点                                                 |
+| ------------ | ------------ | ------------------------- | --------- | ------------------------ | ------------------------------------------------------ |
+| AUTH-PERF-01 | 高并发登录   | auth-login.k6.js          | 100       | p95 < 2000ms, error < 1% | bcrypt ~100ms 同步阻塞, 8 Workers 理论上限 ~80 login/s |
+| AUTH-PERF-02 | Token 刷新   | auth-refresh.k6.js        | 200       | p95 < 200ms              | JWT verify + sign, 无 bcrypt, 应极快                   |
+| AUTH-PERF-03 | 完整用户旅程 | auth-journey.k6.js        | 500       | p95 < 500ms, error < 1%  | login 仅首次, 后续 token-only (快)                     |
+| AUTH-PERF-04 | 无效 Token   | auth-journey.k6.js (辅助) | ~10% 流量 | 100% 返回 401, 无 5xx    | 错误处理不降级                                         |
 
 > **AUTH-PERF-01 VUs 调整说明:** 原 Issue #56 目标 500 VUs login。
 > 经计算: bcrypt 10 rounds ~100ms/call, 8 Workers → ~80 login/s max。
@@ -436,35 +442,35 @@ port=3000
 
 ### 5.2 性能对比测试
 
-| 对比项 | 无认证 (Phase 1/2 基准) | 有认证 (Phase 3) |
-|--------|------------------------|------------------|
-| 500 VUs p95 | 待测 | 待测 |
-| 500 VUs throughput | 待测 | 待测 |
-| 主要差异来源 | — | bcrypt ~100ms/login (首次) + JWT verify ~0.1ms/req (后续) |
+| 对比项             | 无认证 (Phase 1/2 基准) | 有认证 (Phase 3)                                          |
+| ------------------ | ----------------------- | --------------------------------------------------------- |
+| 500 VUs p95        | 待测                    | 待测                                                      |
+| 500 VUs throughput | 待测                    | 待测                                                      |
+| 主要差异来源       | —                       | bcrypt ~100ms/login (首次) + JWT verify ~0.1ms/req (后续) |
 
 ---
 
 ## 6. 风险与缓解
 
-| 风险 | 影响 | 缓解 |
-|------|------|------|
-| bcrypt 同步阻塞 event loop | 登录 p95 远高于无认证场景 | 预期行为, 正是测量目标; VUs 和阈值已据此调整 |
-| bcrypt + better-sqlite3 双重同步阻塞 | event loop 延迟叠加 | 在对比报告中分析各自贡献 |
-| 用户注册数据累积 | DB 膨胀影响后续测试 | 每轮测试前 `npm run restart:clean` (同时清除 users + token_blacklist) |
-| 现有 CI smoke test 被 AUTH_ENABLED 影响 | CI 失败 | 默认 AUTH_ENABLED=false, CI 不受影响; T2 验收包含现有脚本回归验证 |
-| token_blacklist 表膨胀 | 长时间测试可能积累大量记录 | UNIQUE(token_jti) 自带隐式索引; Soak Test (Phase 4) 观察 |
+| 风险                                    | 影响                       | 缓解                                                                  |
+| --------------------------------------- | -------------------------- | --------------------------------------------------------------------- |
+| bcrypt 同步阻塞 event loop              | 登录 p95 远高于无认证场景  | 预期行为, 正是测量目标; VUs 和阈值已据此调整                          |
+| bcrypt + better-sqlite3 双重同步阻塞    | event loop 延迟叠加        | 在对比报告中分析各自贡献                                              |
+| 用户注册数据累积                        | DB 膨胀影响后续测试        | 每轮测试前 `npm run restart:clean` (同时清除 users + token_blacklist) |
+| 现有 CI smoke test 被 AUTH_ENABLED 影响 | CI 失败                    | 默认 AUTH_ENABLED=false, CI 不受影响; T2 验收包含现有脚本回归验证     |
+| token_blacklist 表膨胀                  | 长时间测试可能积累大量记录 | UNIQUE(token_jti) 自带隐式索引; Soak Test (Phase 4) 观察              |
 
 ---
 
 ## 7. Prerequisites
 
-| 工具/依赖 | 验证命令 | 状态 |
-|-----------|---------|------|
-| Node.js 18+ | `node -v` | ✅ 已安装 (v25.8.1) |
-| k6 | `k6 version` | ✅ 已安装 |
-| JMeter | `jmeter --version` | ✅ 已安装 |
-| jsonwebtoken | `npm ls jsonwebtoken` | ⏳ 待安装 |
-| bcryptjs | `npm ls bcryptjs` | ⏳ 待安装 |
+| 工具/依赖    | 验证命令              | 状态                |
+| ------------ | --------------------- | ------------------- |
+| Node.js 18+  | `node -v`             | ✅ 已安装 (v25.8.1) |
+| k6           | `k6 version`          | ✅ 已安装           |
+| JMeter       | `jmeter --version`    | ✅ 已安装           |
+| jsonwebtoken | `npm ls jsonwebtoken` | ⏳ 待安装           |
+| bcryptjs     | `npm ls bcryptjs`     | ⏳ 待安装           |
 
 ---
 
@@ -472,25 +478,25 @@ port=3000
 
 ### Critical (3)
 
-| # | 问题 | 修复 |
-|---|------|------|
-| C1 | bcrypt ~100ms × 500 VUs → 理论上限 80 login/s, p95 < 500ms 不可能达成 | AUTH-PERF-01 调整为 100 VUs, 阈值 p95 < 2000ms; 500 VUs 测试移至 AUTH-PERF-03 (login 仅首次) |
-| C2 | AUTH-07/08/09 三个场景放在一个 k6 文件, VUs 和阈值不同无法共存 | 拆为 3 个独立文件: auth-login.k6.js, auth-refresh.k6.js, auth-journey.k6.js |
-| C3 | logout 需要 authenticate 中间件, 但 app.js 中未注册 | logout 路由内直接应用 authenticate: `router.post('/api/auth/logout', authenticate, ...)` |
+| #   | 问题                                                                  | 修复                                                                                         |
+| --- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| C1  | bcrypt ~100ms × 500 VUs → 理论上限 80 login/s, p95 < 500ms 不可能达成 | AUTH-PERF-01 调整为 100 VUs, 阈值 p95 < 2000ms; 500 VUs 测试移至 AUTH-PERF-03 (login 仅首次) |
+| C2  | AUTH-07/08/09 三个场景放在一个 k6 文件, VUs 和阈值不同无法共存        | 拆为 3 个独立文件: auth-login.k6.js, auth-refresh.k6.js, auth-journey.k6.js                  |
+| C3  | logout 需要 authenticate 中间件, 但 app.js 中未注册                   | logout 路由内直接应用 authenticate: `router.post('/api/auth/logout', authenticate, ...)`     |
 
 ### Important (4)
 
-| # | 问题 | 修复 |
-|---|------|------|
-| I1 | JMeter 缺少用户注册步骤 | 新增 setUp Thread Group 在主测试前自动注册用户 |
-| I2 | AUTH-PERF-04 (无效 Token) 未在脚本中设计 | auth-journey.k6.js 中 ~10% 迭代发送无效 token, 验证 401 |
-| I3 | CI workflow 分支触发 | 使用 `feature/performance-testing` 分支, 已在 CI 触发列表中 |
-| I4 | 缺少 npm scripts 和 CLAUDE.md 更新任务 | T6 增加 npm scripts + CLAUDE.md 更新; §2.2 修改文件表已补充 |
+| #   | 问题                                     | 修复                                                        |
+| --- | ---------------------------------------- | ----------------------------------------------------------- |
+| I1  | JMeter 缺少用户注册步骤                  | 新增 setUp Thread Group 在主测试前自动注册用户              |
+| I2  | AUTH-PERF-04 (无效 Token) 未在脚本中设计 | auth-journey.k6.js 中 ~10% 迭代发送无效 token, 验证 401     |
+| I3  | CI workflow 分支触发                     | 使用 `feature/performance-testing` 分支, 已在 CI 触发列表中 |
+| I4  | 缺少 npm scripts 和 CLAUDE.md 更新任务   | T6 增加 npm scripts + CLAUDE.md 更新; §2.2 修改文件表已补充 |
 
 ### Minor (3)
 
-| # | 问题 | 修复 |
-|---|------|------|
-| M1 | JMeter config 路径不一致 | 统一为 `tests/jmeter/config/auth-load.properties` |
-| M2 | app.js 路由注册模式脆弱 (`app.post` 顺序依赖) | 改为在 orders.js 路由内部条件应用 authenticate |
-| M3 | 用户池大小未指定 | 明确 N = max VUs, 每个 VU 使用唯一用户 |
+| #   | 问题                                          | 修复                                              |
+| --- | --------------------------------------------- | ------------------------------------------------- |
+| M1  | JMeter config 路径不一致                      | 统一为 `tests/jmeter/config/auth-load.properties` |
+| M2  | app.js 路由注册模式脆弱 (`app.post` 顺序依赖) | 改为在 orders.js 路由内部条件应用 authenticate    |
+| M3  | 用户池大小未指定                              | 明确 N = max VUs, 每个 VU 使用唯一用户            |

@@ -7,6 +7,7 @@ Utility functions for collecting and analyzing Prometheus metrics.
 import json
 import logging
 import time
+import operator
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -210,6 +211,17 @@ class MetricsCollector:
         Returns:
             bool: True if condition met
         """
+        ops = {
+            ">=": operator.ge,
+            "<=": operator.le,
+            "==": operator.eq,
+            ">": operator.gt,
+            "<": operator.lt,
+        }
+        op_func = ops.get(comparison)
+        if not op_func:
+            raise ValueError(f"Invalid comparison operator: {comparison}")
+
         start_time = time.time()
         logger.info(f"Waiting for pod count {comparison} {expected_count}")
 
@@ -220,6 +232,7 @@ class MetricsCollector:
                 logger.info(f"Current pod count: {count}")
 
                 if comparison == ">=" and count >= expected_count:
+                if op_func(count, expected_count):
                     return True
                 if comparison == "<=" and count <= expected_count:
                     return True

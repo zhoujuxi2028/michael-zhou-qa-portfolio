@@ -85,7 +85,7 @@ RESULTS=""
 ```bash
 log_result() {
   local id="$1" status="$2" detail="$3"
-  
+
   if [ "$status" = "PASS" ]; then
     PASS=$((PASS + 1))
     RESULTS="${RESULTS}\n  ✅ ${id}: ${detail}"
@@ -122,21 +122,25 @@ cleanup_api() {
 #### 2.2.3 输出解析（inline）
 
 **npm test 结果解析：**
+
 ```bash
 npm test 2>&1 | grep "148 passed"
 ```
 
 **覆盖率解析：**
+
 ```bash
 grep "All files" coverage.log | awk -F'|' '{print $2}' | xargs | sed 's/%//'
 ```
 
 **RTM 统计：**
+
 ```bash
 grep "✅" docs/qa/rtm.md | wc -l
 ```
 
 **CI 状态解析：**
+
 ```bash
 gh run list --branch feature/performance-testing --limit 1 | awk '{print $3}'
 ```
@@ -203,6 +207,7 @@ fi
 ### 3.3 Section 2-9: 其他检查（串行）
 
 详见 `scripts/stage4-selftest.sh` 源代码：
+
 - **Section 2:** 集成测试 (2.1-2.2)
 - **Section 3:** RTM 检查 (3.1)
 - **Section 4:** 风险管理 (4.1)
@@ -336,13 +341,13 @@ fi
 
 ### 5.2 容错策略
 
-| 错误类型 | 处理方式 | 结果 |
-|--------|--------|------|
-| npm test 失败 | 记录 FAIL，继续 | 检查项标记为 FAIL，脚本继续 |
-| Docker 不可用 | 检查 exit code，记录 SKIP | 集成测试标记为 SKIP |
-| 命令不存在 | `command not found` → FAIL | 该检查项标记为 FAIL |
-| 网络超时 (gh) | 使用 `\|\| true` 或 ignoreExitCode | SKIP 或 WARN |
-| 文件不存在 | `[ -f ... ]` 测试 | FAIL 该检查项 |
+| 错误类型      | 处理方式                           | 结果                        |
+| ------------- | ---------------------------------- | --------------------------- |
+| npm test 失败 | 记录 FAIL，继续                    | 检查项标记为 FAIL，脚本继续 |
+| Docker 不可用 | 检查 exit code，记录 SKIP          | 集成测试标记为 SKIP         |
+| 命令不存在    | `command not found` → FAIL         | 该检查项标记为 FAIL         |
+| 网络超时 (gh) | 使用 `\|\| true` 或 ignoreExitCode | SKIP 或 WARN                |
+| 文件不存在    | `[ -f ... ]` 测试                  | FAIL 该检查项               |
 
 ---
 
@@ -355,6 +360,7 @@ npm test 2>&1 | tee "$LOG_DIR/unit-tests.log" | grep -q "148 passed"
 ```
 
 **日志文件列表：**
+
 - `unit-tests.log` — npm test 输出
 - `coverage.log` — 覆盖率报告
 - `eslint.log` — ESLint 检查结果
@@ -393,6 +399,7 @@ tests/unit/scripts/stage4-selftest.test.js (需要添加)
 ### 6.2 验收标准
 
 **脚本执行成功标准：**
+
 - 所有 21 项检查项都有结果（PASS/FAIL/SKIP）
 - PASS ≥ 15 项，FAIL = 0 时，脚本返回 0（exit success）
 - 报告文件成功生成到 `docs/qa/reports/stage4-selftest-report.md`
@@ -454,7 +461,7 @@ gh (GitHub CLI)     # 用于 CI 检查
     "jest": "*",
     "eslint": "*",
     "prettier": "*",
-    "k6": "*"  // 用于 k6 smoke 测试
+    "k6": "*" // 用于 k6 smoke 测试
   }
 }
 ```
@@ -472,14 +479,14 @@ tee       # 日志重定向
 
 ## 9. 架构与实现对照表
 
-| 维度 | 架构设计（v2.0） | 实现 | 状态 |
-|------|----------------|------|------|
-| 语言 | Bash Shell | Bash Shell | ✅ 一致 |
-| 执行方式 | 串行（9 Section） | 串行（9 Section） | ✅ 一致 |
-| 检查项数 | 21 项 | 21 项 | ✅ 一致 |
-| 报告格式 | Markdown | Markdown | ✅ 一致 |
-| 计分方式 | 通过率 % | 通过率 % | ✅ 一致 |
-| 错误处理 | continue-on-error + SKIP | continue-on-error + SKIP | ✅ 一致 |
+| 维度     | 架构设计（v2.0）             | 实现                         | 状态    |
+| -------- | ---------------------------- | ---------------------------- | ------- |
+| 语言     | Bash Shell                   | Bash Shell                   | ✅ 一致 |
+| 执行方式 | 串行（9 Section）            | 串行（9 Section）            | ✅ 一致 |
+| 检查项数 | 21 项                        | 21 项                        | ✅ 一致 |
+| 报告格式 | Markdown                     | Markdown                     | ✅ 一致 |
+| 计分方式 | 通过率 %                     | 通过率 %                     | ✅ 一致 |
+| 错误处理 | continue-on-error + SKIP     | continue-on-error + SKIP     | ✅ 一致 |
 | 日志管理 | docs/qa/reports/logs-stage4/ | docs/qa/reports/logs-stage4/ | ✅ 一致 |
 
 ---
