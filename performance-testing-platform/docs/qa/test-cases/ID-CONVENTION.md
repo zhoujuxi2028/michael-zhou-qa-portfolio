@@ -16,6 +16,8 @@
 | `MODULE` | 被测模块/功能缩写（2~5 个大写字母）| `DB`, `AUTH` |
 | `NNN`    | 从 `01` 起的三位序号              | `01`, `12`   |
 
+> **历史豁免:** `SMOKE`, `LOAD`, `STRESS`, `SPIKE` 系列为 Phase 1 建立时采用 2 段格式 `<MODULE>-<NNN>`，已在全项目稳定使用，不作重命名。**新增用例必须遵守 3 段格式。**
+
 ---
 
 ## 设计原则
@@ -43,8 +45,7 @@
 | `UT-ORDER`    | 订单路由               | `tests/unit/routes/orders.test.js`            | 1     |
 | `UT-METRICS`  | 指标中间件             | `tests/unit/middleware/metrics.test.js`       | 1     |
 | `SM-UT`       | 系统指标采集单元       | `tests/unit/utils/metrics.test.js`            | 2     |
-| `CLU`         | Cluster 模式           | `tests/unit/cluster.test.js`                  | 2     |
-| `TQ-IT`       | 测试质量保障集成       | `scripts/integration-test.sh`                 | 2     |
+| `CLU`         | Cluster 模式（历史遗留，无 UT- 前缀，单元测试性质） | `tests/unit/cluster.test.js` | 2 |
 | `UT-AUTH`     | 认证路由               | `tests/unit/routes/auth.test.js`              | 3     |
 | `UT-MW`       | 认证中间件             | `tests/unit/middleware/authenticate.test.js`  | 3     |
 | `UT-SOAK`     | 内存泄漏检测           | `tests/unit/utils/leak-detection.test.js`     | 4     |
@@ -59,6 +60,7 @@
 | 前缀          | 含义                   | 用例文件                                      | Phase |
 | ------------- | ---------------------- | --------------------------------------------- | ----- |
 | `SM-IT`       | 系统指标集成           | `scripts/integration-test.sh`                 | 2     |
+| `TQ-IT`       | 测试质量保障集成       | `scripts/integration-test.sh`                 | 2     |
 | `CAP`         | 容量测试               | `tests/performance/capacity.k6.js`            | 2     |
 | `AUTH-INT`    | 认证集成流程           | `scripts/integration-test.sh`                 | 3     |
 | `AUTH-PERF`   | 认证性能               | `tests/performance/auth-*.k6.js`              | 3     |
@@ -118,4 +120,4 @@
 | 废弃前缀   | 原因                        | 替代前缀   |
 | ---------- | --------------------------- | ---------- |
 | `K6-BP`    | 与 `K6-BRK` 语义重复        | `K6-BRK`  |
-| `K6-RPT`   | Phase 6 含义与 Phase 1 冲突 | `K6-SUM`  |
+| `K6-RPT`（Phase 6 用法）| Phase 6 摘要报告与 Phase 1 HTML 报告语义冲突 | `K6-SUM`（Phase 6 仅）；Phase 1 的 `K6-RPT` 仍有效 |
