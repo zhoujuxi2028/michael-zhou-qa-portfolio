@@ -175,7 +175,7 @@
 | CI7-01   | CI 覆盖率门禁 (statements ≥ 80%)                  | `.github/workflows/performance-ci.yml`                | CI-COV-01~04                             | ✅                    |
 | CI7-02   | 基线回归：单元测试 + CI 自动对比                  | `src/utils/baseline.js`, `performance-ci.yml`         | UT-BL-01~06, CI-BL-01~04                | ✅                    |
 | CI7-03   | 趋势报告：`generate-trend.sh` + trend.json 累积   | `scripts/generate-trend.sh`                           | TREND-01~03                              | ✅                    |
-| CI7-04   | Grafana 面板增强 (错误分布/热力图/自定义/告警)    | `grafana/dashboards/`                                 | GRF-ERR-01, GRF-HEAT-01, GRF-CUSTOM-01, GRF-ALERT-01 | ⏭️ SKIP (需 Docker) |
+| CI7-04   | Grafana 面板增强 (错误分布/热力图/自定义/告警)    | `grafana/dashboards/`                                 | GRF-ERR-01, GRF-HEAT-01, GRF-CUSTOM-01, GRF-ALERT-01 | ✅                    |
 | CI7-05   | 定时调度：nightly soak + weekly capacity workflow | `.github/workflows/nightly-soak.yml`                  | SCHED-01~04                              | ✅                    |
 
 ---
@@ -190,8 +190,8 @@
 | 4        | 10 (SOAK-01~10)                                   | 10     | 0                                 | 100%     |
 | 5        | 13 (ENT-ENV/DATA/PROFILE/DX/TEST)                 | 13     | 0                                 | 100%     |
 | 6        | 11 (ENT-CONSISTENCY/BREAKPOINT/RESILIENCE/REPORT) | 10     | 1 (ENT-RESILIENCE-03 ⏭️ Phase 7) | 91%      |
-| 7        | 5 (CI7-01~05)                                     | 4      | 1 (CI7-04 Grafana 需 Docker)      | 80%      |
-| **合计** | **78**                                            | **75** | **3**                             | **96%**  |
+| 7        | 5 (CI7-01~05)                                     | 5      | 0                                 | 100%     |
+| **合计** | **78**                                            | **76** | **2**                             | **97%**  |
 
 ### 未覆盖项说明
 
@@ -199,7 +199,6 @@
 | --------------------------- | ------------------------------------ | ----------------------- |
 | Grafana Dashboard (Phase 1) | 需 Docker + InfluxDB 环境            | 本地手动验证            |
 | ENT-RESILIENCE-03 (Phase 6) | 熔断恢复行为测试（K6-RL-04）未实现   | Phase 7 (#116) 实现验证 |
-| CI7-04 Grafana (Phase 7)    | 需 Docker + InfluxDB 环境            | 本地手动验证            |
 
 ---
 
