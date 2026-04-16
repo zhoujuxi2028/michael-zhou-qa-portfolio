@@ -42,7 +42,19 @@
       "Bash(mv test-cases/rtm.md qa/rtm.md)",
       "Bash(tee docs/qa/reports/logs-2026-04-05/unit-test.log)",
       "Bash(tee docs/qa/reports/logs-2026-04-05/coverage.log)",
-      "Bash(tee docs/qa/reports/logs-2026-04-05/lint.log)"
+      "Bash(tee docs/qa/reports/logs-2026-04-05/lint.log)",
+      "Bash(RATE_LIMIT_ENABLED=true npm start)",
+      "Bash(open -a Docker)",
+      "Bash(open -a OrbStack)",
+      "Bash(killall node:*)",
+      "Bash(tee /tmp/stage4-unit-tests.log)",
+      "Bash(tee /tmp/stage4-eslint.log)",
+      "Bash(tee /tmp/stage4-coverage.log)",
+      "Skill(phase-gate)",
+      "Bash(rm *)",
+      "Bash(vm_stat)",
+      "Bash(top -l 1 -o RSIZE)",
+      "Bash(top -l 1)"
     ]
   },
   "hooks": {

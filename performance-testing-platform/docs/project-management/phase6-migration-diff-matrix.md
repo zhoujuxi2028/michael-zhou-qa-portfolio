@@ -11,6 +11,7 @@
 #### load.k6.js
 
 **当前结构:**
+
 ```javascript
 import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 import { sleep } from 'k6';
@@ -19,12 +20,12 @@ import { randomProduct } from './helpers/data.js';
 
 export default function () {
   const p = randomProduct();
-  
+
   // 漏斗逻辑：inline
   const listRes = http.get(`${BASE_URL}/api/products`);
   checkStatus(listRes, 200);
   sleep(randomIntBetween(0.5, 1.0));
-  
+
   if (Math.random() < 0.6) {
     // detail 逻辑...
   }
@@ -50,6 +51,7 @@ export default function () {
 #### stress.k6.js
 
 **当前结构:**
+
 ```javascript
 // 与 load.k6.js 相同的漏斗 + 更高 VUs (20 VUs)
 ```
@@ -61,6 +63,7 @@ export default function () {
 #### capacity.k6.js
 
 **当前结构:**
+
 ```javascript
 import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 // ... 漏斗逻辑 ...
@@ -82,6 +85,7 @@ import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 #### soak.k6.js
 
 **当前结构:**
+
 ```javascript
 // 漏斗 + 自定义 metrics: soakOrderSuccess, soakOrderFailure
 // 内联记录：if (orderRes.status === 201) customMetrics.soakOrderSuccess.add(1)
@@ -103,6 +107,7 @@ import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 #### auth-login.k6.js
 
 **当前结构:**
+
 ```javascript
 import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 import { check } from 'k6';  // ← 直接 check()，不用 checkStatus()
@@ -113,7 +118,7 @@ export default function () {
     'login status 200': (r) => r.status === 200,
     'token in body': (r) => r.json('token') !== undefined,
   });
-  
+
   sleep(randomIntBetween(0.5, 1.0));
 }
 ```
@@ -139,6 +144,7 @@ export default function () {
 #### auth-journey.k6.js
 
 **当前结构:**
+
 ```javascript
 // login → browse/detail/order 完整旅程
 // 包含 randomIntBetween(0.5, 1.0) 多处
@@ -160,6 +166,7 @@ export default function () {
 #### smoke.k6.js
 
 **当前结构:**
+
 ```javascript
 // 简单测试，无漏斗逻辑，有内联 health check
 ```
@@ -184,16 +191,19 @@ export default function () {
 ### 优先级顺序（降低风险）
 
 **第 1 批：低风险（auth 脚本）** — 2h
+
 - auth-login.k6.js: check→checkStatus + CDN→thinkTime
 - auth-refresh.k6.js: 同上
 - 验收: k6 run auth-login.k6.js 通过
 
 **第 2 批：标准脚本（无自定义 metrics）** — 3h
+
 - smoke.k6.js + spike.k6.js: 添加 verifyHealth()
 - load.k6.js + stress.k6.js: 迁移漏斗 + 对标 before/after
 - 验收: p95 差异 < 10%
 
 **第 3 批：高风险（自定义 metrics）** — 3-4h
+
 - capacity.k6.js: 保留 pollMetrics()，只迁移 funnel
 - soak.k6.js: **关键** — 验证 onOrder callback 正确性
 - auth-journey.k6.js: 迁移漏斗 + 断言统一
@@ -204,6 +214,7 @@ export default function () {
 ## 验收标准详细定义
 
 ### 批量迁移前
+
 ```bash
 npm run smoke &          # baseline
 npm run load &
@@ -214,6 +225,7 @@ npm run capacity &
 ```
 
 ### 逐脚本迁移 → 对标
+
 ```bash
 # Step 1: 迁移单个脚本（e.g., load.k6.js）
 git checkout -b migrate/load-helpers
@@ -236,6 +248,7 @@ diff <(grep 'p(95)\|error_rate\|throughput' /tmp/load-before.txt) \
 ```
 
 ### soak 脚本特殊验证
+
 ```bash
 npm run soak:short > /tmp/soak-before.json 2>&1
 # 迁移后
@@ -253,14 +266,14 @@ jq '.data[] | select(.metric | contains("soak")) | .data.value' \
 
 ## 关键风险点总结
 
-| 脚本 | 风险等级 | 关键风险 | 迁移前必做 |
-|------|---------|---------|----------|
-| auth-* (3) | 🟢 低 | 无 | — |
-| smoke/spike | 🟢 低 | 无 | — |
-| load/stress | 🟡 中 | 漏斗概率变化 | before/after 对标 |
-| capacity | 🟡 中 | pollMetrics 独立性 | 验证 metrics 不变 |
-| soak | 🔴 高 | onOrder callback 可靠性 | 完整 soak 运行对标 |
-| auth-journey | 🟡 中 | 漏斗完整性 | 验证登录→浏览→下单完整链路 |
+| 脚本         | 风险等级 | 关键风险                | 迁移前必做                 |
+| ------------ | -------- | ----------------------- | -------------------------- |
+| auth-\* (3)  | 🟢 低    | 无                      | —                          |
+| smoke/spike  | 🟢 低    | 无                      | —                          |
+| load/stress  | 🟡 中    | 漏斗概率变化            | before/after 对标          |
+| capacity     | 🟡 中    | pollMetrics 独立性      | 验证 metrics 不变          |
+| soak         | 🔴 高    | onOrder callback 可靠性 | 完整 soak 运行对标         |
+| auth-journey | 🟡 中    | 漏斗完整性              | 验证登录→浏览→下单完整链路 |
 
 ---
 
@@ -284,6 +297,7 @@ jq '.data[] | select(.metric | contains("soak")) | .data.value' \
 ---
 
 **相关链接:**
+
 - Requirements: [phase6-testing.md](phase6-testing.md)
 - Design: [implementation-plan-phase6.md](implementation-plan-phase6.md)
 - PoC Results: [Issue #91](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/91)

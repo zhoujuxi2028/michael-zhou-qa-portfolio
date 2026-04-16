@@ -60,13 +60,13 @@ if growth_ratio > 0.25 → console.warn("MEMORY GROWTH WARNING")
 
 ### 1.3 Custom k6 Metrics
 
-| Metric Name | Type | Source | Purpose |
-|-------------|------|--------|---------|
-| `soak_heap_used_mb` | Trend | `GET /metrics → memory.heapUsed` | heapUsed 趋势 |
-| `soak_event_loop_lag` | Trend | `GET /metrics → eventLoop.lag` | 事件循环延迟趋势 |
-| `soak_order_success` | Counter | `POST /api/orders → status 201` | 订单成功计数 |
-| `soak_order_failure` | Counter | `POST /api/orders → status != 201` | 订单失败计数 |
-| `soak_auth_latency` | Trend | `POST /api/auth/login → timings.duration` | 认证延迟趋势 (SOAK-04) |
+| Metric Name           | Type    | Source                                    | Purpose                |
+| --------------------- | ------- | ----------------------------------------- | ---------------------- |
+| `soak_heap_used_mb`   | Trend   | `GET /metrics → memory.heapUsed`          | heapUsed 趋势          |
+| `soak_event_loop_lag` | Trend   | `GET /metrics → eventLoop.lag`            | 事件循环延迟趋势       |
+| `soak_order_success`  | Counter | `POST /api/orders → status 201`           | 订单成功计数           |
+| `soak_order_failure`  | Counter | `POST /api/orders → status != 201`        | 订单失败计数           |
+| `soak_auth_latency`   | Trend   | `POST /api/auth/login → timings.duration` | 认证延迟趋势 (SOAK-04) |
 
 > **SOAK-01 状态:** `/api/metrics` 端点已在 Phase 2 实现 (`src/routes/health.js` + `src/middleware/metrics.js`)，返回 heapUsed/heapTotal/rss/external/CPU/eventLoop。Phase 4 无需重新开发，直接复用。
 
@@ -78,34 +78,34 @@ if growth_ratio > 0.25 → console.warn("MEMORY GROWTH WARNING")
 
 ### 2.1 新增文件
 
-| File | Responsibility |
-|------|---------------|
-| `tests/performance/soak.k6.js` | Soak test 脚本 (100~500 VUs, stages 配置) |
-| `tests/performance/soak-short.k6.js` | 短时 soak (10 VUs, 5min) 用于本地验证和 CI smoke |
-| `tests/unit/scripts/soak-leak-detection.test.js` | 泄漏检测逻辑单元测试 |
-| `grafana/dashboards/soak-results.json` | Grafana soak dashboard (heap + business metrics + alerts) |
+| File                                             | Responsibility                                            |
+| ------------------------------------------------ | --------------------------------------------------------- |
+| `tests/performance/soak.k6.js`                   | Soak test 脚本 (100~500 VUs, stages 配置)                 |
+| `tests/performance/soak-short.k6.js`             | 短时 soak (10 VUs, 5min) 用于本地验证和 CI smoke          |
+| `tests/unit/scripts/soak-leak-detection.test.js` | 泄漏检测逻辑单元测试                                      |
+| `grafana/dashboards/soak-results.json`           | Grafana soak dashboard (heap + business metrics + alerts) |
 
 ### 2.2 修改文件
 
-| File | Changes |
-|------|---------|
-| `package.json` | 新增 `k6:soak`, `k6:soak:short`, `k6:soak:influx` scripts |
-| `tests/performance/helpers/utils.js` | 新增 `pollMetrics()`, `LEAK_THRESHOLD` 常量 |
-| `grafana/provisioning/dashboards/dashboard.yml` | 注册 soak-results.json |
+| File                                            | Changes                                                   |
+| ----------------------------------------------- | --------------------------------------------------------- |
+| `package.json`                                  | 新增 `k6:soak`, `k6:soak:short`, `k6:soak:influx` scripts |
+| `tests/performance/helpers/utils.js`            | 新增 `pollMetrics()`, `LEAK_THRESHOLD` 常量               |
+| `grafana/provisioning/dashboards/dashboard.yml` | 注册 soak-results.json                                    |
 
 ---
 
 ## 3. Task Breakdown
 
-| Task | 内容 | 文件 | 依赖 |
-|------|------|------|------|
-| T0 | Helper 扩展: pollMetrics + leak detection | `helpers/utils.js` + test | — |
-| T1 | k6 soak-short 脚本 (5min 验证版) | `soak-short.k6.js` | T0 |
-| T2 | k6 soak 脚本 (完整 1~4h 版) | `soak.k6.js` | T0 |
-| T3 | npm scripts | `package.json` | T1, T2 |
-| T4 | Grafana soak dashboard | `grafana/dashboards/soak-results.json` | — |
-| T5 | Grafana alert rules | 内嵌于 soak dashboard JSON | T4 |
-| T6 | 文档更新 | architecture.md, qa/test-cases/index.md | T0~T5 |
+| Task | 内容                                      | 文件                                    | 依赖   |
+| ---- | ----------------------------------------- | --------------------------------------- | ------ |
+| T0   | Helper 扩展: pollMetrics + leak detection | `helpers/utils.js` + test               | —      |
+| T1   | k6 soak-short 脚本 (5min 验证版)          | `soak-short.k6.js`                      | T0     |
+| T2   | k6 soak 脚本 (完整 1~4h 版)               | `soak.k6.js`                            | T0     |
+| T3   | npm scripts                               | `package.json`                          | T1, T2 |
+| T4   | Grafana soak dashboard                    | `grafana/dashboards/soak-results.json`  | —      |
+| T5   | Grafana alert rules                       | 内嵌于 soak dashboard JSON              | T4     |
+| T6   | 文档更新                                  | architecture.md, qa/test-cases/index.md | T0~T5  |
 
 ---
 
@@ -114,6 +114,7 @@ if growth_ratio > 0.25 → console.warn("MEMORY GROWTH WARNING")
 ### Task 0: Helper 扩展 — pollMetrics + leak detection
 
 **Files:**
+
 - Modify: `tests/performance/helpers/utils.js`
 - Create: `tests/unit/scripts/soak-leak-detection.test.js`
 
@@ -121,8 +122,8 @@ if growth_ratio > 0.25 → console.warn("MEMORY GROWTH WARNING")
 
 ```javascript
 // 新增常量
-export const LEAK_THRESHOLD = 0.50;  // 50% growth = leak
-export const WARN_THRESHOLD = 0.25;  // 25% growth = warning
+export const LEAK_THRESHOLD = 0.5; // 50% growth = leak
+export const WARN_THRESHOLD = 0.25; // 25% growth = warning
 
 // 新增: 采集服务端指标并写入 custom metrics
 export function pollMetrics(customMetrics) {
@@ -136,7 +137,9 @@ export function pollMetrics(customMetrics) {
       if (body.eventLoop && customMetrics.eventLoopLag) {
         customMetrics.eventLoopLag.add(body.eventLoop.lag);
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 }
 
@@ -168,7 +171,11 @@ export function checkMemoryLeak(baselineBytes, finalBytes) {
 Create `tests/unit/scripts/soak-leak-detection.test.js`:
 
 ```javascript
-const { checkMemoryLeak, LEAK_THRESHOLD, WARN_THRESHOLD } = require('../../../src/utils/leak-detection');
+const {
+  checkMemoryLeak,
+  LEAK_THRESHOLD,
+  WARN_THRESHOLD,
+} = require('../../../src/utils/leak-detection');
 
 describe('checkMemoryLeak', () => {
   test('UT-SOAK-01: no leak — stable heap', () => {
@@ -206,7 +213,7 @@ describe('checkMemoryLeak', () => {
 
 describe('thresholds', () => {
   test('UT-SOAK-06: LEAK_THRESHOLD is 0.50', () => {
-    expect(LEAK_THRESHOLD).toBe(0.50);
+    expect(LEAK_THRESHOLD).toBe(0.5);
   });
 
   test('UT-SOAK-07: WARN_THRESHOLD is 0.25', () => {
@@ -225,7 +232,7 @@ Expected: FAIL — `Cannot find module '../../../src/utils/leak-detection'`
 Create `src/utils/leak-detection.js`:
 
 ```javascript
-const LEAK_THRESHOLD = 0.50;
+const LEAK_THRESHOLD = 0.5;
 const WARN_THRESHOLD = 0.25;
 
 function checkMemoryLeak(baselineBytes, finalBytes) {
@@ -251,7 +258,7 @@ Add to `tests/performance/helpers/utils.js`:
 ```javascript
 import http from 'k6/http';
 
-export const LEAK_THRESHOLD = 0.50;
+export const LEAK_THRESHOLD = 0.5;
 export const WARN_THRESHOLD = 0.25;
 
 export function pollMetrics(customMetrics) {
@@ -265,7 +272,9 @@ export function pollMetrics(customMetrics) {
       if (body.eventLoop && customMetrics.eventLoopLag) {
         customMetrics.eventLoopLag.add(body.eventLoop.lag);
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 }
 
@@ -290,6 +299,7 @@ git commit -m "feat(perf): add memory leak detection logic + pollMetrics helper 
 ### Task 1: k6 soak-short 脚本 (5min 验证版)
 
 **Files:**
+
 - Create: `tests/performance/soak-short.k6.js`
 
 **Purpose:** 短时 soak (10 VUs, 5min) 用于本地快速验证脚本正确性。
@@ -300,7 +310,13 @@ git commit -m "feat(perf): add memory leak detection logic + pollMetrics helper 
 import http from 'k6/http';
 import { sleep } from 'k6';
 import { Trend, Counter } from 'k6/metrics';
-import { BASE_URL, checkStatus, pollMetrics, checkMemoryLeak, LEAK_THRESHOLD } from './helpers/utils.js';
+import {
+  BASE_URL,
+  checkStatus,
+  pollMetrics,
+  checkMemoryLeak,
+  LEAK_THRESHOLD,
+} from './helpers/utils.js';
 
 // Custom metrics
 const soakHeapUsedMb = new Trend('soak_heap_used_mb');
@@ -310,9 +326,9 @@ const soakOrderFailure = new Counter('soak_order_failure');
 
 export const options = {
   stages: [
-    { duration: '30s', target: 10 },   // ramp-up
-    { duration: '4m', target: 10 },     // steady state
-    { duration: '30s', target: 0 },     // ramp-down
+    { duration: '30s', target: 10 }, // ramp-up
+    { duration: '4m', target: 10 }, // steady state
+    { duration: '30s', target: 0 }, // ramp-down
   ],
   thresholds: {
     http_req_duration: ['p(95)<500'],
@@ -326,7 +342,9 @@ export function setup() {
   if (m.status === 200) {
     try {
       baselineHeap = JSON.parse(m.body).memory.heapUsed;
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
   console.log(`Soak baseline heapUsed: ${(baselineHeap / 1024 / 1024).toFixed(1)} MB`);
   return { baselineHeap };
@@ -370,7 +388,9 @@ export function teardown(data) {
   if (m.status === 200) {
     try {
       finalHeap = JSON.parse(m.body).memory.heapUsed;
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
   const result = checkMemoryLeak(data.baselineHeap, finalHeap);
@@ -378,7 +398,9 @@ export function teardown(data) {
   console.log(`Heap growth: ${(result.ratio * 100).toFixed(1)}% — level: ${result.level}`);
 
   if (result.leaked) {
-    console.error(`MEMORY LEAK DETECTED: heap grew ${(result.ratio * 100).toFixed(1)}% (threshold: ${LEAK_THRESHOLD * 100}%)`);
+    console.error(
+      `MEMORY LEAK DETECTED: heap grew ${(result.ratio * 100).toFixed(1)}% (threshold: ${LEAK_THRESHOLD * 100}%)`
+    );
   }
 }
 ```
@@ -400,6 +422,7 @@ git commit -m "feat(perf): add soak-short k6 script (5min validation) (#65)"
 ### Task 2: k6 soak 脚本 (完整 1~4h 版)
 
 **Files:**
+
 - Create: `tests/performance/soak.k6.js`
 
 - [ ] **Step 1: Create soak.k6.js**
@@ -408,7 +431,13 @@ git commit -m "feat(perf): add soak-short k6 script (5min validation) (#65)"
 import http from 'k6/http';
 import { sleep } from 'k6';
 import { Trend, Counter } from 'k6/metrics';
-import { BASE_URL, checkStatus, pollMetrics, checkMemoryLeak, LEAK_THRESHOLD } from './helpers/utils.js';
+import {
+  BASE_URL,
+  checkStatus,
+  pollMetrics,
+  checkMemoryLeak,
+  LEAK_THRESHOLD,
+} from './helpers/utils.js';
 // Custom metrics (SOAK-04)
 const soakHeapUsedMb = new Trend('soak_heap_used_mb');
 const soakEventLoopLag = new Trend('soak_event_loop_lag');
@@ -422,9 +451,9 @@ const SOAK_DURATION = __ENV.SOAK_DURATION || '1h';
 
 export const options = {
   stages: [
-    { duration: '2m', target: SOAK_VUS },             // ramp-up
-    { duration: SOAK_DURATION, target: SOAK_VUS },     // steady state
-    { duration: '1m', target: 0 },                      // ramp-down
+    { duration: '2m', target: SOAK_VUS }, // ramp-up
+    { duration: SOAK_DURATION, target: SOAK_VUS }, // steady state
+    { duration: '1m', target: 0 }, // ramp-down
   ],
   thresholds: {
     http_req_duration: ['p(95)<500'],
@@ -438,10 +467,13 @@ export function setup() {
   if (m.status === 200) {
     try {
       baselineHeap = JSON.parse(m.body).memory.heapUsed;
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
   // Register soak user for auth latency sampling (SOAK-04)
-  http.post(`${BASE_URL}/api/auth/register`,
+  http.post(
+    `${BASE_URL}/api/auth/register`,
     JSON.stringify({ username: 'soakuser', password: 'soakpass' }),
     { headers: { 'Content-Type': 'application/json' } }
   );
@@ -499,7 +531,9 @@ export function teardown(data) {
   if (m.status === 200) {
     try {
       finalHeap = JSON.parse(m.body).memory.heapUsed;
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
   const result = checkMemoryLeak(data.baselineHeap, finalHeap);
@@ -511,7 +545,9 @@ export function teardown(data) {
     console.warn(`[SOAK] MEMORY GROWTH WARNING: ${(result.ratio * 100).toFixed(1)}%`);
   }
   if (result.leaked) {
-    console.error(`[SOAK] MEMORY LEAK DETECTED: heap grew ${(result.ratio * 100).toFixed(1)}% (threshold: ${LEAK_THRESHOLD * 100}%)`);
+    console.error(
+      `[SOAK] MEMORY LEAK DETECTED: heap grew ${(result.ratio * 100).toFixed(1)}% (threshold: ${LEAK_THRESHOLD * 100}%)`
+    );
   }
 }
 ```
@@ -533,6 +569,7 @@ git commit -m "feat(perf): add full soak k6 script (1~4h configurable) (#65)"
 ### Task 3: npm scripts
 
 **Files:**
+
 - Modify: `package.json`
 
 - [ ] **Step 1: Add soak scripts to package.json**
@@ -562,12 +599,14 @@ git commit -m "feat(perf): add npm soak scripts (short/default/full/influx) (#65
 ### Task 4: Grafana soak dashboard
 
 **Files:**
+
 - Create: `grafana/dashboards/soak-results.json`
 - Modify: `grafana/provisioning/dashboards/dashboard.yml`
 
 - [ ] **Step 1: Create soak-results.json dashboard**
 
 Dashboard with 6 panels:
+
 1. **Soak Heap Used (MB)** — `SELECT mean("value") FROM "soak_heap_used_mb" WHERE $timeFilter GROUP BY time($__interval)`
 2. **Event Loop Lag (ms)** — `SELECT mean("value") FROM "soak_event_loop_lag" WHERE $timeFilter GROUP BY time($__interval)`
 3. **Virtual Users** — `SELECT mean("value") FROM "vus" WHERE $timeFilter GROUP BY time($__interval)`
@@ -610,11 +649,13 @@ git commit -m "feat(perf): add Grafana soak dashboard (heap + business metrics) 
 ### Task 5: Grafana alert rules
 
 **Files:**
+
 - Modify: `grafana/dashboards/soak-results.json` (add alert section to panels)
 
 - [ ] **Step 1: Add alert rules to soak dashboard panels**
 
 Three alert rules (embedded in panel `alert` field):
+
 1. **p95 > 500ms** on panel 6 (Response Time p95)
 2. **Error rate > 1%** — new panel 7 with `http_req_failed` query
 3. **Heap sustained growth** — on panel 1, alert when last 10m avg > first 10m avg by 50%
@@ -635,12 +676,14 @@ git commit -m "feat(perf): add Grafana alert rules (p95, error rate, heap growth
 ### Task 6: 文档更新
 
 **Files:**
+
 - Modify: `docs/architecture/architecture.md`
 - Modify: `docs/qa/test-cases/index.md`
 
 - [ ] **Step 1: Update architecture.md**
 
 Add Phase 4 section:
+
 - Soak test 流程图 (from §1.1)
 - Custom metrics 表 (from §1.3)
 - Grafana dashboard 描述
@@ -649,11 +692,11 @@ Add Phase 4 section:
 
 Add soak test cases:
 
-| ID | Test Case | VUs | Duration | Pass Criteria |
-|----|-----------|-----|----------|---------------|
-| SOAK-TC-01 | Short soak (validation) | 10 | 5min | p95 < 500ms, error < 1% |
-| SOAK-TC-02 | Default soak (1h) | 200 | 1h | p95 < 500ms, error < 1%, heap growth < 50% |
-| SOAK-TC-03 | Full soak (4h) | 500 | 4h | p95 < 500ms, error < 1%, heap growth < 50% |
+| ID         | Test Case               | VUs | Duration | Pass Criteria                              |
+| ---------- | ----------------------- | --- | -------- | ------------------------------------------ |
+| SOAK-TC-01 | Short soak (validation) | 10  | 5min     | p95 < 500ms, error < 1%                    |
+| SOAK-TC-02 | Default soak (1h)       | 200 | 1h       | p95 < 500ms, error < 1%, heap growth < 50% |
+| SOAK-TC-03 | Full soak (4h)          | 500 | 4h       | p95 < 500ms, error < 1%, heap growth < 50% |
 
 - [ ] **Step 3: Commit**
 
@@ -666,38 +709,38 @@ git commit -m "docs(perf): update architecture and test cases for Phase 4 soak (
 
 ## 5. Test Case Design
 
-| ID | 类型 | 描述 | 验证方法 |
-|----|------|------|----------|
-| UT-SOAK-01~07 | Unit | leak detection 逻辑 (stable/warning/critical/zero/negative) | Jest |
-| SOAK-TC-01 | Perf | Short soak 5min, 10 VUs | `npm run k6:soak:short` |
-| SOAK-TC-02 | Perf | Default soak 1h, 200 VUs | `npm run k6:soak` |
-| SOAK-TC-03 | Perf | Full soak 4h, 500 VUs | `npm run k6:soak:full` |
-| SOAK-TC-04 | Visual | Grafana dashboard panels render | `docker compose up` + browser |
-| SOAK-TC-05 | Visual | Grafana alerts fire on threshold breach | Inject artificial load |
+| ID            | 类型   | 描述                                                        | 验证方法                      |
+| ------------- | ------ | ----------------------------------------------------------- | ----------------------------- |
+| UT-SOAK-01~07 | Unit   | leak detection 逻辑 (stable/warning/critical/zero/negative) | Jest                          |
+| SOAK-TC-01    | Perf   | Short soak 5min, 10 VUs                                     | `npm run k6:soak:short`       |
+| SOAK-TC-02    | Perf   | Default soak 1h, 200 VUs                                    | `npm run k6:soak`             |
+| SOAK-TC-03    | Perf   | Full soak 4h, 500 VUs                                       | `npm run k6:soak:full`        |
+| SOAK-TC-04    | Visual | Grafana dashboard panels render                             | `docker compose up` + browser |
+| SOAK-TC-05    | Visual | Grafana alerts fire on threshold breach                     | Inject artificial load        |
 
 ---
 
 ## 6. Risk & Mitigation
 
-| # | Risk | Impact | Mitigation |
-|---|------|--------|------------|
-| 1 | DB 膨胀: 长时间 orders 写入 | p95 退化 | `npm run restart:clean` 内置于 soak scripts |
-| 2 | Soak 4h 中断 (机器睡眠/网络) | 数据丢失 | k6 `--out influxdb` 实时写入，不怕中断 |
-| 3 | heapUsed 波动导致误判 | 假阳性 leak | 50% threshold + warning at 25% 两级缓冲 |
-| 4 | Grafana alert 在 InfluxDB 1.x 的局限 | 复杂查询不支持 | 使用 panel-level alerts (非 unified alerting) |
-| 5 | k6 ES module 不能 require() CJS | 代码重复 | leak-detection 逻辑两份: CJS (Jest) + ESM (k6 helper) |
+| #   | Risk                                 | Impact         | Mitigation                                            |
+| --- | ------------------------------------ | -------------- | ----------------------------------------------------- |
+| 1   | DB 膨胀: 长时间 orders 写入          | p95 退化       | `npm run restart:clean` 内置于 soak scripts           |
+| 2   | Soak 4h 中断 (机器睡眠/网络)         | 数据丢失       | k6 `--out influxdb` 实时写入，不怕中断                |
+| 3   | heapUsed 波动导致误判                | 假阳性 leak    | 50% threshold + warning at 25% 两级缓冲               |
+| 4   | Grafana alert 在 InfluxDB 1.x 的局限 | 复杂查询不支持 | 使用 panel-level alerts (非 unified alerting)         |
+| 5   | k6 ES module 不能 require() CJS      | 代码重复       | leak-detection 逻辑两份: CJS (Jest) + ESM (k6 helper) |
 
 ---
 
 ## 7. Prerequisites
 
-| # | 依赖 | 验证命令 | 已就绪 |
-|---|------|----------|--------|
-| 1 | Node.js ≥ 18 | `node -v` | ✅ v25.8.1 |
-| 2 | k6 ≥ 1.0 | `k6 version` | ✅ v1.7.0 |
-| 3 | Docker + Compose | `docker compose version` | 需验证 |
-| 4 | InfluxDB (via Docker) | `curl http://localhost:8086/ping` | 需 `docker compose up` |
-| 5 | Grafana (via Docker) | `curl http://localhost:3010` | 需 `docker compose up` |
+| #   | 依赖                  | 验证命令                          | 已就绪                 |
+| --- | --------------------- | --------------------------------- | ---------------------- |
+| 1   | Node.js ≥ 18          | `node -v`                         | ✅ v25.8.1             |
+| 2   | k6 ≥ 1.0              | `k6 version`                      | ✅ v1.7.0              |
+| 3   | Docker + Compose      | `docker compose version`          | 需验证                 |
+| 4   | InfluxDB (via Docker) | `curl http://localhost:8086/ping` | 需 `docker compose up` |
+| 5   | Grafana (via Docker)  | `curl http://localhost:3010`      | 需 `docker compose up` |
 
 ---
 
@@ -705,8 +748,8 @@ git commit -m "docs(perf): update architecture and test cases for Phase 4 soak (
 
 > Plan Reviewer 执行结果: **Approved** (2 issues + 1 advisory)
 
-| # | 级别 | 问题 | 修复 |
-|---|------|------|------|
-| 1 | Minor | SOAK-01 已由 Phase 2 实现，计划未明确说明 | 在 §1.3 后新增 SOAK-01 状态说明 |
-| 2 | Important | SOAK-04 缺少 auth latency p99 指标 | 新增 `soak_auth_latency` Trend + setup 注册 soakuser + default 中 2% 采样 login |
-| R1 | Advisory | `randomIntBetween` 返回整数 (0 或 1) | 改用 `Math.random() + 0.5` 实现 0.5~1.5s 小数 sleep |
+| #   | 级别      | 问题                                      | 修复                                                                            |
+| --- | --------- | ----------------------------------------- | ------------------------------------------------------------------------------- |
+| 1   | Minor     | SOAK-01 已由 Phase 2 实现，计划未明确说明 | 在 §1.3 后新增 SOAK-01 状态说明                                                 |
+| 2   | Important | SOAK-04 缺少 auth latency p99 指标        | 新增 `soak_auth_latency` Trend + setup 注册 soakuser + default 中 2% 采样 login |
+| R1  | Advisory  | `randomIntBetween` 返回整数 (0 或 1)      | 改用 `Math.random() + 0.5` 实现 0.5~1.5s 小数 sleep                             |
