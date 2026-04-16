@@ -141,25 +141,21 @@
 
 ---
 
-## Phase 6 — 测试能力扩展 ([#88](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/88))
+## Phase 6 — 测试能力扩展 ([#86](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/86))
 
-**前置条件:** Docker daemon 运行中（集成测试需 Docker 环境）。验证：`bash scripts/preflight-check.sh --stage4`
-
-| 需求 ID            | 需求                                             | 实现文件                                                                                                                                                   | 测试用例 ID                                                       | 状态       |
-| ------------------ | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- |
-| ENT-CONSISTENCY-01 | k6 共享 helpers (thinkTime, funnel, healthCheck) | `helpers/thinkTime.js`, `helpers/funnel.js`, `helpers/healthCheck.js`                                                                                      | K6-INT-01~05 (Phase 5), K6-HLP-INT-01~02 (Phase 6 Runtime Verify) | ✅         |
-| ENT-CONSISTENCY-02 | 9 个 k6 脚本迁移到 shared helpers                | `load.k6.js`, `stress.k6.js`, `capacity.k6.js`, `soak.k6.js`, `auth-login.k6.js`, `auth-refresh.k6.js`, `auth-journey.k6.js`, `smoke.k6.js`, `spike.k6.js` | K6-HLP-INT-01~02                                                  | ✅         |
-| ENT-CONSISTENCY-03 | k6 脚本回归验证 (checkStatus/thinkTime)          | `smoke.k6.js` + k6:smoke npm script                                                                                                                        | K6-HLP-INT-01                                                     | ✅         |
-| ENT-CONSISTENCY-04 | breakpoint test 脚本                             | `breakpoint.k6.js`                                                                                                                                         | K6-BRK-01~03 (Stage 4 验证完成)                                   | ✅         |
-| ENT-CONSISTENCY-05 | capacity/soak 脚本迁移验证                       | `capacity.k6.js`, `soak.k6.js`                                                                                                                             | K6-HLP-INT-01                                                     | ✅         |
-| ENT-RESILIENCE-01  | Rate Limiter 中间件 (enable/disable toggle)      | `src/middleware/rateLimiter.js`                                                                                                                            | UT-RL-01~06                                                       | ✅         |
-| ENT-RESILIENCE-02  | Rate Limiter 429 burst 测试                      | `tests/performance/rate-limit.k6.js`                                                                                                                       | RL-INT-01                                                         | ✅         |
-| ENT-RESILIENCE-03  | RateLimit headers 验证                           | `tests/performance/rate-limit.k6.js`                                                                                                                       | RL-INT-02                                                         | ✅         |
-| ENT-RESILIENCE-04  | 限流窗口过期恢复                                 | `tests/performance/rate-limit.k6.js`                                                                                                                       | RL-INT-03                                                         | ✅         |
-| ENT-REPORT-01      | k6 执行摘要报告脚本                              | `scripts/generate-summary.sh`                                                                                                                              | GEN-INT-01~03                                                     | ✅         |
-| ENT-REPORT-02      | 摘要报告内容 (p95/error rate/throughput)         | `scripts/generate-summary.sh` → `reports/k6-summary.md`                                                                                                    | GEN-INT-01                                                        | ✅         |
-| ENT-REPORT-03      | 错误率计算验证                                   | `scripts/generate-summary.sh`                                                                                                                              | GEN-INT-03                                                        | ✅         |
-| ENT-REPORT-04      | CI 报告生成集成                                  | `performance-ci.yml` (Phase 7 计划)                                                                                                                        | GEN-INT-01                                                        | ⏭️ Phase 7 |
+| 需求 ID            | 需求                                                                                                                | 实现文件                                                                              | 测试用例 ID                                   | 状态        |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | --------------------------------------------- | ----------- |
+| ENT-CONSISTENCY-01 | 统一所有 k6 脚本的 HTTP 断言方式：全部使用 checkStatus() helper，替代直接 check() 调用                              | `helpers/utils.js`                                                                    | K6-MIG-03, K6-HLP-INT-01~02                   | ✅          |
+| ENT-CONSISTENCY-02 | 统一 sleep/think time 模式：提取 helpers/thinkTime.js，标准化 sleep(randomIntBetween(0.5, 1))                        | `helpers/thinkTime.js`                                                                | K6-MIG-04                                     | ✅          |
+| ENT-CONSISTENCY-03 | 提取漏斗逻辑到 helpers/funnel.js：60% browse → 30% detail → 10% order，消除重复代码                                 | `helpers/funnel.js`                                                                   | K6-MIG-01, K6-MIG-02                          | ✅          |
+| ENT-CONSISTENCY-04 | 所有标准测试脚本 (smoke/load/stress/spike) 添加 health check 前置验证                                               | `helpers/healthCheck.js`                                                              | K6-HLP-INT-01~02                              | ✅          |
+| ENT-CONSISTENCY-05 | 现有脚本迁移：load/stress/capacity/soak 统一 import helpers（funnel/checkStatus/thinkTime），移除内联重复代码        | `load.k6.js`, `stress.k6.js`, `capacity.k6.js`, `soak.k6.js`, `soak-short.k6.js`     | K6-MIG-01, K6-MIG-02, K6-HLP-INT-01           | ✅          |
+| ENT-BREAKPOINT-01  | 新增 breakpoint.k6.js：持续递增 VUs 直到系统崩溃（error rate > 50% 或完全不响应），记录崩溃点 VUs 和崩溃行为         | `tests/performance/breakpoint.k6.js`                                                  | K6-BP-01, K6-BP-03                            | ✅          |
+| ENT-BREAKPOINT-02  | 崩溃行为分类：区分 graceful degradation（渐进退化）vs catastrophic failure（级联崩溃）                               | `tests/performance/breakpoint.k6.js`                                                  | K6-BP-02                                      | ✅          |
+| ENT-RESILIENCE-01  | Rate Limiter 中间件 (enable/disable toggle)                                                                          | `src/middleware/rateLimiter.js`                                                       | UT-RL-01~06                                   | ✅          |
+| ENT-RESILIENCE-02  | k6 限流测试：验证超限返回 429、窗口过后恢复正常                                                                      | `tests/performance/rate-limit.k6.js`                                                 | RL-INT-01, RL-INT-03, K6-RL-01~03             | ✅          |
+| ENT-RESILIENCE-03  | 熔断行为测试：验证系统在持续超载后的恢复时间（graceful degradation vs cascading failure）                            | `tests/performance/rate-limit.k6.js`                                                 | K6-RL-04                                      | ⏭️ Phase 7 |
+| ENT-REPORT-01      | scripts/generate-summary.sh 解析 k6 JSON output，生成 Markdown 摘要（SLA 达标率、Top 5 慢接口）                      | `scripts/generate-summary.sh`                                                        | GEN-INT-01~03, K6-RPT-01~04                   | ✅          |
 
 ---
 
@@ -172,14 +168,15 @@
 | 3        | 11 (AUTH-01~11)                        | 11     | 0                     | 100%     |
 | 4        | 10 (SOAK-01~10)                        | 10     | 0                     | 100%     |
 | 5        | 13 (ENT-ENV/DATA/PROFILE/DX/TEST)      | 13     | 0                     | 100%     |
-| 6        | 14 (ENT-CONSISTENCY/RESILIENCE/REPORT) | 14     | 0                     | 100%     |
-| **合计** | **76**                                 | **76** | **0**                 | **100%** |
+| 6        | 11 (ENT-CONSISTENCY/BREAKPOINT/RESILIENCE/REPORT) | 10     | 1 (ENT-RESILIENCE-03 ⏭️ Phase 7) | 91%      |
+| **合计** | **73**                                            | **71** | **2**                            | **97%**  |
 
 ### 未覆盖项说明
 
-| 需求                        | 原因                      | 计划         |
-| --------------------------- | ------------------------- | ------------ |
-| Grafana Dashboard (Phase 1) | 需 Docker + InfluxDB 环境 | 本地手动验证 |
+| 需求                        | 原因                                 | 计划                     |
+| --------------------------- | ------------------------------------ | ------------------------ |
+| Grafana Dashboard (Phase 1) | 需 Docker + InfluxDB 环境            | 本地手动验证             |
+| ENT-RESILIENCE-03 (Phase 6) | 熔断恢复行为测试（K6-RL-04）未实现   | Phase 7 (#116) 实现验证  |
 
 ---
 
