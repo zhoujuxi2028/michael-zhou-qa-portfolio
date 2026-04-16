@@ -28,7 +28,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [performance-testing-platform](./performance-testing-platform/) | k6 + JMeter 双引擎 (95 unit + 23 integration + 26 perf) — 容量测试 + JWT 认证压测 + Soak 稳定性 + 基础设施 helpers | k6, JMeter, Express, Grafana, InfluxDB |
+| [performance-testing-platform](./performance-testing-platform/) | k6 + JMeter 双引擎 (148 unit + 31 integration + 33 perf) — Phase 6: k6 helpers + rate limiter + breakpoint + lock + Stage 4 verification | k6, JMeter, Express, Grafana, InfluxDB |
 
 ### 自动化测试 (Test Automation)
 
