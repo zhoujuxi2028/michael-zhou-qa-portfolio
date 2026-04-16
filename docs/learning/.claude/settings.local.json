@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mv M1-copilot-cli-basics.md modules/phase1/)",
+      "Bash(mv M2-prompting-fundamentals.md modules/phase1/)",
+      "Bash(mv M3-cli-ecosystem.md modules/phase1/)",
+      "Bash(mv PHASE1-COMPLETION-REPORT.md docs/phase1/)",
+      "Bash(mv PHASE1-FINAL-SUMMARY.md docs/phase1/)",
+      "Read(//Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio/**)",
+      "Bash(gh issue:*)",
+      "Bash(cat)",
+      "Bash(chmod +x /tmp/verify_links.sh)",
+      "Bash(/tmp/verify_links.sh)",
+      "Bash(wc:*)",
+      "Bash(head -50 src/utils/*.js)",
+      "Bash(npm test:*)",
+      "Bash(grep -L \"/**\" src/routes/*.js)",
+      "Bash(npm install:*)",
+      "Bash(timeout 5 npm start)",
+      "Bash(pkill -f \"node.*server.js\")",
+      "Bash(npm start:*)",
+      "Bash(kill 2552)",
+      "Bash(curl -s -I http://localhost:3000/api-docs)",
+      "Bash(curl -s http://localhost:3000/api-docs/)",
+      "Bash(curl -s http://localhost:3000/api-docs.json)",
+      "Bash(curl -s http://localhost:3000/api/products)",
+      "Bash(node -e ':*)",
+      "Bash(curl -s -X POST http://localhost:3000/api/products -H 'Content-Type: application/json' -d '{\"name\":\"TestProduct\",\"price\":-999,\"stock\":100}')",
+      "Bash(curl -s -X POST http://localhost:3000/api/products -H 'Content-Type: application/json' -d '{\"name\":\"TestProduct2\",\"price\":99.99,\"stock\":999999999999}')",
+      "Bash(curl -s -X POST http://localhost:3000/api/products -H 'Content-Type: application/json' -d '{\"name\":\"FreeProduct\",\"price\":0,\"stock\":50}')",
+      "Bash(curl -s -X POST http://localhost:3000/api/products -H 'Content-Type: application/json' -d '{\"name\":\"TestProduct3\",\"price\":\"invalid\",\"stock\":50}')",
+      "Bash(gh copilot suggest '为下列 Python 方法生成 Google 风格的 Docstring。:*)",
+      "Bash(gh copilot suggest -p '为下列 Python 方法生成 Google 风格的 Docstring。:*)",
+      "Bash(gh copilot:*)",
+      "Bash(copilot suggest '为下列 Python 方法生成 Google 风格的 Docstring。:*)"
+    ]
+  }
+}
