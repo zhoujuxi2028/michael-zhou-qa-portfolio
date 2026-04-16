@@ -84,6 +84,9 @@ JMeter (多线程) ───────────→├─ Worker 3 ─┼─
 | Auth Load Test | JWT 登录/刷新/鉴权高并发  | ✅ Phase 3 (#56) |
 | Soak Test      | 长时间运行找内存泄漏      | ✅ Phase 4 (#65) |
 | Infra Helpers  | env/data/profile 三层抽象 | ✅ Phase 5 (#85) |
+| Breakpoint Test| 系统绝对崩溃点测试        | ✅ Phase 6 (#86) |
+| Rate Limiter   | API 限流/熔断行为测试    | ✅ Phase 6 (#86) |
+| Summary Report | 执行摘要 Markdown 报告    | ✅ Phase 6 (#86) |
 
 ## 容量测试结论
 
@@ -236,7 +239,7 @@ performance-testing-platform/
 ├── env/                     # 多环境配置 (local/staging/production)
 ├── profiles/                # k6 负载 profile (smoke/load/stress/spike/peak)
 ├── tests/
-│   ├── unit/                # Jest 单元测试 (95 tests)
+│   ├── unit/                # Jest 单元测试 (148 tests)
 │   ├── performance/         # k6 脚本 (smoke, load, stress, spike, auth, soak)
 │   └── jmeter/              # JMeter 测试计划 + config/*.properties
 ├── grafana/                 # Dashboard (soak-results + provisioning) + alert rules
@@ -293,7 +296,7 @@ performance-testing-platform/
 | `npm stop`                 | 停止目标 API                                      |
 | `npm restart`              | 重启目标 API — Cluster 模式                       |
 | `npm run restart:single`   | 重启目标 API — 单进程模式                         |
-| `npm test`                 | 运行 Jest 单元测试 (95 tests)                     |
+| `npm test`                 | 运行 Jest 单元测试 (148 tests)                     |
 | `npm run setup`            | 安装 + lint + 测试 (一键初始化)                   |
 | `npm run clean`            | 清理 reports/results/coverage/db                  |
 | `npm run health`           | preflight + 测试 (健康检查)                       |

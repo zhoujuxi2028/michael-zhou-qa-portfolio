@@ -49,7 +49,9 @@
       "Bash(tee docs/qa/reports/logs-stage4/*)",
       "Bash(chmod +x tests/unit/scripts/stage4-selftest.test.sh)",
       "Bash(bash tests/unit/scripts/stage4-selftest.test.sh)",
-      "Bash(wc -l /Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio/performance-testing-platform/docs/qa/reports/*.md)"
+      "Bash(wc -l /Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio/performance-testing-platform/docs/qa/reports/*.md)",
+      "Read(//tmp/**)",
+      "Bash(xargs basename *)"
     ]
   }
 }

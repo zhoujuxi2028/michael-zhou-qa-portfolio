@@ -5,7 +5,7 @@
 Test automation, performance testing, and DevOps demonstration projects.
 测试自动化、性能测试与 DevOps 示范项目。
 
-> **Performance Testing:** k6 + JMeter 双引擎负载测试 | 容量测试二分法定位 ~6000 VUs 拐点 | JWT 认证高并发压测 | Grafana + InfluxDB 可观测
+> **Performance Testing:** k6 + JMeter 双引擎负载测试 | 容量测试二分法定位 ~6000 VUs 拐点 | JWT 认证高并发压测 | 限流/熔断/崩溃点测试 | 自动摘要报告 | Grafana + InfluxDB 可观测
 
 ---
 
@@ -28,7 +28,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [performance-testing-platform](./performance-testing-platform/) | k6 + JMeter 双引擎 (95 unit + 23 integration + 26 perf) — 容量测试 + JWT 认证压测 + Soak 稳定性 + 基础设施 helpers | k6, JMeter, Express, Grafana, InfluxDB |
+| [performance-testing-platform](./performance-testing-platform/) | k6 + JMeter 双引擎 (148 unit + 31 integration + 26 perf) — 容量测试 + JWT 认证压测 + Soak 稳定性 + 基础设施 helpers + 限流熔断 + 崩溃测试 | k6, JMeter, Express, Grafana, InfluxDB |
 
 ### 自动化测试 (Test Automation)
 

@@ -62,7 +62,8 @@
       "Bash(mv STAGE4-TDD-COMPLETION-SUMMARY.md archive/stage4-planning/)",
       "Bash(ls -1 *.md)",
       "Bash(ls -d */)",
-      "Bash(xargs -n1 basename)"
+      "Bash(xargs -n1 basename)",
+      "Bash(EOF)"
     ]
   },
   "hooks": {
