@@ -1,6 +1,6 @@
 # 需求追溯矩阵 (Requirements Traceability Matrix)
 
-**Branch:** `feature/performance-testing` | **更新日期:** 2026-04-15 (Phase 6 Stage 4 完成)
+**Branch:** `feature/performance-testing` | **更新日期:** 2026-04-16 (Phase 6 Stage 5 — ID 规范化 #117)
 
 **用途:** 确保每条需求都有对应的测试用例覆盖，快速定位未覆盖需求。
 
@@ -17,6 +17,7 @@
 |          |                                   | `src/routes/orders.js`      | UT-ORDER-01~05   | ✅   |
 |          |                                   | `src/middleware/metrics.js` | UT-METRICS-01~02 | ✅   |
 |          |                                   | `src/utils/delay.js`        | UT-DELAY-01~02   | ✅   |
+|          |                                   | `src/db/database.js`        | UT-DB-01~03      | ✅   |
 
 ### k6 性能测试
 
@@ -92,6 +93,14 @@
 | AUTH-05 | JWT 验证中间件    | `src/middleware/authenticate.js` | UT-MW-01~05   | ✅   |
 | AUTH-06 | AUTH_ENABLED 开关 | `src/routes/orders.js`           | UT-MW-06~07   | ✅   |
 
+### 认证集成测试
+
+| 需求 ID | 需求                          | 实现文件                           | 测试用例 ID     | 状态 |
+| ------- | ----------------------------- | ---------------------------------- | --------------- | ---- |
+| AUTH-01 | 注册→登录→Token 完整流程      | `scripts/integration-test.sh`      | AUTH-INT-01     | ✅   |
+| AUTH-03 | Bearer Token 保护端点访问     | `scripts/integration-test.sh`      | AUTH-INT-02     | ✅   |
+| AUTH-05 | 无 Token 访问受保护端点被拒   | `scripts/integration-test.sh`      | AUTH-INT-03     | ✅   |
+
 ### 认证性能测试
 
 | 需求 ID | 需求                   | 实现文件                                                               | 测试用例 ID  | 状态 |
@@ -150,33 +159,47 @@
 | ENT-CONSISTENCY-03 | 提取漏斗逻辑到 helpers/funnel.js：60% browse → 30% detail → 10% order，消除重复代码                                 | `helpers/funnel.js`                                                                   | K6-MIG-01, K6-MIG-02                          | ✅          |
 | ENT-CONSISTENCY-04 | 所有标准测试脚本 (smoke/load/stress/spike) 添加 health check 前置验证                                               | `helpers/healthCheck.js`                                                              | K6-HLP-INT-01~02                              | ✅          |
 | ENT-CONSISTENCY-05 | 现有脚本迁移：load/stress/capacity/soak 统一 import helpers（funnel/checkStatus/thinkTime），移除内联重复代码        | `load.k6.js`, `stress.k6.js`, `capacity.k6.js`, `soak.k6.js`, `soak-short.k6.js`     | K6-MIG-01, K6-MIG-02, K6-HLP-INT-01           | ✅          |
-| ENT-BREAKPOINT-01  | 新增 breakpoint.k6.js：持续递增 VUs 直到系统崩溃（error rate > 50% 或完全不响应），记录崩溃点 VUs 和崩溃行为         | `tests/performance/breakpoint.k6.js`                                                  | K6-BP-01, K6-BP-03                            | ✅          |
-| ENT-BREAKPOINT-02  | 崩溃行为分类：区分 graceful degradation（渐进退化）vs catastrophic failure（级联崩溃）                               | `tests/performance/breakpoint.k6.js`                                                  | K6-BP-02                                      | ✅          |
+| ENT-BREAKPOINT-01  | 新增 breakpoint.k6.js：持续递增 VUs 直到系统崩溃（error rate > 50% 或完全不响应），记录崩溃点 VUs 和崩溃行为         | `tests/performance/breakpoint.k6.js`                                                  | K6-BRK-01, K6-BRK-03                          | ✅          |
+| ENT-BREAKPOINT-02  | 崩溃行为分类：区分 graceful degradation（渐进退化）vs catastrophic failure（级联崩溃）                               | `tests/performance/breakpoint.k6.js`                                                  | K6-BRK-02                                     | ✅          |
 | ENT-RESILIENCE-01  | Rate Limiter 中间件 (enable/disable toggle)                                                                          | `src/middleware/rateLimiter.js`                                                       | UT-RL-01~06                                   | ✅          |
 | ENT-RESILIENCE-02  | k6 限流测试：验证超限返回 429、窗口过后恢复正常                                                                      | `tests/performance/rate-limit.k6.js`                                                 | RL-INT-01, RL-INT-03, K6-RL-01~03             | ✅          |
 | ENT-RESILIENCE-03  | 熔断行为测试：验证系统在持续超载后的恢复时间（graceful degradation vs cascading failure）                            | `tests/performance/rate-limit.k6.js`                                                 | K6-RL-04                                      | ⏭️ Phase 7 |
-| ENT-REPORT-01      | scripts/generate-summary.sh 解析 k6 JSON output，生成 Markdown 摘要（SLA 达标率、Top 5 慢接口）                      | `scripts/generate-summary.sh`                                                        | GEN-INT-01~03, K6-RPT-01~04                   | ✅          |
+| ENT-REPORT-01      | scripts/generate-summary.sh 解析 k6 JSON output，生成 Markdown 摘要（SLA 达标率、Top 5 慢接口）                      | `scripts/generate-summary.sh`                                                        | GEN-INT-01~03, K6-SUM-01~04                   | ✅          |
+
+---
+
+## Phase 7 — CI/CD + 可观测性增强 ([#116](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/116))
+
+| 需求 ID  | 需求                                              | 实现文件                                              | 测试用例 ID                              | 状态                  |
+| -------- | ------------------------------------------------- | ----------------------------------------------------- | ---------------------------------------- | --------------------- |
+| CI7-01   | CI 覆盖率门禁 (statements ≥ 80%)                  | `.github/workflows/performance-ci.yml`                | CI-COV-01~04                             | ✅                    |
+| CI7-02   | 基线回归：单元测试 + CI 自动对比                  | `src/utils/baseline.js`, `performance-ci.yml`         | UT-BL-01~06, CI-BL-01~04                | ✅                    |
+| CI7-03   | 趋势报告：`generate-trend.sh` + trend.json 累积   | `scripts/generate-trend.sh`                           | TREND-01~03                              | ✅                    |
+| CI7-04   | Grafana 面板增强 (错误分布/热力图/自定义/告警)    | `grafana/dashboards/`                                 | GRF-ERR-01, GRF-HEAT-01, GRF-CUSTOM-01, GRF-ALERT-01 | ⏭️ SKIP (需 Docker) |
+| CI7-05   | 定时调度：nightly soak + weekly capacity workflow | `.github/workflows/nightly-soak.yml`                  | SCHED-01~04                              | ✅                    |
 
 ---
 
 ## 覆盖率统计
 
-| Phase    | 需求数                                 | 已覆盖 | 未覆盖                | 覆盖率   |
-| -------- | -------------------------------------- | ------ | --------------------- | -------- |
-| 1        | 13 (US-01~09 + UC-01~04)               | 12     | 1 (Grafana 需 Docker) | 92%      |
-| 2        | 15 (SM-01~11 + TQ-01~04)               | 15     | 0                     | 100%     |
-| 3        | 11 (AUTH-01~11)                        | 11     | 0                     | 100%     |
-| 4        | 10 (SOAK-01~10)                        | 10     | 0                     | 100%     |
-| 5        | 13 (ENT-ENV/DATA/PROFILE/DX/TEST)      | 13     | 0                     | 100%     |
+| Phase    | 需求数                                            | 已覆盖 | 未覆盖                            | 覆盖率   |
+| -------- | ------------------------------------------------- | ------ | --------------------------------- | -------- |
+| 1        | 13 (US-01~09 + UC-01~04)                          | 12     | 1 (Grafana 需 Docker)             | 92%      |
+| 2        | 15 (SM-01~11 + TQ-01~04)                          | 15     | 0                                 | 100%     |
+| 3        | 11 (AUTH-01~11)                                   | 11     | 0                                 | 100%     |
+| 4        | 10 (SOAK-01~10)                                   | 10     | 0                                 | 100%     |
+| 5        | 13 (ENT-ENV/DATA/PROFILE/DX/TEST)                 | 13     | 0                                 | 100%     |
 | 6        | 11 (ENT-CONSISTENCY/BREAKPOINT/RESILIENCE/REPORT) | 10     | 1 (ENT-RESILIENCE-03 ⏭️ Phase 7) | 91%      |
-| **合计** | **73**                                            | **71** | **2**                            | **97%**  |
+| 7        | 5 (CI7-01~05)                                     | 4      | 1 (CI7-04 Grafana 需 Docker)      | 80%      |
+| **合计** | **78**                                            | **75** | **3**                             | **96%**  |
 
 ### 未覆盖项说明
 
-| 需求                        | 原因                                 | 计划                     |
-| --------------------------- | ------------------------------------ | ------------------------ |
-| Grafana Dashboard (Phase 1) | 需 Docker + InfluxDB 环境            | 本地手动验证             |
-| ENT-RESILIENCE-03 (Phase 6) | 熔断恢复行为测试（K6-RL-04）未实现   | Phase 7 (#116) 实现验证  |
+| 需求                        | 原因                                 | 计划                    |
+| --------------------------- | ------------------------------------ | ----------------------- |
+| Grafana Dashboard (Phase 1) | 需 Docker + InfluxDB 环境            | 本地手动验证            |
+| ENT-RESILIENCE-03 (Phase 6) | 熔断恢复行为测试（K6-RL-04）未实现   | Phase 7 (#116) 实现验证 |
+| CI7-04 Grafana (Phase 7)    | 需 Docker + InfluxDB 环境            | 本地手动验证            |
 
 ---
 
