@@ -81,7 +81,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 - Event loop lag p95 随 VUs 线性增长：197ms@3000 → 324ms@6000 → 433ms@6125
 - R20 对照组 (0% 写操作) p95 与混合流量相近 → 排除 SQLite 写锁为瓶颈
 
-> 完整逐轮数据 → [performance-testing-platform/docs/test-cases/rtm.md](./performance-testing-platform/docs/test-cases/rtm.md)
+> 完整逐轮数据 → [performance-testing-platform/docs/qa/rtm.md](./performance-testing-platform/docs/qa/rtm.md)
 
 ---
 
