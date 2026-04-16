@@ -27,7 +27,10 @@
 | US-02   | Load test (50 VUs, 5m)      | `load.k6.js`   | LOAD-01~03   | ✅   |
 | US-03   | Stress test (200 VUs, 3.5m) | `stress.k6.js` | STRESS-01~03 | ✅   |
 | US-04   | Spike test (100 VUs, 1.5m)  | `spike.k6.js`  | SPIKE-01~03  | ✅   |
-| UC-01   | k6 HTML 报告（生成 + 内容验证） | `npm run k6:*` (`--out web-dashboard`) | K6-RPT-01~07 | ✅ |
+| UC-01   | 本地快速验证：k6 smoke → HTML 报告  | `npm run k6:smoke` (`--out web-dashboard`) | K6-RPT-01~07 | ✅ |
+| UC-02   | 可视化测试分析：k6 → InfluxDB → Grafana | `npm run k6:load:influx`           | JM-GRF-01~04 | ✅ |
+| UC-03   | CI 性能门禁：lint → unit → smoke gate   | `performance-ci.yml`               | JM-CI-01~03  | ✅ |
+| UC-04   | JMeter 企业级测试：CLI + HTML 报告      | `npm run jmeter:smoke`             | SMOKE-01~04, JM-RPT-01~03 | ✅ |
 
 ### JMeter 性能测试
 
