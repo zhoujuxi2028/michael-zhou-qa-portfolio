@@ -54,7 +54,15 @@
       "Bash(rm *)",
       "Bash(vm_stat)",
       "Bash(top -l 1 -o RSIZE)",
-      "Bash(top -l 1)"
+      "Bash(top -l 1)",
+      "Bash(mv stage4-auto-verify-feasibility.md archive/stage4-planning/)",
+      "Bash(mv stage4-auto-verify-requirements.md archive/stage4-planning/)",
+      "Bash(mv stage4-auto-verify-implementation-plan.md archive/stage4-planning/)",
+      "Bash(mv STAGE4-TDD-ROADMAP.md archive/stage4-planning/)",
+      "Bash(mv STAGE4-TDD-COMPLETION-SUMMARY.md archive/stage4-planning/)",
+      "Bash(ls -1 *.md)",
+      "Bash(ls -d */)",
+      "Bash(xargs -n1 basename)"
     ]
   },
   "hooks": {
