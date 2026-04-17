@@ -8,6 +8,7 @@ import {
   checkMemoryLeak,
   LEAK_THRESHOLD,
 } from './helpers/utils.js';
+import { executeFunnel } from './helpers/funnel.js';
 
 // Custom metrics (SOAK-04)
 const soakHeapUsedMb = new Trend('soak_heap_used_mb');
@@ -58,28 +59,15 @@ export function setup() {
 }
 
 export default function () {
-  // Funnel: 60% browse → 30% detail → 10% order
-  const products = http.get(`${BASE_URL}/api/products`);
-  checkStatus(products, 200, 'products');
-
-  if (Math.random() < 0.5) {
-    const id = Math.ceil(Math.random() * 5);
-    const detail = http.get(`${BASE_URL}/api/products/${id}`);
-    checkStatus(detail, 200, 'product detail');
-
-    if (Math.random() < 0.33) {
-      const order = http.post(
-        `${BASE_URL}/api/orders`,
-        JSON.stringify({ product_id: id, quantity: 1 }),
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-      if (order.status === 201) {
+  executeFunnel(BASE_URL, {
+    onOrder: (response) => {
+      if (response.status === 201) {
         soakOrderSuccess.add(1);
       } else {
         soakOrderFailure.add(1);
       }
-    }
-  }
+    },
+  });
 
   // Auth latency sampling (~2% of iterations) — SOAK-04
   if (Math.random() < 0.02) {
@@ -99,7 +87,12 @@ export default function () {
     });
   }
 
-  sleep(Math.random() + 0.5); // 0.5~1.5s fractional sleep
+  // Fault injection: 50% probability sleep 2s to simulate delayed response handling (K6-RECOVERY)
+  if (Math.random() < 0.5) {
+    sleep(2);
+  } else {
+    sleep(Math.random() + 0.5); // 0.5~1.5s fractional sleep
+  }
 }
 
 export function teardown(data) {
