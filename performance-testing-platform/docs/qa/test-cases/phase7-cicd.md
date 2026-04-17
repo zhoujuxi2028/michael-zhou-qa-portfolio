@@ -54,3 +54,16 @@
 | SCHED-02 | PERF-SCHED-FR-001 | nightly soak-short 配置    | cron: 每天 03:00 UTC   | CI P2 regression |
 | SCHED-03 | PERF-SCHED-FR-001 | weekly capacity 配置       | cron: 每周日 06:00 UTC | CI P2 regression |
 | SCHED-04 | PERF-SCHED-FR-002 | artifact 归档保留 30 天    | retention-days: 30     | CI P2 regression |
+
+## k6 脚本能力 (Phase 6→7 补完)
+
+| 用例 ID       | 需求 ID         | 验证项                           | 预期                           | 标签 |
+| ------------- | --------------- | -------------------------------- | ------------------------------ | ---- |
+| K6-FUNNEL-01  | PERF-K6-FR-001  | stress.js funnel 迁移            | 无 require helpers，内联替换 ✅ | UT P1 regression |
+| K6-FUNNEL-02  | PERF-K6-FR-002  | capacity.js funnel 迁移          | 无 require helpers，内联替换 ✅ | UT P1 regression |
+| K6-FUNNEL-03  | PERF-K6-FR-003  | soak.js funnel 迁移              | 无 require helpers，内联替换 ✅ | UT P1 regression |
+| K6-CLASS-01   | PERF-K6-FR-004  | breakpoint graceful 分类         | handleSummary 输出 graceful 标记 | UT P1 regression |
+| K6-CLASS-02   | PERF-K6-FR-004  | breakpoint catastrophic 分类     | handleSummary 输出 catastrophic 标记 | UT P1 regression |
+| K6-RECOVERY-01 | PERF-K6-FR-005  | 熔断恢复时间 ≤ 60s               | soak.js 故障注入 → 10s 连续恢复 | IT P2 regression |
+| K6-SOAK-INT-01 | PERF-K6-FR-006  | Grafana Dashboard 实时展示       | `npm run k6:soak:short` → 数据进 InfluxDB | IT P3 full |
+| K6-SOAK-INT-02 | PERF-K6-FR-007  | Grafana 告警规则触发             | p95 > 500ms 自动 POST webhook   | IT P3 full |
