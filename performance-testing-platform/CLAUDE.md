@@ -107,6 +107,16 @@ rm -rf /tmp/integration-test.lock
 
 **存档位置：** `docs/qa/reports/archive/` 及对应子目录（见 `archive/README.md`）
 
+## 文档简洁原则
+
+**原则:** 设计文档必须简洁，优先使用表格和图表，避免冗长段落
+
+- ✅ **应做**: 表格、子弹点、简短代码示例
+- ❌ **避免**: 多段落说明、冗余重复、过度详细的背景描述
+- **目的**: 节省 token，提高可读性，便于快速检索
+
+**应用范围**: `docs/design/` 所有设计文档（sut 概要 + phase7 详细设计）
+
 ## CI 工作流
 
 `performance-ci.yml` — lint → unit test → k6/JMeter smoke gate
