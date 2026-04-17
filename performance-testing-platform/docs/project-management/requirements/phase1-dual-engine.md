@@ -86,18 +86,18 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 
 | 需求 ID               | 需求                                                                                                      | 关联 US  | 优先级 |
 | --------------------- | --------------------------------------------------------------------------------------------------------- | -------- | ------ |
-| PERF-API-ROUTE-FR-001 | `GET /api/health`：返回服务状态 `{ status: "ok" }`，供 smoke test 验证 API 可用性                        | US-01~04 | P0     |
+| PERF-API-ROUTE-FR-001 | `GET /health`：返回服务状态 `{ status: "ok" }`，供 smoke test 验证 API 可用性                        | US-01~04 | P0     |
 | PERF-API-ROUTE-FR-002 | `GET /api/products`：返回商品列表，支持分页参数 `?page=&limit=`，默认 limit=10                            | US-01~04 | P0     |
 | PERF-API-ROUTE-FR-003 | `GET /api/products/:id`：按 ID 查询单个商品详情，不存在返回 404                                           | US-01~04 | P0     |
 | PERF-API-ROUTE-FR-004 | `POST /api/products`：创建商品（name + price + stock），写入 SQLite                                       | US-01~04 | P0     |
 | PERF-API-ROUTE-FR-005 | `GET /api/orders`：返回订单列表（按 created_at DESC），支持分页                                           | US-01~04 | P0     |
-| PERF-API-ROUTE-FR-006 | `POST /api/orders`：下单接口；校验库存（不足返回 409），事务扣减库存，调用 `simulateDelay`，支持 AUTH_ENABLED 开关 | US-01~04 | P0     |
+| PERF-API-ROUTE-FR-006 | `POST /api/orders`：下单接口；校验库存（不足返回 409），事务扣减库存，调用 `simulateDelay` | US-01~04 | P0     |
 
 #### PERF-API-MW（中间件层）
 
 | 需求 ID            | 需求                                                                                                            | 关联 US  | 优先级 |
 | ------------------ | --------------------------------------------------------------------------------------------------------------- | -------- | ------ |
-| PERF-API-MW-FR-001 | metrics 中间件：采集 requestCount、avgDuration(ms)、CPU(user/system/loadavg)、Memory(rss/heapUsed/heapTotal/external)、eventLoopLag(ms)，由 `GET /metrics` 端点暴露 | US-01~04 | P0     |
+| PERF-API-MW-FR-001 | metrics 中间件：Phase 1 首次引入 `GET /metrics` 端点，采集 requestCount、avgDuration(ms)、CPU(user/system/loadavg)、Memory(rss/heapUsed/heapTotal/external)、eventLoopLag(ms) | US-01~04 | P0     |
 
 #### PERF-API-DB（数据层）
 

@@ -28,7 +28,7 @@
 
 | ID         | 需求                                                                                                          | 优先级 | 工作量 |
 | ---------- | ------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-| ENT-ENV-01 | 创建 `env/` 目录，含 `local.env` / `staging.env` / `production.env`，定义 BASE_URL / AUTH_ENABLED / DB 等变量 | P0     | 小     |
+| ENT-ENV-01 | 创建 `env/` 目录，含 `local.env` / `staging.env` / `production.env`，定义 BASE_URL / DB 等变量；支持 Phase 3 定义的 `AUTH_ENABLED` 开关环境切换 | P0     | 小     |
 | ENT-ENV-02 | k6 环境加载器: `helpers/env.js` 解析环境文件，导出配置对象；k6 通过 `--env ENV=staging` 切换                  | P0     | 小     |
 | ENT-ENV-03 | JMeter 环境适配: 对应 `config/staging.properties` / `config/production.properties`，通过 `-q` 加载            | P1     | 小     |
 
