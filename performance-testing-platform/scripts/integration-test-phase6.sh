@@ -104,13 +104,13 @@ sleep 2
 
 # Make requests and capture headers (Issue #3: robust header parsing)
 RESP_1=$(curl -s -i "http://localhost:$PORT/api/products" 2>&1)
-REMAINING_1=$(echo "$RESP_1" | grep -i "^ratelimit-remaining:" | cut -d: -f2 | tr -d ' ')
+REMAINING_1=$(echo "$RESP_1" | grep -i "^ratelimit-remaining:" | cut -d: -f2 | tr -d ' \r')
 
 RESP_2=$(curl -s -i "http://localhost:$PORT/api/products" 2>&1)
-REMAINING_2=$(echo "$RESP_2" | grep -i "^ratelimit-remaining:" | cut -d: -f2 | tr -d ' ')
+REMAINING_2=$(echo "$RESP_2" | grep -i "^ratelimit-remaining:" | cut -d: -f2 | tr -d ' \r')
 
 RESP_3=$(curl -s -i "http://localhost:$PORT/api/products" 2>&1)
-REMAINING_3=$(echo "$RESP_3" | grep -i "^ratelimit-remaining:" | cut -d: -f2 | tr -d ' ')
+REMAINING_3=$(echo "$RESP_3" | grep -i "^ratelimit-remaining:" | cut -d: -f2 | tr -d ' \r')
 
 # Verify headers present and decrement: 4 → 3 → 2 (with RATE_LIMIT_MAX=6, after 2 initial requests)
 if [ -n "$REMAINING_1" ] && [ -n "$REMAINING_2" ] && [ -n "$REMAINING_3" ]; then
