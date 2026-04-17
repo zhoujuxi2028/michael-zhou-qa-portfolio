@@ -1,5 +1,16 @@
 # Grafana Dashboard 设计
 
+## 环境要求
+
+| 组件 | 版本 | 查询语言 | 备注 |
+|------|------|---------|------|
+| InfluxDB | 1.8 | InfluxQL | 当前生产版本 |
+| Grafana | 10.2.0 | - | 支持 InfluxQL 1.8 |
+
+**注:** 本设计使用 **InfluxQL** 查询语言，完全兼容 InfluxDB 1.8。若升级至 2.x，需使用 Flux 语言重写查询。
+
+---
+
 ## 新增 3 个面板
 
 ### 1. 错误分布面板 (PERF-OBS-FR-001)
@@ -37,13 +48,88 @@ SELECT time, p95_ms, p99_ms FROM measurement
 
 ## 告警规则 (PERF-OBS-FR-004)
 
-| 规则 | 条件 | 触发动作 |
-|------|------|---------|
-| High p95 | p95 > 500ms for 5m | ⚠️ Alert → Webhook |
-| Error Spike | error_rate > 1% | ⚠️ Alert → Webhook |
-| Memory Growth | heap持续增长 2h | ⚠️ Alert → Webhook |
+### SLA 与告警阈值对应表
+
+| 指标 | SLA | Warning 级别 | Critical 级别 | 告警延迟 |
+|------|------|-------------|---------------|---------|
+| p95 延迟 | 500ms | 400ms (≤5m) | 1000ms (≤2m) | 300s/120s |
+| 错误率 | 1% | 0.5% (≤5m) | 5% (≤2m) | 300s/120s |
+| 内存增长 | 无限制 | 200MB/h | 500MB/h | 1h/30m |
+
+### 告警规则详细定义
+
+| 规则 | 条件 | 级别 | 触发动作 | 目的 |
+|------|------|------|---------|------|
+| High p95 Warning | p95 > 400ms for 5m | ⚠️ Warning | Webhook (info) | 提前告警，SLA 前 100ms 预警 |
+| High p95 Critical | p95 > 1000ms for 2m | 🔴 Critical | Webhook (critical) + Page | SLA 突破，2 倍之上，立即告警 |
+| Error Spike Warning | error_rate > 0.5% for 5m | ⚠️ Warning | Webhook (info) | 提前告警，SLA 前 0.5% 预警 |
+| Error Spike Critical | error_rate > 5% for 2m | 🔴 Critical | Webhook (critical) + Page | SLA 突破 5 倍，立即告警 |
+| Memory Growth | heap 增长 > 200MB/h for 1h | ⚠️ Warning | Webhook (info) | 检测内存泄漏趋势 |
+| Memory Overflow | heap 增长 > 500MB/h for 30m | 🔴 Critical | Webhook (critical) + Page | 内存溢出风险 |
 
 **Webhook 配置：** Contact Points → Webhook (目标 URL 由用户配置)
+
+---
+
+## Webhook 配置示例 (PERF-OBS-FR-004-WEBHOOK)
+
+### 方式 1: 本地测试 - curl 模拟告警
+
+```bash
+# 测试告警发送
+curl -X POST http://localhost:9000/webhook/alerts \
+  -H "Content-Type: application/json" \
+  -d '{
+    "status": "firing",
+    "alerts": [
+      {
+        "status": "firing",
+        "labels": {
+          "alertname": "HighP95",
+          "severity": "warning"
+        },
+        "annotations": {
+          "summary": "p95 latency > 400ms",
+          "description": "Current p95: 450ms"
+        }
+      }
+    ]
+  }'
+```
+
+### 方式 2: 生产接收端 - Flask 服务
+
+参考 `grafana/examples/webhook-receiver.py` 部署告警接收端:
+
+```bash
+# 1. 启动接收端
+python3 grafana/examples/webhook-receiver.py
+
+# 2. 在 Grafana 中配置 Webhook
+# Contact Points → New contact point → Webhook
+# URL: http://<your-server>:9000/webhook/alerts
+# Method: POST
+# Headers: Content-Type: application/json
+
+# 3. 测试告警规则
+# 在 Alert rule 中选择该 contact point
+```
+
+**接收端响应示例:**
+
+```json
+{
+  "received_at": "2026-04-17T12:34:56Z",
+  "alerts_count": 1,
+  "alerts": [
+    {
+      "alert_name": "HighP95",
+      "status": "firing",
+      "value": "450ms"
+    }
+  ]
+}
+```
 
 ---
 
