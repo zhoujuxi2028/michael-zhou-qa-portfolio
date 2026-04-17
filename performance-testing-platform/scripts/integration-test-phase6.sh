@@ -11,7 +11,7 @@ PORT="${PORT:-3000}"
 
 # Test configuration (matching test-plan.md)
 RATE_LIMIT_ENABLED=true
-RATE_LIMIT_MAX=3
+RATE_LIMIT_MAX=4  # 1 for verification request (line 63) + 3 for RL-INT-01 test
 RATE_LIMIT_WINDOW_MS=5000
 
 # Counters
