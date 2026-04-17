@@ -1,6 +1,7 @@
 import http from 'k6/http';
 import { Trend } from 'k6/metrics';
 import { BASE_URL, checkStatus } from './helpers/utils.js';
+import { executeFunnel } from './helpers/funnel.js';
 import { thinkTime } from './helpers/thinkTime.js';
 
 // Custom metrics: server-side indicators (polled from /metrics)
@@ -22,28 +23,8 @@ export const options = {
   },
 };
 
-// Funnel model: 60% browse → 30% detail → 10% order
 export default function () {
-  // 100% of users browse product list
-  const products = http.get(`${BASE_URL}/api/products`);
-  checkStatus(products, 200, 'products');
-
-  // 50% of browsers view detail (60% × 50% = 30% overall)
-  if (Math.random() < 0.5) {
-    const id = Math.ceil(Math.random() * 5);
-    const detail = http.get(`${BASE_URL}/api/products/${id}`);
-    checkStatus(detail, 200, 'product detail');
-
-    // 33% of detail viewers place order (30% × 33% ≈ 10% overall)
-    if (Math.random() < 0.33) {
-      const order = http.post(
-        `${BASE_URL}/api/orders`,
-        JSON.stringify({ product_id: id, quantity: 1 }),
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-      checkStatus(order, 201, 'create order');
-    }
-  }
+  executeFunnel(BASE_URL);
 
   // Poll server metrics every ~10 iterations
   if (Math.random() < 0.1) {
