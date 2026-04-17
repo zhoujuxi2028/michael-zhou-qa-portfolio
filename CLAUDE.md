@@ -100,7 +100,8 @@ python3 -m venv venv && source venv/bin/activate
 ## Git Workflow
 
 - **Default branch**: `main`
-- Use conventional commits: `feat:`, `fix:`, `docs:`, `test:`
+- **Commit Convention**: 详见 [GIT-COMMIT-CONVENTION.md](docs/GIT-COMMIT-CONVENTION.md) - 格式统一、issue 关联、Copilot 署名
+- **Conventional Commits Format**: `<type>(<scope>): <subject> [#issue]`
 
 ### Feature Branches
 
