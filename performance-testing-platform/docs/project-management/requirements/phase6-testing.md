@@ -94,7 +94,27 @@
 | jq                 | shell 脚本解析 k6 JSON output                     | ENT-REPORT      | ✅ 本机已有 / GitHub runner 预装 |
 | k6 `--out json`    | k6 JSON output flag，generate-summary.sh 的数据源 | ENT-REPORT      | ✅ k6 内置                       |
 
-## 6.7 需求 Checklist
+## 6.7 阶段状态更新（Status Update）
+
+下列需求在 Phase 6 需求评审中确定，但实际交付推迟至 Phase 7：
+
+| 原 Phase 6 需求组 | 条目数 | 现归属 Phase 7 | 推迟原因 | Issue 链接 |
+|---|---|---|---|---|
+| **ENT-CONSISTENCY** (k6 脚本一致性) | 5 条 | PERF-K6-FR-001～003 | 需与 helpers 框架统一拆分，建议 Phase 7 补完 | [#114](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/114), [#116](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/116) |
+| **ENT-BREAKPOINT** (崩溃测试) | 2 条 | PERF-K6-FR-004 | breakpoint 能力已完成；handleSummary 增强（graceful/catastrophic 分类）推迟 Phase 7 | [#114](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/114) |
+| **ENT-RESILIENCE** (限流/熔断) | 3 条 | PERF-K6-FR-005 | ENT-RESILIENCE-01 (rate limiter 中间件) 已在 Phase 5 完成；ENT-RESILIENCE-03 (熔断恢复测试脚本) 推迟 Phase 7 | [#116](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/116) |
+
+**备注**：Phase 6 负责能力交付，Phase 7 负责统一框架和补完测试。
+
+## 6.8 对 Phase 7 的依赖
+
+Phase 6 定义的上述需求将由 Phase 7 在以下阶段补完：
+
+| 关联文档 | 说明 |
+|---|---|
+| [phase7-cicd.md §7.3.5](./phase7-cicd.md#735-k6-脚本能力perf-k6-fr) | Phase 7 完整的 PERF-K6-FR 实施计划 |
+
+## 6.9 需求 Checklist
 
 | #   | 检查项                  | 状态                                                                                      |
 | --- | ----------------------- | ----------------------------------------------------------------------------------------- |
