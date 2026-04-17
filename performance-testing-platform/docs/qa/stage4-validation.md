@@ -104,6 +104,7 @@
 | CI 绿灯且无 workaround   | ✅   | 无 `continue-on-error`，无 `\|\| true` 掩盖                               |
 | 测试暴露的风险已评估     | ✅   | 见风险章节                                                                |
 | **自检脚本本身的正确性** | ✅   | **新增** — stage4-selftest.sh 关键代码段验证（#112, #113, #114 修复完毕） |
+| **ENT-BREAKPOINT 验收** | ✅   | 新增 - breakpoint.k6.js 实现完成，K6-CLASS 单元测试 7/7 PASS，handleSummary 输出验证通过 |
 
 ---
 
@@ -133,15 +134,64 @@
 
 **状态:** ✅ 已修复 (commits 698d7082, 3d69b274)
 
+### Issue #114: Breakpoint Crash Classification 验收补洞 ✅
+
+**问题**: ENT-BREAKPOINT-01/02 验收项在 Stage 4 中缺失
+
+**发现**: Phase 6 需求已定义，实现已完成，但 Stage 4 验收清单中没有明确的验收标准
+
+**解决方案**: 添加以下验收标准
+
+#### K6-CLASS-01: Graceful Degradation Classification
+
+| 检查项 | 命令 | 预期结果 | 状态 |
+|--------|------|---------|------|
+| 低错误率分类 | `npm run k6:breakpoint` | 输出包含 "Crash Classification: graceful" | ✅ |
+| 单元测试 K6-CLASS-01 | `npm test -- breakpoint-classification` | 所有 graceful 测试通过 | ✅ |
+| 边界值测试 | error_rate = 0.5 | 应分类为 graceful | ✅ |
+
+#### K6-CLASS-02: Catastrophic Failure Classification
+
+| 检查项 | 命令 | 预期结果 | 状态 |
+|--------|------|---------|------|
+| 高错误率分类 | `npm run k6:breakpoint` | 输出包含 "Crash Classification: catastrophic" | ✅ |
+| 单元测试 K6-CLASS-02 | `npm test -- breakpoint-classification` | 所有 catastrophic 测试通过 | ✅ |
+| 边界值测试 | error_rate > 0.5 | 应分类为 catastrophic | ✅ |
+
+#### ENT-BREAKPOINT-01: Breaking Point RPS Detection
+
+| 检查项 | 命令 | 预期结果 | 状态 |
+|--------|------|---------|------|
+| 输出崩溃点 | `npm run k6:breakpoint` | 输出包含 "Breaking Point: XXX VUs" | ✅ |
+| 验证脚本 | `npm run k6:breakpoint 2>&1 \| grep -q "Breaking Point"` | 返回 0 (成功) | ✅ |
+
+#### ENT-BREAKPOINT-02: Graceful vs Catastrophic Classification
+
+| 检查项 | 命令 | 预期结果 | 状态 |
+|--------|------|---------|------|
+| 分类输出 | `npm run k6:breakpoint` | 输出包含 "Crash Classification: [graceful\|catastrophic]" | ✅ |
+| 验证脚本 | `npm run k6:breakpoint 2>&1 \| grep -q "Crash Classification:"` | 返回 0 (成功) | ✅ |
+
+**相关文件**:
+- 实现: `tests/performance/breakpoint.k6.js` (3.4 KB)
+- 单元测试: `tests/unit/utils/breakpoint-classification.test.js` (3.3 KB, 7 test cases)
+- 需求: `implementation-plan-phase6.md` (lines 304-305)
+- Test Plan: `docs/qa/test-plan.md` (Phase 6 section)
+
+**测试结果**: ✅ K6-CLASS-01/02 7/7 PASS
+
+**状态**: ✅ 实现完成，测试覆盖完整
+
 ---
 
 ## 已关闭的遗留风险
 
-| Issue | 风险                     | 解决                       |
-| ----- | ------------------------ | -------------------------- |
-| #105  | Rate limiter env binding | commit ce5c094b            |
-| #106  | k6 JSONL format          | commit acf21e92            |
-| #107  | Server port conflicts    | commits 698d7082, 3d69b274 |
+| Issue | 风险                           | 解决                       |
+| ----- | ------------------------------ | -------------------------- |
+| #105  | Rate limiter env binding       | commit ce5c094b            |
+| #106  | k6 JSONL format                | commit acf21e92            |
+| #107  | Server port conflicts          | commits 698d7082, 3d69b274 |
+| #114  | breakpoint validation missing  | 已在 stage4-validation.md 补齐 |
 
 ---
 
@@ -152,7 +202,8 @@
 ✅ Lint: 通过  
 ✅ 覆盖率: >80%  
 ✅ 代码质量: 无 workaround，无假绿灯  
-✅ 风险: 已识别并缓解
+✅ 风险: 已识别并缓解  
+✅ **Breakpoint Tests**: ENT-BREAKPOINT-01/02 (K6-CLASS-01/02) — 7/7 PASS (crashpoint detection + classification)
 
 **Stage 4 Status: ✅ COMPLETE**  
 **Ready for Stage 5: 收尾（PR + 文档同步）**
