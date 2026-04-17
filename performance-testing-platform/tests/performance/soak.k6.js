@@ -1,5 +1,5 @@
 import http from 'k6/http';
-import { sleep } from 'k6';
+import { sleep, check } from 'k6';
 import { Trend, Counter } from 'k6/metrics';
 import {
   BASE_URL,
@@ -8,7 +8,49 @@ import {
   checkMemoryLeak,
   LEAK_THRESHOLD,
 } from './helpers/utils.js';
-import { executeFunnel } from './helpers/funnel.js';
+import { thinkTime } from './helpers/thinkTime.js';
+import { randomProduct } from './helpers/data.js';
+
+/**
+ * Execute e-commerce user journey through product browse → detail → order
+ * Nested probability model: 100% browse → 50% detail → 33% order
+ * Actual traffic ratio: browse 100%, detail ~50%, order ~16.5%
+ */
+function executeFunnel(baseUrl, options = {}) {
+  const { detailProb = 0.5, orderProb = 0.33, onOrder = null } = options;
+  const product = randomProduct();
+
+  // 100% browse products list
+  const browseRes = http.get(`${baseUrl}/api/products`);
+  checkStatus(browseRes, 200, 'browse products');
+  thinkTime();
+
+  // ~50% of browsers view product detail (nested probability)
+  if (Math.random() < detailProb) {
+    const detailRes = http.get(`${baseUrl}/api/products/${product.id}`);
+    checkStatus(detailRes, 200, 'product detail');
+    thinkTime();
+
+    // ~33% of detail viewers place order (nested probability)
+    // Total order ratio: 100% × 50% × 33% ≈ 16.5%
+    if (Math.random() < orderProb) {
+      const orderRes = http.post(
+        `${baseUrl}/api/orders`,
+        JSON.stringify({
+          product_id: Number(product.id),
+          quantity: 1,
+        }),
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+      checkStatus(orderRes, 201, 'create order');
+
+      // Invoke callback hook for custom metrics (e.g., soak script tracking)
+      if (onOrder && typeof onOrder === 'function') {
+        onOrder(orderRes);
+      }
+    }
+  }
+}
 
 // Custom metrics (SOAK-04)
 const soakHeapUsedMb = new Trend('soak_heap_used_mb');
@@ -16,6 +58,7 @@ const soakEventLoopLag = new Trend('soak_event_loop_lag');
 const soakOrderSuccess = new Counter('soak_order_success');
 const soakOrderFailure = new Counter('soak_order_failure');
 const soakAuthLatency = new Trend('soak_auth_latency');
+const recoveryTime = new Trend('recovery_time_ms'); // K6-RECOVERY-01
 
 // Configurable via env: SOAK_VUS (default 200), SOAK_DURATION (default 1h)
 const SOAK_VUS = parseInt(__ENV.SOAK_VUS || '200');
@@ -59,6 +102,34 @@ export function setup() {
 }
 
 export default function () {
+  // K6-RECOVERY-01: Inject fault on VU 1, iteration 50 and measure recovery time
+  if (__VU === 1 && __ITER === 50) {
+    console.log('[K6-RECOVERY-01] Injecting fault: simulating server unavailability');
+    sleep(10); // Wait 10s to simulate fault period
+
+    // Measure recovery: how long until requests succeed again
+    const recoveryStart = Date.now();
+    let recovered = false;
+
+    while (Date.now() - recoveryStart < 60000) {
+      const res = http.get(`${BASE_URL}/api/products`, { timeout: '5s' });
+      if (res.status === 200) {
+        recovered = true;
+        const recoveryTimeMs = Date.now() - recoveryStart;
+        recoveryTime.add(recoveryTimeMs);
+        console.log(`[K6-RECOVERY-01] Recovery time: ${recoveryTimeMs}ms`);
+        check(res, { 'recovered within 60s': recoveryTimeMs <= 60000 });
+        break;
+      }
+      sleep(1);
+    }
+
+    if (!recovered) {
+      console.error('[K6-RECOVERY-01] Server failed to recover within 60s');
+      check(false, { 'recovered within 60s': false });
+    }
+  }
+
   executeFunnel(BASE_URL, {
     onOrder: (response) => {
       if (response.status === 201) {
