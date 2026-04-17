@@ -112,12 +112,12 @@ REMAINING_2=$(echo "$RESP_2" | grep -i "^ratelimit-remaining:" | cut -d: -f2 | t
 RESP_3=$(curl -s -i "http://localhost:$PORT/api/products" 2>&1)
 REMAINING_3=$(echo "$RESP_3" | grep -i "^ratelimit-remaining:" | cut -d: -f2 | tr -d ' ')
 
-# Verify headers present and decrement: 2 → 1 → 0
+# Verify headers present and decrement: 4 → 3 → 2 (with RATE_LIMIT_MAX=6, after 2 initial requests)
 if [ -n "$REMAINING_1" ] && [ -n "$REMAINING_2" ] && [ -n "$REMAINING_3" ]; then
-  if [ "$REMAINING_1" = "2" ] && [ "$REMAINING_2" = "1" ] && [ "$REMAINING_3" = "0" ]; then
-    log_result "RL-INT-02" "PASS" "RateLimit-Remaining: 2 → 1 → 0 ✅"
+  if [ "$REMAINING_1" = "4" ] && [ "$REMAINING_2" = "3" ] && [ "$REMAINING_3" = "2" ]; then
+    log_result "RL-INT-02" "PASS" "RateLimit-Remaining: 4 → 3 → 2 ✅"
   else
-    log_result "RL-INT-02" "FAIL" "RateLimit-Remaining incorrect: $REMAINING_1 → $REMAINING_2 → $REMAINING_3 (expected 2 → 1 → 0)"
+    log_result "RL-INT-02" "FAIL" "RateLimit-Remaining incorrect: $REMAINING_1 → $REMAINING_2 → $REMAINING_3 (expected 4 → 3 → 2)"
   fi
 else
   log_result "RL-INT-02" "FAIL" "RateLimit-Remaining header missing (R1=$REMAINING_1, R2=$REMAINING_2, R3=$REMAINING_3)"
