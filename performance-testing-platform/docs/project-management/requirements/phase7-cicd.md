@@ -79,17 +79,21 @@ PERF-[子系统]-FR-[序号]
 
 ### 7.3.5 k6 脚本能力（PERF-K6-FR）
 
-> 来源: Issue #114、#116、#108 — Phase 6 有意推迟、Phase 7 补完的未实现需求
+> 来源：Phase 6 需求评审中确定但推迟交付的能力。
+> 详见 [Phase 6 需求说明 §6.3 + §6.7-6.8](./phase6-testing.md#63-需求列表) 完整定义和推迟原因。
 
-| ID               | 需求                                                                                                                                     | 优先级 | 工作量 | 来源 Issue |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ | ---------- |
-| PERF-K6-FR-001   | funnel helper 迁移: `stress.k6.js` 替换内联漏斗逻辑为 `executeFunnel()`                                                                 | P1     | 小     | #116       |
-| PERF-K6-FR-002   | funnel helper 迁移: `capacity.k6.js` 替换内联漏斗逻辑为 `executeFunnel()`                                                               | P1     | 小     | #116       |
-| PERF-K6-FR-003   | funnel helper 迁移: `soak.k6.js` 替换内联漏斗逻辑为 `executeFunnel(baseUrl, { onOrder: cb })`，保留 soakOrderSuccess/Failure metrics     | P1     | 中     | #116       |
-| PERF-K6-FR-004   | breakpoint handleSummary 增强: 输出 graceful/catastrophic 崩溃类型分类（graceful = p95 超限先于 error rate；catastrophic = 反之）        | P2     | 小     | #114       |
-| PERF-K6-FR-005   | 熔断恢复行为测试: k6 脚本验证系统在持续超载后的恢复时间（graceful degradation vs cascading failure），补充 UT-RL-07 单元测试             | P2     | 中     | #116       |
-| PERF-K6-FR-006   | SOAK-TC-04 集成验证: 启动 InfluxDB + Grafana，运行 k6 soak-short（10min），确认 Dashboard 实时展示数据且内存/CPU 趋势正常               | P1     | 小     | #108       |
-| PERF-K6-FR-007   | SOAK-TC-05 集成验证: 主动触发 p95 > 500ms 及 error rate > 1% 条件，确认 Grafana 告警规则正确触发、UI 告警状态变更                      | P1     | 小     | #108       |
+下表显示 Phase 7 补完的需求与 Phase 6 来源的对应关系：
+
+| Phase 7 需求 ID | Phase 6 来源 | 补完类型 | 详细需求摘要 | Issue |
+|---|---|---|---|---|
+| **PERF-K6-FR-001～003** | ENT-CONSISTENCY-01～05 | helpers 迁移 | `stress.k6.js` / `capacity.k6.js` / `soak.k6.js` 中替换内联漏斗逻辑为 `executeFunnel()` helper | [#116](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/116) |
+| **PERF-K6-FR-004** | ENT-BREAKPOINT-02 | 输出分类 | breakpoint.k6.js 的 handleSummary 增强：输出 graceful/catastrophic 崩溃类型分类 | [#114](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/114) |
+| **PERF-K6-FR-005** | ENT-RESILIENCE-03 | 测试脚本 | k6 脚本验证系统在持续超载后的恢复时间（graceful degradation vs cascading failure） | [#116](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/116) |
+| **PERF-K6-FR-006～007** | Phase 6 SOAK-TC-04/05 | 集成验证 | InfluxDB + Grafana 集成验证，确认实时展示和告警规则 | [#108](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/108) |
+
+**关联用户故事**：US-34/35/36（继承自 Phase 6，由 Phase 7 补完实现）
+
+**详细需求对应**：详见 [Phase 6 §6.3.1～6.3.3](./phase6-testing.md#631-k6-脚本一致性重构entconsistency) 原始需求定义
 
 ## 7.4 Scope 确认
 
