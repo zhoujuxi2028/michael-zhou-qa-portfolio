@@ -83,12 +83,7 @@ STATUS_3=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$PORT/api/pr
 STATUS_4=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$PORT/api/products")
 
 if [ "$STATUS_1" = "200" ] && [ "$STATUS_2" = "200" ] && [ "$STATUS_3" = "200" ] && [ "$STATUS_4" = "429" ]; then
-  # Verify that 4th request was actually throttled (Issue #2)
-  if [ "$STATUS_4" != "429" ]; then
-    log_result "RL-INT-01" "FAIL" "4th request should return 429 but got $STATUS_4"
-  else
-    log_result "RL-INT-01" "PASS" "Requests 1-3: 200, Request 4: 429 ✅"
-  fi
+  log_result "RL-INT-01" "PASS" "Requests 1-3: 200, Request 4: 429 ✅"
 else
   log_result "RL-INT-01" "FAIL" "Expected [200,200,200,429], got [$STATUS_1,$STATUS_2,$STATUS_3,$STATUS_4]"
 fi
