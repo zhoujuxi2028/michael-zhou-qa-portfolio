@@ -25,6 +25,11 @@ bash scripts/integration-test.sh  # 集成测试 (31 cases，需 Docker)
 > - 若前次运行异常退出未释放锁: `rm -rf /tmp/integration-test.lock`
 > - 同时运行多个实例会立即失败，提示"already running"
 
+> ⚠️ **硬件要求:** CPU ≥ 4核, 内存 ≥ 8GB, SSD 推荐
+>
+> - Breakpoint 测试（阶梯递增至极限）需要充足硬件，耗时 4-8 小时
+> - 详见 [README.md](README.md#硬件要求)
+
 完整命令见 [README.md](README.md#npm-脚本)
 
 ## 关键文档

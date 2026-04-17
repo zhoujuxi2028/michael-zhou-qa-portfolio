@@ -11,34 +11,39 @@
 └──────────────────┴──────────────────┴──────────────────┘
            ↓
 ┌─────────────────────────────────────────────────────────┐
-│              Router Layer (8 Endpoints)                  │
+│              Router Layer (12 Endpoints)                 │
 ├──────────────────┬──────────────────┬──────────────────┤
 │  Health Routes   │  Auth Routes     │  Product Routes  │
-│  ├─ /health     │  ├─ /auth/reg    │  ├─ GET /products│
-│  ├─ /ready      │  ├─ /auth/login  │  ├─ GET /products/:id
-│  └─ /metrics    │  ├─ /auth/refresh│  └─ POST /products
-│                 │  └─ /auth/logout │
-│                 │                  │   Order Routes
-│                 │                  │   ├─ GET /orders
-│                 │                  │   └─ POST /orders
+│  ├─ /health      │  ├─ /api/auth/register │ ├─ GET /api/products     │
+│  ├─ /ready       │  ├─ /api/auth/login    │ ├─ GET /api/products/:id │
+│  └─ /metrics     │  ├─ /api/auth/refresh  │ └─ POST /api/products    │
+│                  │  └─ /api/auth/logout   │
+│                  │                         │   Order Routes
+│                  │                         │   ├─ GET /api/orders     │
+│                  │                         │   └─ POST /api/orders    │
 └──────────────────┴──────────────────┴──────────────────┘
            ↓
 ┌─────────────────────────────────────────────────────────┐
 │         SQLite Database (File Mode + WAL)                │
-│         data/perf.db (5 tables)                          │
+│         data/perf.db (4 tables)                          │
 └─────────────────────────────────────────────────────────┘
 ```
 
 ## 2. 模式支持
 
-### 开发模式：单进程
+### 默认模式：Cluster
 ```
-npm start → src/server.js
+npm start → scripts/server.sh start cluster → src/cluster.js
 ```
 
-### 生产模式：多进程 Cluster
+### 单进程模式：调试 / 集成测试
 ```
-npm start (Cluster) → src/cluster.js
+npm run start:single → scripts/server.sh start single → src/server.js
+```
+
+### Cluster 运行模式
+```
+npm start (default)
   ├─ Master (PID: 主)
   └─ Workers (PID: N 个，N = CPU 核数)
       ├─ Worker 1 → :3000 (负载均衡)
@@ -54,11 +59,11 @@ npm start (Cluster) → src/cluster.js
 |-----|--------|------|
 | 1 | helmet | 安全头 (CSP, HSTS, X-Frame-Options, ...) |
 | 2 | express.json() | 解析 JSON body |
-| 3 | rateLimiter | 限流 (429 Too Many Requests) |
+| 3 | rateLimiter | 限流（始终挂载，仅 `RATE_LIMIT_ENABLED=true` 时生效） |
 | 4 | metricsMiddleware | 采集请求计数、延迟、CPU、内存、eventLoopLag |
 | 5 | 路由 | 业务逻辑处理 |
 
-**认证中间件** (可选)：`POST /api/orders` 在 `AUTH_ENABLED=true` 时使用。
+**认证中间件**（可选）：`POST /api/orders` 在 `AUTH_ENABLED=true` 时使用。
 
 ## 4. 性能指标采集
 
