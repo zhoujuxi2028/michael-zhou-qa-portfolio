@@ -58,7 +58,18 @@ if ! curl -sf "http://localhost:$PORT/health" > /dev/null 2>&1; then
   echo "❌ ERROR: Server failed to start"
   exit 1
 fi
-echo "✅ Server started with RATE_LIMIT_ENABLED=true, RATE_LIMIT_MAX=3, RATE_LIMIT_WINDOW_MS=5000"
+
+# Verify rate limiter middleware is enabled (Issue #4)
+LIMIT_HEADER=$(curl -s -i "http://localhost:$PORT/api/products" 2>/dev/null | grep -i "^ratelimit-limit:" | cut -d: -f2 | tr -d ' ')
+if [ -z "$LIMIT_HEADER" ]; then
+  echo "❌ ERROR: Rate limiter not enabled - RateLimit-Limit header missing"
+  exit 1
+fi
+echo "✅ Rate limiter enabled (limit from header: $LIMIT_HEADER)"
+
+# Dynamically get RATE_LIMIT_MAX from header (Issue #5)
+RATE_LIMIT_MAX="$LIMIT_HEADER"
+echo "✅ Server started with RATE_LIMIT_ENABLED=true, RATE_LIMIT_MAX=$RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS=5000"
 echo ""
 
 # ============================================================
@@ -72,7 +83,12 @@ STATUS_3=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$PORT/api/pr
 STATUS_4=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$PORT/api/products")
 
 if [ "$STATUS_1" = "200" ] && [ "$STATUS_2" = "200" ] && [ "$STATUS_3" = "200" ] && [ "$STATUS_4" = "429" ]; then
-  log_result "RL-INT-01" "PASS" "Requests 1-3: 200, Request 4: 429 ✅"
+  # Verify that 4th request was actually throttled (Issue #2)
+  if [ "$STATUS_4" != "429" ]; then
+    log_result "RL-INT-01" "FAIL" "4th request should return 429 but got $STATUS_4"
+  else
+    log_result "RL-INT-01" "PASS" "Requests 1-3: 200, Request 4: 429 ✅"
+  fi
 else
   log_result "RL-INT-01" "FAIL" "Expected [200,200,200,429], got [$STATUS_1,$STATUS_2,$STATUS_3,$STATUS_4]"
 fi
@@ -91,15 +107,15 @@ RATE_LIMIT_WINDOW_MS="$RATE_LIMIT_WINDOW_MS" \
 bash scripts/server.sh start single 2>/dev/null
 sleep 2
 
-# Make requests and capture headers
+# Make requests and capture headers (Issue #3: robust header parsing)
 RESP_1=$(curl -s -i "http://localhost:$PORT/api/products" 2>&1)
-REMAINING_1=$(echo "$RESP_1" | grep -i "ratelimit-remaining" | grep -oE "[0-9]+" | head -1)
+REMAINING_1=$(echo "$RESP_1" | grep -i "^ratelimit-remaining:" | cut -d: -f2 | tr -d ' ')
 
 RESP_2=$(curl -s -i "http://localhost:$PORT/api/products" 2>&1)
-REMAINING_2=$(echo "$RESP_2" | grep -i "ratelimit-remaining" | grep -oE "[0-9]+" | head -1)
+REMAINING_2=$(echo "$RESP_2" | grep -i "^ratelimit-remaining:" | cut -d: -f2 | tr -d ' ')
 
 RESP_3=$(curl -s -i "http://localhost:$PORT/api/products" 2>&1)
-REMAINING_3=$(echo "$RESP_3" | grep -i "ratelimit-remaining" | grep -oE "[0-9]+" | head -1)
+REMAINING_3=$(echo "$RESP_3" | grep -i "^ratelimit-remaining:" | cut -d: -f2 | tr -d ' ')
 
 # Verify headers present and decrement: 2 → 1 → 0
 if [ -n "$REMAINING_1" ] && [ -n "$REMAINING_2" ] && [ -n "$REMAINING_3" ]; then
