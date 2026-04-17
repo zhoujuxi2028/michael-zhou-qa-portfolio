@@ -1,8 +1,8 @@
 # 测试计划 (Test Plan)
 
 **项目:** Performance Testing Platform
-**版本:** Phase 1~6
-**日期:** 2026-04-05 (Phase 6 更新)
+**版本:** Phase 1~7
+**日期:** 2026-04-17 (Phase 7 更新)
 
 ---
 
@@ -18,10 +18,9 @@
 | 4     | Soak Test + 可观测性    | 长时间运行稳定性、内存泄漏检测、Grafana 告警                      |
 | 5     | 基础设施 Helper         | env-loader、csv-loader、profile-parser、k6 脚本改造               |
 | 6     | 测试能力扩展            | k6 helpers 统一、breakpoint 崩溃测试、API 限流/熔断、执行摘要报告 |
+| 7     | CI/CD + 可观测性        | 性能基线回归、覆盖率门禁、Grafana 面板+告警、定时调度             |
 
 ### 1.2 范围外 (Out of Scope)
-
-- Phase 7 (Planned，用例待开发)
 - 第三方服务可用性 (InfluxDB/Grafana 自身 Bug)
 - 跨项目端口冲突排查
 
