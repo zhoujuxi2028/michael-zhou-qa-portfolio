@@ -43,7 +43,7 @@
 | 4     | Soak Test + 可观测性    | 7             | 3        | 2        | 0      | **12**  | [phase4-soak.md](phase4-soak.md)               |
 | 5     | 基础设施 Helper         | 24            | 0        | 5        | 0      | **29**  | [phase5-infra.md](phase5-infra.md)             |
 | 6     | 测试能力扩展            | 41            | 7        | 8        | 8      | **64**  | [phase6-testing.md](phase6-testing.md)         |
-| 7     | CI/CD + 可观测性        | 12            | 0        | 0        | 18     | **30**  | [phase7-cicd.md](phase7-cicd.md)               |
+| 7     | CI/CD + 可观测性        | 6             | 0        | 0        | 19     | **25**  | [phase7-cicd.md](phase7-cicd.md)               |
 |       | **小计**                | **148**       | **33**   | **31**   | **43** | **255** |                                                |
 
 > **Release 验证规则:** 每次大版本发布前，需逐 Phase 确认所有用例已执行且通过。用例变更记录见下方 §4。
