@@ -1,0 +1,14 @@
+{
+  "defaults": {
+    "vus": 50,
+    "warmupVusFraction": 0.1,
+    "warmupDuration": "30s",
+    "holdDuration": "60s",
+    "cooldownDuration": "30s",
+    "pollProb": 0.1
+  },
+  "thresholds": {
+    "http_req_duration{type:api}": ["p(95)<500"],
+    "http_req_failed{type:api}": ["rate<0.01"]
+  }
+}
