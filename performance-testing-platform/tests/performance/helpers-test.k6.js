@@ -8,10 +8,44 @@
  * 3. Don't have syntax errors
  */
 
-import { thinkTime, randomIntBetween } from './helpers/thinkTime.js';
-import { executeFunnel } from './helpers/funnel.js';
-import { verifyHealth } from './helpers/healthCheck.js';
+import http from 'k6/http';
 import { check } from 'k6';
+import { thinkTime, randomIntBetween } from './helpers/thinkTime.js';
+import { verifyHealth } from './helpers/healthCheck.js';
+import { BASE_URL, checkStatus } from './helpers/utils.js';
+import { randomProduct } from './helpers/data.js';
+
+// Inline executeFunnel helper for testing
+function executeFunnel(baseUrl, options = {}) {
+  const { detailProb = 0.5, orderProb = 0.33, onOrder = null } = options;
+  const product = randomProduct();
+
+  const browseRes = http.get(`${baseUrl}/api/products`);
+  checkStatus(browseRes, 200, 'browse products');
+  thinkTime();
+
+  if (Math.random() < detailProb) {
+    const detailRes = http.get(`${baseUrl}/api/products/${product.id}`);
+    checkStatus(detailRes, 200, 'product detail');
+    thinkTime();
+
+    if (Math.random() < orderProb) {
+      const orderRes = http.post(
+        `${baseUrl}/api/orders`,
+        JSON.stringify({
+          product_id: Number(product.id),
+          quantity: 1,
+        }),
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+      checkStatus(orderRes, 201, 'create order');
+
+      if (onOrder && typeof onOrder === 'function') {
+        onOrder(orderRes);
+      }
+    }
+  }
+}
 
 export const options = {
   vus: 1,
