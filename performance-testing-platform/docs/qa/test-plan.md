@@ -277,6 +277,54 @@ npm run generate-summary                    # 生成执行摘要报告
 | 执行摘要报告                                   | `npm run generate-summary` → reports/k6-summary.md   |
 | CDN 依赖清除                                   | `grep -r "jslib.k6.io" tests/performance/` 返回空    |
 
+### Phase 7 — CI/CD + 可观测性（全量执行，无跳过）
+
+#### 7.1 测试覆盖与依赖
+
+| 类型 | 用例 | 依赖 | 备注 |
+|------|------|------|------|
+| **单元** | UT-BL-01~06, K6-FUNNEL-01~03, K6-CLASS-01~02 | 无 | 并行执行，最快 |
+| **覆盖率** | CI-COV-01~04 | UT-* 全部通过 | `npm test -- --coverage` |
+| **基线** | CI-BL-01~04 | smoke gate 完成 | 生成/对比 baseline.json |
+| **趋势** | TREND-01~03 | CI-BL-01 完成 | 追加 trend.json |
+| **Grafana** | GRF-ERR/HEAT/CUSTOM/ALERT | InfluxDB + Grafana 启动 | Docker 集成 |
+| **恢复** | K6-RECOVERY-01 | k6 runtime 就绪 | 长时间压测（30+ min） |
+| **集成** | K6-SOAK-INT-01~02 | Grafana dashboard 配置 | 需主动观测 |
+| **调度** | SCHED-01~04 | CI 环境检测通过 | 最后验证 |
+
+#### 7.2 执行顺序规划
+
+```
+第1轮：单元测试 + 覆盖率（~5 min）
+  ├─ npm test (UT-BL, K6-FUNNEL, K6-CLASS)
+  └─ npm test -- --coverage (CI-COV)
+
+第2轮：基线建立（~2 min）
+  ├─ npm run k6:smoke (生成 baseline.json)
+  └─ CI job baseline-compare (CI-BL-01~04)
+
+第3轮：趋势报告（~1 min）
+  └─ scripts/generate-trend.sh (TREND-01~03)
+
+第4轮：Grafana 集成（Docker）（~10 min）
+  ├─ docker-compose up (InfluxDB + Grafana)
+  └─ 可视化验证 (GRF-ERR/HEAT/CUSTOM/ALERT)
+
+第5轮：长时间压测（~30+ min）
+  ├─ npm run k6:soak:short (K6-RECOVERY-01)
+  └─ K6-SOAK-INT-01~02 观测告警
+
+第6轮：调度配置（~2 min）
+  └─ actionlint 验证 (SCHED-01~04)
+```
+
+#### 7.3 进入/退出标准
+
+| 条件 | 标准 |
+|------|------|
+| **进入** | npm test 100% PASS + coverage ≥ 80% + k6 smoke 无报错 |
+| **退出** | 33/33 用例完成 + 所有报告（baseline/trend/coverage）生成 + Grafana dashboard 可访问 |
+
 ---
 
 ## 9. SLA 定义
