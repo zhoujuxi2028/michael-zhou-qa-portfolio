@@ -24,11 +24,11 @@ prev_p95 = 上次 p95_ms
 curr_p95 = 当前 p95_ms
 regression = (curr_p95 - prev_p95) / prev_p95
 
-| 范围 | 动作 | block PR? |
-|------|------|----------|
-| ≤ +20% | ✅ PASS | ❌ 不阻塞 |
-| +20% ~ +50% | ⚠️ WARNING | ❌ 不阻塞（评论显示） |
-| > +50% | ❌ FAIL | ✅ 阻塞合并 |
+| 范围 | 动作 | 处理 |
+|------|------|------|
+| ≤ +20% | ✅ PASS | 质量门通过 |
+| +20% ~ +50% | ⚠️ WARNING | 在 PR comment 与 CI log 中显式标记，需人工复核 |
+| > +50% | ❌ FAIL | 质量门失败，阻塞合并 |
 ```
 
 **对标字段**:
@@ -58,18 +58,18 @@ regression = (curr_p95 - prev_p95) / prev_p95
 
 ## 覆盖率门禁
 
-**工具**: nyc (Istanbul)
+**工具**: Jest coverage / Istanbul
 
 | 指标 | 阈值 | 不达标 |
 |------|------|--------|
-| statements | ≥ 80% | ⚠️ WARNING |
-| branches | ≥ 75% | ⚠️ WARNING |
-| functions | ≥ 80% | ⚠️ WARNING |
-| lines | ≥ 80% | ⚠️ WARNING |
+| statements | ≥ 80% | ❌ FAIL |
+| branches | ≥ 70% | ❌ FAIL |
+| functions | ≥ 80% | ❌ FAIL |
+| lines | ≥ 80% | ❌ FAIL |
 
 **触发**: 单元测试完成后（`npm test` 阶段）
 
-**不阻塞**: warning 不阻塞合并，但在 CI 输出中显示
+**门禁策略**: 任一指标低于阈值即 fail，阻塞合并。
 
 ---
 
@@ -78,23 +78,25 @@ regression = (curr_p95 - prev_p95) / prev_p95
 ```yaml
 jobs:
   lint:
-    - eslint . || true
-    
-  unit:
-    - npm test
-    - coverage report (nyc)
-    
-  smoke:
-    - k6 run smoke.js
-    - export baseline.json ✅ NEW
-    - post: baseline-compare & trend-collect ✅ NEW
-    
-  integration: (optional, 可用 scripts/integration-test.sh)
-    - docker-compose up
-    - run k6 integration tests
+    - npx eslint src/ tests/unit/ --ext .js
+    - npx prettier --check 'src/**/*.js' 'tests/unit/**/*.js'
+
+  unit-test:
+    - npx jest tests/unit/ --coverage --coverageReporters=text --coverageReporters=lcov
+
+  smoke-test:
+    - k6 run tests/performance/smoke.k6.js
+    - export baseline.json  # Phase 7 target
+    - post: baseline-compare & trend-collect  # Phase 7 target
+
+  jmeter-smoke-test:
+    - jmeter -n -t tests/jmeter/smoke.jmx ...
 ```
 
-**Artifact 保留**: 7 天
+**当前实现**: 见根目录 `.github/workflows/performance-ci.yml`  
+**Phase 7 目标**: 在现有 4 个 job 基础上补 baseline compare / trend collect，不改变 fail-fast 原则。
+
+**Artifact 保留**: 7 天（baseline / coverage）；定时调度 artifact 另按 30 天设计
 
 ---
 
