@@ -4,7 +4,12 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { compareWithBaseline, appendTrend, loadBaseline, saveBaseline } = require('../../../src/utils/baseline');
+const {
+  compareWithBaseline,
+  appendTrend,
+  loadBaseline,
+  saveBaseline,
+} = require('../../../src/utils/baseline');
 
 describe('baseline regression detection', () => {
   const testDir = path.join(__dirname, '../../fixtures/baseline');
