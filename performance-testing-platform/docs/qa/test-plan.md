@@ -292,6 +292,7 @@ npm run generate-summary                    # 生成执行摘要报告
 | **Grafana** | GRF-ERR/HEAT/CUSTOM/ALERT | InfluxDB + Grafana 启动 | Docker 集成 |
 | **恢复** | K6-RECOVERY-01 | k6 runtime 就绪 | 长时间压测（30+ min） |
 | **集成** | K6-SOAK-INT-01~02 | Grafana dashboard 配置 | 需主动观测 |
+| **设计门禁** | K6-OBS-DESIGN-01~04 | Phase 7 observer 方案评审通过 | 设计目标，暂不计入当前 33 条已落地统计 |
 | **调度** | SCHED-01~04 | CI 环境检测通过 | 最后验证 |
 
 #### 7.2 执行顺序规划
@@ -316,6 +317,11 @@ npm run generate-summary                    # 生成执行摘要报告
   ├─ npm run k6:soak:short (K6-RECOVERY-01)
   └─ K6-SOAK-INT-01~02 观测告警
 
+第5.5轮：observer 方案门禁（设计/实现切换前）
+  ├─ 确认 load + observer 双 scenario 设计
+  ├─ 确认 threshold 仅统计 scenario:load
+  └─ 确认 capacity:test 现有链路可复用
+
 第6轮：调度配置（~2 min）
   └─ actionlint 验证 (SCHED-01~04)
 ```
@@ -326,6 +332,8 @@ npm run generate-summary                    # 生成执行摘要报告
 |------|------|
 | **进入** | `npm test` 通过 + coverage 达到 stmt 80 / branch 70 / func 80 / line 80 + k6 smoke 无报错 |
 | **退出** | 33/33 用例完成 + 所有报告（baseline/trend/coverage）生成 + Grafana dashboard 可访问 |
+
+> `#133` 补充说明：observer scenario + 固定间隔采样属于 **Phase 7 设计门禁**。在脚本实现与验证完成前，仅作为设计目标记录，不并入当前 33/33 已落地统计。
 
 ---
 

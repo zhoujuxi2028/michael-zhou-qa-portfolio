@@ -19,8 +19,9 @@ export function checkDuration(res, maxMs, name) {
   });
 }
 
-export function pollMetrics(customMetrics) {
-  const m = http.get(`${BASE_URL}/metrics`);
+export function pollMetrics(customMetrics, tags) {
+  const requestOptions = tags ? { tags } : undefined;
+  const m = requestOptions ? http.get(`${BASE_URL}/metrics`, requestOptions) : http.get(`${BASE_URL}/metrics`);
   if (m.status === 200) {
     try {
       const body = JSON.parse(m.body);
@@ -29,6 +30,9 @@ export function pollMetrics(customMetrics) {
       }
       if (body.eventLoop && customMetrics.eventLoopLag) {
         customMetrics.eventLoopLag.add(body.eventLoop.lag);
+      }
+      if (body.cpu && customMetrics.cpuUser) {
+        customMetrics.cpuUser.add(body.cpu.userPercent);
       }
     } catch {
       /* ignore parse errors */
