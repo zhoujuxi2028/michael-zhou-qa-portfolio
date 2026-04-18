@@ -9,7 +9,8 @@
 - [5. 被测对象设计约束](#5-被测对象设计约束intentional-design-constraints)
 - [6. Phase 5 — 基础设施层](#6-phase-5--基础设施层-infrastructure-layer)
 - [7. Phase 6 — 测试能力扩展](#7-phase-6--测试能力扩展)
-- [8. 基础设施](#8-基础设施)
+- [8. Phase 7 — CI/CD + 可观测性](#8-phase-7--cicd-可观测性)
+- [9. 基础设施](#9-基础设施)
 
 ---
 
@@ -446,3 +447,189 @@ lint → unit-test → ┬─ k6 smoke gate      (grafana/setup-k6-action)
 ```
 
 两个 smoke gate 并行运行，均通过才算 CI 绿灯。
+
+## 8. Phase 7 — CI/CD + 可观测性
+
+### 8.1 CI Pipeline 架构
+
+```
+lint → unit-test (coverage ≥80%) → ┬─ k6 smoke gate
+                               └─ jmeter smoke gate
+                               └─ baseline-compare (regression detection)
+                               └─ trend-collect (historical analysis)
+```
+
+**CI 流程特点：**
+- **覆盖率门禁**: Jest coverage threshold enforced (minimum 80%)
+- **并行执行**: k6 和 JMeter smoke test 同时运行，提高 CI 效率
+- **基线对比**: 自动对比历史性能数据，检测回归
+- **趋势收集**: 持续收集性能趋势，支持长期分析
+- **失败策略**: 禁用 `|| true`，任何失败直接导致 CI fail
+
+### 8.2 CI 工作流程组件
+
+| 组件 | 文件 | 作用 | 验证方式 |
+|------|------|------|----------|
+| **Workflow** | `.github/workflows/performance-ci.yml` | 主 CI 流程定义 | GitHub Actions |
+| **Baseline Export** | `scripts/baseline-export.js` | 导出当前性能基线 | `node scripts/baseline-export.js` |
+| **Baseline Compare** | `scripts/baseline-compare.js` | 对比性能基线，检测回归 | `node scripts/baseline-compare.js` |
+| **Trend Collect** | `scripts/trend-collect.js` | 收集历史趋势数据 | `node scripts/trend-collect.js` |
+| **Summary Report** | `scripts/generate-summary.sh` | 生成 Markdown 执行摘要 | `bash scripts/generate-summary.sh` |
+
+### 8.3 基线管理策略
+
+```
+每次 CI 执行：
+1. 运行 k6 smoke test → 输出 k6-smoke-summary.json
+2. 调用 baseline-export.js → 保存当前指标到 baseline.json
+3. 下载上次成功运行的 baseline-artifact
+4. 调用 baseline-compare.js → 计算回归/提升
+5. 调用 trend-collect.js → 更新趋势数据
+6. 调用 generate-summary.sh → 生成报告
+7. 上传 artifacts (baseline, trend, reports)
+```
+
+**回归检测逻辑：**
+- **p95 延迟**: 如果新值 > 旧值 × 1.1 (10% 上升)，标记为 REGRESSION
+- **错误率**: 如果新值 > 旧值 + 0.5%，标记为 REGRESSION  
+- **吞吐量**: 如果新值 < 旧值 × 0.9 (10% 下降)，标记 as REGRESSION
+
+### 8.4 趋势分析
+
+**存储结构：**
+```
+reports/
+├── trend.json              # 每次 CI 追加的性能数据
+├── k6-summary.md           # Markdown 摘要报告
+└── trend-analysis/         # 趋势分析结果
+    ├── latency-trend.png   # p95 延迟趋势图
+    ├── error-rate-trend.png # 错误率趋势图
+    └── throughput-trend.png # 吞吐量趋势图
+```
+
+**数据保留策略：**
+- `trend.json`: 保留最近 90 天数据（Issue #128）
+- 每日执行追加新数据，自动清理旧数据
+- 支持 Grafana 查询历史趋势
+
+### 8.5 可观测性增强
+
+#### 8.5.1 Grafana 面板升级
+
+**新增面板：**
+1. **CI 状态面板**: 显示最近 CI 运行状态，通过/失败率
+2. **基线对比面板**: 显示当前 vs 基线的性能对比
+3. **趋势分析面板**: 显示 p95/error rate/throughput 的长期趋势
+4. **业务指标面板**: 订单创建成功率、认证成功率等业务级指标
+
+**面板数据源：**
+- InfluxDB (k6 + JMeter)：原始性能数据
+- trend.json：趋势分析数据（通过 Grafana JSON API）
+
+#### 8.5.2 告警规则增强
+
+**新增告警规则：**
+```yaml
+# CI 失败告警
+- alert: CIFailed
+  expr: ci_job_result == 1
+  for: 5m
+  labels:
+    severity: critical
+  annotations:
+    summary: "CI Pipeline Failed"
+
+# 性能回归告警  
+- alert: PerformanceRegression
+  expr: |
+    (
+      rate(k6_http_req_duration_p95[5m]) > 
+      rate(k6_http_req_duration_p5m[5m]) * 1.1
+    ) and (
+      rate(k6_http_req_failed[5m]) > 0.01
+    )
+  for: 10m
+  labels:
+    severity: warning
+  annotations:
+    summary: "Performance Regression Detected"
+```
+
+### 8.6 定时测试
+
+**夜间回归测试：**
+```yaml
+name: Nightly Regression
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 每天凌晨2点
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - # 执行完整性能回归测试
+      - # 结果存储在带时间戳的目录
+      - # 生成回归报告并邮件通知
+```
+
+**测试范围：**
+- 所有 k6 脚本（smoke, load, stress, spike, capacity, soak）
+- 所有 JMeter 测试计划
+- 基线回归检测
+- 趋势更新
+
+### 8.7 PR 集成
+
+**PR 评论功能：**
+- 自动在 PR 中添加测试结果摘要
+- 显示基线对比结果
+- 提供趋势分析链接
+- 标注是否存在性能回归
+
+**评论格式：**
+```markdown
+📊 Performance Test Results
+
+| Test | Status | p95 | Error Rate | Baseline Change |
+|------|--------|-----|------------|-----------------|
+| k6-smoke | ✅ PASS | 45ms | 0.0% | +2% |
+| jmeter-smoke | ✅ PASS | 52ms | 0.0% | -1% |
+
+📈 Trend Analysis: [View Dashboard](...)
+📄 Baseline Comparison: [View Details](...)
+
+⚠️ No regressions detected
+```
+
+### 8.8 脚本命令扩展
+
+**新增 npm scripts：**
+```json
+{
+  "generate-summary": "bash scripts/generate-summary.sh",
+  "k6:rate-limit": "mkdir -p reports && k6 run --out 'web-dashboard=export=reports/k6-rate-limit.html' tests/performance/rate-limit.k6.js",
+  "k6:breakpoint": "npm run preflight && npm run restart:clean && mkdir -p reports && k6 run --out 'web-dashboard=export=reports/k6-breakpoint.html' tests/performance/breakpoint.k6.js"
+}
+```
+
+**脚本功能：**
+- `generate-summary`: 生成 Markdown 格式的执行摘要
+- `k6:rate-limit`: 测试 API 限流功能
+- `k6:breakpoint`: 寻找系统崩溃点的递增测试
+
+### 8.9 测试统计
+
+**Phase 7 新增测试类型：**
+| 测试类型 | 数量 | 累计总数 | 工具 |
+|---------|------|----------|------|
+| CI 流程测试 | 12 | 212 | GitHub Actions |
+| 趋势分析测试 | 3 | 215 | Bash + Node.js |
+| 基线管理测试 | 5 | 220 | Bash + Node.js |
+| **总计** | **20** | **220** | |
+
+**测试覆盖范围：**
+- CI 流程完整性验证
+- 性能回归检测
+- 趋势数据分析
+- 基线管理自动化
+- 可观测性集成
