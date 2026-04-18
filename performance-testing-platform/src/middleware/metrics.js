@@ -5,18 +5,18 @@ const ALERT_THRESHOLDS = {
   // SLA 值
   SLA: {
     p95_ms: 500,
-    error_rate: 0.01,  // 1%
+    error_rate: 0.01, // 1%
   },
   // Warning 级别（提前告警）
   WARNING: {
     p95_ms: 400,
-    error_rate: 0.005,  // 0.5%
+    error_rate: 0.005, // 0.5%
     memory_growth_mb_per_hour: 200,
   },
   // Critical 级别（立即告警）
   CRITICAL: {
     p95_ms: 1000,
-    error_rate: 0.05,  // 5%
+    error_rate: 0.05, // 5%
     memory_growth_mb_per_hour: 500,
   },
 };
