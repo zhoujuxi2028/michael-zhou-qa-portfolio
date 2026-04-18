@@ -52,7 +52,7 @@ jobs:
           fi
 
           # Extract coverage percentages
-         Statements=$(grep -o 'All files[^>]*> \([0-9.]*\)%' "$COVERAGE_FILE" | sed 's/.*> \([0-9.]*\)%/\1/')
+          Statements=$(grep -o 'All files[^>]*> \([0-9.]*\)%' "$COVERAGE_FILE" | sed 's/.*> \([0-9.]*\)%/\1/')
           Branches=$(grep -o 'All files[^>]*> \([0-9.]*\)%' "$COVERAGE_FILE" | sed 's/.*> \([0-9.]*\)%/\1/' | tail -1)
           Functions=$(grep -o 'All files[^>]*> \([0-9.]*\)%' "$COVERAGE_FILE" | sed 's/.*> \([0-9.]*\)%/\1/' | tail -1)
           Lines=$(grep -o 'All files[^>]*> \([0-9.]*\)%' "$COVERAGE_FILE" | sed 's/.*> \([0-9.]*\)%/\1/' | tail -1)
@@ -113,27 +113,7 @@ jobs:
       - name: Run k6 smoke test (performance gate)
         run: k6 run --out json=reports/k6-smoke-summary.json tests/performance/smoke.k6.js
       - name: Extract baseline metrics
-        if: always()
         run: node scripts/baseline-export.js
-      - name: Download previous baseline
-        if: always()
-        continue-on-error: true
-        run: |
-          gh run list -w performance-ci.yml --json conclusion,databaseId -q '.[] | select(.conclusion=="success") | .databaseId' | head -1 | xargs -I {} gh run download {} -n baseline-artifact -D reports/
-      - name: Compare baseline (regression detection)
-        if: always()
-        run: node scripts/baseline-compare.js
-      - name: Collect trend data
-        if: always()
-        run: node scripts/trend-collect.js
-      - name: Upload baseline artifacts
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: baseline-artifact
-          path: |
-            performance-testing-platform/reports/baseline.json
-            performance-testing-platform/reports/trend.json
       - name: Stop API
         if: always()
         run: kill $(lsof -ti:3000) 2>/dev/null || true
@@ -168,7 +148,7 @@ jobs:
         run: |
           mkdir -p results
           jmeter -n -t tests/jmeter/smoke.jmx -q tests/jmeter/config/smoke.properties -l results/jmeter-smoke.jtl
-      - name: Check JMeter results (fail on errors)
+      - name: Check JMeter results (fail on errors + latency)
         run: |
           ERROR_COUNT=$(tail -n +2 results/jmeter-smoke.jtl | awk -F',' '{if($8=="false") count++} END{print count+0}')
           TOTAL_COUNT=$(tail -n +2 results/jmeter-smoke.jtl | wc -l | tr -d ' ')
@@ -183,6 +163,15 @@ jobs:
             echo "FAIL: Error rate >= 1% threshold"
             exit 1
           fi
+
+          # p95 latency check (aligned with k6 SLA: p95 < 500ms)
+          # JMeter CSV 默认格式: column 2 = elapsed time (ms)
+          P95=$(tail -n +2 results/jmeter-smoke.jtl | awk -F',' '{print $2}' | sort -n | awk 'BEGIN{c=0} {a[c++]=$1} END{print a[int(c*0.95)]}')
+          echo "p95 latency: ${P95}ms"
+          if [ "$(echo "$P95 >= 500" | bc)" -eq 1 ]; then
+            echo "FAIL: p95 latency (${P95}ms) >= 500ms threshold"
+            exit 1
+          fi
       - name: Stop API
         if: always()
         run: kill $(lsof -ti:3000) 2>/dev/null || true
@@ -193,41 +182,50 @@ jobs:
           name: jmeter-smoke-results
           path: performance-testing-platform/results/
 
-      baseline-compare:
-        runs-on: ubuntu-latest
-        needs: [smoke-test, jmeter-smoke-test]
-        steps:
-          - uses: actions/checkout@v6
-          - uses: actions/setup-node@v6
-            with:
-              node-version: '18'
-          - run: npm ci
-          - name: Download baseline artifact
-            run: |
-              gh run list -w performance-ci.yml --json conclusion,databaseId -q '.[] | select(.conclusion=="success") | .databaseId' | head -1 | xargs -I {} gh run download {} -n baseline-artifact -D reports/
-          - name: Compare baseline (CI-BASE-02)
-            run: node scripts/baseline-compare.js
-          - name: Upload comparison result
-            if: always()
-            uses: actions/upload-artifact@v7
-            with:
-              name: baseline-comparison
-              path: performance-testing-platform/reports/comparison-result.json
+  baseline-compare:
+    runs-on: ubuntu-latest
+    needs: [smoke-test, jmeter-smoke-test]
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '18'
+      - run: npm ci
+      - name: Download baseline artifact
+        # 首次运行无 baseline artifact 时允许失败（已知 exemption，见 risks.md R-27）
+        continue-on-error: true
+        run: |
+          gh run list -w performance-ci.yml --json conclusion,databaseId -q '.[] | select(.conclusion=="success") | .databaseId' | head -1 | xargs -I {} gh run download {} -n baseline-artifact -D reports/
+      - name: Compare baseline (CI-BASE-02)
+        run: node scripts/baseline-compare.js
+      - name: Upload comparison result
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: baseline-comparison
+          path: |
+            performance-testing-platform/reports/baseline.json
+            performance-testing-platform/reports/comparison-result.json
 
-      trend-collect:
-        runs-on: ubuntu-latest
-        needs: smoke-test
-        steps:
-          - uses: actions/checkout@v6
-          - uses: actions/setup-node@v6
-            with:
-              node-version: '18'
-          - run: npm ci
-          - name: Collect trend data (CI-TREND-01)
-            run: node scripts/trend-collect.js
-          - name: Upload trend artifact
-            if: always()
-            uses: actions/upload-artifact@v7
-            with:
-              name: trend-data
-              path: performance-testing-platform/reports/trend.json
+  trend-collect:
+    runs-on: ubuntu-latest
+    needs: smoke-test
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '18'
+      - run: npm ci
+      - name: Collect trend data (CI-TREND-01)
+        run: node scripts/trend-collect.js
+      - name: Upload trend artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: trend-data
+          path: performance-testing-platform/reports/trend.json
