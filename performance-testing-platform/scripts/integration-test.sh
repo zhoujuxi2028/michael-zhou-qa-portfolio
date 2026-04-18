@@ -122,7 +122,7 @@ echo "=========================================="
 # SM-UT-01~03: /metrics endpoint (server still running from Phase 1)
 METRICS=$(curl -sf http://localhost:3000/metrics)
 
-CPU_OK=$(echo "$METRICS" | python3 -c "import sys,json; m=json.load(sys.stdin); print('1' if m['cpu']['user']>=0 and len(m['cpu']['loadavg'])==3 else '0')" 2>/dev/null)
+CPU_OK=$(echo "$METRICS" | python3 -c "import sys,json; m=json.load(sys.stdin); print('1' if m['cpu']['userPercent']>=0 and len(m['cpu']['loadavg'])==3 else '0')" 2>/dev/null)
 [ "$CPU_OK" = "1" ] && log_result "SM-UT-01" "PASS" "/metrics CPU ok" || log_result "SM-UT-01" "FAIL" "CPU metrics missing"
 
 MEM_OK=$(echo "$METRICS" | python3 -c "import sys,json; m=json.load(sys.stdin); print('1' if m['memory']['rss']>0 and m['memory']['heapUsed']>0 else '0')" 2>/dev/null)
