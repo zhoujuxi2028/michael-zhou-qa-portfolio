@@ -97,7 +97,7 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 
 | 需求 ID            | 需求                                                                                                            | 关联 US  | 优先级 |
 | ------------------ | --------------------------------------------------------------------------------------------------------------- | -------- | ------ |
-| PERF-API-MW-FR-001 | metrics 中间件：Phase 1 首次引入 `GET /metrics` 端点，采集 requestCount、avgDuration(ms)、CPU(user/system/loadavg)、Memory(rss/heapUsed/heapTotal/external)、eventLoopLag(ms) | US-01~04 | P0     |
+| PERF-API-MW-FR-001 | metrics 中间件：Phase 1 首次引入 `GET /metrics` 端点，采集 requestCount、avgDuration(ms)、CPU(userPercent/systemPercent/loadavg)、Memory(rss/heapUsed/heapTotal/external)、eventLoopLag(ms) | US-01~04 | P0     |
 
 #### PERF-API-DB（数据层）
 

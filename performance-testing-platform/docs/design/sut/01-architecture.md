@@ -68,7 +68,7 @@ npm start (default)
 ## 4. 性能指标采集
 
 ### 进程级指标（实时，/metrics 端点）
-- CPU: user/system/loadavg
+- CPU: userPercent/systemPercent/loadavg
 - Memory: rss/heapUsed/heapTotal/external
 - Event Loop Lag: setImmediate 延迟 (ms)
 - Request Count & Avg Duration

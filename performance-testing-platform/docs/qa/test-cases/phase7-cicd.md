@@ -67,3 +67,14 @@
 | K6-RECOVERY-01 | PERF-K6-FR-005  | 熔断恢复时间 ≤ 60s               | soak.js 故障注入 → 10s 连续恢复 | IT P2 regression |
 | K6-SOAK-INT-01 | PERF-K6-FR-006  | Grafana Dashboard 实时展示（#108） | ✓ k6 soak 持续运行 ✓ InfluxDB 数据增长 ✓ Dashboard 更新 ✓ 内存/CPU 趋势 | IT P3 full |
 | K6-SOAK-INT-02 | PERF-K6-FR-007  | Grafana 告警规则触发（#108）   | ✓ 规则加载正常 ✓ p95>500ms 触发 ✓ error>1% 触发 ✓ UI 状态改变 | IT P3 full |
+
+## observer 采样设计门禁（#133，待实现）
+
+> 以下用例用于约束 `#133` 的设计与后续实现方向，**当前不计入 Phase 7 已落地 33 条统计**；待脚本实现并验证后，再转入正式回归/集成统计。
+
+| 用例 ID | 需求 ID | 验证项 | 预期 | 标签 |
+| ------- | ------- | ------ | ---- | ---- |
+| K6-OBS-DESIGN-01 | PERF-K6-FR-002 / PERF-K6-FR-006 | observer scenario 启动成功 | `load` 与 `observer` 两个 scenario 均可运行，`observeMetrics` 被调用 | Design Gate |
+| K6-OBS-DESIGN-02 | PERF-K6-FR-002 / PERF-K6-FR-006 | `/metrics` 改为固定间隔采样 | 不再由业务 VU 随机比例轮询，observer 以固定间隔采样 `/metrics` | Design Gate |
+| K6-OBS-DESIGN-03 | PERF-K6-FR-002 / PERF-K6-FR-006 | threshold 仅统计 `scenario:load` | observer 请求不进入业务 SLA 统计，`http_req_duration` / `http_req_failed` 只看 `scenario:load` | Design Gate |
+| K6-OBS-DESIGN-04 | PERF-K6-FR-006 / PERF-K6-FR-007 | setup/teardown 与 observer 共存 | `soak` / `soak-short` 的 baseline/final heap 快照保留，且不与 observer 周期采样冲突 | Design Gate |

@@ -4,10 +4,15 @@ import { Trend, Counter } from 'k6/metrics';
 import {
   BASE_URL,
   checkStatus,
-  pollMetrics,
   checkMemoryLeak,
   LEAK_THRESHOLD,
 } from './helpers/utils.js';
+import {
+  buildLoadThresholds,
+  buildObserverDurationFromStages,
+  buildObserverScenario,
+  observeMetricsCycle,
+} from './helpers/metricsObserver.js';
 import { thinkTime } from './helpers/thinkTime.js';
 import { randomProduct } from './helpers/data.js';
 
@@ -61,20 +66,29 @@ const soakAuthLatency = new Trend('soak_auth_latency');
 const recoveryTime = new Trend('recovery_time_ms'); // K6-RECOVERY-01
 
 // Configurable via env: SOAK_VUS (default 200), SOAK_DURATION (default 1h)
-const SOAK_VUS = parseInt(__ENV.SOAK_VUS || '200');
+const SOAK_VUS = parseInt(__ENV.SOAK_VUS || '200', 10);
 const SOAK_DURATION = __ENV.SOAK_DURATION || '1h';
+const SOAK_STAGES = [
+  { duration: __ENV.SOAK_RAMP_UP_DURATION || '2m', target: SOAK_VUS },
+  { duration: SOAK_DURATION, target: SOAK_VUS },
+  { duration: __ENV.SOAK_RAMP_DOWN_DURATION || '1m', target: 0 },
+];
 
 export const options = {
   setupTimeout: '30s',
-  stages: [
-    { duration: '2m', target: SOAK_VUS }, // ramp-up
-    { duration: SOAK_DURATION, target: SOAK_VUS }, // steady state
-    { duration: '1m', target: 0 }, // ramp-down
-  ],
-  thresholds: {
-    'http_req_duration{test_phase:!setup}': ['p(95)<500'],
-    'http_req_failed{test_phase:!setup}': ['rate<0.01'],
+  scenarios: {
+    load: {
+      executor: 'ramping-vus',
+      exec: 'runSoakLoad',
+      startVUs: 0,
+      stages: SOAK_STAGES,
+      gracefulRampDown: '0s',
+    },
+    observer: buildObserverScenario({
+      duration: __ENV.SOAK_OBSERVER_DURATION || buildObserverDurationFromStages(SOAK_STAGES),
+    }),
   },
+  thresholds: buildLoadThresholds(),
 };
 
 export function setup() {
@@ -101,7 +115,7 @@ export function setup() {
   return { baselineHeap };
 }
 
-export default function () {
+export function runSoakLoad() {
   // K6-RECOVERY-01: Inject fault on VU 1, iteration 50 and measure recovery time
   if (__VU === 1 && __ITER === 50) {
     console.log('[K6-RECOVERY-01] Injecting fault: simulating server unavailability');
@@ -150,20 +164,19 @@ export default function () {
     soakAuthLatency.add(loginRes.timings.duration);
   }
 
-  // Poll server metrics every ~5% of iterations
-  if (Math.random() < 0.05) {
-    pollMetrics({
-      heapUsedMb: soakHeapUsedMb,
-      eventLoopLag: soakEventLoopLag,
-    });
-  }
-
   // Fault injection: 50% probability sleep 2s to simulate delayed response handling (K6-RECOVERY)
   if (Math.random() < 0.5) {
     sleep(2);
   } else {
     sleep(Math.random() + 0.5); // 0.5~1.5s fractional sleep
   }
+}
+
+export function observeMetrics() {
+  observeMetricsCycle({
+    heapUsedMb: soakHeapUsedMb,
+    eventLoopLag: soakEventLoopLag,
+  });
 }
 
 export function teardown(data) {

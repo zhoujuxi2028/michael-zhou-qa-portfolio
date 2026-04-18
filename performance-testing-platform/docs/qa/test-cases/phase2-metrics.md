@@ -12,7 +12,7 @@
 
 | 用例 ID  | 测试项                      | 验收标准                                                | 标签 |
 | -------- | --------------------------- | ------------------------------------------------------- | ---- |
-| SM-UT-01 | `/metrics` 返回 CPU 指标    | `cpu.user >= 0`, `cpu.loadavg` 长度 3                   | UT P1 regression |
+| SM-UT-01 | `/metrics` 返回 CPU 指标    | `cpu.userPercent >= 0`, `cpu.systemPercent >= 0`, `cpu.loadavg` 长度 3 | UT P1 regression |
 | SM-UT-02 | `/metrics` 返回内存指标     | `memory.rss > 0`, `memory.heapUsed > 0`                 | UT P1 regression |
 | SM-UT-03 | `/metrics` 返回事件循环延迟 | `eventLoop.lag >= 0`                                    | UT P1 regression |
 | SM-IT-01 | 采集器生成 CSV              | `reports/system-metrics-*.csv` 包含 CPU/mem/disk/net 列 | IT P2 regression |
