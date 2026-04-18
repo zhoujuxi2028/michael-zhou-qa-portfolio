@@ -40,16 +40,16 @@
 
 ## 3. Phase 用例索引
 
-| Phase | 主题                    | Jest 单元测试 | 性能测试 | 集成测试 | 其他   | 合计    | 详细文档                                       |
-| ----- | ----------------------- | ------------- | -------- | -------- | ------ | ------- | ---------------------------------------------- |
-| 1     | 双引擎性能测试          | 24            | 13       | 4        | 13     | **54**  | [phase1-dual-engine.md](phase1-dual-engine.md) |
-| 2     | 系统指标采集 + 容量测试 | 23            | 6        | 9        | 4      | **42**  | [phase2-metrics.md](phase2-metrics.md)         |
-| 3     | JWT 认证场景            | 17            | 4        | 3        | 0      | **24**  | [phase3-auth.md](phase3-auth.md)               |
-| 4     | Soak Test + 可观测性    | 7             | 3        | 2        | 0      | **12**  | [phase4-soak.md](phase4-soak.md)               |
-| 5     | 基础设施 Helper         | 24            | 0        | 5        | 0      | **29**  | [phase5-infra.md](phase5-infra.md)             |
-| 6     | 测试能力扩展            | 41            | 7        | 8        | 8      | **64**  | [phase6-testing.md](phase6-testing.md)         |
-| 7     | CI/CD + 可观测性        | 6             | 0        | 19       | 20     | **45**  | [phase7-cicd.md](phase7-cicd.md)               |
-|       | **小计**                | **163**       | **33**   | **60**   | **47** | **284** |                                                |
+| Phase | 主题                    | Jest 单元测试 | 性能测试 | 集成测试 | 其他   | 合计    | 详细文档                                       | 通过率  |
+| ----- | ----------------------- | ------------- | -------- | -------- | ------ | ------- | ---------------------------------------------- | ------- |
+| 1     | 双引擎性能测试          | 24            | 13       | 4        | 13     | **54**  | [phase1-dual-engine.md](phase1-dual-engine.md) | ✅ 100% |
+| 2     | 系统指标采集 + 容量测试 | 23            | 6        | 9        | 4      | **42**  | [phase2-metrics.md](phase2-metrics.md)         | ✅ 100% |
+| 3     | JWT 认证场景            | 17            | 4        | 3        | 0      | **24**  | [phase3-auth.md](phase3-auth.md)               | ✅ 100% |
+| 4     | Soak Test + 可观测性    | 7             | 3        | 2        | 0      | **12**  | [phase4-soak.md](phase4-soak.md)               | ✅ 100% |
+| 5     | 基础设施 Helper         | 24            | 0        | 5        | 0      | **29**  | [phase5-infra.md](phase5-infra.md)             | ✅ 100% |
+| 6     | 测试能力扩展            | 41            | 7        | 8        | 8      | **64**  | [phase6-testing.md](phase6-testing.md)         | ✅ 100% |
+| 7     | CI/CD + 可观测性        | 81            | 0        | 19       | 20     | **120** | [phase7-cicd.md](phase7-cicd.md)               | ✅ 100% |
+|       | **小计**                | **217**       | **33**   | **60**   | **47** | **357** |                                                | ✅ 100% |
 
 > **Release 验证规则:** 每次大版本发布前，需逐 Phase 确认所有用例已执行且通过。用例变更记录见下方 §4。
 
@@ -70,6 +70,7 @@
 | 2026-04-17 | 7     | 修正     | Phase 7 用例统计                                     | Phase 7 当前为 33 条（单元 11 + 集成 3 + 其他 19）；与 `phase7-cicd.md` 和 `test-plan.md` 对齐                                               |
 | 2026-04-18 | 7     | 新增     | CI-COV-01~12, CI-TREND-01~07, CI-SCHED-01~20        | Phase 7 新增 CI 流程测试 12 + 趋势分析测试 3 + 基线管理测试 5；总计从 33 更新为 39；总用例从 266 更新为 278 |
 | 2026-04-18 | 7     | 修正     | CI-COV-01~12                                        | 将 CI-COV-01~12 从"单元测试"修正为"集成测试"；Phase 7 单元测试从 12 改为 0，集成测试从 7 改为 19；总用例数不变 |
+| 2026-04-18 | 7     | 修正     | 单元测试全量统计                                    | 单元测试总数从 157 更新为 217（+60）；Phase 7 单元测试从 0 更新为 81；总用例从 278 更新为 357；全部单元测试通过率 100% (26/26 test suites, 217/217 tests) |
 | 2026-04-19 | 7     | 新增     | BM-UT-01~06                                         | Issue #137 follow-up：补充业务指标单元测试 6 条（orderSuccess/orderConflict/orderConflictRate/authLatencyMs/resetMetrics/sampling）；Phase 7 单元测试从 0 更新为 6；总用例从 278 更新为 284 |
 | 2026-04-19 | 7     | 修复     | metrics.test.js, scheduled.test.js                  | 修复 metrics.test.js 中未解决的 git merge 冲突标记；修复 scheduled.test.js 第 120/158 行注释语法错误；修复 breakpoint-classification.test.js lint 警告 |
 
