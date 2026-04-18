@@ -1,6 +1,6 @@
 # CLAUDE.md - 性能测试平台 (Performance Testing Platform)
 
-**分类:** 性能测试 | k6 + JMeter 双引擎 | 157 unit + 60 integration + 39 performance tests
+**分类:** 性能测试 | k6 + JMeter 双引擎 | 217 unit + 50 integration + 33 performance tests (357 total)
 
 ## 🔴 分支规则
 
