@@ -22,19 +22,21 @@
 
 | 模块 | 需求ID | 优先级 | 预估工作量 |
 |------|----------|----------|------------|
-| Baseline | PERF-BL-FR-001~006 | P1 | 12小时 |
-| Coverage | PERF-COV-FR-001~003 | P1 | 6小时 |
-| Observability | PERF-OBS-FR-001~004 | P2 | 8小时 |
-| Schedule | PERF-SCHED-FR-001~002 | P3 | 10小时 |
-| k6 Scripts | PERF-K6-FR-001~007 | P2 | 8小时 |
+| Baseline | PERF-CI-BL-FR-001~006 | P1 | 12小时 |
+| Coverage | PERF-CI-COV-FR-001~003 | P1 | 6小时 |
+| Observability | PERF-OBS-DASH-FR-001~003 / PERF-OBS-ALERT-FR-001 | P2 | 8小时 |
+| Schedule | PERF-CI-SCHED-FR-001~002 | P3 | 10小时 |
+| k6 Scripts | PERF-ENGINE-K6-FR-011~017 | P2 | 8小时 |
 
 ---
 
 ## 2. 详细需求
 
-### 2.1 Baseline模块 (PERF-BL-FR-001~006)
+### 2.1 Baseline模块 (PERF-CI-BL-FR-001~006)
 
-#### PERF-BL-FR-001: CI性能基线存储
+> **权威需求来源:** [phase7-cicd.md](../project-management/requirements/phase7-cicd.md)，本文件为 DevOps 实施补充参考。
+
+#### PERF-CI-BL-FR-001: CI性能基线存储
 
 **用户故事**: 作为性能工程师，我想在CI中自动对比当前p95与历史基线
 

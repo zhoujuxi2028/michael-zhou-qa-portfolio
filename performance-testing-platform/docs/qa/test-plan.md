@@ -338,14 +338,17 @@ npm run generate-summary                    # 生成执行摘要报告
 
 ## 9. SLA 定义
 
-| 指标              | 阈值     | 适用场景                          |
-| ----------------- | -------- | --------------------------------- |
-| p95 latency       | < 500ms  | 所有 API 端点 (smoke/load/stress) |
-| p99 latency       | < 2000ms | 认证相关端点 (bcrypt 开销)        |
-| Error rate        | < 1%     | 所有场景                          |
-| Heap growth       | < 50%    | Soak test (1h+)                   |
-| Coverage (stmt)   | ≥ 80%    | Jest 单元测试                     |
-| Coverage (branch) | ≥ 70%    | Jest 单元测试                     |
+> **权威来源:** SLA 指标定义见 [requirements.md §SLA 定义](../project-management/requirements.md#sla-定义)，本节仅做快速引用。
+
+| 指标              | 阈值     | 适用场景                              |
+| ----------------- | -------- | ------------------------------------- |
+| p95 latency       | < 500ms  | 所有 API 端点 (smoke/load/stress)     |
+| p99 latency       | < 2000ms | 认证相关端点 (bcrypt 开销)            |
+| Error rate        | < 1%     | 所有场景                              |
+| Throughput        | ≥ 30 rps | smoke 场景 (5 VUs)                    |
+| Heap growth       | < 50%    | Soak test (1h+)                       |
+| Coverage (stmt)   | ≥ 80%    | Jest 单元测试                         |
+| Coverage (branch) | ≥ 70%    | Jest 单元测试                         |
 
 ---
 
