@@ -1,5 +1,70 @@
 # k6 脚本改动设计
 
+## k6 Tags 规范 (PERF-MONITOR-TAG-001)
+
+**目的:** 所有 HTTP 调用必须添加 `endpoint` tag，支持 Grafana 按 endpoint 分组错误分布、延迟等指标
+
+**设计原则:** 
+- 每个 HTTP 调用都显式标识 endpoint，便于 InfluxDB 按 tag 分组统计
+- tags 保持静态，不依赖动态变量（便于 Grafana 面板分组）
+- 规范化 endpoint 路径，去掉 ID 参数（如 `/api/products/{id}` → `/api/products/:id`）
+
+### Endpoint Tags 标准表
+
+| Endpoint | Tags | 脚本覆盖 | 用途 |
+|----------|------|---------|------|
+| `/health` | `{ endpoint: '/health' }` | smoke.k6.js | 健康检查 |
+| `/api/products` | `{ endpoint: '/api/products' }` | smoke/capacity/soak.k6.js | 列表浏览（100% 流量） |
+| `/api/products/:id` | `{ endpoint: '/api/products/:id' }` | smoke/capacity/soak.k6.js | 详情查看（~50% 流量） |
+| `/api/orders` | `{ endpoint: '/api/orders' }` | capacity/soak.k6.js | 订单创建（~16.5% 流量） |
+| `/api/auth/login` | `{ endpoint: '/api/auth/login' }` | soak.k6.js | 认证延迟采样（~2% 流量） |
+| `/metrics` | `{ endpoint: '/metrics' }` | capacity/soak.k6.js | 服务器指标采样（~1-10% 流量） |
+
+### 使用示例
+
+**正确用法：**
+```javascript
+// smoke.k6.js
+const products = http.get(`${BASE_URL}/api/products`, { 
+  tags: { endpoint: '/api/products' } 
+});
+
+// capacity.k6.js
+const order = http.post(
+  `${BASE_URL}/api/orders`,
+  JSON.stringify({ product_id: 1, quantity: 1 }),
+  { 
+    headers: { 'Content-Type': 'application/json' },
+    tags: { endpoint: '/api/orders' } 
+  }
+);
+```
+
+**错误用法（避免）：**
+```javascript
+// ❌ 不要：动态 endpoint，每个 ID 都生成不同 tag
+{ tags: { endpoint: `/api/products/${product.id}` } }
+
+// ❌ 不要：忘记添加 tag
+http.get(`${BASE_URL}/api/products`)
+```
+
+### Grafana 集成
+
+**面板查询示例：** "Error Distribution (by endpoint)"
+```sql
+SELECT sum("value") FROM "http_req_failed" 
+WHERE $timeFilter 
+GROUP BY time($__interval), "endpoint"
+```
+
+**如何使用：**
+1. k6 脚本中的 `endpoint` tag → InfluxDB tag field
+2. InfluxDB 查询按 `endpoint` tag 分组 → 按 endpoint 统计错误率
+3. Grafana 显示为表格或图表 → 快速识别问题 endpoint
+
+---
+
 ## Helper 函数模块化结构 (PERF-ARCH-FR-001)
 
 **设计原则:** 保留模块化 helpers 目录，避免代码重复
