@@ -67,11 +67,39 @@ npm start (default)
 
 ## 4. 性能指标采集
 
-### 进程级指标（实时，/metrics 端点）
+### 系统指标（实时，/metrics 端点）
+
+**进程级指标:**
 - CPU: user/system/loadavg
 - Memory: rss/heapUsed/heapTotal/external
 - Event Loop Lag: setImmediate 延迟 (ms)
 - Request Count & Avg Duration
+
+**业务指标 (PERF-BUSINESS-METRICS-001):**
+- `orderSuccess`: 订单成功创建数
+- `orderConflict`: 库存冲突数（409 响应）
+- `orderConflictRate`: 订单冲突率（百分比）
+- `authLatencyMs`: 平均认证延迟（毫秒）
+
+采集点位置:
+- 订单成功：`src/routes/orders.js` POST /api/orders 返回 201 时
+- 库存冲突：`src/routes/orders.js` POST /api/orders 返回 409 时
+- 认证延迟：`src/routes/auth.js` POST /api/auth/login 全程计时
+
+**示例 /metrics 响应:**
+```json
+{
+  "cpu": { "userPercent": 5.2, "systemPercent": 2.1, "loadavg": [2.5, 2.3, 2.1] },
+  "memory": { "heapUsed": 52428800, "heapTotal": 104857600, ... },
+  "eventLoop": { "lag": 0.45 },
+  "business": {
+    "orderSuccess": 1250,
+    "orderConflict": 8,
+    "orderConflictRate": "0.64%",
+    "authLatencyMs": 42
+  }
+}
+```
 
 ### 系统级指标（后台采集，CSV 输出）
 - 脚本：`bash scripts/server.sh collect <duration> <output>`
