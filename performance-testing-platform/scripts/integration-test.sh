@@ -231,9 +231,26 @@ echo "=========================================="
 echo " Phase 4: Soak Grafana (SOAK-TC-04~05)"
 echo "=========================================="
 
-# These require long-running soak + Grafana alert injection — skip in automated run
-log_result "SOAK-TC-04" "SKIP" "Requires Grafana + soak run (manual verification)"
-log_result "SOAK-TC-05" "SKIP" "Requires alert rule trigger (manual verification)"
+PHASE7_SOAK_OUTPUT=""
+PHASE7_SOAK_STATUS=0
+if PHASE7_SOAK_OUTPUT=$(bash scripts/integration-test-phase7-soak.sh 2>&1); then
+  PHASE7_SOAK_STATUS=0
+else
+  PHASE7_SOAK_STATUS=$?
+fi
+echo "$PHASE7_SOAK_OUTPUT"
+
+if echo "$PHASE7_SOAK_OUTPUT" | grep -q "✅ K6-SOAK-INT-01:"; then
+  log_result "SOAK-TC-04" "PASS" "k6 → InfluxDB → Grafana dashboard validation passed"
+else
+  log_result "SOAK-TC-04" "FAIL" "Phase 7 soak integration failed (exit=${PHASE7_SOAK_STATUS})"
+fi
+
+if echo "$PHASE7_SOAK_OUTPUT" | grep -q "✅ K6-SOAK-INT-02:"; then
+  log_result "SOAK-TC-05" "PASS" "Grafana alert assets and threshold trigger validation passed"
+else
+  log_result "SOAK-TC-05" "FAIL" "Grafana alert validation failed (exit=${PHASE7_SOAK_STATUS})"
+fi
 
 # ============================================================
 echo ""
@@ -406,6 +423,64 @@ if [ $HLP_EXIT -eq 0 ]; then
 else
   log_result "K6-HLP-INT-01" "FAIL" "helpers-test.k6.js 执行失败 (exit $HLP_EXIT)"
   log_result "K6-HLP-INT-02" "FAIL" "k6 helpers 验证脚本执行失败"
+fi
+
+# ============================================================
+echo ""
+echo "=========================================="
+echo " Phase 7: CI/CD Integration (PR-COMMENT-01~04)"
+echo "=========================================="
+
+# PR-COMMENT-01: Test should fail until script is implemented
+echo "Testing PR comment integration script (should fail initially)..."
+if [ -f "scripts/pr-comment.js" ]; then
+  PR_TEST_OUTPUT=$(node tests/integration/pr-comment.test.js 2>&1)
+  if echo "$PR_TEST_OUTPUT" | grep -q "FAIL"; then
+    log_result "PR-COMMENT-01" "FAIL" "PR comment test failed as expected (script not fully implemented)"
+  else
+    log_result "PR-COMMENT-01" "PASS" "PR comment integration test passed"
+  fi
+else
+  log_result "PR-COMMENT-01" "SKIP" "PR comment script not yet implemented"
+fi
+
+# PR-COMMENT-02: Test coverage badge generation
+echo "Testing coverage badge generation..."
+if [ -f "scripts/coverage-badge.js" ]; then
+  COV_BADGE_OUTPUT=$(node scripts/coverage-badge.js --coverage=85 2>&1)
+  if echo "$COV_BADGE_OUTPUT" | grep -q "85%"; then
+    log_result "PR-COMMENT-02" "PASS" "Coverage badge generated correctly"
+  else
+    log_result "PR-COMMENT-02" "FAIL" "Coverage badge missing correct percentage"
+  fi
+else
+  log_result "PR-COMMENT-02" "SKIP" "Coverage badge script not yet implemented"
+fi
+
+# PR-COMMENT-03: Test baseline comparison integration
+echo "Testing baseline comparison integration..."
+if [ -f "scripts/baseline-compare.js" ]; then
+  COMPARE_OUTPUT=$(node scripts/baseline-compare.js --test-mode 2>&1)
+  if echo "$COMPARE_OUTPUT" | grep -q "Regression"; then
+    log_result "PR-COMMENT-03" "PASS" "Baseline comparison working"
+  else
+    log_result "PR-COMMENT-03" "FAIL" "Baseline comparison output missing 'Regression' label"
+  fi
+else
+  log_result "PR-COMMENT-03" "SKIP" "Baseline comparison script not yet implemented"
+fi
+
+# PR-COMMENT-04: Test markdown formatting
+echo "Testing markdown output formatting..."
+if [ -f "scripts/format-pr-comment.js" ]; then
+  MARKDOWN_OUTPUT=$(node scripts/format-pr-comment.js --test-mode 2>&1)
+  if echo "$MARKDOWN_OUTPUT" | grep -q "| Metric"; then
+    log_result "PR-COMMENT-04" "PASS" "Markdown table format correct"
+  else
+    log_result "PR-COMMENT-04" "FAIL" "Markdown table missing header"
+  fi
+else
+  log_result "PR-COMMENT-04" "SKIP" "Markdown formatting script not yet implemented"
 fi
 
 # ============================================================
