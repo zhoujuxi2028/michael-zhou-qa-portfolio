@@ -32,12 +32,13 @@ function compareWithBaseline(current, previous) {
 }
 
 /**
- * Append entry to trend.json (max 30 entries)
- * @param {object} entry - Trend entry { run, p95_ms, error_rate, ... }
+ * Append entry to trend.json (keep entries from last 90 days)
+ * Changed from max 30 rows to 90-day retention policy (PERF-TREND-RETENTION-001)
+ * @param {object} entry - Trend entry { run, date, p95_ms, error_rate, ... }
  * @param {string} filePath - Path to trend.json
- * @param {number} maxRows - Max entries to keep (default 30)
+ * @param {number} retentionDays - Keep entries from last N days (default 90)
  */
-function appendTrend(entry, filePath, maxRows = 30) {
+function appendTrend(entry, filePath, retentionDays = 90) {
   const dir = path.dirname(filePath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
@@ -53,10 +54,18 @@ function appendTrend(entry, filePath, maxRows = 30) {
 
   data.push(entry);
 
-  // Keep only the last maxRows entries
-  if (data.length > maxRows) {
-    data = data.slice(data.length - maxRows);
-  }
+  // Filter entries older than retentionDays
+  const now = new Date();
+  const cutoffDate = new Date(now.getTime() - retentionDays * 24 * 60 * 60 * 1000);
+  data = data.filter(e => {
+    if (!e.date) return true;  // Keep entries without date
+    try {
+      const entryDate = new Date(e.date);
+      return entryDate >= cutoffDate;
+    } catch {
+      return true;  // Keep entries with invalid dates
+    }
+  });
 
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 }
