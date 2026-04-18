@@ -34,7 +34,7 @@ describe('PR Comment Integration (CI-SCHED-04)', () => {
         encoding: 'utf8',
         stdio: 'pipe'
       });
-    }).toThrow();
+    }).toThrow(/Cannot find module|ENOENT/);
 
     // After implementation, test should pass and verify:
     // - Comment contains "Test Results" header
@@ -50,7 +50,7 @@ describe('PR Comment Integration (CI-SCHED-04)', () => {
         encoding: 'utf8',
         stdio: 'pipe'
       });
-    }).toThrow();
+    }).toThrow(/Cannot find module|ENOENT/);
 
     // After implementation, test should verify:
     // - Coverage change badge (↑ or ↓)
@@ -65,7 +65,7 @@ describe('PR Comment Integration (CI-SCHED-04)', () => {
         encoding: 'utf8',
         stdio: 'pipe'
       });
-    }).toThrow();
+    }).toThrow(/Cannot find module|ENOENT/);
 
     // After implementation, test should verify:
     // --dry-run flag outputs to stdout instead of creating comment
@@ -87,6 +87,6 @@ describe('PR Comment Integration (CI-SCHED-04)', () => {
       expect(markdown).toContain('| Metric');
       expect(markdown).toContain('| Value');
       expect(markdown).toContain('| Status');
-    }).toThrow();
+    }).toThrow(/Cannot find module|ENOENT/);
   });
 });
