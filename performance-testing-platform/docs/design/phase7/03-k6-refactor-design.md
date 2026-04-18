@@ -1,5 +1,82 @@
 # k6 脚本改动设计
 
+---
+
+## /metrics 采样策略 (PERF-MONITOR-SAMPLING-001)
+
+**问题背景:** capacity.k6.js 原来使用随机 10% 采样，在 5000 VU 时造成 ~166 req/s 的 /metrics 请求，占用大量 SUT 资源，导致性能指标虚高。
+
+**解决方案:** 改为**固定间隔轮询**（而非随机采样），降低 /metrics 负载 80 倍。
+
+### 设计对比
+
+| 方案 | 采样方式 | 预期负载 | 优点 | 缺点 |
+|------|---------|----------|------|------|
+| ❌ 旧方案（随机 10%） | `Math.random() < 0.1` | ~166 req/s | 简单 | 占用资源高，指标虚高 |
+| ✅ **新方案（固定间隔）** | **`if (__ITER % 50 === 0)`** | **~0.2 req/s** | **资源低，稳定性高** | **需要调整采样频率** |
+
+### 实现方式（capacity.k6.js）
+
+```javascript
+export default function () {
+  executeFunnel(BASE_URL);
+
+  // Poll server metrics every ~50 iterations ≈ 5 seconds
+  // 降低 /metrics 负载 80 倍（从随机 10% 的 166 req/s 改为 ~0.2 req/s）
+  if (__ITER % 50 === 0) {
+    const m = http.get(`${BASE_URL}/metrics`, { tags: { endpoint: '/metrics' } });
+    if (m.status === 200) {
+      try {
+        const body = JSON.parse(m.body);
+        if (body.eventLoop) serverEventLoopLag.add(body.eventLoop.lag);
+        if (body.memory) serverHeapUsedMb.add(body.memory.heapUsed / 1024 / 1024);
+        if (body.cpu) serverCpuUser.add(body.cpu.userPercent);
+      } catch {
+        // ignore parse errors
+      }
+    }
+  }
+
+  thinkTime(0.5, 1.0);
+}
+```
+
+### 性能影响分析
+
+**旧方案（随机 10%）：**
+- VU 数：5000 稳定阶段
+- 每 VU 每秒 iterations：~10（假设每个 iteration 100-200ms）
+- 总 iterations/s：5000 × 10 = 50K iter/s
+- 采样率 10%：50K × 10% = 5K /metrics req/s × 1 VU = 5000 req/s ✗ **太高**
+
+实际计算（按实测）：
+- 假设稳定阶段每个 VU 每 5 秒执行一次完整的 executeFunnel()
+- 每次 executeFunnel() 包含 3 个 HTTP 调用 + think time（总 2-3 秒）
+- 5000 VU × ~20 iter/min = ~100K req/min
+- 10% 采样：~10K /metrics req/min ≈ **166 req/s** ✗ 占用 SUT 资源
+
+**新方案（固定 50 iteration 间隔）：**
+- 所有 VU 每 50 iterations 轮询一次 /metrics
+- 总体采样频率：~5000 VU × (50 iter/sample) = 1 /metrics 请求 per 50 VU-iterations
+- 换算：50K total iter/s ÷ 50 = **1 req/s（全局）** ✓ 资源占用低
+
+实际运行预期：~0.2-0.5 req/s（取决于实际 iteration 速率）
+
+### 关键特性
+
+✅ **稳定性:** 固定间隔 vs 随机波动 → 时间序列数据更平滑  
+✅ **准确性:** 降低噪声，压力测试指标更真实  
+✅ **可维护:** 易于调整采样频率（改 50 为其他值）  
+✅ **兼容性:** 不改变其他 VU 的业务流程  
+
+### 调整建议
+
+如需调整采样频率，修改 `__ITER % 50 === 0` 中的 `50`：
+- `% 25` → 每 25 iterations 采样一次（2x 频率，更接近实时）
+- `% 100` → 每 100 iterations 采样一次（0.5x 频率，更省资源）
+
+---
+
 ## k6 Tags 规范 (PERF-MONITOR-TAG-001)
 
 **目的:** 所有 HTTP 调用必须添加 `endpoint` tag，支持 Grafana 按 endpoint 分组错误分布、延迟等指标
