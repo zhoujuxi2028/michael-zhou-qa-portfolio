@@ -1,6 +1,16 @@
 const request = require('supertest');
 const app = require('../../../src/app');
+<<<<<<< Updated upstream
 const { resetMetrics, getMetrics, recordOrderSuccess, recordOrderConflict, recordAuthLatency } = require('../../../src/middleware/metrics');
+=======
+const {
+  getMetrics,
+  recordAuthLatency,
+  recordOrderConflict,
+  recordOrderSuccess,
+  resetMetrics,
+} = require('../../../src/middleware/metrics');
+>>>>>>> Stashed changes
 const { resetDatabase } = require('../../../src/db/database');
 
 beforeEach(() => resetMetrics());
@@ -25,10 +35,16 @@ describe('metrics middleware', () => {
     const res = await request(app).get('/metrics');
     expect(res.body.cpu).toBeDefined();
     expect(res.body.cpu.userPercent).toBeGreaterThanOrEqual(0);
+<<<<<<< Updated upstream
     // 多核系统上 CPU 占用率可超过 100%（N核最高NX100%）
     expect(typeof res.body.cpu.userPercent).toBe('number');
     expect(res.body.cpu.systemPercent).toBeGreaterThanOrEqual(0);
     expect(typeof res.body.cpu.systemPercent).toBe('number');
+=======
+    expect(res.body.cpu.systemPercent).toBeGreaterThanOrEqual(0);
+    expect(Number.isFinite(res.body.cpu.userPercent)).toBe(true);
+    expect(Number.isFinite(res.body.cpu.systemPercent)).toBe(true);
+>>>>>>> Stashed changes
     expect(res.body.cpu.loadavg).toHaveLength(3);
   });
 
@@ -46,6 +62,58 @@ describe('metrics middleware', () => {
     const res = await request(app).get('/metrics');
     expect(res.body.eventLoop).toBeDefined();
     expect(res.body.eventLoop.lag).toBeGreaterThanOrEqual(0);
+  });
+
+  test('tracks business order metrics and calculates conflict rate', () => {
+    recordOrderSuccess();
+    recordOrderSuccess();
+    recordOrderConflict();
+
+    expect(getMetrics().business).toEqual({
+      orderSuccess: 2,
+      orderConflict: 1,
+      orderConflictRate: '33.33%',
+      authLatencyMs: 0,
+    });
+  });
+
+  test('returns rounded average auth latency', () => {
+    recordAuthLatency(10);
+    recordAuthLatency(21);
+
+    expect(getMetrics().business.authLatencyMs).toBe(16);
+  });
+
+  test('returns zeroed business metrics when no samples exist', () => {
+    expect(getMetrics().business).toEqual({
+      orderSuccess: 0,
+      orderConflict: 0,
+      orderConflictRate: '0.00%',
+      authLatencyMs: 0,
+    });
+  });
+
+  test('resetMetrics clears business metrics state', () => {
+    recordOrderSuccess();
+    recordOrderConflict();
+    recordAuthLatency(99);
+
+    resetMetrics();
+
+    expect(getMetrics().business).toEqual({
+      orderSuccess: 0,
+      orderConflict: 0,
+      orderConflictRate: '0.00%',
+      authLatencyMs: 0,
+    });
+  });
+
+  test('keeps only the latest 100 auth latency samples', () => {
+    for (let latency = 1; latency <= 101; latency++) {
+      recordAuthLatency(latency);
+    }
+
+    expect(getMetrics().business.authLatencyMs).toBe(52);
   });
 });
 
