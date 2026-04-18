@@ -19,13 +19,13 @@ function executeFunnel(baseUrl, options = {}) {
   const product = randomProduct();
 
   // 100% browse products list
-  const browseRes = http.get(`${baseUrl}/api/products`);
+  const browseRes = http.get(`${baseUrl}/api/products`, { tags: { endpoint: '/api/products' } });
   checkStatus(browseRes, 200, 'browse products');
   thinkTime();
 
   // ~50% of browsers view product detail (nested probability)
   if (Math.random() < detailProb) {
-    const detailRes = http.get(`${baseUrl}/api/products/${product.id}`);
+    const detailRes = http.get(`${baseUrl}/api/products/${product.id}`, { tags: { endpoint: '/api/products/:id' } });
     checkStatus(detailRes, 200, 'product detail');
     thinkTime();
 
@@ -38,7 +38,7 @@ function executeFunnel(baseUrl, options = {}) {
           product_id: Number(product.id),
           quantity: 1,
         }),
-        { headers: { 'Content-Type': 'application/json' } }
+        { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/orders' } }
       );
       checkStatus(orderRes, 201, 'create order');
 
@@ -69,7 +69,7 @@ export default function () {
 
   // Poll server metrics every ~10 iterations
   if (Math.random() < 0.1) {
-    const m = http.get(`${BASE_URL}/metrics`);
+    const m = http.get(`${BASE_URL}/metrics`, { tags: { endpoint: '/metrics' } });
     if (m.status === 200) {
       try {
         const body = JSON.parse(m.body);
