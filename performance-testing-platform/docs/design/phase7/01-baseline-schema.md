@@ -30,7 +30,7 @@
 ]
 ```
 
-**追加策略**：CI smoke gate 后，json 格式追加到 `reports/trend.json`，保留最近 30 条。
+**追加策略**：CI smoke gate 后，json 格式追加到 `reports/trend.json`，按时间戳过滤保留最近 **90 天**数据（PERF-TREND-RETENTION-001）。每条 entry 必须包含 `date` 字段（ISO 8601），超过 90 天的条目在下次 append 时自动清理。
 
 ## 生成触发
 
