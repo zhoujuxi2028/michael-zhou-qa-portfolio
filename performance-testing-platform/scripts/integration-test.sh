@@ -322,7 +322,8 @@ for i in $(seq 1 30); do
   sleep 0.5
 done
 # Use curl to verify headers are present in response (case-insensitive check)
-HEADERS=$(curl -s -i http://localhost:3000/api/products 2>&1 | grep -iE "ratelimit-limit|ratelimit-remaining|ratelimit-reset" | wc -l)
+# Use /health endpoint instead of /api/products to avoid consuming rate limit quota
+HEADERS=$(curl -s -i http://localhost:3000/health 2>&1 | grep -iE "ratelimit-limit|ratelimit-remaining|ratelimit-reset" | wc -l)
 if [[ "$HEADERS" -ge 3 ]]; then
   log_result "RL-INT-02" "PASS" "Headers: RateLimit-Limit/Remaining/Reset present"
 else

@@ -1,0 +1,39 @@
+groups:
+  - name: performance-testing-platform
+    interval: 1m
+    rules:
+      # Rule 1: p95 latency > 500ms for 5 minutes
+      - alert: HighP95Latency
+        expr: |
+          percentile(http_req_duration, 95) > 500
+        for: 5m
+        annotations:
+          summary: "High p95 latency: {{ $value }}ms (threshold: 500ms)"
+          description: "p95 response time exceeded 500ms for more than 5 minutes"
+        labels:
+          severity: warning
+          team: performance
+
+      # Rule 2: Error rate > 1% for 5 minutes
+      - alert: HighErrorRate
+        expr: |
+          rate(http_req_failed[5m]) > 0.01
+        for: 5m
+        annotations:
+          summary: "High error rate: {{ $value | humanizePercentage }} (threshold: 1%)"
+          description: "Error rate exceeded 1% for more than 5 minutes"
+        labels:
+          severity: critical
+          team: performance
+
+      # Rule 3: Heap memory continuous growth for 2 hours
+      - alert: HeapMemoryGrowth
+        expr: |
+          (server_heap_used_mb - server_heap_used_mb offset 2h) > 500
+        for: 2h
+        annotations:
+          summary: "Heap memory growing: {{ $value }}MB increase (threshold: 500MB/2h)"
+          description: "Heap memory has increased by more than 500MB over the past 2 hours, potential memory leak"
+        labels:
+          severity: warning
+          team: performance

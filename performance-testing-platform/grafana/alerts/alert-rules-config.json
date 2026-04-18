@@ -1,0 +1,73 @@
+{
+  "uid": "perf-alerts-001",
+  "title": "Performance Alerts (k6 + Soak)",
+  "description": "Production alert rules for performance testing platform",
+  "rules": [
+    {
+      "uid": "p95-warning",
+      "title": "High p95 Warning",
+      "condition": "p95_ms > 400",
+      "duration": "5m",
+      "severity": "warning",
+      "webhook": {
+        "url": "${WEBHOOK_URL}",
+        "method": "POST"
+      }
+    },
+    {
+      "uid": "p95-critical",
+      "title": "High p95 Critical",
+      "condition": "p95_ms > 1000",
+      "duration": "2m",
+      "severity": "critical",
+      "webhook": {
+        "url": "${WEBHOOK_URL}",
+        "method": "POST"
+      }
+    },
+    {
+      "uid": "error-warning",
+      "title": "Error Spike Warning",
+      "condition": "error_rate > 0.5%",
+      "duration": "5m",
+      "severity": "warning",
+      "webhook": {
+        "url": "${WEBHOOK_URL}",
+        "method": "POST"
+      }
+    },
+    {
+      "uid": "error-critical",
+      "title": "Error Spike Critical",
+      "condition": "error_rate > 5%",
+      "duration": "2m",
+      "severity": "critical",
+      "webhook": {
+        "url": "${WEBHOOK_URL}",
+        "method": "POST"
+      }
+    },
+    {
+      "uid": "memory-warning",
+      "title": "Memory Growth Warning",
+      "condition": "heap_growth > 200MB/h",
+      "duration": "1h",
+      "severity": "warning",
+      "webhook": {
+        "url": "${WEBHOOK_URL}",
+        "method": "POST"
+      }
+    },
+    {
+      "uid": "memory-critical",
+      "title": "Memory Overflow Critical",
+      "condition": "heap_growth > 500MB/h",
+      "duration": "30m",
+      "severity": "critical",
+      "webhook": {
+        "url": "${WEBHOOK_URL}",
+        "method": "POST"
+      }
+    }
+  ]
+}

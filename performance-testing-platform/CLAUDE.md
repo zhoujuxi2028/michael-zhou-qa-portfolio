@@ -10,6 +10,12 @@
 git checkout feature/performance-testing
 ```
 
+## Worktree 约定
+
+- 默认使用全局 worktree 目录：`~/.config/superpowers/worktrees/michael-zhou-qa-portfolio/`
+- `performance-testing-platform` 的隔离工作建议放在该目录下的独立子目录中
+- 需要设计验证、可行性评估或并行修复时，优先在 worktree 中执行，避免污染当前工作区
+
 ## 快速命令
 
 ```bash
@@ -24,6 +30,11 @@ bash scripts/integration-test.sh  # 集成测试 (31 cases，需 Docker)
 > - 锁文件: `/tmp/integration-test.lock`
 > - 若前次运行异常退出未释放锁: `rm -rf /tmp/integration-test.lock`
 > - 同时运行多个实例会立即失败，提示"already running"
+
+> ⚠️ **硬件要求:** CPU ≥ 4核, 内存 ≥ 8GB, SSD 推荐
+>
+> - Breakpoint 测试（阶梯递增至极限）需要充足硬件，耗时 4-8 小时
+> - 详见 [README.md](README.md#硬件要求)
 
 完整命令见 [README.md](README.md#npm-脚本)
 
@@ -106,6 +117,16 @@ rm -rf /tmp/integration-test.lock
 **目的：** 保持 `docs/qa/reports/` 整洁，防止历史规划文档长期堆积
 
 **存档位置：** `docs/qa/reports/archive/` 及对应子目录（见 `archive/README.md`）
+
+## 文档简洁原则
+
+**原则:** 设计文档必须简洁，优先使用表格和图表，避免冗长段落
+
+- ✅ **应做**: 表格、子弹点、简短代码示例
+- ❌ **避免**: 多段落说明、冗余重复、过度详细的背景描述
+- **目的**: 节省 token，提高可读性，便于快速检索
+
+**应用范围**: `docs/design/` 所有设计文档（sut 概要 + phase7 详细设计）
 
 ## CI 工作流
 

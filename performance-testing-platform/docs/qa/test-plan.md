@@ -1,8 +1,10 @@
 # 测试计划 (Test Plan)
 
 **项目:** Performance Testing Platform
-**版本:** Phase 1~6
-**日期:** 2026-04-05 (Phase 6 更新)
+**版本:** Phase 1~7
+**日期:** 2026-04-17 (Phase 7 更新)
+
+> **说明:** 本文档同时覆盖已落地测试资产与 Phase 7 设计阶段新增门禁。凡 workflow / 脚本尚未落地的内容，明确标注为“设计目标”，不冒充当前实现事实。
 
 ---
 
@@ -18,10 +20,9 @@
 | 4     | Soak Test + 可观测性    | 长时间运行稳定性、内存泄漏检测、Grafana 告警                      |
 | 5     | 基础设施 Helper         | env-loader、csv-loader、profile-parser、k6 脚本改造               |
 | 6     | 测试能力扩展            | k6 helpers 统一、breakpoint 崩溃测试、API 限流/熔断、执行摘要报告 |
+| 7     | CI/CD + 可观测性        | 性能基线回归、覆盖率门禁、Grafana 面板+告警、定时调度             |
 
 ### 1.2 范围外 (Out of Scope)
-
-- Phase 7 (Planned，用例待开发)
 - 第三方服务可用性 (InfluxDB/Grafana 自身 Bug)
 - 跨项目端口冲突排查
 
@@ -31,11 +32,11 @@
 
 | 类型     | 工具                  | 用例数  | 职责                                                                                                                   | 执行方式                           |
 | -------- | --------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| 单元测试 | Jest + Supertest      | 99      | API 功能正确性、helpers 解析逻辑、中间件行为、rate limiter                                                             | `npm test` 自动                    |
-| 集成测试 | Shell + curl + Docker | 28      | 端到端链路验证 (k6→InfluxDB→Grafana、认证流程、k6 helpers、限流中间件、摘要报告)；Stage 3 完成时实现，Stage 4 验证通过 | `bash scripts/integration-test.sh` |
-| 性能测试 | k6 + JMeter           | 26      | 延迟/吞吐/错误率、SLA 达标、瓶颈定位                                                                                   | npm scripts 手动触发               |
-| 其他     | 手动验证              | 17      | 报告完整性、脚本行为、CI 门禁                                                                                          | 人工检查                           |
-| **合计** |                       | **161** |                                                                                                                        |                                    |
+| 单元测试 | Jest + Supertest      | 156     | API 功能正确性、helpers 解析逻辑、中间件行为、baseline 判定、k6 补完能力                                              | `npm test` / `npx jest tests/unit/` |
+| 集成测试 | Shell + curl + Docker | 34      | 端到端链路验证 (k6→InfluxDB→Grafana、认证流程、k6 helpers、限流中间件、摘要报告、Grafana 集成)                        | `bash scripts/integration-test.sh` |
+| 性能测试 | k6 + JMeter           | 33      | 延迟/吞吐/错误率、SLA 达标、瓶颈定位、长时间稳定性                                                                     | npm scripts 手动触发               |
+| 其他     | 手动验证              | 43      | 报告完整性、脚本行为、CI/Grafana/调度设计验证                                                                          | 人工检查                           |
+| **合计** |                       | **266** |                                                                                                                        |                                    |
 
 ---
 
@@ -45,7 +46,7 @@
 
 | 检查项         | 命令                     | 通过标准                                         |
 | -------------- | ------------------------ | ------------------------------------------------ |
-| 单元测试       | `npm test`               | 95/95 PASS                                       |
+| 单元测试       | `npm test`               | 全部 Jest 单元测试通过，且覆盖率阈值满足项目标准 |
 | Lint           | `npx eslint .`           | 0 errors                                         |
 | 覆盖率         | `npm test -- --coverage` | stmt ≥ 80%, branch ≥ 70%, func ≥ 80%, line ≥ 80% |
 | JMeter dry-run | `npm run jmeter:dryrun`  | 0 errors, 字段名/状态码正确                      |
@@ -54,7 +55,7 @@
 
 | 检查项       | 命令                               | 通过标准                                  |
 | ------------ | ---------------------------------- | ----------------------------------------- |
-| 集成测试     | `bash scripts/integration-test.sh` | 26 Pass, 0 Fail (2 Skip 为 k6 模块兼容性) |
+| 集成测试     | `bash scripts/integration-test.sh` | 当前自动化集成检查全部通过；Phase 7 设计项按实施计划补齐 |
 | k6 smoke     | `npm run k6:smoke`                 | p95 < 500ms, error < 1%                   |
 | JMeter smoke | `npm run jmeter:smoke`             | error < 1%                                |
 | CI 流水线    | push → GitHub Actions              | 4 jobs 全绿                               |
@@ -138,7 +139,7 @@ P0 (本地快速反馈，~2 min)
 ### 6.1 单元测试
 
 ```bash
-npm test                                    # 全部 95 tests
+npm test                                    # 全量 Jest 单元测试（以 tests/unit/ 当前内容为准）
 npx jest tests/unit/routes/                 # Phase 1: API 路由 (products/orders/health)
 npx jest tests/unit/middleware/             # Phase 1: 中间件 (delay/metrics)
 npx jest tests/unit/scripts/               # Phase 2: 脚本 (server-sh/preflight/soak)
@@ -151,7 +152,7 @@ npm test -- --coverage                      # 含覆盖率报告
 ### 6.2 集成测试
 
 ```bash
-bash scripts/integration-test.sh            # 全部 23 cases (自动化)
+bash scripts/integration-test.sh            # 自动化集成检查入口（覆盖已实现的集成场景）
 ```
 
 ### 6.3 性能测试
@@ -268,15 +269,71 @@ npm run generate-summary                    # 生成执行摘要报告
 
 ### Phase 6 — 测试能力扩展
 
-| 验证项                                         | 方法                                                 |
-| ---------------------------------------------- | ---------------------------------------------------- |
-| Rate limiter 中间件 (正常/超限/恢复/开关)      | Jest: rateLimiter.test.js (4 tests)                  |
-| k6 helpers 统一 (funnel/thinkTime/healthCheck) | k6 smoke 迁移前后对比 (p95 偏差 < 10%)               |
-| 现有脚本迁移回归                               | `npm run k6:smoke` + `npm test` 全部 PASS            |
-| Breakpoint 崩溃测试                            | `npm run k6:breakpoint` 输出崩溃点 + 类型            |
-| 限流测试 (429/恢复)                            | `npm run k6:rate-limit` (需 RATE_LIMIT_ENABLED=true) |
-| 执行摘要报告                                   | `npm run generate-summary` → reports/k6-summary.md   |
-| CDN 依赖清除                                   | `grep -r "jslib.k6.io" tests/performance/` 返回空    |
+| 验证项                                         | 方法                                                              |
+| ---------------------------------------------- | ----------------------------------------------------------------- |
+| Rate limiter 中间件 (正常/超限/恢复/开关/headers) | Jest: `tests/unit/middleware/rateLimiter.test.js`                 |
+| k6 helpers 统一 (funnel/thinkTime/healthCheck) | k6 smoke 迁移前后对比 (p95 偏差 < 10%)                            |
+| 现有脚本迁移回归                               | `npm run k6:smoke` + `npm test` 全部 PASS                         |
+| Breakpoint 崩溃测试                            | `npm run k6:breakpoint` 输出崩溃点 + 类型                         |
+| 限流测试 (429/恢复)                            | `npm run k6:rate-limit`（设计目标；当前 workflow 未自动接入）     |
+| 执行摘要报告                                   | `npm run generate-summary` → `reports/k6-summary.md`              |
+| CDN 依赖清除                                   | `grep -r "jslib.k6.io" tests/performance/` 返回空                 |
+
+### Phase 7 — CI/CD + 可观测性（全量执行，无跳过）
+
+#### 7.1 测试覆盖与依赖
+
+| 类型 | 用例 | 依赖 | 备注 |
+|------|------|------|------|
+| **单元** | UT-BL-01~06, K6-FUNNEL-01~03, K6-CLASS-01~02 | 无 | 并行执行，最快 |
+| **覆盖率** | CI-COV-01~04 | UT-* 全部通过 | `npm test -- --coverage` |
+| **基线** | CI-BL-01~04 | smoke gate 完成 | 生成/对比 baseline.json |
+| **趋势** | TREND-01~03 | CI-BL-01 完成 | 追加 trend.json |
+| **Grafana** | GRF-ERR/HEAT/CUSTOM/ALERT | InfluxDB + Grafana 启动 | Docker 集成 |
+| **恢复** | K6-RECOVERY-01 | k6 runtime 就绪 | 长时间压测（30+ min） |
+| **集成** | K6-SOAK-INT-01~02 | Grafana dashboard 配置 | 需主动观测 |
+| **设计门禁** | K6-OBS-DESIGN-01~04 | Phase 7 observer 方案评审通过 | 设计目标，暂不计入当前 33 条已落地统计 |
+| **调度** | SCHED-01~04 | CI 环境检测通过 | 最后验证 |
+
+#### 7.2 执行顺序规划
+
+```
+第1轮：单元测试 + 覆盖率（~5 min）
+  ├─ npm test (UT-BL, K6-FUNNEL, K6-CLASS)
+  └─ npm test -- --coverage (CI-COV)
+
+第2轮：基线建立（~2 min）
+  ├─ npm run k6:smoke (生成 baseline.json)
+  └─ CI job baseline-compare (CI-BL-01~04)
+
+第3轮：趋势报告（~1 min）
+  └─ scripts/generate-trend.sh (TREND-01~03)
+
+第4轮：Grafana 集成（Docker）（~10 min）
+  ├─ docker-compose up (InfluxDB + Grafana)
+  └─ 可视化验证 (GRF-ERR/HEAT/CUSTOM/ALERT)
+
+第5轮：长时间压测（~30+ min）
+  ├─ npm run k6:soak:short (K6-RECOVERY-01)
+  └─ K6-SOAK-INT-01~02 观测告警
+
+第5.5轮：observer 方案门禁（设计/实现切换前）
+  ├─ 确认 load + observer 双 scenario 设计
+  ├─ 确认 threshold 仅统计 scenario:load
+  └─ 确认 capacity:test 现有链路可复用
+
+第6轮：调度配置（~2 min）
+  └─ actionlint 验证 (SCHED-01~04)
+```
+
+#### 7.3 进入/退出标准
+
+| 条件 | 标准 |
+|------|------|
+| **进入** | `npm test` 通过 + coverage 达到 stmt 80 / branch 70 / func 80 / line 80 + k6 smoke 无报错 |
+| **退出** | 33/33 用例完成 + 所有报告（baseline/trend/coverage）生成 + Grafana dashboard 可访问 |
+
+> `#133` 补充说明：observer scenario + 固定间隔采样属于 **Phase 7 设计门禁**。在脚本实现与验证完成前，仅作为设计目标记录，不并入当前 33/33 已落地统计。
 
 ---
 
@@ -310,8 +367,8 @@ npm run generate-summary                    # 生成执行摘要报告
 
 | 文档     | 路径                                                                  | 关系                            |
 | -------- | --------------------------------------------------------------------- | ------------------------------- |
-| 用例索引 | [test-cases/index.md](test-cases/index.md)                            | 161 条用例清单 + per-phase 详情 |
+| 用例索引 | [test-cases/index.md](test-cases/index.md)                            | 266 条用例清单 + per-phase 详情 |
 | 架构设计 | [architecture.md](../architecture/architecture.md)                    | 系统架构 + 数据流               |
 | 风险清单 | [risks.md](../project-management/risks.md)                            | 技术风险 + 缓解措施             |
-| 需求文档 | [requirements.md](../project-management/requirements.md)              | Phase 1~5 需求编号              |
+| 需求文档 | [requirements.md](../project-management/requirements.md)              | Phase 1~7 需求编号              |
 | 开发流程 | [dev-process-checklist.md](../../../../docs/dev-process-checklist.md) | 5 阶段流程 + checklist          |

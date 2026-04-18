@@ -24,6 +24,12 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 
 **历史教训**: 2026-04-15 在 main 上触发 merge，导致需要回滚到 feature/performance-testing 重新开始 Stage 4 verification
 
+## Worktree Convention
+
+- 默认 worktree 位置：`~/.config/superpowers/worktrees/<repo-name>/`
+- 本仓库推荐路径：`~/.config/superpowers/worktrees/michael-zhou-qa-portfolio/`
+- 需要隔离开发、测试、设计验证时，优先使用全局 worktree，而不是在仓库内新建 `.worktrees/`
+
 ## Development Process（开发流程）
 
 每个新功能/项目遵循 5 阶段流程，**每阶段结束必须暂停等待人工评审**，通过后才能进入下一阶段。
@@ -100,7 +106,8 @@ python3 -m venv venv && source venv/bin/activate
 ## Git Workflow
 
 - **Default branch**: `main`
-- Use conventional commits: `feat:`, `fix:`, `docs:`, `test:`
+- **Commit Convention**: 详见 [GIT-COMMIT-CONVENTION.md](docs/GIT-COMMIT-CONVENTION.md) - 格式统一、issue 关联、Copilot 署名
+- **Conventional Commits Format**: `<type>(<scope>): <subject> [#issue]`
 
 ### Feature Branches
 

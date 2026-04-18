@@ -1,6 +1,6 @@
 # 需求追溯矩阵 (Requirements Traceability Matrix)
 
-**Branch:** `feature/performance-testing` | **更新日期:** 2026-04-15 (Phase 6 Stage 4 完成)
+**Branch:** `feature/performance-testing` | **更新日期:** 2026-04-17 (Phase 1 需求 ID 规范化 — ROUTE 拆分为 6 条)
 
 **用途:** 确保每条需求都有对应的测试用例覆盖，快速定位未覆盖需求。
 
@@ -8,36 +8,46 @@
 
 ## Phase 1 — 双引擎性能测试 ([#17](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/17))
 
-### 被测 API 功能
+### PERF-API — 被测系统
 
-| 需求 ID  | 需求                              | 实现文件                    | 测试用例 ID      | 状态 |
-| -------- | --------------------------------- | --------------------------- | ---------------- | ---- |
-| US-01~04 | 电商 API (health/products/orders) | `src/routes/health.js`      | UT-HEALTH-01~02  | ✅   |
-|          |                                   | `src/routes/products.js`    | UT-PROD-01~06    | ✅   |
-|          |                                   | `src/routes/orders.js`      | UT-ORDER-01~05   | ✅   |
-|          |                                   | `src/middleware/metrics.js` | UT-METRICS-01~02 | ✅   |
-|          |                                   | `src/utils/delay.js`        | UT-DELAY-01~02   | ✅   |
+| 需求 ID                | 需求                                                                                            | 实现文件                    | 测试用例 ID      | 状态 |
+| ---------------------- | ----------------------------------------------------------------------------------------------- | --------------------------- | ---------------- | ---- |
+| PERF-API-ROUTE-FR-001  | `GET /api/health`：返回 `{ status: "ok", timestamp }`                                          | `src/routes/health.js`      | UT-HEALTH-01~02  | ✅   |
+| PERF-API-ROUTE-FR-002  | `GET /api/products`：分页商品列表（`?page=&limit=`，默认 limit=10）                             | `src/routes/products.js`    | UT-PROD-01~02    | ✅   |
+| PERF-API-ROUTE-FR-003  | `GET /api/products/:id`：单商品详情，不存在返回 404                                             | `src/routes/products.js`    | UT-PROD-03~04    | ✅   |
+| PERF-API-ROUTE-FR-004  | `POST /api/products`：创建商品（name + price 必填，stock 默认 0）                               | `src/routes/products.js`    | UT-PROD-05~06    | ✅   |
+| PERF-API-ROUTE-FR-005  | `GET /api/orders`：分页订单列表（按 created_at DESC）                                           | `src/routes/orders.js`      | UT-ORDER-01      | ✅   |
+| PERF-API-ROUTE-FR-006  | `POST /api/orders`：库存不足返回 409，事务扣减，调用 simulateDelay，AUTH_ENABLED 开关           | `src/routes/orders.js`      | UT-ORDER-02~05   | ✅   |
+| PERF-API-MW-FR-001     | metrics 中间件：requestCount、avgDuration(ms)、CPU、Memory、eventLoopLag(ms)                   | `src/middleware/metrics.js` | UT-METRICS-01~02 | ✅   |
+| PERF-API-DB-FR-001     | SQLite（test: `:memory:`，prod: `data/perf.db` + WAL），5 种商品种子数据，每种 stock=100,000    | `src/db/database.js`        | UT-DB-01~03      | ✅   |
+| PERF-API-UTIL-FR-001   | `simulateDelay(ms)`：`POST /api/orders` 延迟注入，由 `ORDER_DELAY_MS` 控制（默认 50ms）         | `src/utils/delay.js`        | UT-DELAY-01~02   | ✅   |
 
-### k6 性能测试
+### PERF-ENGINE-K6 — k6 脚本
 
-| 需求 ID | 需求                        | 实现文件       | 测试用例 ID  | 状态 |
-| ------- | --------------------------- | -------------- | ------------ | ---- |
-| US-01   | Smoke test (5 VUs, 60s)     | `smoke.k6.js`  | SMOKE-01~04  | ✅   |
-| US-02   | Load test (50 VUs, 5m)      | `load.k6.js`   | LOAD-01~03   | ✅   |
-| US-03   | Stress test (200 VUs, 3.5m) | `stress.k6.js` | STRESS-01~03 | ✅   |
-| US-04   | Spike test (100 VUs, 1.5m)  | `spike.k6.js`  | SPIKE-01~03  | ✅   |
+| 需求 ID                | 需求                                           | 实现文件       | 测试用例 ID  | 状态 |
+| ---------------------- | ---------------------------------------------- | -------------- | ------------ | ---- |
+| PERF-ENGINE-K6-FR-001  | smoke test (5 VUs, 60s, p95<500ms)             | `smoke.k6.js`  | SMOKE-01~04  | ✅   |
+| PERF-ENGINE-K6-FR-002  | load test (50 VUs ramp, 5min, p95<2000ms)      | `load.k6.js`   | LOAD-01~03   | ✅   |
+| PERF-ENGINE-K6-FR-003  | stress test (200 VUs ramp, p95<3000ms)         | `stress.k6.js` | STRESS-01~03 | ✅   |
+| PERF-ENGINE-K6-FR-004  | spike test (100 VUs 突增, 验证恢复基线)        | `spike.k6.js`  | SPIKE-01~03  | ✅   |
+| PERF-ENGINE-K6-FR-005  | HTML 报告输出 (`--out web-dashboard`)          | `npm run k6:smoke` | K6-RPT-01~07 | ✅ |
 
-### JMeter 性能测试
+### PERF-ENGINE-JM — JMeter 脚本
 
-| 需求 ID  | 需求                            | 实现文件                           | 测试用例 ID  | 状态                |
-| -------- | ------------------------------- | ---------------------------------- | ------------ | ------------------- |
-| US-07    | JMeter 4 种测试模式             | `smoke.jmx` + `smoke.properties`   | SMOKE-01~04  | ✅                  |
-|          |                                 | `load.jmx` + `load.properties`     | LOAD-01~03   | ✅                  |
-|          |                                 | `stress.jmx` + `stress.properties` | STRESS-01~03 | ✅                  |
-|          |                                 | `spike.jmx` + `spike.properties`   | SPIKE-01~03  | ✅                  |
-| US-08    | JMeter HTML 报告                | `*.jmx` → `-e -o reports/`         | JM-RPT-01~03 | ✅                  |
-| US-06/09 | Grafana Dashboard (k6 + JMeter) | `grafana/dashboards/*.json`        | JM-GRF-01~04 | ⏭️ SKIP (需 Docker) |
-| US-05    | CI 性能门禁 (双引擎)            | `performance-ci.yml`               | JM-CI-01~03  | ✅                  |
+| 需求 ID                | 需求                                           | 实现文件                           | 测试用例 ID        | 状态 |
+| ---------------------- | ---------------------------------------------- | ---------------------------------- | ------------------ | ---- |
+| PERF-ENGINE-JM-FR-001  | smoke test（参数与 k6 一致）                   | `smoke.jmx` + `smoke.properties`   | SMOKE-01~04        | ✅   |
+| PERF-ENGINE-JM-FR-002  | load test（参数与 k6 一致）                    | `load.jmx` + `load.properties`     | LOAD-01~03         | ✅   |
+| PERF-ENGINE-JM-FR-003  | stress test（参数与 k6 一致）                  | `stress.jmx` + `stress.properties` | STRESS-01~03       | ✅   |
+| PERF-ENGINE-JM-FR-004  | spike test（参数与 k6 一致）                   | `spike.jmx` + `spike.properties`   | SPIKE-01~03        | ✅   |
+| PERF-ENGINE-JM-FR-005  | HTML 报告 (`jmeter -g results.jtl -o reports/`)| `*.jmx` → `-e -o reports/`         | JM-RPT-01~03       | ✅   |
+
+### 测试基础设施（过程文档，不编功能需求号）
+
+| 内容                          | 关联 US | 实现文件                    | 测试用例 ID  | 状态 |
+| ----------------------------- | ------- | --------------------------- | ------------ | ---- |
+| Grafana Dashboard (k6+JMeter) | US-06/09| `grafana/dashboards/*.json` | JM-GRF-01~04 | ✅   |
+| CI 性能门禁 (双引擎 smoke)    | US-05   | `performance-ci.yml`        | JM-CI-01~03  | ✅   |
 
 ---
 
@@ -91,6 +101,14 @@
 | AUTH-04 | 用户登出          | `src/routes/auth.js`             | UT-AUTH-09~10 | ✅   |
 | AUTH-05 | JWT 验证中间件    | `src/middleware/authenticate.js` | UT-MW-01~05   | ✅   |
 | AUTH-06 | AUTH_ENABLED 开关 | `src/routes/orders.js`           | UT-MW-06~07   | ✅   |
+
+### 认证集成测试
+
+| 需求 ID | 需求                          | 实现文件                           | 测试用例 ID     | 状态 |
+| ------- | ----------------------------- | ---------------------------------- | --------------- | ---- |
+| AUTH-01 | 注册→登录→Token 完整流程      | `scripts/integration-test.sh`      | AUTH-INT-01     | ✅   |
+| AUTH-03 | Bearer Token 保护端点访问     | `scripts/integration-test.sh`      | AUTH-INT-02     | ✅   |
+| AUTH-05 | 无 Token 访问受保护端点被拒   | `scripts/integration-test.sh`      | AUTH-INT-03     | ✅   |
 
 ### 认证性能测试
 
@@ -150,33 +168,51 @@
 | ENT-CONSISTENCY-03 | 提取漏斗逻辑到 helpers/funnel.js：60% browse → 30% detail → 10% order，消除重复代码                                 | `helpers/funnel.js`                                                                   | K6-MIG-01, K6-MIG-02                          | ✅          |
 | ENT-CONSISTENCY-04 | 所有标准测试脚本 (smoke/load/stress/spike) 添加 health check 前置验证                                               | `helpers/healthCheck.js`                                                              | K6-HLP-INT-01~02                              | ✅          |
 | ENT-CONSISTENCY-05 | 现有脚本迁移：load/stress/capacity/soak 统一 import helpers（funnel/checkStatus/thinkTime），移除内联重复代码        | `load.k6.js`, `stress.k6.js`, `capacity.k6.js`, `soak.k6.js`, `soak-short.k6.js`     | K6-MIG-01, K6-MIG-02, K6-HLP-INT-01           | ✅          |
-| ENT-BREAKPOINT-01  | 新增 breakpoint.k6.js：持续递增 VUs 直到系统崩溃（error rate > 50% 或完全不响应），记录崩溃点 VUs 和崩溃行为         | `tests/performance/breakpoint.k6.js`                                                  | K6-BP-01, K6-BP-03                            | ✅          |
-| ENT-BREAKPOINT-02  | 崩溃行为分类：区分 graceful degradation（渐进退化）vs catastrophic failure（级联崩溃）                               | `tests/performance/breakpoint.k6.js`                                                  | K6-BP-02                                      | ✅          |
+| ENT-BREAKPOINT-01  | 新增 breakpoint.k6.js：持续递增 VUs 直到系统崩溃（error rate > 50% 或完全不响应），记录崩溃点 VUs 和崩溃行为         | `tests/performance/breakpoint.k6.js`                                                  | K6-BRK-01, K6-BRK-03                          | ✅          |
+| ENT-BREAKPOINT-02  | 崩溃行为分类：区分 graceful degradation（渐进退化）vs catastrophic failure（级联崩溃）                               | `tests/performance/breakpoint.k6.js`                                                  | K6-BRK-02                                     | ✅          |
 | ENT-RESILIENCE-01  | Rate Limiter 中间件 (enable/disable toggle)                                                                          | `src/middleware/rateLimiter.js`                                                       | UT-RL-01~06                                   | ✅          |
 | ENT-RESILIENCE-02  | k6 限流测试：验证超限返回 429、窗口过后恢复正常                                                                      | `tests/performance/rate-limit.k6.js`                                                 | RL-INT-01, RL-INT-03, K6-RL-01~03             | ✅          |
 | ENT-RESILIENCE-03  | 熔断行为测试：验证系统在持续超载后的恢复时间（graceful degradation vs cascading failure）                            | `tests/performance/rate-limit.k6.js`                                                 | K6-RL-04                                      | ⏭️ Phase 7 |
-| ENT-REPORT-01      | scripts/generate-summary.sh 解析 k6 JSON output，生成 Markdown 摘要（SLA 达标率、Top 5 慢接口）                      | `scripts/generate-summary.sh`                                                        | GEN-INT-01~03, K6-RPT-01~04                   | ✅          |
+| ENT-REPORT-01      | scripts/generate-summary.sh 解析 k6 JSON output，生成 Markdown 摘要（SLA 达标率、Top 5 慢接口）                      | `scripts/generate-summary.sh`                                                        | GEN-INT-01~03, K6-SUM-01~04                   | ✅          |
+
+---
+
+## Phase 7 — CI/CD + 可观测性增强 ([#88](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/88))
+
+| 需求 ID                | 需求                                              | 实现文件                                              | 测试用例 ID                                           | 状态       |
+| ---------------------- | ------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------- | ---------- |
+| PERF-COV-FR-001~003    | CI 覆盖率门禁 (statements ≥ 80%)                  | `.github/workflows/performance-ci.yml`                | CI-COV-01~04                                          | ✅         |
+| PERF-BL-FR-001~002,006 | 基线回归：单元测试 + CI 自动对比                  | `src/utils/baseline.js`, `performance-ci.yml`         | UT-BL-01~06, CI-BL-01~04                             | ✅         |
+| PERF-BL-FR-003~004     | 趋势报告：`generate-trend.sh` + trend.json 累积   | `scripts/generate-trend.sh`                           | TREND-01~03                                           | ✅         |
+| PERF-BL-FR-005         | Grafana 趋势面板：历史 p95 / throughput 折线图    | `grafana/dashboards/`                                 | GRF-TREND-01                                          | ✅         |
+| PERF-OBS-FR-001~004    | Grafana 面板增强 (错误分布/热力图/自定义/告警)    | `grafana/dashboards/`                                 | GRF-ERR-01, GRF-HEAT-01, GRF-CUSTOM-01, GRF-ALERT-01 | ✅         |
+| PERF-SCHED-FR-001~002  | 定时调度：nightly soak + weekly capacity workflow | `.github/workflows/nightly-soak.yml`                  | SCHED-01~04                                           | ✅         |
+| PERF-K6-FR-001~003     | funnel helper 迁移：stress / capacity / soak      | `stress.k6.js`, `capacity.k6.js`, `soak.k6.js`       | K6-FUNNEL-01~03                                       | ✅ Phase 7 |
+| PERF-K6-FR-004         | breakpoint handleSummary graceful/catastrophic 分类 | `tests/performance/breakpoint.k6.js`                | K6-CLASS-01~02                                        | ✅ Phase 7 |
+| PERF-K6-FR-005         | 熔断恢复行为测试                                  | `tests/performance/rate-limit.k6.js`                  | K6-RECOVERY-01                                        | ✅ Phase 7 |
+| PERF-K6-FR-006         | SOAK-TC-04 集成验证：Grafana Dashboard 实时展示   | `npm run k6:soak:short` + Docker Compose              | K6-SOAK-INT-01                                        | ✅ Phase 7 |
+| PERF-K6-FR-007         | SOAK-TC-05 集成验证：Grafana 告警规则触发         | `soak.k6.js` 超限场景                                 | K6-SOAK-INT-02                                        | ✅ Phase 7 |
 
 ---
 
 ## 覆盖率统计
 
-| Phase    | 需求数                                 | 已覆盖 | 未覆盖                | 覆盖率   |
-| -------- | -------------------------------------- | ------ | --------------------- | -------- |
-| 1        | 13 (US-01~09 + UC-01~04)               | 12     | 1 (Grafana 需 Docker) | 92%      |
-| 2        | 15 (SM-01~11 + TQ-01~04)               | 15     | 0                     | 100%     |
-| 3        | 11 (AUTH-01~11)                        | 11     | 0                     | 100%     |
-| 4        | 10 (SOAK-01~10)                        | 10     | 0                     | 100%     |
-| 5        | 13 (ENT-ENV/DATA/PROFILE/DX/TEST)      | 13     | 0                     | 100%     |
+| Phase    | 需求数                                            | 已覆盖 | 未覆盖                            | 覆盖率   |
+| -------- | ------------------------------------------------- | ------ | --------------------------------- | -------- |
+| 1        | 19 (PERF-API-ROUTE×6 + MW/DB/UTIL×1 + K6×5 + JM×5) | 19   | 0                                 | 100%     |
+| 2        | 15 (SM-01~11 + TQ-01~04)                          | 15     | 0                                 | 100%     |
+| 3        | 11 (AUTH-01~11)                                   | 11     | 0                                 | 100%     |
+| 4        | 10 (SOAK-01~10)                                   | 10     | 0                                 | 100%     |
+| 5        | 13 (ENT-ENV/DATA/PROFILE/DX/TEST)                 | 13     | 0                                 | 100%     |
 | 6        | 11 (ENT-CONSISTENCY/BREAKPOINT/RESILIENCE/REPORT) | 10     | 1 (ENT-RESILIENCE-03 ⏭️ Phase 7) | 91%      |
-| **合计** | **73**                                            | **71** | **2**                            | **97%**  |
+| 7        | 22 (PERF-BL/COV/OBS/SCHED/K6-FR)                 | 22     | 0                                | 100%     |
+| **合计** | **86**                                            | **85** | **1**                             | **99%**  |
 
 ### 未覆盖项说明
 
-| 需求                        | 原因                                 | 计划                     |
-| --------------------------- | ------------------------------------ | ------------------------ |
-| Grafana Dashboard (Phase 1) | 需 Docker + InfluxDB 环境            | 本地手动验证             |
-| ENT-RESILIENCE-03 (Phase 6) | 熔断恢复行为测试（K6-RL-04）未实现   | Phase 7 (#116) 实现验证  |
+| 需求                        | 原因                                          | 计划                    |
+| --------------------------- | --------------------------------------------- | ----------------------- |
+| ENT-RESILIENCE-03 (Phase 6) | 熔断恢复行为测试（K6-RL-04）未实现            | Phase 7 (#88) 实现验证  |
 
 ---
 

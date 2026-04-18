@@ -46,6 +46,8 @@
     "dev": "NODE_ENV=development node --watch src/server.js",
     "preflight": "bash scripts/preflight-check.sh",
     "capacity:test": "bash scripts/preflight-check.sh && npm run restart:clean && mkdir -p reports && bash scripts/server.sh collect 1000 reports/system-metrics.csv & COLLECTOR_PID=$! && k6 run --out 'web-dashboard=export=reports/k6-capacity.html' tests/performance/capacity.k6.js; kill $COLLECTOR_PID 2>/dev/null; echo 'Capacity test complete. Reports in reports/'",
+    "baseline:export": "node scripts/baseline-export.js",
+    "trend:collect": "node scripts/trend-collect.js",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down"
   },
