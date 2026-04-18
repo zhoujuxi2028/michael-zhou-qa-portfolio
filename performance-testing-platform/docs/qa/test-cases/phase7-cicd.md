@@ -1,5 +1,10 @@
 # Phase 7 测试用例 — CI/CD + 可观测性
 
+> **范围说明：**
+> - **Stage 3（开发阶段）**：只执行 **SUT 单元测试** 与 **SUT 集成测试**
+> - **Stage 4（验收阶段）**：再执行 **SUT 性能测试**，包括 `smoke / load / stress / spike / soak`
+> - 因此，**soak 不属于 Stage 3 集成测试范围**
+
 ## 基线回归单元测试 (`tests/unit/utils/baseline.test.js`)
 
 | 用例 ID  | 需求 ID       | 测试                            | 预期                              | 标签 |
@@ -55,7 +60,7 @@
 | SCHED-03 | PERF-SCHED-FR-001 | weekly capacity 配置       | cron: 每周日 06:00 UTC | CI P2 regression |
 | SCHED-04 | PERF-SCHED-FR-002 | artifact 归档保留 30 天    | retention-days: 30     | CI P2 regression |
 
-## k6 脚本能力 (Phase 6→7 补完)
+## k6 脚本能力（Stage 3：开发阶段）
 
 | 用例 ID       | 需求 ID         | 验证项                           | 预期                           | 标签 |
 | ------------- | --------------- | -------------------------------- | ------------------------------ | ---- |
@@ -65,5 +70,11 @@
 | K6-CLASS-01   | PERF-K6-FR-004  | breakpoint graceful 分类         | handleSummary 输出 graceful 标记 | UT P1 regression |
 | K6-CLASS-02   | PERF-K6-FR-004  | breakpoint catastrophic 分类     | handleSummary 输出 catastrophic 标记 | UT P1 regression |
 | K6-RECOVERY-01 | PERF-K6-FR-005  | 熔断恢复时间 ≤ 60s               | soak.js 故障注入 → 10s 连续恢复 | IT P2 regression |
-| K6-SOAK-INT-01 | PERF-K6-FR-006  | Grafana Dashboard 实时展示（#108） | `bash scripts/integration-test-phase7-soak.sh`：✓ InfluxDB 数据增长 ✓ soak 自定义指标存在 ✓ `soak-results` dashboard 可查询 | IT P3 full |
-| K6-SOAK-INT-02 | PERF-K6-FR-007  | Grafana 告警规则触发（#108）   | `bash scripts/integration-test-phase7-soak.sh`：✓ 告警资产存在（embedded alert / provisioning）✓ p95 阈值数据可观测 ✓ dashboard alert 已加载 | IT P3 full |
+## Soak 验收支撑（Stage 4：验收阶段）
+
+| 用例 ID       | 需求 ID         | 验证项                           | 预期                           | 标签 |
+| ------------- | --------------- | -------------------------------- | ------------------------------ | ---- |
+| K6-SOAK-INT-01 | PERF-K6-FR-006  | Grafana Dashboard 实时展示（#108） | `bash scripts/integration-test-phase7-soak.sh`：✓ InfluxDB 数据增长 ✓ soak 自定义指标存在 ✓ `soak-results` dashboard 可查询 | PT P3 acceptance |
+| K6-SOAK-INT-02 | PERF-K6-FR-007  | Grafana 告警规则触发（#108）   | `bash scripts/integration-test-phase7-soak.sh`：✓ 告警资产存在（embedded alert / provisioning）✓ p95 阈值数据可观测 ✓ dashboard alert 已加载 | PT P3 acceptance |
+
+> **说明：** `K6-SOAK-INT-01/02` 继续复用集成脚本执行，但它们服务于 **Stage 4 性能验收**，不计入 **Stage 3 集成测试范围**。

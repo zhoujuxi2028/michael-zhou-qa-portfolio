@@ -24,6 +24,17 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 
 **历史教训**: 2026-04-15 在 main 上触发 merge，导致需要回滚到 feature/performance-testing 重新开始 Stage 4 verification
 
+## Worktree Convention
+
+| 项目 | 约定 |
+|------|------|
+| 默认位置 | 当前仓库目录下的 `./.worktrees/<branch-name>/` |
+| 本仓库推荐路径 | `./.worktrees/feature-.../` |
+| 禁止位置 | `~/.config/...`、`~/worktrees/...` 等家目录路径 |
+
+- 需要隔离开发、测试、设计验证时，优先在**当前仓库目录下**创建 worktree
+- 不要把本仓库的 worktree 放在 `~` 目录下
+
 ## Development Process（开发流程）
 
 每个新功能/项目遵循 5 阶段流程，**每阶段结束必须暂停等待人工评审**，通过后才能进入下一阶段。
