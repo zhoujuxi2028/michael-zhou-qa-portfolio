@@ -1,16 +1,39 @@
 /**
  * Compare current baseline with previous baseline
  * Reads reports/baseline.json and downloads previous from artifacts
- * Usage: node scripts/baseline-compare.js
+ * Usage: node scripts/baseline-compare.js [--test-mode]
  */
 const fs = require('fs');
-const path = require('path');
 const { compareWithBaseline, loadBaseline } = require('../src/utils/baseline');
 
+const isTestMode = process.argv.includes('--test-mode');
 const baselineFile = 'reports/baseline.json';
 const prevBaselineFile = 'reports/baseline.prev.json';
 
 try {
+  // --test-mode: 使用内置 fixture 数据进行集成验证
+  if (isTestMode) {
+    const testCurrent = { p95_ms: 180, error_rate: 0.005, throughput_rps: 500 };
+    const testPrevious = { p95_ms: 150, error_rate: 0.003, throughput_rps: 520 };
+    const result = compareWithBaseline(testCurrent, testPrevious);
+
+    console.log('\n[Test Mode] Baseline Comparison Result:');
+    console.log(`Status: ${result.status}`);
+    console.log(`Delta: ${(result.delta * 100).toFixed(1)}%`);
+    console.log(`\nMetrics:`);
+    console.log(`  p95_ms: ${testPrevious.p95_ms}ms → ${testCurrent.p95_ms}ms (${result.delta > 0 ? '+' : ''}${(result.delta * 100).toFixed(1)}%)`);
+    console.log(`  error_rate: ${(testPrevious.error_rate * 100).toFixed(2)}% → ${(testCurrent.error_rate * 100).toFixed(2)}%`);
+
+    if (result.status === 'FAIL') {
+      console.log('\n❌ Regression DETECTED (test mode)');
+    } else if (result.status === 'WARNING') {
+      console.log('\n⚠️  Regression WARNING (test mode)');
+    } else {
+      console.log('\n✅ No Regression detected (test mode)');
+    }
+    process.exit(0);
+  }
+
   const current = loadBaseline(baselineFile);
   if (!current) {
     console.log('⚠️  No baseline.json found, skipping comparison');
