@@ -2,6 +2,7 @@ const { Router } = require('express');
 const { getDatabase } = require('../db/database');
 const { simulateDelay } = require('../utils/delay');
 const { authenticate } = require('../middleware/authenticate');
+const { recordOrderSuccess, recordOrderConflict } = require('../middleware/metrics');
 
 const router = Router();
 const ORDER_DELAY_MS = parseInt(process.env.ORDER_DELAY_MS) || 50;
@@ -34,7 +35,10 @@ router.post(
 
     const product = db.prepare('SELECT * FROM products WHERE id = ?').get(product_id);
     if (!product) return res.status(404).json({ error: 'Product not found' });
-    if (product.stock < quantity) return res.status(409).json({ error: 'Insufficient stock' });
+    if (product.stock < quantity) {
+      recordOrderConflict();  // 记录库存冲突
+      return res.status(409).json({ error: 'Insufficient stock' });
+    }
 
     await simulateDelay(ORDER_DELAY_MS);
 
@@ -46,6 +50,7 @@ router.post(
         .run(product_id, quantity, total, 'confirmed');
     });
     const result = tx();
+    recordOrderSuccess();  // 记录订单成功
     const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(result.lastInsertRowid);
     res.status(201).json(order);
   }
