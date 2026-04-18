@@ -50,9 +50,9 @@ regression = (curr_p95 - prev_p95) / prev_p95
 ]
 ```
 
-**策略**: 每次 smoke gate 后，append 新行，保留最近 30 条
+**策略**: 每次 smoke gate 后，append 新行，按时间戳过滤保留最近 **90 天**数据。每条 entry 必须包含 `date` 字段（ISO 8601），超过 90 天的条目在下次 append 时自动清理。
 
-**清理**: 超过 30 条时，删除最早的行
+> **权威来源**: 保留策略统一为 90 天，详见 `01-baseline-schema.md`。
 
 ---
 
@@ -86,15 +86,22 @@ jobs:
 
   smoke-test:
     - k6 run tests/performance/smoke.k6.js
-    - export baseline.json  # Phase 7 target
-    - post: baseline-compare & trend-collect  # Phase 7 target
+    - export baseline.json
 
   jmeter-smoke-test:
     - jmeter -n -t tests/jmeter/smoke.jmx ...
+    - check error rate + p95 latency
+
+  baseline-compare:  # 独立 job，smoke-test 后执行
+    - download previous baseline artifact
+    - compare baseline (regression detection)
+
+  trend-collect:  # 独立 job，smoke-test 后执行
+    - append to trend.json (保留最近 90 天)
 ```
 
 **当前实现**: 见根目录 `.github/workflows/performance-ci.yml`  
-**Phase 7 目标**: 在现有 4 个 job 基础上补 baseline compare / trend collect，不改变 fail-fast 原则。
+**Phase 7 目标**: 在现有 4 个 job 基础上补独立的 baseline-compare / trend-collect job（从 smoke-test 中分离，保持关注点分离），不改变 fail-fast 原则。
 
 **Artifact 保留**: 7 天（baseline / coverage）；定时调度 artifact 另按 30 天设计
 
