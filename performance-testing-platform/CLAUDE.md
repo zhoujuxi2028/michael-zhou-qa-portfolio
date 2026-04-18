@@ -1,6 +1,6 @@
 # CLAUDE.md - 性能测试平台 (Performance Testing Platform)
 
-**分类:** 性能测试 | k6 + JMeter 双引擎 | 148 unit + 31 integration + 33 performance tests
+**分类:** 性能测试 | k6 + JMeter 双引擎 | 157 unit + 31 integration + 39 performance tests
 
 ## 🔴 分支规则
 
@@ -10,12 +10,26 @@
 git checkout feature/performance-testing
 ```
 
+## Worktree 约定
+
+| 项目 | 约定 |
+|------|------|
+| 默认位置 | 当前仓库目录下的 `./.worktrees/<branch-name>/` |
+| 推荐方式 | 在仓库根目录创建 `./.worktrees/feature-.../` |
+| 禁止位置 | `~/.config/...`、`~/worktrees/...` 等家目录路径 |
+
+- `performance-testing-platform` 的隔离工作建议放在**当前仓库目录**下的独立 worktree 子目录中
+- 需要设计验证、可行性评估或并行修复时，优先在本地 worktree 中执行，避免污染当前工作区
+
 ## 快速命令
 
 ```bash
 npm install && npm start &        # 启动 API
-npm test                          # 单元测试 (148 tests)
+npm test                          # 单元测试 (157 tests, coverage ≥80%)
 npm run k6:smoke                  # k6 smoke test
+npm run k6:rate-limit             # k6 rate limiting test
+npm run k6:breakpoint             # k6 breakpoint test
+npm run generate-summary          # 生成测试摘要报告
 bash scripts/integration-test.sh  # 集成测试 (31 cases，需 Docker)
 ```
 
@@ -124,4 +138,30 @@ rm -rf /tmp/integration-test.lock
 
 ## CI 工作流
 
-`performance-ci.yml` — lint → unit test → k6/JMeter smoke gate
+`performance-ci.yml` — lint → unit test (coverage ≥80%) → k6/JMeter smoke gate + baseline compare + trend collect
+
+### Phase 7 新增命令
+
+```bash
+# 生成 k6 执行摘要报告
+npm run generate-summary              # 从 k6-result.json 生成 k6-summary.md
+
+# Rate limiting test
+npm run k6:rate-limit                # 测试 API 限流功能 (需 RATE_LIMIT_ENABLED=true)
+
+# Breakpoint test - 寻找系统崩溃点
+npm run k6:breakpoint               # 从 50 req/s 递增至崩溃点 (耗时较长)
+
+# 基线管理
+node scripts/baseline-export.js      # 导出当前性能基线
+node scripts/baseline-compare.js    # 对比性能基线，检测回归
+node scripts/trend-collect.js       # 收集趋势数据
+```
+
+### CI 工作流特点
+
+- **覆盖率门禁**: Jest coverage < 80% 时 CI 直接 fail
+- **并行执行**: k6 和 JMeter smoke test 同时运行，提高效率
+- **基线对比**: 自动检测性能回归，标记有显著变化的指标
+- **趋势收集**: 持续记录性能趋势，支持长期分析
+- **失败策略**: 禁用 `|| true`，任何失败都导致 CI fail
