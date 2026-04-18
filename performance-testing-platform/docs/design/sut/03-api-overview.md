@@ -40,7 +40,7 @@
 {
   "requestCount": 42,
   "avgDuration": 125,
-  "cpu": { "user": 123456, "system": 87654, "loadavg": [1.2, 1.0, 0.8] },
+  "cpu": { "userPercent": 12.3, "systemPercent": 4.5, "loadavg": [1.2, 1.0, 0.8] },
   "memory": { "rss": 52428800, "heapUsed": 15728640, "heapTotal": 29360128, "external": 1024 },
   "eventLoop": { "lag": 2.3 }
 }

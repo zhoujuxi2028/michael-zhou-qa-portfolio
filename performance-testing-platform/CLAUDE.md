@@ -10,6 +10,12 @@
 git checkout feature/performance-testing
 ```
 
+## Worktree 约定
+
+- 默认使用全局 worktree 目录：`~/.config/superpowers/worktrees/michael-zhou-qa-portfolio/`
+- `performance-testing-platform` 的隔离工作建议放在该目录下的独立子目录中
+- 需要设计验证、可行性评估或并行修复时，优先在 worktree 中执行，避免污染当前工作区
+
 ## 快速命令
 
 ```bash

@@ -1,6 +1,12 @@
 import http from 'k6/http';
 import { Trend } from 'k6/metrics';
 import { BASE_URL, checkStatus } from './helpers/utils.js';
+import {
+  buildLoadThresholds,
+  buildObserverDurationFromStages,
+  buildObserverScenario,
+  observeMetricsCycle,
+} from './helpers/metricsObserver.js';
 import { thinkTime } from './helpers/thinkTime.js';
 import { randomProduct } from './helpers/data.js';
 
@@ -50,37 +56,40 @@ function executeFunnel(baseUrl, options = {}) {
   }
 }
 
+const CAPACITY_TARGET_VUS = parseInt(__ENV.CAPACITY_TARGET_VUS || '5000', 10);
+const CAPACITY_STAGES = [
+  { duration: __ENV.CAPACITY_WARMUP_DURATION || '30s', target: 10 }, // Warm-up (TQ-02)
+  { duration: __ENV.CAPACITY_HOLD_DURATION || '60s', target: CAPACITY_TARGET_VUS }, // PASS baseline
+  { duration: __ENV.CAPACITY_HOLD_DURATION || '60s', target: CAPACITY_TARGET_VUS }, // Hold steady
+  { duration: __ENV.CAPACITY_HOLD_DURATION || '60s', target: CAPACITY_TARGET_VUS }, // Hold steady
+  { duration: __ENV.CAPACITY_COOLDOWN_DURATION || '30s', target: 0 }, // Cool-down
+];
+
 export const options = {
-  stages: [
-    { duration: '30s', target: 10 }, // Warm-up (TQ-02)
-    { duration: '60s', target: 5000 }, // Default: stable PASS baseline (max safe ~6000 VUs)
-    { duration: '60s', target: 5000 }, // Hold steady
-    { duration: '60s', target: 5000 }, // Hold steady
-    { duration: '30s', target: 0 }, // Cool-down
-  ],
-  thresholds: {
-    http_req_duration: ['p(95)<500'],
-    http_req_failed: ['rate<0.01'],
+  scenarios: {
+    load: {
+      executor: 'ramping-vus',
+      exec: 'runCapacityLoad',
+      startVUs: 0,
+      stages: CAPACITY_STAGES,
+      gracefulRampDown: '0s',
+    },
+    observer: buildObserverScenario({
+      duration: __ENV.CAPACITY_OBSERVER_DURATION || buildObserverDurationFromStages(CAPACITY_STAGES),
+    }),
   },
+  thresholds: buildLoadThresholds(),
 };
 
-export default function () {
+export function runCapacityLoad() {
   executeFunnel(BASE_URL);
-
-  // Poll server metrics every ~10 iterations
-  if (Math.random() < 0.1) {
-    const m = http.get(`${BASE_URL}/metrics`);
-    if (m.status === 200) {
-      try {
-        const body = JSON.parse(m.body);
-        if (body.eventLoop) serverEventLoopLag.add(body.eventLoop.lag);
-        if (body.memory) serverHeapUsedMb.add(body.memory.heapUsed / 1024 / 1024);
-        if (body.cpu) serverCpuUser.add(body.cpu.userPercent); // instantaneous CPU %
-      } catch {
-        // ignore parse errors
-      }
-    }
-  }
-
   thinkTime(0.5, 1.0);
+}
+
+export function observeMetrics() {
+  observeMetricsCycle({
+    eventLoopLag: serverEventLoopLag,
+    heapUsedMb: serverHeapUsedMb,
+    cpuUser: serverCpuUser,
+  });
 }
