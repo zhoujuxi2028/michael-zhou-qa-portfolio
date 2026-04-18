@@ -4,10 +4,15 @@ import { Trend, Counter } from 'k6/metrics';
 import {
   BASE_URL,
   checkStatus,
-  pollMetrics,
   checkMemoryLeak,
   LEAK_THRESHOLD,
 } from './helpers/utils.js';
+import {
+  buildLoadThresholds,
+  buildObserverDurationFromStages,
+  buildObserverScenario,
+  observeMetricsCycle,
+} from './helpers/metricsObserver.js';
 
 // Custom metrics (SOAK-04)
 const soakHeapUsedMb = new Trend('soak_heap_used_mb');
@@ -16,17 +21,27 @@ const soakOrderSuccess = new Counter('soak_order_success');
 const soakOrderFailure = new Counter('soak_order_failure');
 const soakAuthLatency = new Trend('soak_auth_latency');
 
+const SOAK_SHORT_STAGES = [
+  { duration: __ENV.SOAK_SHORT_RAMP_UP_DURATION || '30s', target: 10 },
+  { duration: __ENV.SOAK_SHORT_STEADY_DURATION || '4m', target: 10 },
+  { duration: __ENV.SOAK_SHORT_RAMP_DOWN_DURATION || '30s', target: 0 },
+];
+
 export const options = {
   setupTimeout: '30s',
-  stages: [
-    { duration: '30s', target: 10 }, // ramp-up
-    { duration: '4m', target: 10 }, // steady state
-    { duration: '30s', target: 0 }, // ramp-down
-  ],
-  thresholds: {
-    'http_req_duration{test_phase:!setup}': ['p(95)<500'],
-    'http_req_failed{test_phase:!setup}': ['rate<0.01'],
+  scenarios: {
+    load: {
+      executor: 'ramping-vus',
+      exec: 'runSoakShortLoad',
+      startVUs: 0,
+      stages: SOAK_SHORT_STAGES,
+      gracefulRampDown: '0s',
+    },
+    observer: buildObserverScenario({
+      duration: __ENV.SOAK_SHORT_OBSERVER_DURATION || buildObserverDurationFromStages(SOAK_SHORT_STAGES),
+    }),
   },
+  thresholds: buildLoadThresholds(),
 };
 
 export function setup() {
@@ -52,7 +67,7 @@ export function setup() {
   return { baselineHeap };
 }
 
-export default function () {
+export function runSoakShortLoad() {
   // Funnel: 60% browse → 30% detail → 10% order
   const products = http.get(`${BASE_URL}/api/products`);
   checkStatus(products, 200, 'products');
@@ -86,15 +101,14 @@ export default function () {
     soakAuthLatency.add(loginRes.timings.duration);
   }
 
-  // Poll server metrics every ~5% of iterations
-  if (Math.random() < 0.05) {
-    pollMetrics({
-      heapUsedMb: soakHeapUsedMb,
-      eventLoopLag: soakEventLoopLag,
-    });
-  }
-
   sleep(1);
+}
+
+export function observeMetrics() {
+  observeMetricsCycle({
+    heapUsedMb: soakHeapUsedMb,
+    eventLoopLag: soakEventLoopLag,
+  });
 }
 
 export function teardown(data) {
