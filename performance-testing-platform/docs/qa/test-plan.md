@@ -256,7 +256,7 @@ npm run generate-summary                    # 生成执行摘要报告
 | ------------------- | ------------------------------------ |
 | 内存泄漏检测逻辑    | UT-SOAK-01~07                        |
 | Soak 短时验证       | SOAK-TC-01 (`npm run k6:soak:short`) |
-| Grafana 面板 + 告警 | SOAK-TC-04~05 (手动, Docker)         |
+| Grafana 面板 + 告警 | `bash scripts/integration-test-phase7-soak.sh` |
 
 ### Phase 5 — 基础设施 Helper
 

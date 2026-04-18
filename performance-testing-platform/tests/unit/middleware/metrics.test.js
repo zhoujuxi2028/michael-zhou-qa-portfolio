@@ -21,11 +21,13 @@ describe('metrics middleware', () => {
   });
 
   // SM-01: Process-level CPU
-  test('/metrics returns cpu object with user, system, loadavg', async () => {
+  test('/metrics returns cpu object with userPercent, systemPercent, loadavg', async () => {
     const res = await request(app).get('/metrics');
     expect(res.body.cpu).toBeDefined();
-    expect(res.body.cpu.user).toBeGreaterThanOrEqual(0);
-    expect(res.body.cpu.system).toBeGreaterThanOrEqual(0);
+    expect(res.body.cpu.userPercent).toBeGreaterThanOrEqual(0);
+    expect(res.body.cpu.userPercent).toBeLessThanOrEqual(100);
+    expect(res.body.cpu.systemPercent).toBeGreaterThanOrEqual(0);
+    expect(res.body.cpu.systemPercent).toBeLessThanOrEqual(100);
     expect(res.body.cpu.loadavg).toHaveLength(3);
   });
 

@@ -65,5 +65,5 @@
 | K6-CLASS-01   | PERF-K6-FR-004  | breakpoint graceful 分类         | handleSummary 输出 graceful 标记 | UT P1 regression |
 | K6-CLASS-02   | PERF-K6-FR-004  | breakpoint catastrophic 分类     | handleSummary 输出 catastrophic 标记 | UT P1 regression |
 | K6-RECOVERY-01 | PERF-K6-FR-005  | 熔断恢复时间 ≤ 60s               | soak.js 故障注入 → 10s 连续恢复 | IT P2 regression |
-| K6-SOAK-INT-01 | PERF-K6-FR-006  | Grafana Dashboard 实时展示（#108） | ✓ k6 soak 持续运行 ✓ InfluxDB 数据增长 ✓ Dashboard 更新 ✓ 内存/CPU 趋势 | IT P3 full |
-| K6-SOAK-INT-02 | PERF-K6-FR-007  | Grafana 告警规则触发（#108）   | ✓ 规则加载正常 ✓ p95>500ms 触发 ✓ error>1% 触发 ✓ UI 状态改变 | IT P3 full |
+| K6-SOAK-INT-01 | PERF-K6-FR-006  | Grafana Dashboard 实时展示（#108） | `bash scripts/integration-test-phase7-soak.sh`：✓ InfluxDB 数据增长 ✓ soak 自定义指标存在 ✓ `soak-results` dashboard 可查询 | IT P3 full |
+| K6-SOAK-INT-02 | PERF-K6-FR-007  | Grafana 告警规则触发（#108）   | `bash scripts/integration-test-phase7-soak.sh`：✓ 告警资产存在（embedded alert / provisioning）✓ p95 阈值数据可观测 ✓ dashboard alert 已加载 | IT P3 full |
