@@ -24,16 +24,28 @@
 | 4     | Soak Test + 可观测性增强 | [#65](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/65) | ✅ Done    | SOAK-01~10                                                 | [phase4-soak.md](requirements/phase4-soak.md)               |
 | 5     | 基础设施升级             | [#85](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/85) | ✅ Done    | 5 组 13 条 (ENT-ENV/DATA/PROFILE/DX/TEST)                  | [phase5-infra.md](requirements/phase5-infra.md)             |
 | 6     | 测试能力扩展             | [#86](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/86) | 📋 Planned | 4 组 11 条 (ENT-CONSISTENCY/BREAKPOINT/RESILIENCE/REPORT)  | [phase6-testing.md](requirements/phase6-testing.md)         |
-| 7     | CI/CD + 可观测性         | [#88](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/88) | 📋 Planned | 5 组 15 条 (ENT-BASELINE/COVERAGE/DASHBOARD/SCHEDULE/TEST) | [phase7-cicd.md](requirements/phase7-cicd.md)               |
+| 7     | CI/CD + 可观测性         | [#88](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/88) | 📋 Planned | 5 组 22 条 (PERF-BL/COV/OBS/SCHED/K6-FR)                   | [phase7-cicd.md](requirements/phase7-cicd.md)               |
 
 ## Phase 依赖关系
 
 ```
-Phase 1~4 (已完成) → Phase 5 (基础设施) → Phase 6 (测��能力) → Phase 7 (CI/CD)
+Phase 1~4 (已完成) → Phase 5 (基础设施) → Phase 6 (测试能力) → Phase 7 (CI/CD)
 ```
 
 - **Phase 5 → 6**: Phase 6 的 k6 一致性重构依赖 Phase 5 的 helpers/profiles/env 基础设施
 - **Phase 6 → 7**: Phase 7 的 CI 基线回归依赖 Phase 6 的测试产出 (k6 JSON output、摘要报告)
+
+## Phase 7 需求摘要
+
+> **主口径:** Phase 7 的正式需求来源是 Issue `#88` 和本文件；`rtm.md`、测试用例与设计稿需引用该口径，不反向定义 Phase 7 范围。
+
+| 模块 | 正式编号 | 说明 |
+|------|----------|------|
+| Baseline | `PERF-BL-FR-001~006` | 基线回归、趋势数据、趋势报告、单元测试 |
+| Coverage | `PERF-COV-FR-001~003` | CI 覆盖率报告、artifact、阈值门禁 |
+| Observability | `PERF-OBS-FR-001~004` | Grafana 错误分布、热力图、自定义指标、webhook 告警 |
+| Schedule | `PERF-SCHED-FR-001~002` | nightly soak / weekly capacity 调度与归档 |
+| k6 | `PERF-K6-FR-001~007` | funnel 迁移、breakpoint 分类、恢复验证、Grafana 集成验证 |
 
 ## SLA 定义
 

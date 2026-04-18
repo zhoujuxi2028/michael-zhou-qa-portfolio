@@ -75,7 +75,29 @@ jobs:
             sleep 1
           done
       - name: Run k6 smoke test (performance gate)
-        run: k6 run tests/performance/smoke.k6.js
+        run: k6 run --out json=reports/k6-smoke-summary.json tests/performance/smoke.k6.js
+      - name: Extract baseline metrics
+        if: always()
+        run: node scripts/baseline-export.js
+      - name: Download previous baseline
+        if: always()
+        continue-on-error: true
+        run: |
+          gh run list -w performance-ci.yml --json conclusion,databaseId -q '.[] | select(.conclusion=="success") | .databaseId' | head -1 | xargs -I {} gh run download {} -n baseline-artifact -D reports/
+      - name: Compare baseline (regression detection)
+        if: always()
+        run: node scripts/baseline-compare.js
+      - name: Collect trend data
+        if: always()
+        run: node scripts/trend-collect.js
+      - name: Upload baseline artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: baseline-artifact
+          path: |
+            performance-testing-platform/reports/baseline.json
+            performance-testing-platform/reports/trend.json
       - name: Stop API
         if: always()
         run: kill $(lsof -ti:3000) 2>/dev/null || true
