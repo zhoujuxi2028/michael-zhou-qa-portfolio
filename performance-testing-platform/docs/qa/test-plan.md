@@ -55,7 +55,7 @@
 
 | 检查项       | 命令                               | 通过标准                                  |
 | ------------ | ---------------------------------- | ----------------------------------------- |
-| 集成测试     | `bash scripts/integration-test.sh` | 当前自动化集成检查全部通过；Phase 7 设计项按实施计划补齐 |
+| 集成测试     | `bash scripts/integration-test.sh` | Stage 3 只验证 SUT 单元测试与 SUT 集成测试范围，不包含 soak / 其他性能验收项 |
 | k6 smoke     | `npm run k6:smoke`                 | p95 < 500ms, error < 1%                   |
 | JMeter smoke | `npm run jmeter:smoke`             | error < 1%                                |
 | CI 流水线    | push → GitHub Actions              | 4 jobs 全绿                               |
@@ -68,6 +68,13 @@
 | CI workaround 复验 | 移除 `continue-on-error` / `\|\| true` | 真实结果 0 failures    |
 | 性能基线           | load/stress/spike 各跑一轮             | 结果记录到 reports/    |
 | Soak 短时          | `npm run k6:soak:short`                | 10 min heap < 50% 增长 |
+
+### 阶段边界说明
+
+| 阶段 | 关注点 | 包含内容 | 不包含内容 |
+| ---- | ------ | -------- | ---------- |
+| Stage 3（开发阶段） | 开发自测 | SUT 单元测试、SUT 集成测试 | soak / load / stress / spike 等性能验收 |
+| Stage 4（验收阶段） | 验收验证 | SUT 性能测试（含 smoke / load / stress / spike / soak） | 与本项目无关的部署/回滚门禁 |
 
 ### 执行顺序
 
