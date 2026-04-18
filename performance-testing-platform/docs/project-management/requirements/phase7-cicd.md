@@ -77,6 +77,260 @@ PERF-[子系统]-FR-[序号]
 | PERF-SCHED-FR-001 | GitHub Actions cron workflow: nightly soak-short (10m) + weekly capacity test，自动归档结果 | P3     | 中     |
 | PERF-SCHED-FR-002 | 测试结果自动归档: 每次调度运行的 k6 JSON output 存为 CI artifact，保留 30 天                | P3     | 小     |
 
+## 7.4 问题与回答
+
+### 7.4.1 需求详细化问题与回答
+
+#### 问题1：PERF-BL-FR-001 需求不够详细
+
+**问题描述**：
+baseline.json的数据结构、artifact命名规范、metrics提取方法未明确定义。
+
+**回答与补充**：
+```yaml
+补充内容:
+  baseline_data_structure:
+    定义完整JSON schema:
+      file: "baseline-{YYYYMMDD-HHMMSS}.json"
+      fields:
+        - timestamp: "string (ISO 8601)"
+        - test_type: "string (smoke/load/stress/soak/capacity)"
+        - metrics:
+            p95:
+              value: "number (milliseconds)"
+              description: "第95百分位延迟"
+            p99:
+              value: "number (milliseconds)"
+              description: "第99百分位延迟"
+            error_rate:
+              value: "number (percentage 0-100)"
+              description: "错误率"
+            throughput:
+              value: "number (requests per second)"
+              description: "吞吐量"
+
+  artifact_naming:
+    定义命名规范:
+      pattern: "baseline-{timestamp}.json"
+      examples:
+        - "baseline-20260418-143000.json"
+        - "baseline-20260418-150030.json"
+
+  metrics_extraction:
+    定义提取方法:
+      k6_json:
+        - 提取字段: "data.metrics.http_req_duration.p(95)"
+        - 提取字段: "data.metrics.http_reqs"
+      jmeter_jtl:
+        - 解析JTL文件获取错误率
+        - 使用正则匹配响应码
+
+技术原因: 需要明确数据结构和提取方法才能避免实施时的不一致。
+```
+
+#### 问题2：PERF-BL-FR-002 需求过于模糊
+
+**问题描述**：
+"退化 >20% 则 warning，>50% 则 fail"的定义不够清晰。
+
+**回答与补充**：
+```yaml
+补充内容:
+  regression_calculation:
+    定义精确计算公式:
+      percentage_degradation: "(current_p95 - baseline_p95) / baseline_p95 * 100"
+      negative_value: "性能提升（负数表示改善）"
+      small_degradation: "0-20%（小幅下降）"
+      medium_degradation: "20-50%（明显下降）"
+      large_degradation: ">50%（严重下降）"
+
+    absolute_tolerance:
+      定义绝对值容差:
+      latency_tolerance: "±50ms内不算退化"
+      rate_tolerance: "±0.1%绝对值偏差"
+
+  fail_action:
+    明确fail后的动作:
+      - "CI job失败，阻止后续执行"
+      - "设置GitHub check为failure"
+      - "生成详细的fail原因报告"
+
+    warning_action:
+    明确warning后的动作:
+      - "CI job成功，但生成warning"
+      - "不阻止后续执行"
+      - "在log中突出显示warning信息"
+
+技术原因: 模糊的描述会导致开发和验收困难。
+```
+
+#### 问题3：PERF-COV-FR-003 需求技术细节不足
+
+**问题描述**：
+没有说明如何从Jest输出中提取覆盖率数值。
+
+**回答与补充**：
+```yaml
+补充内容:
+  coverage_extraction:
+    定义提取方法:
+      jest_output: "使用内置coverage收集器"
+      coverage_format: "支持 lcov、json、html"
+      extraction_tool: "可以使用jest自带的解析器或第三方工具（如c8）"
+
+  threshold_checking:
+    定义检查方法:
+      runtime_check: "使用Jest的coverageThresholds配置"
+      post_check: "解析lcov.info或coverage-summary.json"
+      fallback: "如果覆盖率文件生成失败，使用命令行输出"
+
+技术原因: 需要明确提取和检查的技术路径。
+```
+
+#### 问题4：PERF-OBS-FR-004 需求webhook规范缺失
+
+**问题描述**：
+没有定义webhook的payload格式、认证机制、重试策略。
+
+**回答与补充**：
+```yaml
+补充内容:
+  webhook_payload:
+    定义payload schema:
+      alert_name: "string"
+      state: "firing 或 resolved"
+      condition: "告警触发条件描述"
+      values:
+        - 当前指标值
+        - 阈值
+        - 时间戳
+      message: "告警描述"
+      labels:
+        alert_type: "threshold / anomaly"
+        endpoint: "受影响的endpoint"
+        severity: "warning / critical"
+      ruleUrl: "Grafana告警规则链接"
+
+  security_considerations:
+    定义安全机制:
+      webhook_validation: "验证URL合法性，避免SSRF"
+      authentication: "使用API token或签名验证"
+      rate_limiting: "实现请求队列和退避"
+      encryption: "使用HTTPS传输"
+      ip_whitelist: "限制webhook调用来源"
+
+技术原因: webhook集成涉及安全风险，必须明确安全要求。
+```
+
+#### 问题5：PERF-SCHED-FR-001 需求实施细节不足
+
+**问题描述**：
+cron执行失败处理、结果归档格式、并发控制等实施细节缺失。
+
+**回答与补充**：
+```yaml
+补充内容:
+  failure_handling:
+    定义失败处理策略:
+      k6_execution_failure:
+        - 脚本执行exit code非0
+        - action: "记录详细日志，生成错误报告"
+        - retry: "自动重试1次，使用退避策略"
+        - escalation: "重试失败后发送告警"
+
+      service_unavailable:
+        - GitHub API不可达
+        - action: "graceful degradation，继续其他job"
+        - monitoring: "记录服务不可达时间"
+        - alert: "发送服务down告警"
+
+  result_archiving:
+    定义归档格式:
+      directory_structure:
+        root: "reports/scheduled/{YYYY-MM-DD}/"
+        contents:
+          - k6_outputs: "所有k6脚本的JSON output"
+          - summary: "test_summary.md"
+          - logs: "execution.log"
+
+      file_naming:
+        - "k6-{test_type}-{timestamp}.json"
+        - "summary-{timestamp}.md"
+        - "execution-{timestamp}.log"
+
+  concurrency_control:
+    定义并发控制:
+      lock_mechanism:
+        file: "/tmp/scheduled-test.lock"
+        implementation: "原子性目录创建"
+        timeout: "30分钟"
+        cleanup: "异常退出时自动清理"
+
+      job_queue:
+        implementation: "使用GitHub Actions的concurrency设置"
+        max_concurrent_jobs: "限制同时运行的scheduled jobs数量为1"
+        waiting_strategy: "新请求等待，不丢弃"
+
+技术原因: 分布式系统的可靠性需要完善的失败处理和并发控制机制。
+```
+
+---
+
+## 7.5 补充的验收标准
+
+基于上述问题与回答，补充以下验收标准：
+
+### 7.5.1 Baseline模块验收标准
+
+| 需求ID | 原有验收 | 补充验收标准 |
+|----------|----------|--------------|
+| PERF-BL-FR-001 | baseline.json包含p95/error_rate/throughput | ✅ JSON schema完整定义，所有字段有类型说明 |
+| PERF-BL-FR-002 | 对比结果输出pass/warning/fail | ✅ 百分比计算公式明确，绝对值容差定义 |
+| PERF-BL-FR-003 | trend.json追加新记录 | ✅ 追加逻辑原子性，30天清理策略明确 |
+| PERF-BL-FR-004 | Grafana趋势面板正确显示 | ✅ Flux查询优化，缓存策略，时间范围选择正确 |
+| PERF-BL-FR-005 | Markdown趋势表格式正确 | ✅ 趋势指示符定义，表头包含所有必需列 |
+| PERF-BL-FR-006 | 单元测试覆盖所有edge cases | ✅ 6个测试用例对应6个单元测试，edge cases验证通过 |
+
+### 7.5.2 Coverage模块验收标准
+
+| 需求ID | 原有验收 | 补充验收标准 |
+|----------|----------|--------------|
+| PERF-COV-FR-001 | coverage/目录生成 | ✅ 包含lcov.info和HTML报告，覆盖率百分比正确显示 |
+| PERF-COV-FR-002 | artifact成功上传 | ✅ artifact在GitHub Actions页面可见，retention设置为90天 |
+| PERF-COV-FR-003 | CI失败低于阈值 | ✅ statements<80%/branches<70%/functions<80%/lines<80%时CI fail，错误消息清晰指示未达标指标 |
+
+### 7.5.3 Observability模块验收标准
+
+| 需求ID | 原有验收 | 补充验收标准 |
+|----------|----------|--------------|
+| PERF-OBS-FR-001 | 错误分布面板显示 | ✅ 按endpoint分组，时间序列正确，阈值线（1%）显示 |
+| PERF-OBS-FR-002 | 延迟热力图显示 | ✅ 颜色梯度正确（绿<100ms，黄<500ms，红≥500ms），异常值过滤（>5s） |
+| PERF-OBS-FR-003 | 自定义指标面板显示 | ✅ 3个指标独立Y轴，数据点正确，阈值显示 |
+| PERF-OBS-FR-004 | Webhook告警触发 | ✅ 告警时POST到指定URL，payload格式完整，包含所有必需字段 |
+
+### 7.5.4 Schedule模块验收标准
+
+| 需求ID | 原有验收 | 补充验收标准 |
+|----------|----------|--------------|
+| PERF-SCHED-FR-001 | Cron workflow执行 | ✅ nightly和weekly按预定时间触发，workflow run显示成功 |
+| PERF-SCHED-FR-002 | 结果自动归档 | ✅ artifact命名包含timestamp，包含k6 JSON和summary，retention设置为30天 |
+| 失败处理 | 执行失败优雅降级 | ✅ k6脚本失败时记录详细日志，重试机制工作，服务不可达时有告警 |
+| 并发控制 | 避免冲突 | ✅ 锁机制正确实现，GitHub Actions concurrency设置生效 |
+
+### 7.5.5 k6 Scripts模块验收标准
+
+| 需求ID | 原有验收 | 补充验收标准 |
+|----------|----------|--------------|
+| PERF-K6-FR-004 | 崩溃分类 | ✅ graceful/catastrophic判断基于明确的百分比阈值，输出在summary中正确显示 |
+| PERF-K6-FR-005 | 恢复验证 | ✅ 3个测试阶段（正常/超载/恢复）metrics被正确收集和记录 |
+| PERF-K6-FR-006~007 | 集成验证 | ✅ InfluxDB查询正确，Grafana面板显示实时数据，webhook告警触发 |
+
+---
+
+**文档版本更新**: v1.1 - 添加问题与回答章节
+**更新日期**: 2026-04-18
+**更新内容**: 补充PERF-BL-FR、PERF-COV-FR、PERF-OBS-FR、PERF-SCHED-FR系列需求的技术细节和验收标准 |
+
 ### 7.3.5 k6 脚本能力（PERF-K6-FR）
 
 > 来源：Phase 6 需求评审中确定但推迟交付的能力。
