@@ -16,6 +16,7 @@ const PORT = 3199; // 使用非标准端口避免冲突
 const LOG_FILE = `/tmp/cluster-integration-test-${PORT}.log`;
 const RESTART_PATTERN = /died.*restarting/i;
 const RUNNING_PATTERN = /running on port/g;
+const PORT_RELEASE_TIMEOUT_MS = 15000;
 
 /** 最近一次 startCluster() 返回的子进程引用，用于按进程组清理 */
 let clusterChild = null;
@@ -207,7 +208,7 @@ describe('Cluster 模式集成测试', () => {
     }
 
     // 轮询等待端口释放（比固定 sleep 更可靠）
-    const portDeadline = Date.now() + 15000;
+    const portDeadline = Date.now() + PORT_RELEASE_TIMEOUT_MS;
     let portFree = false;
     while (Date.now() < portDeadline) {
       try {
