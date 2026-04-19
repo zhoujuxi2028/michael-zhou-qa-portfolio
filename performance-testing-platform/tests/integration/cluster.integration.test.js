@@ -14,6 +14,8 @@ const fs = require('fs');
 const PROJECT_DIR = path.join(__dirname, '../..');
 const PORT = 3199; // 使用非标准端口避免冲突
 const LOG_FILE = `/tmp/cluster-integration-test-${PORT}.log`;
+const RESTART_PATTERN = /died.*restarting/i;
+const RUNNING_PATTERN = /running on port/g;
 
 /**
  * 等待端口可连接（同步轮询 curl）
@@ -126,7 +128,7 @@ describe('Cluster 模式集成测试', () => {
 
     // 记录初始 "running on port" 出现次数
     const log1 = readLog();
-    const initialRunning = (log1.match(/running on port/gi) || []).length;
+    const initialRunning = (log1.match(RUNNING_PATTERN) || []).length;
     const masterMatch = log1.match(/Master\s+(\d+)/);
     expect(masterMatch).not.toBeNull();
     const masterPid = masterMatch[1];
@@ -140,9 +142,9 @@ describe('Cluster 模式集成测试', () => {
     expect(workerPids.length).toBeGreaterThanOrEqual(1);
 
     // kill 第一个 Worker
-    const targetPid = workerPids[0];
+    const targetPid = Number(workerPids[0]);
     try {
-      process.kill(parseInt(targetPid), 9);
+      process.kill(targetPid, 9);
     } catch {
       // ignore
     }
@@ -152,8 +154,8 @@ describe('Cluster 模式集成测试', () => {
     let logConfirmed = false;
     while (Date.now() < restartDeadline) {
       const currentLog = readLog();
-      const hasRestart = /died.*restarting/i.test(currentLog);
-      const currentRunning = (currentLog.match(/running on port/gi) || []).length;
+      const hasRestart = RESTART_PATTERN.test(currentLog);
+      const currentRunning = (currentLog.match(RUNNING_PATTERN) || []).length;
       if (hasRestart && currentRunning > initialRunning) {
         logConfirmed = true;
         break;
@@ -171,7 +173,7 @@ describe('Cluster 模式集成测试', () => {
 
     // 验证日志包含重启信息
     const log = readLog();
-    expect(log).toMatch(/died.*restarting/i);
+    expect(log).toMatch(RESTART_PATTERN);
   }, 70000);
 
   test('CLU-INT-03: SIGTERM 后所有进程退出、端口释放', () => {
