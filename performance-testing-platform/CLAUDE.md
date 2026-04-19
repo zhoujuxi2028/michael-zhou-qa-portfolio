@@ -1,6 +1,6 @@
 # CLAUDE.md - 性能测试平台 (Performance Testing Platform)
 
-**分类:** 性能测试 | k6 + JMeter 双引擎 | 217 unit + 50 integration + 33 performance tests (357 total)
+**分类:** 性能测试 | k6 + JMeter 双引擎 | 217 unit + 60 integration + 33 performance + 47 other (357 total)
 
 ## 🔴 分支规则
 
@@ -25,7 +25,7 @@ git checkout feature/performance-testing
 
 ```bash
 npm install && npm start &        # 启动 API
-npm test                          # 单元测试 (157 tests, coverage ≥80%)
+npm test                          # 单元测试 (220 tests, 26 suites, coverage ≥80%)
 npm run k6:smoke                  # k6 smoke test
 npm run k6:rate-limit             # k6 rate limiting test
 npm run k6:breakpoint             # k6 breakpoint test
