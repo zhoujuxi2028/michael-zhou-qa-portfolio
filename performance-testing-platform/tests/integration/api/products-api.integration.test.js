@@ -74,10 +74,7 @@ describe('产品 API 集成测试 (PROD-INT)', () => {
 
   // PROD-INT-04: 缺少必填字段创建产品返回 400
   test('PROD-INT-04: 创建产品缺少 name 字段应返回 400', async () => {
-    const res = await agent
-      .post('/api/products')
-      .send({ price: 100 })
-      .expect(400);
+    const res = await agent.post('/api/products').send({ price: 100 }).expect(400);
 
     expect(res.body.error).toMatch(/name.*price.*required/i);
   });

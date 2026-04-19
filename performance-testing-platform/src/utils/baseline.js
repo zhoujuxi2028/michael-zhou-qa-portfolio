@@ -57,13 +57,13 @@ function appendTrend(entry, filePath, retentionDays = 90) {
   // Filter entries older than retentionDays
   const now = new Date();
   const cutoffDate = new Date(now.getTime() - retentionDays * 24 * 60 * 60 * 1000);
-  data = data.filter(e => {
-    if (!e.date) return true;  // Keep entries without date
+  data = data.filter((e) => {
+    if (!e.date) return true; // Keep entries without date
     try {
       const entryDate = new Date(e.date);
       return entryDate >= cutoffDate;
     } catch {
-      return true;  // Keep entries with invalid dates
+      return true; // Keep entries with invalid dates
     }
   });
 

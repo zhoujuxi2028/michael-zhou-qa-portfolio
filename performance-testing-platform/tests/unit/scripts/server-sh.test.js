@@ -176,7 +176,11 @@ describe('server.sh', () => {
   // --- stop-collect ---
   test('stop-collect: no PID file → prints message, exits 0', () => {
     // 确保 PID 文件不存在
-    try { fs.unlinkSync('/tmp/metrics-collector.pid'); } catch { /* ignore */ }
+    try {
+      fs.unlinkSync('/tmp/metrics-collector.pid');
+    } catch {
+      /* ignore */
+    }
     const output = run('stop-collect');
     expect(output).toMatch(/[Nn]o collector PID file/);
   });
@@ -191,8 +195,16 @@ describe('server.sh', () => {
 
   test('collect + stop-collect: starts collector, saves PID, stop-collect kills it', () => {
     const csvPath = path.join(__dirname, '../../../reports/test-metrics.csv');
-    try { fs.unlinkSync(csvPath); } catch { /* ignore */ }
-    try { fs.unlinkSync('/tmp/metrics-collector.pid'); } catch { /* ignore */ }
+    try {
+      fs.unlinkSync(csvPath);
+    } catch {
+      /* ignore */
+    }
+    try {
+      fs.unlinkSync('/tmp/metrics-collector.pid');
+    } catch {
+      /* ignore */
+    }
 
     // 在后台启动 collector
     const child = require('child_process').spawn(
@@ -243,6 +255,10 @@ describe('server.sh', () => {
     }
 
     // 清理测试文件
-    try { fs.unlinkSync(csvPath); } catch { /* ignore */ }
+    try {
+      fs.unlinkSync(csvPath);
+    } catch {
+      /* ignore */
+    }
   });
 });

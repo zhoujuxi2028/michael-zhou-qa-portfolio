@@ -28,20 +28,14 @@ describe('认证流程集成测试 (AUTH-INT)', () => {
     const userData = { username: 'newuser', password: 'SecurePass123' };
 
     // Act: 注册
-    const regRes = await agent
-      .post('/api/auth/register')
-      .send(userData)
-      .expect(201);
+    const regRes = await agent.post('/api/auth/register').send(userData).expect(201);
 
     // Assert: 注册返回用户信息
     expect(regRes.body).toHaveProperty('id');
     expect(regRes.body.username).toBe('newuser');
 
     // Act: 登录
-    const loginRes = await agent
-      .post('/api/auth/login')
-      .send(userData)
-      .expect(200);
+    const loginRes = await agent.post('/api/auth/login').send(userData).expect(200);
 
     // Assert: 登录返回双 token
     expect(loginRes.body).toHaveProperty('accessToken');
@@ -56,10 +50,7 @@ describe('认证流程集成测试 (AUTH-INT)', () => {
     const { refreshToken } = await registerAndLogin(agent);
 
     // Act: 刷新 token
-    const refreshRes = await agent
-      .post('/api/auth/refresh')
-      .send({ refreshToken })
-      .expect(200);
+    const refreshRes = await agent.post('/api/auth/refresh').send({ refreshToken }).expect(200);
 
     // Assert: 返回新的 accessToken
     expect(refreshRes.body).toHaveProperty('accessToken');
@@ -79,10 +70,7 @@ describe('认证流程集成测试 (AUTH-INT)', () => {
       .expect(200);
 
     // Assert: 使用已登出的 refreshToken 刷新应被拒绝
-    const refreshRes = await agent
-      .post('/api/auth/refresh')
-      .send({ refreshToken })
-      .expect(401);
+    const refreshRes = await agent.post('/api/auth/refresh').send({ refreshToken }).expect(401);
 
     expect(refreshRes.body.error).toMatch(/revoked/i);
   });
@@ -111,10 +99,7 @@ describe('认证流程集成测试 (AUTH-INT)', () => {
       .expect(200);
 
     // Assert: 尝试用已撤销的 refreshToken 刷新
-    const res = await agent
-      .post('/api/auth/refresh')
-      .send({ refreshToken })
-      .expect(401);
+    const res = await agent.post('/api/auth/refresh').send({ refreshToken }).expect(401);
 
     expect(res.body.error).toBeDefined();
   });
@@ -126,10 +111,7 @@ describe('认证流程集成测试 (AUTH-INT)', () => {
     await agent.post('/api/auth/register').send(userData).expect(201);
 
     // Act: 重复注册
-    const res = await agent
-      .post('/api/auth/register')
-      .send(userData)
-      .expect(409);
+    const res = await agent.post('/api/auth/register').send(userData).expect(409);
 
     // Assert
     expect(res.body.error).toMatch(/already exists/i);
