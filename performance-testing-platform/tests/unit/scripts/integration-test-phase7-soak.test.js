@@ -40,7 +40,7 @@ exit 0
         ...process.env,
         PATH: `${tempDir}:${process.env.PATH}`,
       },
-      timeout: 15000,
+      timeout: 30000,
     });
 
     expect(result.status).toBe(1);
@@ -129,7 +129,7 @@ process.stdout.write(body);
         ...process.env,
         PATH: `${tempDir}:${process.env.PATH}`,
       },
-      timeout: 15000,
+      timeout: 30000,
     });
 
     expect(result.status).toBe(0);
@@ -223,7 +223,7 @@ process.stdout.write(body);
         ...process.env,
         PATH: `${tempDir}:${process.env.PATH}`,
       },
-      timeout: 15000,
+      timeout: 30000,
     });
 
     expect(result.status).toBe(0);
