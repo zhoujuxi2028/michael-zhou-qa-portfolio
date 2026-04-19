@@ -40,6 +40,106 @@
 
 ---
 
+## 2.1 集成测试策略 (Integration Test Strategy)
+
+> **详细设计文档:** [集成测试设计文档](../design/integration-test-design.md) |
+> **详细用例:** [集成测试用例详细文档](test-cases/integration-test-cases.md)
+
+### 2.1.1 集成测试目标
+
+| 目标 | 说明 |
+|------|------|
+| **模块协同验证** | 验证 API 路由、数据库、中间件、认证模块之间的交互 |
+| **数据流完整性** | 确认请求从入口到数据库再到响应的完整链路 |
+| **业务规则跨模块执行** | 验证库存扣减、Token 黑名单、限额共享等跨模块业务逻辑 |
+| **基础设施链路验证** | 确认 k6→InfluxDB→Grafana 的数据采集和可视化链路 |
+| **安全防护集成** | 验证 Helmet + 限流器 + JWT 认证的协同安全效果 |
+
+### 2.1.2 双执行引擎
+
+集成测试采用双执行引擎架构：
+
+| 引擎 | 框架 | 文件数 | 用例数 | 适用场景 | 执行命令 |
+|------|------|--------|--------|---------|---------|
+| **Jest Runner** | Jest + Supertest | 12 | 61 | 进程内 API 交互、中间件、工具函数 | `npm run test:integration` |
+| **Shell Runner** | Bash + curl + Docker | 3 | ~40 | 外部进程编排（Docker/k6/JMeter） | `bash scripts/integration-test.sh` |
+
+**选型决策：**
+- **Jest Runner**：利用 Supertest 直接调用 Express app（无真实 HTTP），内存 SQLite 保证隔离性，适合快速反馈
+- **Shell Runner**：编排多进程工作流（API 服务 + Docker 容器 + k6/JMeter 进程），适合真实环境集成
+
+### 2.1.3 集成测试分层
+
+```
+                      集成测试分层结构
+┌─────────────────────────────────────────────────────┐
+│ Layer 4: 基础设施集成 (Shell Runner)                  │
+│   Grafana / InfluxDB / k6 / JMeter 联动             │
+├─────────────────────────────────────────────────────┤
+│ Layer 3: 横切关注点 (Jest)                            │
+│   认证保护路由 / 错误处理统一 / 并发访问安全          │
+├─────────────────────────────────────────────────────┤
+│ Layer 2: 中间件集成 (Jest)                            │
+│   限流器行为 / 安全头验证                             │
+├─────────────────────────────────────────────────────┤
+│ Layer 1: API 模块交互 (Jest)                          │
+│   Products / Orders / Auth / Health & Metrics         │
+└─────────────────────────────────────────────────────┘
+```
+
+### 2.1.4 隔离策略
+
+| 策略 | Jest Runner | Shell Runner |
+|------|-------------|-------------|
+| **数据库** | SQLite `:memory:`，每次 beforeEach 重建 | 文件模式 SQLite，测试前后清理 |
+| **HTTP** | Supertest 进程内调用（无真实端口） | 真实 HTTP（端口 3000） |
+| **外部服务** | 无外部依赖 | Docker Compose (InfluxDB/Grafana) |
+| **环境变量** | `jest.resetModules()` 实现模块重载 | Bash `export` / 子 shell 隔离 |
+| **并发控制** | Jest 并行 + 文件内串行 | `lock.sh` 互斥锁（全局唯一执行） |
+
+### 2.1.5 环境要求
+
+| 环境 | Jest Runner | Shell Runner |
+|------|-------------|-------------|
+| **Node.js** | ≥ 18 ✅ 必须 | ≥ 18 ✅ 必须 |
+| **Docker** | ❌ 不需要 | ✅ 必须（≥ 24） |
+| **k6** | ❌ 不需要 | ✅ 需要（≥ 0.50） |
+| **端口 3000** | ❌ 不占用 | ✅ 占用 |
+| **端口 3010/8086** | ❌ 不需要 | ✅ Grafana/InfluxDB |
+
+### 2.1.6 集成测试执行顺序
+
+```
+Step 1: Jest Runner（~30s，无外部依赖）
+  npm run test:integration
+  ├── API 层 (27 用例)
+  ├── 横切关注点 (13 用例)
+  ├── 中间件 (9 用例)
+  └── 工具函数 (12 用例)
+
+Step 2: Shell Runner（~10 min，需 Docker）
+  bash scripts/integration-test.sh
+  ├── Phase 1: Grafana + InfluxDB
+  ├── Phase 2: 系统指标 + Cluster
+  ├── Phase 3: 认证流程
+  ├── Phase 4: Soak 可观测性
+  ├── Phase 5: k6 Helpers
+  ├── Phase 6: Rate Limiter + 摘要
+  └── Phase 7: CI/CD 集成
+```
+
+### 2.1.7 失败处理策略
+
+| 失败类型 | 影响评估 | 处理方式 |
+|---------|---------|---------|
+| **Jest 用例失败** | P1 用例阻塞发布 | 修复后重跑 `npx jest <failed-file>` |
+| **Shell 阶段失败** | 检查是否环境问题 | 查看日志 → 修复 → `bash scripts/integration-test.sh` |
+| **Docker 启动失败** | Shell Runner 不可用 | `docker ps` 排查 → 重启 Docker → 重试 |
+| **端口冲突** | Shell Runner 阻塞 | `lsof -ti:3000 \| xargs kill` → 重试 |
+| **互斥锁残留** | Shell Runner 无法获取锁 | `rm -rf /tmp/integration-test.lock` → 重试 |
+
+---
+
 ## 3. 执行优先级
 
 ### P0 — 必须通过 (阻塞发布)
