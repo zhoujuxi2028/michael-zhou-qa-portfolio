@@ -6,8 +6,8 @@
   "scripts": {
     "lint": "eslint src/ tests/unit/ tests/integration/ scripts/ --ext .js",
     "lint:fix": "eslint src/ tests/unit/ tests/integration/ scripts/ --ext .js --fix",
-    "format": "prettier --write 'src/**/*.js' 'tests/unit/**/*.js' 'tests/integration/**/*.js'",
-    "format:check": "prettier --check 'src/**/*.js' 'tests/unit/**/*.js' 'tests/integration/**/*.js'",
+    "format": "prettier --write 'src/**/*.js' 'tests/unit/**/*.js' 'tests/integration/**/*.js' 'scripts/**/*.js'",
+    "format:check": "prettier --check 'src/**/*.js' 'tests/unit/**/*.js' 'tests/integration/**/*.js' 'scripts/**/*.js'",
     "start": "bash scripts/server.sh start cluster",
     "start:single": "bash scripts/server.sh start single",
     "stop": "bash scripts/server.sh stop",
