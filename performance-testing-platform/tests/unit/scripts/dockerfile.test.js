@@ -15,7 +15,9 @@ describe('Docker-based soak integration assets', () => {
   test('Dockerfile unsets host proxy variables and verifies runtime dependencies after npm ci', () => {
     const dockerfile = fs.readFileSync(DOCKERFILE, 'utf8');
 
-    expect(dockerfile).toContain('unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy ALL_PROXY all_proxy');
+    expect(dockerfile).toContain(
+      'unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy ALL_PROXY all_proxy'
+    );
     expect(dockerfile).toContain("require.resolve('express')");
     expect(dockerfile).toContain("require.resolve('better-sqlite3')");
   });
