@@ -216,9 +216,15 @@ describe('server.sh', () => {
     const pid = fs.readFileSync('/tmp/metrics-collector.pid', 'utf-8').trim();
     expect(pid).toMatch(/^\d+$/);
 
-    // 等待 CSV 数据写入
-    execSync('sleep 1');
+    // 等待 CSV 数据写入（短暂等待后轮询确认，避免硬编码 sleep 导致不稳定）
+    const csvDeadline = Date.now() + 3000;
+    while (!fs.existsSync(csvPath) && Date.now() < csvDeadline) {
+      execSync('sleep 0.2');
+    }
     expect(fs.existsSync(csvPath)).toBe(true);
+
+    // 在调用 stop-collect 前确认 PID 文件仍然存在（防止采集器已提前退出）
+    expect(fs.existsSync('/tmp/metrics-collector.pid')).toBe(true);
 
     // 调用 stop-collect 停止采集器
     const output = run('stop-collect');
