@@ -70,6 +70,18 @@
 | K6-CLASS-01   | PERF-ENGINE-K6-FR-014  | breakpoint graceful 分类         | handleSummary 输出 graceful 标记 | UT P1 regression |
 | K6-CLASS-02   | PERF-ENGINE-K6-FR-014  | breakpoint catastrophic 分类     | handleSummary 输出 catastrophic 标记 | UT P1 regression |
 | K6-RECOVERY-01 | PERF-ENGINE-K6-FR-015  | 熔断恢复时间 ≤ 60s               | soak.js 故障注入 → 10s 连续恢复 | IT P2 regression |
+
+## 业务指标单元测试 (`tests/unit/middleware/metrics.test.js` — BM-01, Issue #137)
+
+| 用例 ID   | 需求 ID                 | 验证项                                    | 预期                                  | 标签 |
+| --------- | ----------------------- | ----------------------------------------- | ------------------------------------- | ---- |
+| BM-UT-01  | PERF-BUSINESS-METRICS-001 | `orderSuccess` 计数正确                   | 连续调用 3 次后计数为 3               | UT P1 regression |
+| BM-UT-02  | PERF-BUSINESS-METRICS-001 | `orderConflict` 计数与 `orderConflictRate` 计算 | 3 成功 + 1 冲突 → rate = 25.00%      | UT P1 regression |
+| BM-UT-03  | PERF-BUSINESS-METRICS-001 | `orderConflictRate` 无订单时为 0%         | 初始化状态返回 '0.00%'               | UT P1 regression |
+| BM-UT-04  | PERF-BUSINESS-METRICS-001 | `authLatencyMs` 平均值计算               | (100+200+300)/3 = 200                 | UT P1 regression |
+| BM-UT-05  | PERF-BUSINESS-METRICS-001 | `resetMetrics()` 清空业务指标             | 重置后所有业务指标归零                | UT P1 regression |
+| BM-UT-06  | PERF-BUSINESS-METRICS-001 | `authLatencyMs` 仅保留最近 100 条样本    | 写入 105 条后平均值 = (6+105)/2 ≈ 56 | UT P1 regression |
+
 ## Soak 验收支撑（Stage 4：验收阶段）
 
 | 用例 ID       | 需求 ID         | 验证项                           | 预期                           | 标签 |
