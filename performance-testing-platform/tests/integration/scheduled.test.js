@@ -117,7 +117,7 @@ describe('Scheduled Testing Integration (CI-SCHED-01~20)', () => {
 
     // After implementation, test should verify:
     // - Creates YYYY-MM-DD directory structure
-    - // Stores all test outputs in timestamped location
+    // - Stores all test outputs in timestamped location
     // - Maintains file organization
   });
 
@@ -155,7 +155,7 @@ describe('Scheduled Testing Integration (CI-SCHED-01~20)', () => {
 
     // After implementation, test should verify:
     // - Retries failed tests
-    - - Implements exponential backoff
+    // - Implements exponential backoff
     // - Tracks retry attempts
     // - Eventually fails after max attempts
   });

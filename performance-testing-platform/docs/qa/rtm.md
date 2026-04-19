@@ -1,6 +1,6 @@
 # 需求追溯矩阵 (Requirements Traceability Matrix)
 
-**Branch:** `feature/performance-testing` | **更新日期:** 2026-04-17 (Phase 1 需求 ID 规范化 — ROUTE 拆分为 6 条)
+**Branch:** `feature/performance-testing` | **更新日期:** 2026-04-19 (Phase 7 BM-01 业务指标单元测试 + bug fix)
 
 **用途:** 确保每条需求都有对应的测试用例覆盖，快速定位未覆盖需求。
 
@@ -192,6 +192,7 @@
 | PERF-ENGINE-K6-FR-015     | 熔断恢复行为测试                                  | `tests/performance/rate-limit.k6.js`                  | K6-RECOVERY-01                                        | ✅ Phase 7 |
 | PERF-ENGINE-K6-FR-016     | SOAK-TC-04 集成验证：Grafana Dashboard 实时展示   | `npm run k6:soak:short` + Docker Compose              | K6-SOAK-INT-01                                        | ✅ Phase 7 |
 | PERF-ENGINE-K6-FR-017     | SOAK-TC-05 集成验证：Grafana 告警规则触发         | `soak.k6.js` 超限场景                                 | K6-SOAK-INT-02                                        | ✅ Phase 7 |
+| PERF-BUSINESS-METRICS-001 | 业务指标单元测试 (Issue #137)                     | `src/middleware/metrics.js`                            | BM-UT-01~06                                           | ✅ Phase 7 |
 
 ---
 
