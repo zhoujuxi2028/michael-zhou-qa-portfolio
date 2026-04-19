@@ -218,8 +218,9 @@ process.on('SIGINT', shutdown);
   local collector_pid=$!
   echo "$collector_pid" > "$COLLECTOR_PID_FILE"
   echo "Collector started (PID: $collector_pid, output: $output)"
-  # 注册 trap：脚本退出时自动清理 PID 文件和采集进程
-  trap 'do_stop_collect 2>/dev/null || true' EXIT
+  # 仅在收到信号时清理采集器（INT/TERM/HUP），避免与 stop-collect 产生竞态条件
+  # 正常退出（node 被 stop-collect 终止后 wait 返回）不触发清理
+  trap 'do_stop_collect 2>/dev/null || true' INT TERM HUP
   wait "$collector_pid" 2>/dev/null || true
 }
 
