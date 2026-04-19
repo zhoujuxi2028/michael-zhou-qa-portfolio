@@ -230,7 +230,7 @@ do_stop_collect() {
     if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
       echo "Stopping collector (PID: $pid)..."
       kill -TERM "$pid" 2>/dev/null || true
-      # 等待最多 3 秒优雅退出
+      # 等待最多 3 秒优雅退出 (15 × 0.2s = 3s)
       for _ in $(seq 1 15); do
         if ! kill -0 "$pid" 2>/dev/null; then
           break

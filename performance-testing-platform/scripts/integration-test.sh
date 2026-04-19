@@ -139,6 +139,7 @@ sleep 2
 rm -f reports/system-metrics-int.csv
 
 # 启动采集器（后台运行，PID 由 server.sh 管理）
+# interval=3ms 用于快速测试; sleep 5s 确保采集 2+ 条数据
 bash scripts/server.sh collect 3 reports/system-metrics-int.csv &
 COLLECTOR_SHELL_PID=$!
 sleep 5
