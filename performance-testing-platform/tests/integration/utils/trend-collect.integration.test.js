@@ -59,7 +59,13 @@ describe('趋势采集集成测试 (TREND-INT)', () => {
 
     // Arrange: 添加新数据
     appendTrend(
-      { run: 2, date: new Date().toISOString(), p95_ms: 100, error_rate: 0.005, throughput_rps: 50 },
+      {
+        run: 2,
+        date: new Date().toISOString(),
+        p95_ms: 100,
+        error_rate: 0.005,
+        throughput_rps: 50,
+      },
       trendFile
     );
 

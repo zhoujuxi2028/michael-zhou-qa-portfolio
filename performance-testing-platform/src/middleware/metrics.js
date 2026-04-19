@@ -5,18 +5,18 @@ const ALERT_THRESHOLDS = {
   // SLA 值
   SLA: {
     p95_ms: 500,
-    error_rate: 0.01,  // 1%
+    error_rate: 0.01, // 1%
   },
   // Warning 级别（提前告警）
   WARNING: {
     p95_ms: 400,
-    error_rate: 0.005,  // 0.5%
+    error_rate: 0.005, // 0.5%
     memory_growth_mb_per_hour: 200,
   },
   // Critical 级别（立即告警）
   CRITICAL: {
     p95_ms: 1000,
-    error_rate: 0.05,  // 5%
+    error_rate: 0.05, // 5%
     memory_growth_mb_per_hour: 500,
   },
 };
@@ -31,9 +31,9 @@ let lagTimer = null;
 
 // 业务指标收集 (PERF-BUSINESS-METRICS-001)
 const businessMetrics = {
-  orderSuccess: 0,      // 订单成功数
-  orderConflict: 0,     // 库存冲突数（409）
-  authLatencyMs: [],    // 认证延迟数组（采样）
+  orderSuccess: 0, // 订单成功数
+  orderConflict: 0, // 库存冲突数（409）
+  authLatencyMs: [], // 认证延迟数组（采样）
 };
 
 function startLagSampling() {
@@ -73,15 +73,19 @@ function getMetrics() {
   const userPercent = elapsedMs > 0 ? (cpuDelta.user / (elapsedMs * 1000)) * 100 : 0;
   const systemPercent = elapsedMs > 0 ? (cpuDelta.system / (elapsedMs * 1000)) * 100 : 0;
   const memUsage = process.memoryUsage();
-  
+
   // 计算业务指标
-  const orderConflictRate = businessMetrics.orderSuccess + businessMetrics.orderConflict > 0 
-    ? businessMetrics.orderConflict / (businessMetrics.orderSuccess + businessMetrics.orderConflict)
-    : 0;
-  const avgAuthLatency = businessMetrics.authLatencyMs.length > 0
-    ? businessMetrics.authLatencyMs.reduce((a, b) => a + b, 0) / businessMetrics.authLatencyMs.length
-    : 0;
-  
+  const orderConflictRate =
+    businessMetrics.orderSuccess + businessMetrics.orderConflict > 0
+      ? businessMetrics.orderConflict /
+        (businessMetrics.orderSuccess + businessMetrics.orderConflict)
+      : 0;
+  const avgAuthLatency =
+    businessMetrics.authLatencyMs.length > 0
+      ? businessMetrics.authLatencyMs.reduce((a, b) => a + b, 0) /
+        businessMetrics.authLatencyMs.length
+      : 0;
+
   return {
     requestCount: metrics.requestCount,
     avgDuration: metrics.requestCount > 0 ? metrics.totalDuration / metrics.requestCount : 0,
@@ -142,10 +146,10 @@ function recordAuthLatency(latencyMs) {
   }
 }
 
-module.exports = { 
-  metricsMiddleware, 
-  getMetrics, 
-  resetMetrics, 
+module.exports = {
+  metricsMiddleware,
+  getMetrics,
+  resetMetrics,
   ALERT_THRESHOLDS,
   recordOrderSuccess,
   recordOrderConflict,
