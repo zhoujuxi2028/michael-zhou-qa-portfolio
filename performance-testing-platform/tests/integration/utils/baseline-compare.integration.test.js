@@ -4,6 +4,7 @@
  * 验证性能基线的保存、加载、对比和回归检测完整流程。
  * 跨模块集成：baseline.js + 文件系统 I/O + JSON 序列化
  */
+const os = require('os');
 const fs = require('fs');
 const path = require('path');
 const {
@@ -14,7 +15,7 @@ const {
 } = require('../../../src/utils/baseline');
 
 describe('基线管理集成测试 (BASE-INT)', () => {
-  const tmpDir = path.join('/tmp', 'baseline-int-test');
+  const tmpDir = path.join(os.tmpdir(), 'baseline-int-test');
   const baselineFile = path.join(tmpDir, 'baseline.json');
   const trendFile = path.join(tmpDir, 'trend.json');
 

@@ -89,7 +89,7 @@ describe('并发访问集成测试 (CONC-INT)', () => {
       expect(r.status).toBe(201);
     });
 
-    // Assert: 总产品数正确 = 5(seed) + 10(new)
+    // Assert: 总产品数 = 5(seed) + 10(new) = 15
     const listRes = await agent.get('/api/products?limit=100').expect(200);
     expect(listRes.body.total).toBe(15);
   });
