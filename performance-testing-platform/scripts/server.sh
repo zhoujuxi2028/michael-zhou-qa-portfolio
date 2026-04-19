@@ -5,7 +5,8 @@
 #   ./scripts/server.sh stop                      — 停止服务
 #   ./scripts/server.sh restart [cluster|single]  — 重启服务
 #   ./scripts/server.sh restart [cluster|single] --clean — 重启 + 清理数据库
-#   ./scripts/server.sh collect [interval] [path] — 系统指标采集 → CSV
+#   ./scripts/server.sh collect [interval] [path] — 系统指标采集 → CSV (后台运行, 记录 PID)
+#   ./scripts/server.sh stop-collect              — 停止后台指标采集器
 
 set -euo pipefail
 
@@ -21,6 +22,7 @@ for arg in "$@"; do
 done
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+COLLECTOR_PID_FILE="/tmp/metrics-collector.pid"
 
 # --- helpers ---
 
@@ -110,6 +112,9 @@ do_collect() {
 
   cd "$PROJECT_DIR"
   mkdir -p "$(dirname "$output")"
+
+  # 停止残留的采集器进程
+  do_stop_collect 2>/dev/null || true
 
   node -e "
 const os = require('os');
@@ -209,7 +214,41 @@ const timer = setInterval(collect, INTERVAL);
 function shutdown() { clearInterval(timer); console.log('Metrics collection stopped. Output: ' + OUTPUT); process.exit(0); }
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
-"
+" &
+  local collector_pid=$!
+  echo "$collector_pid" > "$COLLECTOR_PID_FILE"
+  echo "Collector started (PID: $collector_pid, output: $output)"
+  # 注册 trap：脚本退出时自动清理 PID 文件和采集进程
+  trap 'do_stop_collect 2>/dev/null || true' EXIT
+  wait "$collector_pid" 2>/dev/null || true
+}
+
+do_stop_collect() {
+  if [ -f "$COLLECTOR_PID_FILE" ]; then
+    local pid
+    pid=$(cat "$COLLECTOR_PID_FILE" 2>/dev/null)
+    if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
+      echo "Stopping collector (PID: $pid)..."
+      kill -TERM "$pid" 2>/dev/null || true
+      # 等待最多 3 秒优雅退出
+      for _ in $(seq 1 15); do
+        if ! kill -0 "$pid" 2>/dev/null; then
+          break
+        fi
+        sleep 0.2
+      done
+      # 如果仍在运行，强制 kill
+      if kill -0 "$pid" 2>/dev/null; then
+        kill -9 "$pid" 2>/dev/null || true
+      fi
+      echo "Collector stopped."
+    else
+      echo "No running collector found (PID: $pid)."
+    fi
+    rm -f "$COLLECTOR_PID_FILE"
+  else
+    echo "No collector PID file found."
+  fi
 }
 
 # --- main ---
@@ -232,8 +271,11 @@ case "$ACTION" in
   collect)
     do_collect "$@"
     ;;
+  stop-collect)
+    do_stop_collect
+    ;;
   *)
-    echo "Usage: $0 {start|stop|restart|collect} [cluster|single]"
+    echo "Usage: $0 {start|stop|restart|collect|stop-collect} [cluster|single]"
     exit 1
     ;;
 esac
