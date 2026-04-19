@@ -17,6 +17,9 @@ const LOG_FILE = `/tmp/cluster-integration-test-${PORT}.log`;
 const RESTART_PATTERN = /died.*restarting/i;
 const RUNNING_PATTERN = /running on port/g;
 
+/** 最近一次 startCluster() 返回的子进程引用，用于按进程组清理 */
+let clusterChild = null;
+
 /**
  * 等待端口可连接（同步轮询 curl）
  * 使用 --connect-timeout 控制单次连接超时，避免在高负载时 curl 进程被 execSync timeout 杀死
@@ -54,6 +57,15 @@ function readLog() {
  * 强制清理端口占用和临时文件，等待端口真正释放
  */
 function forceCleanup() {
+  // 优先按进程组杀死（detached: true 创建了独立进程组）
+  if (clusterChild && clusterChild.pid) {
+    try {
+      process.kill(-clusterChild.pid, 'SIGKILL');
+    } catch {
+      // 进程可能已退出
+    }
+    clusterChild = null;
+  }
   try {
     execSync(`lsof -ti:${PORT} | xargs kill -9 2>/dev/null || true`, { encoding: 'utf-8' });
   } catch {
@@ -90,6 +102,7 @@ function startCluster() {
   });
   child.unref();
   fs.closeSync(logFd);
+  clusterChild = child;
   return child;
 }
 
@@ -177,7 +190,7 @@ describe('Cluster 模式集成测试', () => {
   }, 70000);
 
   test('CLU-INT-03: SIGTERM 后所有进程退出、端口释放', () => {
-    startCluster();
+    const child = startCluster();
     waitForPort(PORT);
 
     // 确认服务正常
@@ -186,21 +199,25 @@ describe('Cluster 模式集成测试', () => {
     });
     expect(JSON.parse(result)).toHaveProperty('status', 'ok');
 
-    // 获取所有相关 PID 并发送 SIGTERM
-    execSync(`lsof -ti:${PORT} | xargs kill -15 2>/dev/null || true`, { encoding: 'utf-8' });
+    // 向整个进程组发送 SIGTERM（确保 master 收到并触发优雅关闭）
+    try {
+      process.kill(-child.pid, 'SIGTERM');
+    } catch {
+      // 进程可能已退出
+    }
 
-    // 等待进程退出
-    execSync('sleep 2');
-
-    // 验证端口已释放
-    const portFree = (() => {
+    // 轮询等待端口释放（比固定 sleep 更可靠）
+    const portDeadline = Date.now() + 15000;
+    let portFree = false;
+    while (Date.now() < portDeadline) {
       try {
         execSync(`lsof -ti:${PORT}`, { encoding: 'utf-8', stdio: 'pipe' });
-        return false; // 有进程在用
+        execSync('sleep 0.5');
       } catch {
-        return true; // 无进程在用
+        portFree = true;
+        break;
       }
-    })();
+    }
     expect(portFree).toBe(true);
   }, 40000);
 });
