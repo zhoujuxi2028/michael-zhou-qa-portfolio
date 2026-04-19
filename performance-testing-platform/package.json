@@ -4,8 +4,8 @@
   "description": "Performance testing platform — k6 load/stress/spike/smoke testing with Grafana + InfluxDB",
   "private": true,
   "scripts": {
-    "lint": "eslint src/ tests/unit/ tests/integration/ --ext .js",
-    "lint:fix": "eslint src/ tests/unit/ tests/integration/ --ext .js --fix",
+    "lint": "eslint src/ tests/unit/ tests/integration/ scripts/ --ext .js",
+    "lint:fix": "eslint src/ tests/unit/ tests/integration/ scripts/ --ext .js --fix",
     "format": "prettier --write 'src/**/*.js' 'tests/unit/**/*.js' 'tests/integration/**/*.js'",
     "format:check": "prettier --check 'src/**/*.js' 'tests/unit/**/*.js' 'tests/integration/**/*.js'",
     "start": "bash scripts/server.sh start cluster",
