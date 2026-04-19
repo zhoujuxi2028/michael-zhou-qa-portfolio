@@ -4,13 +4,14 @@
  * 验证趋势数据追加、保留策略和 Markdown 报告生成。
  * 跨模块集成：baseline.js (appendTrend) + trend.js (generateTrendMarkdown) + 文件 I/O
  */
+const os = require('os');
 const fs = require('fs');
 const path = require('path');
 const { appendTrend } = require('../../../src/utils/baseline');
 const { generateTrendMarkdown } = require('../../../src/utils/trend');
 
 describe('趋势采集集成测试 (TREND-INT)', () => {
-  const tmpDir = path.join('/tmp', 'trend-int-test');
+  const tmpDir = path.join(os.tmpdir(), 'trend-int-test');
   const trendFile = path.join(tmpDir, 'trend.json');
   const reportFile = path.join(tmpDir, 'trend.md');
 
