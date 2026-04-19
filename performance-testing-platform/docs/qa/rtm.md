@@ -196,6 +196,65 @@
 
 ---
 
+## 集成测试需求追溯
+
+> **完整集成测试用例:** [integration-test-cases.md](test-cases/integration-test-cases.md) |
+> **集成测试设计:** [integration-test-design.md](../design/integration-test-design.md)
+
+### API 模块集成覆盖
+
+| 需求 ID | 需求 | 集成测试 ID | 验证内容 | 状态 |
+|---------|------|------------|---------|------|
+| PERF-API-ROUTE-FR-002 | 商品分页列表 | PROD-INT-02, PROD-INT-05~06 | 分页参数传递、默认值、批量数据 | ✅ |
+| PERF-API-ROUTE-FR-003 | 单商品详情 / 404 | PROD-INT-01, PROD-INT-03 | 创建→查询一致性、不存在返回 404 | ✅ |
+| PERF-API-ROUTE-FR-004 | 创建商品 | PROD-INT-01, PROD-INT-04~05 | 数据持久化、字段校验、批量创建 | ✅ |
+| PERF-API-ROUTE-FR-005 | 订单分页 | ORD-INT-04 | 分页查询 + 排序 | ✅ |
+| PERF-API-ROUTE-FR-006 | 创建订单 | ORD-INT-01~07 | 库存扣减、409 冲突、金额精度 | ✅ |
+| PERF-API-MW-FR-001 | metrics 中间件 | METRICS-INT-03~06 | 请求计数、业务指标联动 | ✅ |
+| PERF-API-DB-FR-001 | SQLite WAL | CONC-INT-01~03 | 并发安全、唯一约束、批量写入 | ✅ |
+| PERF-API-ROUTE-FR-001 | 健康检查 | METRICS-INT-01~02 | /health + /ready 端点 | ✅ |
+
+### 认证模块集成覆盖
+
+| 需求 ID | 需求 | 集成测试 ID | 验证内容 | 状态 |
+|---------|------|------------|---------|------|
+| AUTH-01 | 用户注册 | AUTH-INT-01, AUTH-INT-06~07, CONC-INT-02 | 注册成功、重复用户名、缺少字段 | ✅ |
+| AUTH-02 | 用户登录 | AUTH-INT-01, AUTH-INT-08 | 登录 Token 签发、密码错误 | ✅ |
+| AUTH-03 | Token 刷新 | AUTH-INT-02, AUTH-INT-05 | 刷新成功、登出后刷新拒绝 | ✅ |
+| AUTH-04 | 用户登出 | AUTH-INT-03, CROSS-INT-03 | 黑名单机制、跨端点失效 | ✅ |
+| AUTH-05 | JWT 验证中间件 | AUTH-INT-04, CROSS-INT-01~02 | 无效 Token、受保护端点 | ✅ |
+| AUTH-06 | AUTH_ENABLED 开关 | CROSS-INT-01~05 | 开启/关闭认证、端到端旅程 | ✅ |
+
+### 中间件集成覆盖
+
+| 需求 ID | 需求 | 集成测试 ID | 验证内容 | 状态 |
+|---------|------|------------|---------|------|
+| ENT-RESILIENCE-01 | Rate Limiter | RL-INT-01~05 | 超限 429、Headers、开关、跨端点共享 | ✅ |
+| Helmet 配置 | 安全响应头 | SEC-INT-01~04 | CSP、HSTS、X-Frame-Options、XSS 防护 | ✅ |
+| Express 错误处理 | 统一错误格式 | ERR-INT-01~05 | 400/404/409 格式一致、参数降级 | ✅ |
+
+### 工具函数集成覆盖
+
+| 需求 ID | 需求 | 集成测试 ID | 验证内容 | 状态 |
+|---------|------|------------|---------|------|
+| PERF-CI-BL-FR-001~002 | 基线存储与对比 | BASE-INT-01~05 | 首次建基线、退化检测、完整工作流 | ✅ |
+| PERF-CI-BL-FR-003 | 趋势数据累积 | TREND-INT-01~04 | 累积、过期清理、报告生成 | ✅ |
+| PERF-CI-BL-FR-006 | 首次无基线 | BASE-INT-01 | 首次运行正常通过 | ✅ |
+| SOAK-03 | 内存泄漏检测 | LEAK-INT-01~03 | ok/warning/critical 三级判定 | ✅ |
+| PERF-BUSINESS-METRICS-001 | 业务指标 | METRICS-INT-05~06 | orderSuccess/orderConflict 联动 | ✅ |
+
+### 集成测试覆盖率统计
+
+| 类别 | 需求数 | 集成测试覆盖 | 覆盖率 |
+|------|--------|-------------|--------|
+| API 模块 | 8 | 8 | 100% |
+| 认证模块 | 6 | 6 | 100% |
+| 中间件 | 3 | 3 | 100% |
+| 工具函数 | 5 | 5 | 100% |
+| **合计** | **22** | **22** | **100%** |
+
+---
+
 ## 覆盖率统计
 
 | Phase    | 需求数                                            | 已覆盖 | 未覆盖                            | 覆盖率   |
