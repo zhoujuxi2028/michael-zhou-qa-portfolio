@@ -22,11 +22,15 @@ const PORT_RELEASE_TIMEOUT_MS = 15000;
 let clusterChild = null;
 
 /**
- * 等待端口可连接（同步轮询 curl）
- * 使用 --connect-timeout 控制单次连接超时，避免在高负载时 curl 进程被 execSync timeout 杀死
+ * 等待端口可连接并验证服务稳定（同步轮询 curl）
+ * 要求连续 STABILITY_COUNT 次成功才认为服务就绪，避免 CI 高负载下
+ * 单次偶然成功后服务又短暂不可用的 false-positive。
  */
+const STABILITY_COUNT = 3;
+
 function waitForPort(port, timeout = 30000) {
   const deadline = Date.now() + timeout;
+  let consecutiveOk = 0;
   while (Date.now() < deadline) {
     try {
       execSync(`curl -sf --connect-timeout 2 --max-time 5 http://127.0.0.1:${port}/health`, {
@@ -34,13 +38,33 @@ function waitForPort(port, timeout = 30000) {
         timeout: 8000,
         stdio: 'pipe',
       });
-      return;
+      consecutiveOk++;
+      if (consecutiveOk >= STABILITY_COUNT) return;
+      execSync('sleep 0.2');
     } catch {
+      consecutiveOk = 0;
       execSync('sleep 0.3');
     }
   }
   const log = readLog();
   throw new Error(`Timeout waiting for port ${port}. Log: ${log.slice(0, 500)}`);
+}
+
+/**
+ * 带超时和重试的健康检查，替代裸 curl 调用
+ */
+function curlHealth(port, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return execSync(
+        `curl -sf --connect-timeout 2 --max-time 5 http://127.0.0.1:${port}/health`,
+        { encoding: 'utf-8', timeout: 8000, stdio: 'pipe' },
+      );
+    } catch {
+      if (i === retries - 1) throw new Error(`Health check failed after ${retries} attempts on port ${port}`);
+      execSync('sleep 0.3');
+    }
+  }
 }
 
 /**
@@ -128,10 +152,7 @@ describe('Cluster 模式集成测试', () => {
 
     // 发送多个请求验证服务可用
     for (let i = 0; i < 5; i++) {
-      const result = execSync(`curl -sf http://127.0.0.1:${PORT}/health`, {
-        encoding: 'utf-8',
-      });
-      const body = JSON.parse(result);
+      const body = JSON.parse(curlHealth(PORT));
       expect(body).toHaveProperty('status', 'ok');
     }
   }, 40000);
@@ -180,10 +201,7 @@ describe('Cluster 模式集成测试', () => {
 
     // Worker 日志确认恢复后验证 HTTP 可达
     waitForPort(PORT);
-    const result = execSync(`curl -sf http://127.0.0.1:${PORT}/health`, {
-      encoding: 'utf-8',
-    });
-    expect(JSON.parse(result)).toHaveProperty('status', 'ok');
+    expect(JSON.parse(curlHealth(PORT))).toHaveProperty('status', 'ok');
 
     // 验证日志包含重启信息
     const log = readLog();
@@ -195,10 +213,7 @@ describe('Cluster 模式集成测试', () => {
     waitForPort(PORT);
 
     // 确认服务正常
-    const result = execSync(`curl -sf http://127.0.0.1:${PORT}/health`, {
-      encoding: 'utf-8',
-    });
-    expect(JSON.parse(result)).toHaveProperty('status', 'ok');
+    expect(JSON.parse(curlHealth(PORT))).toHaveProperty('status', 'ok');
 
     // 向整个进程组发送 SIGTERM（确保 master 收到并触发优雅关闭）
     try {
