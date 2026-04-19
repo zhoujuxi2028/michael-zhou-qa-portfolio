@@ -39,6 +39,7 @@ echo ""
 cleanup() {
   echo ""
   echo "Cleaning up..."
+  bash scripts/server.sh stop-collect 2>/dev/null || true
   bash scripts/server.sh stop 2>/dev/null || true
   docker compose down 2>/dev/null || true
   bash scripts/lock.sh release "$LOCK_DIR"
@@ -136,29 +137,28 @@ bash scripts/server.sh stop 2>/dev/null || true
 bash scripts/server.sh start single 2>/dev/null
 sleep 2
 rm -f reports/system-metrics-int.csv
-node -e "
-const { execSync } = require('child_process');
-const { writeFileSync, readFileSync } = require('fs');
-execSync('bash scripts/server.sh collect 3 reports/system-metrics-int.csv &', { stdio: 'ignore' });
-setTimeout(() => {
-  try {
-    const csv = readFileSync('reports/system-metrics-int.csv', 'utf8');
-    const lines = csv.trim().split('\n');
-    const hasHeader = lines[0].includes('timestamp');
-    const hasData = lines.length > 1;
-    const cols = lines[0].split(',').length;
-    console.log(JSON.stringify({ hasHeader, rows: lines.length - 1, cols }));
-  } catch(e) { console.log(JSON.stringify({ hasHeader: false, rows: 0, cols: 0 })); }
-  process.exit(0);
-}, 5000);
-" 2>/dev/null > /tmp/csv_result.json
 
-CSV_RESULT=$(cat /tmp/csv_result.json 2>/dev/null || echo '{"hasHeader":false,"rows":0,"cols":0}')
-CSV_HEADER=$(echo "$CSV_RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin)['hasHeader'])" 2>/dev/null)
-CSV_ROWS=$(echo "$CSV_RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin)['rows'])" 2>/dev/null)
-CSV_COLS=$(echo "$CSV_RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin)['cols'])" 2>/dev/null)
+# 启动采集器（后台运行，PID 由 server.sh 管理）
+bash scripts/server.sh collect 3 reports/system-metrics-int.csv &
+COLLECTOR_SHELL_PID=$!
+sleep 5
 
-[ "$CSV_HEADER" = "True" ] && log_result "SM-IT-01" "PASS" "CSV generated: ${CSV_ROWS} rows, ${CSV_COLS} columns" || log_result "SM-IT-01" "FAIL" "CSV not generated"
+# 停止采集器，回收进程
+bash scripts/server.sh stop-collect 2>/dev/null || true
+wait "$COLLECTOR_SHELL_PID" 2>/dev/null || true
+
+# 读取 CSV 结果
+if [ -f reports/system-metrics-int.csv ]; then
+  CSV_HEADER=$(head -1 reports/system-metrics-int.csv | grep -c "timestamp" || echo 0)
+  CSV_ROWS=$(tail -n +2 reports/system-metrics-int.csv | wc -l | tr -d ' ')
+  CSV_COLS=$(head -1 reports/system-metrics-int.csv | awk -F, '{print NF}')
+else
+  CSV_HEADER=0
+  CSV_ROWS=0
+  CSV_COLS=0
+fi
+
+[ "$CSV_HEADER" -ge 1 ] 2>/dev/null && log_result "SM-IT-01" "PASS" "CSV generated: ${CSV_ROWS} rows, ${CSV_COLS} columns" || log_result "SM-IT-01" "FAIL" "CSV not generated"
 [ "$CSV_ROWS" -ge 2 ] 2>/dev/null && log_result "SM-IT-02" "PASS" "Per-second recording: ${CSV_ROWS} rows" || log_result "SM-IT-02" "FAIL" "Insufficient rows: ${CSV_ROWS}"
 
 # SM-IT-03: graceful exit (file not truncated)
