@@ -15,29 +15,6 @@ let mockFork;
 let mockOn;
 let mockServerRequired;
 
-// Mock cluster 模块
-jest.mock('cluster', () => {
-  const original = jest.requireActual('cluster');
-  return {
-    ...original,
-    get isPrimary() {
-      return mockIsPrimary;
-    },
-    fork: jest.fn(() => {
-      mockFork();
-      return { process: { pid: Math.floor(Math.random() * 10000) + 1000 } };
-    }),
-    on: jest.fn((event, cb) => {
-      mockOn(event, cb);
-    }),
-  };
-});
-
-// Mock os.cpus()
-jest.mock('os', () => ({
-  cpus: jest.fn(() => Array.from({ length: mockCpusLength }, () => ({}))),
-}));
-
 beforeEach(() => {
   mockIsPrimary = true;
   mockCpusLength = 4;
@@ -48,7 +25,7 @@ beforeEach(() => {
   // 清除 cluster.js 缓存，保证每次重新加载
   jest.resetModules();
 
-  // 重新设置 mock（resetModules 会清除 mock）
+  // 设置 mock（resetModules 后需要用 doMock 重新定义）
   jest.doMock('cluster', () => ({
     get isPrimary() {
       return mockIsPrimary;
