@@ -42,7 +42,7 @@
 
 ## 2.1 集成测试策略 (Integration Test Strategy)
 
-> **详细设计文档:** [集成测试设计文档](../../design/integration-test-design.md) |
+> **详细设计文档:** [集成测试设计文档](../design/integration-test-design.md) |
 > **详细用例:** [集成测试用例详细文档](test-cases/integration-test-cases.md)
 
 ### 2.1.1 集成测试目标
