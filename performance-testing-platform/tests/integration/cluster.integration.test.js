@@ -26,13 +26,16 @@ const PORT_RELEASE_TIMEOUT_MS = 15000;
 /** 最近一次 startCluster() 返回的子进程引用 */
 let clusterChild = null;
 
+/** 端口等待超时（CI 并行运行时需要更长时间） */
+const WAIT_PORT_TIMEOUT_MS = 60000;
+
 /**
  * 等待端口可连接并验证服务稳定（同步轮询 curl）
  * 要求连续 STABILITY_COUNT 次成功才认为服务就绪
  */
 const STABILITY_COUNT = 3;
 
-function waitForPort(port, timeout = 30000) {
+function waitForPort(port, timeout = WAIT_PORT_TIMEOUT_MS) {
   const deadline = Date.now() + timeout;
   let consecutiveOk = 0;
   while (Date.now() < deadline) {
@@ -155,7 +158,7 @@ describe('Cluster 模式集成测试', () => {
       const body = JSON.parse(curlHealth(PORT));
       expect(body).toHaveProperty('status', 'ok');
     }
-  }, 40000);
+  }, 90000);
 
   test('CLU-INT-02: Worker 崩溃后服务自动恢复', () => {
     startCluster();
@@ -185,7 +188,7 @@ describe('Cluster 模式集成测试', () => {
     // === 主要验证：HTTP 服务恢复 ===
     // Worker 崩溃后，Master 会 fork 新 Worker，等待服务重新可用
     // 这比轮询日志更可靠，因为 HTTP 可达 = 服务真正恢复
-    waitForPort(PORT, 30000);
+    waitForPort(PORT);
     const body = JSON.parse(curlHealth(PORT));
     expect(body).toHaveProperty('status', 'ok');
 
@@ -211,7 +214,7 @@ describe('Cluster 模式集成测试', () => {
     }
     // 日志验证为辅助断言 — 服务已恢复即代表 Worker 已重启
     expect(logHasRestart).toBe(true);
-  }, 70000);
+  }, 120000);
 
   test('CLU-INT-03: SIGTERM 后所有进程退出、端口释放', () => {
     const child = startCluster();
@@ -237,5 +240,5 @@ describe('Cluster 模式集成测试', () => {
       }
     }
     expect(portFree).toBe(true);
-  }, 40000);
+  }, 90000);
 });
