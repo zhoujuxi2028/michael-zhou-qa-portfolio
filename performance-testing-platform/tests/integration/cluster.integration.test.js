@@ -14,22 +14,25 @@ const fs = require('fs');
 const PROJECT_DIR = path.join(__dirname, '../..');
 const PORT = 3199; // 使用非标准端口避免冲突
 const LOG_FILE = `/tmp/cluster-integration-test-${PORT}.log`;
+const RESTART_PATTERN = /died.*restarting/i;
+const RUNNING_PATTERN = /running on port/g;
 
 /**
  * 等待端口可连接（同步轮询 curl）
+ * 使用 --connect-timeout 控制单次连接超时，避免在高负载时 curl 进程被 execSync timeout 杀死
  */
-function waitForPort(port, timeout = 10000) {
+function waitForPort(port, timeout = 30000) {
   const deadline = Date.now() + timeout;
   while (Date.now() < deadline) {
     try {
-      execSync(`curl -sf http://127.0.0.1:${port}/health`, {
+      execSync(`curl -sf --connect-timeout 2 --max-time 5 http://127.0.0.1:${port}/health`, {
         encoding: 'utf-8',
-        timeout: 2000,
+        timeout: 8000,
         stdio: 'pipe',
       });
       return;
     } catch {
-      execSync('sleep 0.5');
+      execSync('sleep 0.3');
     }
   }
   const log = readLog();
@@ -48,14 +51,26 @@ function readLog() {
 }
 
 /**
- * 强制清理端口占用和临时文件
+ * 强制清理端口占用和临时文件，等待端口真正释放
  */
 function forceCleanup() {
   try {
     execSync(`lsof -ti:${PORT} | xargs kill -9 2>/dev/null || true`, { encoding: 'utf-8' });
-    execSync('sleep 0.5');
   } catch {
     // ignore
+  }
+  // 等待端口真正释放
+  const deadline = Date.now() + 10000;
+  while (Date.now() < deadline) {
+    try {
+      execSync(`lsof -ti:${PORT}`, { encoding: 'utf-8', stdio: 'pipe' });
+      try {
+        execSync(`lsof -ti:${PORT} | xargs kill -9 2>/dev/null || true`, { encoding: 'utf-8' });
+      } catch { /* ignore */ }
+      execSync('sleep 0.3');
+    } catch {
+      break;
+    }
   }
   try { fs.unlinkSync(LOG_FILE); } catch { /* ignore */ }
 }
@@ -69,7 +84,7 @@ function startCluster() {
   const logFd = fs.openSync(LOG_FILE, 'w');
   const child = spawn('node', ['src/cluster.js'], {
     cwd: PROJECT_DIR,
-    env: { ...process.env, PORT: String(PORT), NODE_ENV: 'test' },
+    env: { ...process.env, PORT: String(PORT), NODE_ENV: 'test', CLUSTER_WORKERS: '2' },
     detached: true,
     stdio: ['ignore', logFd, logFd],
   });
@@ -105,14 +120,15 @@ describe('Cluster 模式集成测试', () => {
       const body = JSON.parse(result);
       expect(body).toHaveProperty('status', 'ok');
     }
-  }, 15000);
+  }, 40000);
 
   test('CLU-INT-02: Worker 崩溃后服务自动恢复', () => {
     startCluster();
     waitForPort(PORT);
 
-    // 读取 Master PID
+    // 记录初始 "running on port" 出现次数
     const log1 = readLog();
+    const initialRunning = (log1.match(RUNNING_PATTERN) || []).length;
     const masterMatch = log1.match(/Master\s+(\d+)/);
     expect(masterMatch).not.toBeNull();
     const masterPid = masterMatch[1];
@@ -126,18 +142,30 @@ describe('Cluster 模式集成测试', () => {
     expect(workerPids.length).toBeGreaterThanOrEqual(1);
 
     // kill 第一个 Worker
-    const targetPid = workerPids[0];
+    const targetPid = Number(workerPids[0]);
     try {
-      execSync(`kill -9 ${targetPid} 2>/dev/null`);
+      process.kill(targetPid, 9);
     } catch {
       // ignore
     }
 
-    // 等待 Master 重启 Worker
-    execSync('sleep 3');
+    // 等待日志确认 Worker 已重启（比轮询 curl 更可靠）
+    const restartDeadline = Date.now() + 30000;
+    let logConfirmed = false;
+    while (Date.now() < restartDeadline) {
+      const currentLog = readLog();
+      const hasRestart = RESTART_PATTERN.test(currentLog);
+      const currentRunning = (currentLog.match(RUNNING_PATTERN) || []).length;
+      if (hasRestart && currentRunning > initialRunning) {
+        logConfirmed = true;
+        break;
+      }
+      execSync('sleep 0.5');
+    }
+    expect(logConfirmed).toBe(true);
 
-    // 验证服务恢复
-    waitForPort(PORT, 8000);
+    // Worker 日志确认恢复后验证 HTTP 可达
+    waitForPort(PORT);
     const result = execSync(`curl -sf http://127.0.0.1:${PORT}/health`, {
       encoding: 'utf-8',
     });
@@ -145,8 +173,8 @@ describe('Cluster 模式集成测试', () => {
 
     // 验证日志包含重启信息
     const log = readLog();
-    expect(log).toMatch(/died.*restarting/i);
-  }, 25000);
+    expect(log).toMatch(RESTART_PATTERN);
+  }, 70000);
 
   test('CLU-INT-03: SIGTERM 后所有进程退出、端口释放', () => {
     startCluster();
@@ -174,5 +202,5 @@ describe('Cluster 模式集成测试', () => {
       }
     })();
     expect(portFree).toBe(true);
-  }, 15000);
+  }, 40000);
 });
