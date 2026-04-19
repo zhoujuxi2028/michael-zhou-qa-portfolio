@@ -9,6 +9,7 @@ if (cluster.isPrimary) {
 
   cluster.on('exit', (worker) => {
     if (isShuttingDown) {
+      // 关闭中不重启 worker，避免 kill-respawn 循环
       console.log(`Worker ${worker.process.pid} exited (shutting down)`);
       return;
     }
