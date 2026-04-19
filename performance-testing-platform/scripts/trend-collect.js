@@ -4,7 +4,6 @@
  * Usage: node scripts/trend-collect.js
  */
 const fs = require('fs');
-const path = require('path');
 const { appendTrend, loadBaseline } = require('../src/utils/baseline');
 
 const baselineFile = 'reports/baseline.json';
