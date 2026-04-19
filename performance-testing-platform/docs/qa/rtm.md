@@ -68,7 +68,7 @@
 
 | 需求 ID | 需求                  | 实现文件             | 测试用例 ID | 状态 |
 | ------- | --------------------- | -------------------- | ----------- | ---- |
-| SM-10   | Express Cluster 模式  | `src/cluster.js`     | CLU-01~03   | ✅   |
+| SM-10   | Express Cluster 模式  | `src/cluster.js`     | CLU-01a~04a (UT), CLU-INT-01~03 (IT) | ✅   |
 | SM-11   | SQLite 文件模式 + WAL | `src/db/database.js` | CLU-01      | ✅   |
 
 ### 容量测试

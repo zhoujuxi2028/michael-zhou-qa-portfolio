@@ -43,13 +43,13 @@
 | Phase | 主题                    | Jest 单元测试 | 性能测试 | 集成测试 | 其他   | 合计    | 详细文档                                       | 通过率  |
 | ----- | ----------------------- | ------------- | -------- | -------- | ------ | ------- | ---------------------------------------------- | ------- |
 | 1     | 双引擎性能测试          | 24            | 13       | 4        | 13     | **54**  | [phase1-dual-engine.md](phase1-dual-engine.md) | ✅ 100% |
-| 2     | 系统指标采集 + 容量测试 | 23            | 6        | 9        | 4      | **42**  | [phase2-metrics.md](phase2-metrics.md)         | ✅ 100% |
+| 2     | 系统指标采集 + 容量测试 | 32            | 6        | 12       | 4      | **54**  | [phase2-metrics.md](phase2-metrics.md)         | ✅ 100% |
 | 3     | JWT 认证场景            | 17            | 4        | 3        | 0      | **24**  | [phase3-auth.md](phase3-auth.md)               | ✅ 100% |
 | 4     | Soak Test + 可观测性    | 7             | 3        | 2        | 0      | **12**  | [phase4-soak.md](phase4-soak.md)               | ✅ 100% |
 | 5     | 基础设施 Helper         | 24            | 0        | 5        | 0      | **29**  | [phase5-infra.md](phase5-infra.md)             | ✅ 100% |
 | 6     | 测试能力扩展            | 41            | 7        | 8        | 8      | **64**  | [phase6-testing.md](phase6-testing.md)         | ✅ 100% |
 | 7     | CI/CD + 可观测性        | 81            | 0        | 19       | 20     | **120** | [phase7-cicd.md](phase7-cicd.md)               | ✅ 100% |
-|       | **小计**                | **217**       | **33**   | **60**   | **47** | **357** |                                                | ✅ 100% |
+|       | **小计**                | **226**       | **33**   | **63**   | **47** | **369** |                                                | ✅ 100% |
 
 > **集成测试专项文档:** 60 条集成测试的详细规格说明（含测试步骤、前/后置条件、需求追溯）见 [integration-test-cases.md](integration-test-cases.md)
 >
@@ -76,6 +76,7 @@
 | 2026-04-19 | 7     | 新增     | BM-UT-01~06                                         | Issue #137 follow-up：补充业务指标单元测试 6 条（orderSuccess/orderConflict/orderConflictRate/authLatencyMs/resetMetrics/sampling）；Phase 7 单元测试从 0 更新为 6；总用例从 278 更新为 284 |
 | 2026-04-19 | 7     | 修复     | metrics.test.js, scheduled.test.js                  | 修复 metrics.test.js 中未解决的 git merge 冲突标记；修复 scheduled.test.js 第 120/158 行注释语法错误；修复 breakpoint-classification.test.js lint 警告 |
 | 2026-04-19 | 全部  | 新增     | 集成测试文档体系                                    | 新增集成测试设计文档 (integration-test-design.md)、集成测试用例详细文档 (integration-test-cases.md)；更新 test-plan.md 增加 §2.1 集成测试策略；更新 rtm.md 增加集成测试需求追溯章节 |
+| 2026-04-19 | 2     | 新增     | CLU-01a~04a, CLU-INT-01~03                          | RCA 补漏：cluster.js 从 0% 覆盖率补充 12 条单元测试 + 3 条集成测试；Phase 2 单元测试从 23 更新为 32，集成测试从 9 更新为 12；总用例从 357 更新为 369 |
 
 > **变更类型:** `新增` / `修改` / `删除` / `初始化` / `重构`
 >
