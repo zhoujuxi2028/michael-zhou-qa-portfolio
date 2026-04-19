@@ -17,3 +17,6 @@ docs/qa/reports/*.log
 docs/qa/reports/test-execution-report-*.md
 jmeter.log
 index.html
+# Test artifacts: 忽略测试生成的临时 baseline/trend 文件
+reports/baseline-*.json
+reports/trend-*.json
