@@ -45,7 +45,7 @@
 | `UT-ORDER`    | 订单路由               | `tests/unit/routes/orders.test.js`            | 1     |
 | `UT-METRICS`  | 指标中间件             | `tests/unit/middleware/metrics.test.js`       | 1     |
 | `SM-UT`       | 系统指标采集单元       | `tests/unit/utils/metrics.test.js`            | 2     |
-| `CLU`         | Cluster 模式（历史遗留，无 UT- 前缀，单元测试性质） | `tests/unit/cluster.test.js` | 2 |
+| `CLU`         | Cluster 模式单元测试（历史遗留，无 UT- 前缀） | `tests/unit/cluster.test.js` | 2 |
 | `UT-AUTH`     | 认证路由               | `tests/unit/routes/auth.test.js`              | 3     |
 | `UT-MW`       | 认证中间件             | `tests/unit/middleware/authenticate.test.js`  | 3     |
 | `UT-SOAK`     | 内存泄漏检测           | `tests/unit/utils/leak-detection.test.js`     | 4     |
@@ -61,6 +61,7 @@
 | ------------- | ---------------------- | --------------------------------------------- | ----- |
 | `SM-IT`       | 系统指标集成           | `scripts/integration-test.sh`                 | 2     |
 | `TQ-IT`       | 测试质量保障集成       | `scripts/integration-test.sh`                 | 2     |
+| `CLU-INT`     | Cluster 模式集成       | `tests/integration/cluster.integration.test.js` | 2   |
 | `CAP`         | 容量测试               | `tests/performance/capacity.k6.js`            | 2     |
 | `AUTH-INT`    | 认证集成流程           | `scripts/integration-test.sh`                 | 3     |
 | `AUTH-PERF`   | 认证性能               | `tests/performance/auth-*.k6.js`              | 3     |
