@@ -14,6 +14,8 @@ let mockCpusLength;
 let mockFork;
 let mockOn;
 let mockServerRequired;
+let mockWorkers;
+let mockWorkerId;
 
 beforeEach(() => {
   mockIsPrimary = true;
@@ -21,6 +23,8 @@ beforeEach(() => {
   mockFork = jest.fn();
   mockOn = jest.fn();
   mockServerRequired = false;
+  mockWorkers = {};
+  mockWorkerId = 0;
 
   // 清除 cluster.js 缓存，保证每次重新加载
   jest.resetModules();
@@ -32,11 +36,20 @@ beforeEach(() => {
     },
     fork: jest.fn((...args) => {
       mockFork(...args);
-      return { process: { pid: Math.floor(Math.random() * 10000) + 1000 } };
+      mockWorkerId++;
+      const worker = {
+        id: mockWorkerId,
+        process: { pid: Math.floor(Math.random() * 10000) + 1000, kill: jest.fn() },
+      };
+      mockWorkers[mockWorkerId] = worker;
+      return worker;
     }),
     on: jest.fn((event, cb) => {
       mockOn(event, cb);
     }),
+    get workers() {
+      return mockWorkers;
+    },
   }));
 
   jest.doMock('os', () => ({
@@ -220,5 +233,98 @@ describe('CLU-04: 边界条件 — 单核 CPU', () => {
     const clusterMod = require('cluster');
 
     expect(clusterMod.fork).toHaveBeenCalledTimes(1);
+  });
+});
+
+// ─── CLU-05: 优雅关闭 — SIGTERM 处理 ──────────────────────────────────────────
+
+describe('CLU-05: Master 收到 SIGTERM 后优雅关闭', () => {
+  let sigTermHandler;
+
+  beforeEach(() => {
+    sigTermHandler = null;
+    // 拦截 process.on('SIGTERM') 注册，避免影响 Jest 进程
+    jest.spyOn(process, 'on').mockImplementation((event, handler) => {
+      if (event === 'SIGTERM') {
+        sigTermHandler = handler;
+      }
+    });
+  });
+
+  afterEach(() => {
+    process.on.mockRestore();
+  });
+
+  test('CLU-05a: Master 注册 SIGTERM 处理器', () => {
+    mockIsPrimary = true;
+    mockCpusLength = 2;
+
+    require('../../src/cluster');
+
+    expect(sigTermHandler).toBeInstanceOf(Function);
+  });
+
+  test('CLU-05b: SIGTERM 后 Worker 退出不再触发 fork', () => {
+    mockIsPrimary = true;
+    mockCpusLength = 2;
+    let exitCallback;
+    mockOn = jest.fn((event, cb) => {
+      if (event === 'exit') exitCallback = cb;
+    });
+
+    require('../../src/cluster');
+    const clusterMod = require('cluster');
+
+    // 初始 fork 2 个 Worker
+    expect(clusterMod.fork).toHaveBeenCalledTimes(2);
+
+    // 触发 SIGTERM
+    sigTermHandler();
+
+    // Worker 退出后不应再 fork
+    const deadWorker = { process: { pid: 12345 } };
+    exitCallback(deadWorker);
+
+    expect(clusterMod.fork).toHaveBeenCalledTimes(2); // 不增加
+  });
+
+  test('CLU-05c: SIGTERM 向所有 Worker 发送 SIGTERM 信号', () => {
+    mockIsPrimary = true;
+    mockCpusLength = 2;
+
+    require('../../src/cluster');
+
+    // mockWorkers 已被 fork() 填充
+    const workerIds = Object.keys(mockWorkers);
+    expect(workerIds.length).toBe(2);
+
+    // 触发 SIGTERM
+    sigTermHandler();
+
+    // 验证所有 Worker 都收到了 SIGTERM
+    for (const id of workerIds) {
+      expect(mockWorkers[id].process.kill).toHaveBeenCalledWith('SIGTERM');
+    }
+  });
+
+  test('CLU-05d: SIGTERM 输出关闭日志', () => {
+    mockIsPrimary = true;
+    mockCpusLength = 1;
+
+    require('../../src/cluster');
+
+    sigTermHandler();
+
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringMatching(/Master.*received SIGTERM.*shutting down/i)
+    );
+  });
+
+  test('CLU-05e: Worker 进程不注册 SIGTERM 处理器', () => {
+    mockIsPrimary = false;
+
+    require('../../src/cluster');
+
+    expect(sigTermHandler).toBeNull();
   });
 });
