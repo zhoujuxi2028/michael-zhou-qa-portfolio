@@ -51,6 +51,8 @@
 | 7     | CI/CD + 可观测性        | 81            | 0        | 19       | 20     | **120** | [phase7-cicd.md](phase7-cicd.md)               | ✅ 100% |
 |       | **小计**                | **217**       | **33**   | **60**   | **47** | **357** |                                                | ✅ 100% |
 
+> **集成测试专项文档:** 60 条集成测试的详细规格说明（含测试步骤、前/后置条件、需求追溯）见 [integration-test-cases.md](integration-test-cases.md)
+>
 > **Release 验证规则:** 每次大版本发布前，需逐 Phase 确认所有用例已执行且通过。用例变更记录见下方 §4。
 
 ## 4. 用例变更记录
@@ -73,6 +75,7 @@
 | 2026-04-18 | 7     | 修正     | 单元测试全量统计                                    | 单元测试总数从 157 更新为 217（+60）；Phase 7 单元测试从 0 更新为 81；总用例从 278 更新为 357；全部单元测试通过率 100% (26/26 test suites, 217/217 tests) |
 | 2026-04-19 | 7     | 新增     | BM-UT-01~06                                         | Issue #137 follow-up：补充业务指标单元测试 6 条（orderSuccess/orderConflict/orderConflictRate/authLatencyMs/resetMetrics/sampling）；Phase 7 单元测试从 0 更新为 6；总用例从 278 更新为 284 |
 | 2026-04-19 | 7     | 修复     | metrics.test.js, scheduled.test.js                  | 修复 metrics.test.js 中未解决的 git merge 冲突标记；修复 scheduled.test.js 第 120/158 行注释语法错误；修复 breakpoint-classification.test.js lint 警告 |
+| 2026-04-19 | 全部  | 新增     | 集成测试文档体系                                    | 新增集成测试设计文档 (integration-test-design.md)、集成测试用例详细文档 (integration-test-cases.md)；更新 test-plan.md 增加 §2.1 集成测试策略；更新 rtm.md 增加集成测试需求追溯章节 |
 
 > **变更类型:** `新增` / `修改` / `删除` / `初始化` / `重构`
 >
