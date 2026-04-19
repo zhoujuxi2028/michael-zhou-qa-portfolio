@@ -1,16 +1,6 @@
 const request = require('supertest');
 const app = require('../../../src/app');
-<<<<<<< Updated upstream
 const { resetMetrics, getMetrics, recordOrderSuccess, recordOrderConflict, recordAuthLatency } = require('../../../src/middleware/metrics');
-=======
-const {
-  getMetrics,
-  recordAuthLatency,
-  recordOrderConflict,
-  recordOrderSuccess,
-  resetMetrics,
-} = require('../../../src/middleware/metrics');
->>>>>>> Stashed changes
 const { resetDatabase } = require('../../../src/db/database');
 
 beforeEach(() => resetMetrics());
@@ -35,16 +25,10 @@ describe('metrics middleware', () => {
     const res = await request(app).get('/metrics');
     expect(res.body.cpu).toBeDefined();
     expect(res.body.cpu.userPercent).toBeGreaterThanOrEqual(0);
-<<<<<<< Updated upstream
     // 多核系统上 CPU 占用率可超过 100%（N核最高NX100%）
     expect(typeof res.body.cpu.userPercent).toBe('number');
     expect(res.body.cpu.systemPercent).toBeGreaterThanOrEqual(0);
     expect(typeof res.body.cpu.systemPercent).toBe('number');
-=======
-    expect(res.body.cpu.systemPercent).toBeGreaterThanOrEqual(0);
-    expect(Number.isFinite(res.body.cpu.userPercent)).toBe(true);
-    expect(Number.isFinite(res.body.cpu.systemPercent)).toBe(true);
->>>>>>> Stashed changes
     expect(res.body.cpu.loadavg).toHaveLength(3);
   });
 
