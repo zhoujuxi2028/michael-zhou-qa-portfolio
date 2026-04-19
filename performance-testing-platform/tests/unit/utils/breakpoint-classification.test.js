@@ -30,7 +30,7 @@ describe('breakpoint crash classification (K6-CLASS)', () => {
       { errorRate: 0.5, description: '50% error rate (boundary)' }
     ];
 
-    testCases.forEach(({ errorRate, description }) => {
+    testCases.forEach(({ errorRate, description: _description }) => {
       const result = classifyCrashType(errorRate);
       expect(result).toBe('graceful');
       expect(result).toMatch(/graceful/i);
@@ -46,7 +46,7 @@ describe('breakpoint crash classification (K6-CLASS)', () => {
       { errorRate: 1.0, description: '100% error rate (complete failure)' }
     ];
 
-    testCases.forEach(({ errorRate, description }) => {
+    testCases.forEach(({ errorRate, description: _description }) => {
       const result = classifyCrashType(errorRate);
       expect(result).toBe('catastrophic');
       expect(result).toMatch(/catastrophic/i);
