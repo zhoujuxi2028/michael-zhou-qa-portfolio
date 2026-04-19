@@ -4,7 +4,6 @@
  * Usage: node scripts/baseline-export.js [summary.json] [output.json]
  */
 const fs = require('fs');
-const path = require('path');
 const { saveBaseline } = require('../src/utils/baseline');
 
 const summaryFile = process.argv[2] || 'summary.json';
