@@ -140,13 +140,24 @@ jobs:
           cache: npm
           cache-dependency-path: performance-testing-platform/package-lock.json
       - run: npm ci
-      - name: Install JMeter
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Cache JMeter
+        id: cache-jmeter
+        uses: actions/cache@v4
+        with:
+          path: performance-testing-platform/apache-jmeter-5.6.3
+          key: jmeter-5.6.3
+      - name: Download JMeter
+        if: steps.cache-jmeter.outputs.cache-hit != 'true'
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq default-jre > /dev/null
           wget -q https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.3.tgz
           tar -xzf apache-jmeter-5.6.3.tgz
-          echo "$PWD/apache-jmeter-5.6.3/bin" >> $GITHUB_PATH
+          rm -f apache-jmeter-5.6.3.tgz
+      - name: Add JMeter to PATH
+        run: echo "$PWD/apache-jmeter-5.6.3/bin" >> $GITHUB_PATH
       - name: Start target API
         run: node src/server.js &
       - name: Wait for API
