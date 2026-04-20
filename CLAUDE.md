@@ -206,6 +206,7 @@ grep <tool> package.json       # Node.js: eslint, prettier, newman
 | 报告采集步骤需显式抑制 exit code | `npm audit --json > file` 因漏洞返回 exit 1，导致报告步骤误判为安全门控失败 | ISS-014 |
 | ESLint ≠ Prettier，PR 合并前必须分别验证 | ESLint 通过不代表 Prettier 通过，CI 需独立执行两者。PR 不应在 CI 未绿时合并 | ISS-015 |
 | 新增 .js 文件必须先 `npx prettier --write` 再提交 | ESLint 的 `--fix` 和 Prettier 对行折叠、trailing comma 规则不同，仅跑 ESLint 不保证 Prettier 通过 | ISS-016 |
+| CI `working-directory` 下路径用相对路径；推送前完整模拟 CI 全步骤 | `working-directory: X` 下写 `X/file` 变双重嵌套；只验部分步骤会遗漏下游失败 | ISS-017 |
 
 ## Wiki & Roadmap
 
