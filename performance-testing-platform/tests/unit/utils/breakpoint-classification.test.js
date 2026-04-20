@@ -8,12 +8,12 @@ describe('breakpoint crash classification (K6-CLASS)', () => {
   const createMockSummaryData = (p95 = 400, errorRate = 0) => ({
     metrics: {
       http_req_duration: {
-        values: { p95 }
+        values: { p95 },
       },
       http_req_failed: {
-        values: { value: errorRate }
-      }
-    }
+        values: { value: errorRate },
+      },
+    },
   });
 
   // Mock handleSummary logic (extracted from breakpoint.k6.js)
@@ -27,7 +27,7 @@ describe('breakpoint crash classification (K6-CLASS)', () => {
       { errorRate: 0, description: 'no errors' },
       { errorRate: 0.1, description: '10% error rate' },
       { errorRate: 0.3, description: '30% error rate' },
-      { errorRate: 0.5, description: '50% error rate (boundary)' }
+      { errorRate: 0.5, description: '50% error rate (boundary)' },
     ];
 
     testCases.forEach(({ errorRate, description: _description }) => {
@@ -43,7 +43,7 @@ describe('breakpoint crash classification (K6-CLASS)', () => {
       { errorRate: 0.51, description: '51% error rate (boundary+1%)' },
       { errorRate: 0.75, description: '75% error rate' },
       { errorRate: 0.9, description: '90% error rate' },
-      { errorRate: 1.0, description: '100% error rate (complete failure)' }
+      { errorRate: 1.0, description: '100% error rate (complete failure)' },
     ];
 
     testCases.forEach(({ errorRate, description: _description }) => {

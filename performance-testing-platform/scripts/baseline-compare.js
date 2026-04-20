@@ -22,8 +22,12 @@ try {
     console.log(`Status: ${result.status}`);
     console.log(`Delta: ${(result.delta * 100).toFixed(1)}%`);
     console.log(`\nMetrics:`);
-    console.log(`  p95_ms: ${testPrevious.p95_ms}ms → ${testCurrent.p95_ms}ms (${result.delta > 0 ? '+' : ''}${(result.delta * 100).toFixed(1)}%)`);
-    console.log(`  error_rate: ${(testPrevious.error_rate * 100).toFixed(2)}% → ${(testCurrent.error_rate * 100).toFixed(2)}%`);
+    console.log(
+      `  p95_ms: ${testPrevious.p95_ms}ms → ${testCurrent.p95_ms}ms (${result.delta > 0 ? '+' : ''}${(result.delta * 100).toFixed(1)}%)`
+    );
+    console.log(
+      `  error_rate: ${(testPrevious.error_rate * 100).toFixed(2)}% → ${(testCurrent.error_rate * 100).toFixed(2)}%`
+    );
 
     if (result.status === 'FAIL') {
       console.log('\n❌ Regression DETECTED (test mode)');
@@ -56,16 +60,26 @@ try {
 
   // Print detailed metrics
   console.log(`\nMetrics:`);
-  console.log(`  p95_ms: ${previous.p95_ms}ms → ${current.p95_ms}ms (${result.delta > 0 ? '+' : ''}${(result.delta * 100).toFixed(1)}%)`);
-  console.log(`  error_rate: ${(previous.error_rate * 100).toFixed(2)}% → ${(current.error_rate * 100).toFixed(2)}%`);
-  console.log(`  throughput_rps: ${previous.throughput_rps.toFixed(1)} → ${current.throughput_rps.toFixed(1)}`);
+  console.log(
+    `  p95_ms: ${previous.p95_ms}ms → ${current.p95_ms}ms (${result.delta > 0 ? '+' : ''}${(result.delta * 100).toFixed(1)}%)`
+  );
+  console.log(
+    `  error_rate: ${(previous.error_rate * 100).toFixed(2)}% → ${(current.error_rate * 100).toFixed(2)}%`
+  );
+  console.log(
+    `  throughput_rps: ${previous.throughput_rps.toFixed(1)} → ${current.throughput_rps.toFixed(1)}`
+  );
 
   // Gate: fail if FAIL status
   if (result.status === 'FAIL') {
-    console.error(`\n❌ BASELINE REGRESSION DETECTED: p95 degraded by ${(result.delta * 100).toFixed(1)}% (threshold: 50%)`);
+    console.error(
+      `\n❌ BASELINE REGRESSION DETECTED: p95 degraded by ${(result.delta * 100).toFixed(1)}% (threshold: 50%)`
+    );
     process.exit(1);
   } else if (result.status === 'WARNING') {
-    console.warn(`\n⚠️  BASELINE WARNING: p95 degraded by ${(result.delta * 100).toFixed(1)}% (threshold: 20%)`);
+    console.warn(
+      `\n⚠️  BASELINE WARNING: p95 degraded by ${(result.delta * 100).toFixed(1)}% (threshold: 20%)`
+    );
     process.exit(0); // Warning does not block
   } else {
     console.log(`\n✅ Baseline within acceptable range`);

@@ -83,10 +83,7 @@ describe('健康与指标集成测试 (METRICS-INT)', () => {
   // METRICS-INT-05: 订单操作后业务指标更新
   test('METRICS-INT-05: 创建订单后 orderSuccess 指标应递增', async () => {
     // Arrange: 使用 seed 产品下单
-    await agent
-      .post('/api/orders')
-      .send({ product_id: 1, quantity: 1 })
-      .expect(201);
+    await agent.post('/api/orders').send({ product_id: 1, quantity: 1 }).expect(201);
 
     // Act: 查询指标
     const res = await agent.get('/metrics').expect(200);

@@ -63,12 +63,14 @@ function waitForPort(port, timeout = WAIT_PORT_TIMEOUT_MS) {
 function curlHealth(port, retries = 3) {
   for (let i = 0; i < retries; i++) {
     try {
-      return execSync(
-        `curl -sf --connect-timeout 2 --max-time 5 http://127.0.0.1:${port}/health`,
-        { encoding: 'utf-8', timeout: 8000, stdio: 'pipe' },
-      );
+      return execSync(`curl -sf --connect-timeout 2 --max-time 5 http://127.0.0.1:${port}/health`, {
+        encoding: 'utf-8',
+        timeout: 8000,
+        stdio: 'pipe',
+      });
     } catch {
-      if (i === retries - 1) throw new Error(`Health check failed after ${retries} attempts on port ${port}`);
+      if (i === retries - 1)
+        throw new Error(`Health check failed after ${retries} attempts on port ${port}`);
       execSync('sleep 0.3');
     }
   }
@@ -108,20 +110,30 @@ function forceCleanup() {
       execSync(`lsof -ti:${PORT}`, { encoding: 'utf-8', stdio: 'pipe' });
       try {
         execSync(`lsof -ti:${PORT} | xargs kill -9 2>/dev/null || true`, { encoding: 'utf-8' });
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
       execSync('sleep 0.3');
     } catch {
       break;
     }
   }
-  try { fs.unlinkSync(LOG_FILE); } catch { /* ignore */ }
+  try {
+    fs.unlinkSync(LOG_FILE);
+  } catch {
+    /* ignore */
+  }
 }
 
 /**
  * 通过 detached spawn 启动 cluster 模式服务器
  */
 function startCluster() {
-  try { fs.unlinkSync(LOG_FILE); } catch { /* ignore */ }
+  try {
+    fs.unlinkSync(LOG_FILE);
+  } catch {
+    /* ignore */
+  }
 
   const logFd = fs.openSync(LOG_FILE, 'w');
   const child = spawn('node', ['src/cluster.js'], {
