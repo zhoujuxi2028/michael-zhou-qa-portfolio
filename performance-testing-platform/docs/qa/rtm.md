@@ -120,7 +120,7 @@
 | AUTH-08 | Token 刷新 (200 VUs)   | `auth-refresh.k6.js`                                                   | AUTH-PERF-02 | ✅   |
 | AUTH-09 | 完整用户旅程 (500 VUs) | `auth-journey.k6.js`                                                   | AUTH-PERF-03 | ✅   |
 | AUTH-10 | JMeter 认证压测        | `auth-load.jmx`                                                        | AUTH-PERF-04 | ✅   |
-| AUTH-11 | 性能对比报告           | [`auth-comparison-report.md`](../test-cases/auth-comparison-report.md) | —            | ✅   |
+| AUTH-11 | 性能对比报告           | [`auth-comparison-report.md`](test-cases/auth-comparison-report.md) | —            | ✅   |
 
 ---
 

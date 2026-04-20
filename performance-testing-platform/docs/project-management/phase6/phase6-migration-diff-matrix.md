@@ -298,7 +298,7 @@ jq '.data[] | select(.metric | contains("soak")) | .data.value' \
 
 **相关链接:**
 
-- Requirements: [phase6-testing.md](phase6-testing.md)
-- Design: [implementation-plan-phase6.md](implementation-plan-phase6.md)
+- Requirements: [phase6-testing.md](../requirements/phase6-testing.md)
+- Design: [implementation-plan-phase6.md](../implementation-plans/implementation-plan-phase6.md)
 - PoC Results: [Issue #91](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/91)
 - Remaining Risks: [phase6-poc-risks-remaining.md](phase6-poc-risks-remaining.md)
