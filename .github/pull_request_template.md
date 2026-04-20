@@ -8,9 +8,10 @@
 
 ## Test Plan
 
-- [ ] Lint passes (`black`/`flake8` or `eslint`/`prettier`)
+- [ ] Lint passes (`black`/`flake8` or `eslint`)
+- [ ] Format check passes (`prettier --check` or `black --check`)
 - [ ] Unit tests pass locally
-- [ ] CI green
+- [ ] CI green (all required status checks pass before merge)
 
 ## Checklist
 
