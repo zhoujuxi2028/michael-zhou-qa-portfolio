@@ -197,7 +197,7 @@ sleep 2
 
 | 文件 | 用途 | 相关性 |
 |------|------|--------|
-| `implementation-plan-phase6.md` | ENT 需求定义 | 验收标准的来源 |
+| `implementation-plan-phase6.md` | ENT 需求定义 | 验收标准的来源（路径: `project-management/implementation-plans/`） |
 | `stage4-validation.md` | Stage 4 验收清单 | **修改目标** |
 | `tests/performance/breakpoint.k6.js` | breakpoint 实现 | #114 核心代码 |
 | `tests/unit/utils/breakpoint-classification.test.js` | breakpoint 单元测试 | #114 验证依据 |
