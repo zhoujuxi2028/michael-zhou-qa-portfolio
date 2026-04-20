@@ -203,6 +203,7 @@ grep <tool> package.json       # Node.js: eslint, prettier, newman
 | CI 绿灯 ≠ 测试通过，禁止 `continue-on-error` 掩盖失败 | 22 个 Newman 断言失败被隐藏，临时 workaround 变成永久遗留 | ISS-012, ISS-013 |
 | JMeter 正式测试前先 `npm run jmeter:dryrun` | 字段名/状态码错误在 dry-run 阶段拦截，避免全量测试浪费时间 | #50 |
 | 报告采集步骤需显式抑制 exit code | `npm audit --json > file` 因漏洞返回 exit 1，导致报告步骤误判为安全门控失败 | ISS-014 |
+| ESLint ≠ Prettier，PR 合并前必须分别验证 | ESLint 通过不代表 Prettier 通过，CI 需独立执行两者。PR 不应在 CI 未绿时合并 | ISS-015 |
 
 ## Wiki & Roadmap
 

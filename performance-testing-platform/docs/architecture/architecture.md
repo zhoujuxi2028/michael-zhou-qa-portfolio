@@ -442,29 +442,44 @@ executor: ramping-arrival-rate
 ### 7.3 CI Pipeline 架构
 
 ```
-lint → unit-test → ┬─ k6 smoke gate      (grafana/setup-k6-action)
-                   └─ jmeter smoke gate   (apt-get install + wget)
+lint (ESLint + Prettier) → unit-test → ┬─ k6 smoke gate      (grafana/setup-k6-action)
+                                       └─ jmeter smoke gate   (apt-get install + wget)
 ```
 
-两个 smoke gate 并行运行，均通过才算 CI 绿灯。
+两个 smoke gate 并行运行，均通过才算 CI 绿灯。lint 阶段包含 ESLint 和 Prettier 两个独立检查。
 
 ## 8. Phase 7 — CI/CD + 可观测性
 
 ### 8.1 CI Pipeline 架构
 
 ```
-lint → unit-test (coverage ≥80%) → ┬─ k6 smoke gate
-                               └─ jmeter smoke gate
-                               └─ baseline-compare (regression detection)
-                               └─ trend-collect (historical analysis)
+lint (ESLint + Prettier) → unit-test (coverage ≥80%) → ┬─ k6 smoke gate
+                                                        ├─ jmeter smoke gate
+                                                        ├─ baseline-compare (regression detection)
+                                                        └─ trend-collect (historical analysis)
 ```
 
 **CI 流程特点：**
+- **代码质量门禁**: ESLint（语法/逻辑）+ Prettier（格式）独立执行，任一失败即阻断
 - **覆盖率门禁**: Jest coverage threshold enforced (minimum 80%)
 - **并行执行**: k6 和 JMeter smoke test 同时运行，提高 CI 效率
 - **基线对比**: 自动对比历史性能数据，检测回归
 - **趋势收集**: 持续收集性能趋势，支持长期分析
 - **失败策略**: 禁用 `|| true`，任何失败直接导致 CI fail
+
+**Prettier 检查范围** (ISS-015 后扩展):
+- `src/**/*.js` — 源代码
+- `tests/**/*.js` — 所有测试文件（unit + integration + performance）
+- `scripts/**/*.js` — 脚本文件
+
+**本地质量门禁** (pre-commit hook):
+- husky v9 + lint-staged：git commit 前自动执行 ESLint + Prettier
+- 覆盖范围与 CI 一致：`src/`, `tests/`, `scripts/` 下所有 `.js` 文件
+
+**分支保护建议** (ISS-015 RCA):
+- 建议在 `main` 和 `feature/performance-testing` 分支启用 branch protection rules
+- 要求 `lint` 和 `unit-test` status checks 通过后才能合并
+- 需要 repo admin 在 GitHub Settings → Branches → Branch protection rules 手动配置
 
 ### 8.2 CI 工作流程组件
 

@@ -221,7 +221,7 @@ describe('Cluster 模式集成测试', () => {
       const diagLog = readLog();
       // eslint-disable-next-line no-console
       console.warn(
-        `[CLU-INT-02 诊断] 日志未匹配 RESTART_PATTERN，可能是 I/O 延迟。日志内容:\n${diagLog.slice(-500)}`,
+        `[CLU-INT-02 诊断] 日志未匹配 RESTART_PATTERN，可能是 I/O 延迟。日志内容:\n${diagLog.slice(-500)}`
       );
     }
     // 日志验证为辅助断言 — 服务已恢复即代表 Worker 已重启

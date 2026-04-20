@@ -27,7 +27,9 @@ function executeFunnel(baseUrl, options = {}) {
 
   // ~50% of browsers view product detail (nested probability)
   if (Math.random() < detailProb) {
-    const detailRes = http.get(`${baseUrl}/api/products/${product.id}`, { tags: { endpoint: '/api/products/:id' } });
+    const detailRes = http.get(`${baseUrl}/api/products/${product.id}`, {
+      tags: { endpoint: '/api/products/:id' },
+    });
     checkStatus(detailRes, 200, 'product detail');
     thinkTime();
 
@@ -112,7 +114,10 @@ export default function () {
     let recovered = false;
 
     while (Date.now() - recoveryStart < 60000) {
-      const res = http.get(`${BASE_URL}/api/products`, { tags: { endpoint: '/api/products' }, timeout: '5s' });
+      const res = http.get(`${BASE_URL}/api/products`, {
+        tags: { endpoint: '/api/products' },
+        timeout: '5s',
+      });
       if (res.status === 200) {
         recovered = true;
         const recoveryTimeMs = Date.now() - recoveryStart;
