@@ -70,7 +70,17 @@
     "swagger-ui-express": "^5.0.1"
   },
   "lint-staged": {
-    "src/**/*.js": "eslint --fix",
-    "tests/**/*.js": "eslint --fix"
+    "src/**/*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "tests/**/*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "scripts/**/*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   }
 }
