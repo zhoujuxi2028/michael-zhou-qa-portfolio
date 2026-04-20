@@ -43,6 +43,14 @@
 | R-014 | 时间估算不准确 | 中 | 高 | 迭代修正 | DevOps |
 | R-015 | 技能要求过高 | 中 | 中 | 范围调整 | QA |
 
+### 1.5 流程风险（ISS-015 RCA 新增）
+
+| 风险ID | 风险描述 | 概率 | 影响 | 缓解措施 | 责任人 |
+|--------|----------|------|------|----------|--------|
+| R-016 | PR 在 CI 未通过时被手动合并 | 中 | 高 | 启用 branch protection + required status checks | DevOps |
+| R-017 | ESLint 通过但 Prettier 格式不一致 | 中 | 中 | CI 中独立执行两者 + pre-commit hook | QA |
+| R-018 | CI Prettier 检查范围不全面 | 低 | 中 | 扩展到 tests/**/*.js + scripts/**/*.js | DevOps |
+
 ---
 
 ## 2. 缓解策略
