@@ -103,13 +103,19 @@ echo "=================================================="
 echo ""
 echo "=== Section 1: 代码质量检查 ==="
 
+# 工具函数: 从日志文件中提取数量（格式: "LABEL: N"）
+extract_count() {
+  local pattern="$1" logfile="$2"
+  grep -oE "${pattern}: [0-9]+" "$logfile" | tail -1 | grep -oE "[0-9]+" || echo "0"
+}
+
 # 1.1 单元测试
 echo ""
 echo "--- 1.1 单元测试 ---"
 UNIT_LOG="$LOG_DIR/unit-tests.log"
 npm test 2>&1 | tee "$UNIT_LOG" > /dev/null
-# 提取实际 passed 数量（格式: "X passed"）
-ACTUAL_PASSED=$(grep -E "^Tests:" "$UNIT_LOG" | grep -oE "[0-9]+ passed" | grep -oE "[0-9]+" || echo "0")
+# 提取实际 passed 数量（Jest 输出格式: "Tests: X passed, Y total"）
+ACTUAL_PASSED=$(grep -E "Tests:.*[0-9]+ passed" "$UNIT_LOG" | grep -oE "[0-9]+ passed" | grep -oE "[0-9]+" | tail -1 || echo "0")
 if [ -n "$ACTUAL_PASSED" ] && [ "$ACTUAL_PASSED" -ge 200 ]; then
   log_result "1.1" "PASS" "单元测试 (${ACTUAL_PASSED} passed)"
 elif grep -q "passed" "$UNIT_LOG" && ! grep -q "failed" "$UNIT_LOG"; then
@@ -173,14 +179,14 @@ echo "--- 2.1 集成测试通过率 ---"
 if check_system_load; then
   INT_LOG="$LOG_DIR/integration-test.log"
   bash scripts/integration-test.sh 2>&1 | tee "$INT_LOG" > /dev/null || true
-  # 提取实际 Pass 数量（格式: "Pass: N"）
-  INT_PASS=$(grep -oE "Pass: [0-9]+" "$INT_LOG" | tail -1 | grep -oE "[0-9]+" || echo "0")
-  INT_FAIL=$(grep -oE "Fail: [0-9]+" "$INT_LOG" | tail -1 | grep -oE "[0-9]+" || echo "0")
-  INT_SKIP=$(grep -oE "Skip: [0-9]+" "$INT_LOG" | tail -1 | grep -oE "[0-9]+" || echo "0")
-  if [ -n "$INT_PASS" ] && [ "$INT_PASS" -ge 20 ] && [ "${INT_FAIL:-0}" -le 5 ]; then
-    log_result "2.1" "PASS" "集成测试 (Pass: ${INT_PASS}, Fail: ${INT_FAIL:-0}, Skip: ${INT_SKIP:-0})"
-  elif [ -n "$INT_PASS" ] && [ "$INT_PASS" -gt 0 ]; then
-    log_result "2.1" "SKIP" "集成测试部分通过 (Pass: ${INT_PASS}, Fail: ${INT_FAIL:-0})，详见日志"
+  # 提取实际 Pass/Fail/Skip 数量（使用统一工具函数）
+  INT_PASS=$(extract_count "Pass" "$INT_LOG")
+  INT_FAIL=$(extract_count "Fail" "$INT_LOG")
+  INT_SKIP=$(extract_count "Skip" "$INT_LOG")
+  if [ "$INT_PASS" -ge 20 ] && [ "$INT_FAIL" -le 5 ]; then
+    log_result "2.1" "PASS" "集成测试 (Pass: ${INT_PASS}, Fail: ${INT_FAIL}, Skip: ${INT_SKIP})"
+  elif [ "$INT_PASS" -gt 0 ]; then
+    log_result "2.1" "SKIP" "集成测试部分通过 (Pass: ${INT_PASS}, Fail: ${INT_FAIL})，详见日志"
   else
     log_result "2.1" "SKIP" "集成测试输出格式异常，详见日志"
   fi
