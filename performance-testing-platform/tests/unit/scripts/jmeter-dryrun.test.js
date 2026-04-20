@@ -39,7 +39,7 @@ function countJtlErrors(jtlPath) {
       '-c',
       `tail -n +2 "${jtlPath}" | awk -F',' '{if ($8 == "false") print}' | wc -l | tr -dc '0-9'`,
     ],
-    { encoding: 'utf-8' },
+    { encoding: 'utf-8' }
   );
   return result.stdout.trim();
 }
@@ -48,14 +48,9 @@ function countJtlErrors(jtlPath) {
  * 统计 JTL CSV 总请求数
  */
 function countJtlTotal(jtlPath) {
-  const result = spawnSync(
-    'bash',
-    [
-      '-c',
-      `tail -n +2 "${jtlPath}" | wc -l | tr -dc '0-9'`,
-    ],
-    { encoding: 'utf-8' },
-  );
+  const result = spawnSync('bash', ['-c', `tail -n +2 "${jtlPath}" | wc -l | tr -dc '0-9'`], {
+    encoding: 'utf-8',
+  });
   return result.stdout.trim();
 }
 
@@ -69,7 +64,7 @@ function extractJtlFailureDetails(jtlPath) {
       '-c',
       `tail -n +2 "${jtlPath}" | awk -F',' '$8 == "false" {print $3 " → " $4 " (status: " $5 ")"}'`,
     ],
-    { encoding: 'utf-8' },
+    { encoding: 'utf-8' }
   );
   return result.stdout;
 }
@@ -96,10 +91,7 @@ describe('JMeter dry-run 脚本测试', () => {
   });
 
   describe('配置文件验证', () => {
-    const dryrunProps = path.join(
-      PROJECT_DIR,
-      'tests/jmeter/config/dryrun.properties',
-    );
+    const dryrunProps = path.join(PROJECT_DIR, 'tests/jmeter/config/dryrun.properties');
 
     test('DRYRUN-UT-04: dryrun.properties 文件存在', () => {
       expect(fs.existsSync(dryrunProps)).toBe(true);
@@ -178,18 +170,14 @@ describe('JMeter dry-run 脚本测试', () => {
 
   describe('npm 脚本配置验证', () => {
     test('DRYRUN-UT-12: package.json 包含 jmeter:dryrun 脚本', () => {
-      const pkg = JSON.parse(
-        fs.readFileSync(path.join(PROJECT_DIR, 'package.json'), 'utf-8'),
-      );
+      const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_DIR, 'package.json'), 'utf-8'));
       expect(pkg.scripts['jmeter:dryrun']).toBeDefined();
       expect(pkg.scripts['jmeter:dryrun']).toContain('jmeter-dryrun.sh');
       expect(pkg.scripts['jmeter:dryrun']).toContain('smoke.jmx');
     });
 
     test('DRYRUN-UT-13: package.json 包含 jmeter:dryrun:auth 脚本', () => {
-      const pkg = JSON.parse(
-        fs.readFileSync(path.join(PROJECT_DIR, 'package.json'), 'utf-8'),
-      );
+      const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_DIR, 'package.json'), 'utf-8'));
       expect(pkg.scripts['jmeter:dryrun:auth']).toBeDefined();
       expect(pkg.scripts['jmeter:dryrun:auth']).toContain('jmeter-dryrun.sh');
       expect(pkg.scripts['jmeter:dryrun:auth']).toContain('auth-load.jmx');

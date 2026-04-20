@@ -5,10 +5,7 @@ const { loadProfile, validateProfile } = require('../../../src/utils/profile-par
 
 const PROFILES_DIR = path.join(__dirname, '../../../profiles');
 const SMOKE_PROFILE = path.join(PROFILES_DIR, 'smoke.json');
-const SMOKE_K6_SCRIPT = path.join(
-  __dirname,
-  '../../../tests/performance/smoke.k6.js',
-);
+const SMOKE_K6_SCRIPT = path.join(__dirname, '../../../tests/performance/smoke.k6.js');
 
 describe('k6 Smoke 配置验证', () => {
   describe('smoke.json profile 文件验证', () => {
@@ -36,7 +33,7 @@ describe('k6 Smoke 配置验证', () => {
       expect(profile.thresholds).toBeDefined();
       expect(profile.thresholds.http_req_duration).toBeDefined();
       expect(profile.thresholds.http_req_duration).toContainEqual(
-        expect.stringContaining('p(95)<500'),
+        expect.stringContaining('p(95)<500')
       );
     });
 
@@ -44,7 +41,7 @@ describe('k6 Smoke 配置验证', () => {
       const profile = JSON.parse(fs.readFileSync(SMOKE_PROFILE, 'utf-8'));
       expect(profile.thresholds.http_req_failed).toBeDefined();
       expect(profile.thresholds.http_req_failed).toContainEqual(
-        expect.stringContaining('rate<0.01'),
+        expect.stringContaining('rate<0.01')
       );
     });
 
@@ -129,12 +126,7 @@ describe('k6 Smoke 配置验证', () => {
     let pkg;
 
     beforeAll(() => {
-      pkg = JSON.parse(
-        fs.readFileSync(
-          path.join(__dirname, '../../../package.json'),
-          'utf-8',
-        ),
-      );
+      pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '../../../package.json'), 'utf-8'));
     });
 
     test('K6-SMOKE-UT-19: package.json 包含 k6:smoke 脚本', () => {
@@ -142,15 +134,11 @@ describe('k6 Smoke 配置验证', () => {
     });
 
     test('K6-SMOKE-UT-20: k6:smoke 输出 HTML 报告到 reports/', () => {
-      expect(pkg.scripts['k6:smoke']).toContain(
-        'reports/k6-smoke.html',
-      );
+      expect(pkg.scripts['k6:smoke']).toContain('reports/k6-smoke.html');
     });
 
     test('K6-SMOKE-UT-21: k6:smoke 执行 smoke.k6.js', () => {
-      expect(pkg.scripts['k6:smoke']).toContain(
-        'tests/performance/smoke.k6.js',
-      );
+      expect(pkg.scripts['k6:smoke']).toContain('tests/performance/smoke.k6.js');
     });
 
     test('K6-SMOKE-UT-22: k6:smoke 创建 reports 目录', () => {
@@ -169,26 +157,17 @@ describe('k6 Smoke 配置验证', () => {
       expect(profileFiles.length).toBeGreaterThan(0);
 
       for (const file of profileFiles) {
-        const content = fs.readFileSync(
-          path.join(PROFILES_DIR, file),
-          'utf-8',
-        );
+        const content = fs.readFileSync(path.join(PROFILES_DIR, file), 'utf-8');
         expect(() => loadProfile(content)).not.toThrow();
       }
     });
 
     test('K6-SMOKE-UT-24: smoke profile 的 vus 是所有 profile 中最小的', () => {
-      const smokeProfile = JSON.parse(
-        fs.readFileSync(SMOKE_PROFILE, 'utf-8'),
-      );
-      const profileFiles = fs
-        .readdirSync(PROFILES_DIR)
-        .filter((f) => f.endsWith('.json'));
+      const smokeProfile = JSON.parse(fs.readFileSync(SMOKE_PROFILE, 'utf-8'));
+      const profileFiles = fs.readdirSync(PROFILES_DIR).filter((f) => f.endsWith('.json'));
 
       for (const file of profileFiles) {
-        const profile = JSON.parse(
-          fs.readFileSync(path.join(PROFILES_DIR, file), 'utf-8'),
-        );
+        const profile = JSON.parse(fs.readFileSync(path.join(PROFILES_DIR, file), 'utf-8'));
         if (profile.vus) {
           expect(smokeProfile.vus).toBeLessThanOrEqual(profile.vus);
         }
