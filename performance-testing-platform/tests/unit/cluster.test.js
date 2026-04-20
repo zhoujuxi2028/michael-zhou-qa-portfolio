@@ -120,7 +120,7 @@ describe('CLU-01: Primary 进程 fork Worker', () => {
     });
     mgr.start();
     expect(silentLogger.log).toHaveBeenCalledWith(
-      expect.stringMatching(/Master.*starting.*4.*workers/i),
+      expect.stringMatching(/Master.*starting.*4.*workers/i)
     );
   });
 
@@ -219,7 +219,7 @@ describe('CLU-03: Worker 崩溃自动重启', () => {
     exitHandler({ process: { pid: 99999 } });
 
     expect(silentLogger.log).toHaveBeenCalledWith(
-      expect.stringMatching(/Worker.*99999.*died.*restarting/i),
+      expect.stringMatching(/Worker.*99999.*died.*restarting/i)
     );
   });
 
@@ -334,7 +334,7 @@ describe('CLU-05: Master 收到 SIGTERM 后优雅关闭', () => {
     sigTermHandler();
 
     expect(silentLogger.log).toHaveBeenCalledWith(
-      expect.stringMatching(/Master.*received SIGTERM.*shutting down/i),
+      expect.stringMatching(/Master.*received SIGTERM.*shutting down/i)
     );
   });
 

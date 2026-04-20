@@ -22,8 +22,7 @@ class ClusterManager {
   constructor(options = {}) {
     this.cluster = options.cluster;
     this.numWorkers =
-      options.numWorkers ??
-      (parseInt(process.env.CLUSTER_WORKERS) || require('os').cpus().length);
+      options.numWorkers ?? (parseInt(process.env.CLUSTER_WORKERS) || require('os').cpus().length);
     this.serverModule = options.serverModule || './server';
     this.logger = options.logger || console;
     this._process = options.process || process;
@@ -45,9 +44,7 @@ class ClusterManager {
    * Primary 进程：fork Worker + 注册 exit/SIGTERM 处理
    */
   _startPrimary() {
-    this.logger.log(
-      `Master ${this._process.pid} starting ${this.numWorkers} workers...`,
-    );
+    this.logger.log(`Master ${this._process.pid} starting ${this.numWorkers} workers...`);
 
     for (let i = 0; i < this.numWorkers; i++) {
       this.cluster.fork();
@@ -62,14 +59,10 @@ class ClusterManager {
    */
   _handleWorkerExit(worker) {
     if (this.isShuttingDown) {
-      this.logger.log(
-        `Worker ${worker.process.pid} exited (shutting down)`,
-      );
+      this.logger.log(`Worker ${worker.process.pid} exited (shutting down)`);
       return;
     }
-    this.logger.log(
-      `Worker ${worker.process.pid} died, restarting...`,
-    );
+    this.logger.log(`Worker ${worker.process.pid} died, restarting...`);
     this.cluster.fork();
   }
 
@@ -78,9 +71,7 @@ class ClusterManager {
    */
   _handleShutdown() {
     this.isShuttingDown = true;
-    this.logger.log(
-      `Master ${this._process.pid} received SIGTERM, shutting down...`,
-    );
+    this.logger.log(`Master ${this._process.pid} received SIGTERM, shutting down...`);
     for (const id in this.cluster.workers) {
       try {
         this.cluster.workers[id].process.kill('SIGTERM');
