@@ -161,12 +161,12 @@ describe('k6 Smoke 配置验证', () => {
   describe('profiles 目录一致性', () => {
     test('K6-SMOKE-UT-23: 标准 profile JSON 都通过 validateProfile', () => {
       // capacity.json 使用自定义 defaults 格式（二分法容量测试），不适用标准 profile 验证
-      const standardProfiles = ['smoke.json', 'load.json', 'stress.json', 'spike.json', 'peak.json'];
+      const NON_STANDARD_PROFILES = ['capacity.json'];
       const profileFiles = fs
         .readdirSync(PROFILES_DIR)
-        .filter((f) => standardProfiles.includes(f));
+        .filter((f) => f.endsWith('.json') && !NON_STANDARD_PROFILES.includes(f));
 
-      expect(profileFiles.length).toBe(standardProfiles.length);
+      expect(profileFiles.length).toBeGreaterThan(0);
 
       for (const file of profileFiles) {
         const content = fs.readFileSync(

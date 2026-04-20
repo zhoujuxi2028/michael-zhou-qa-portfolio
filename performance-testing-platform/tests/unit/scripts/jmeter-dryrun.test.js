@@ -29,6 +29,51 @@ function jtlRow(label, responseCode, success) {
   return `${ts},45,${label},${responseCode},OK,Thread Group 1-1,text,${success},,1024,512,1,1,http://localhost:3000/health,40,0,5`;
 }
 
+/**
+ * 解析 JTL CSV 并统计失败请求数
+ */
+function countJtlErrors(jtlPath) {
+  const result = spawnSync(
+    'bash',
+    [
+      '-c',
+      `tail -n +2 "${jtlPath}" | awk -F',' '{if ($8 == "false") print}' | wc -l | tr -dc '0-9'`,
+    ],
+    { encoding: 'utf-8' },
+  );
+  return result.stdout.trim();
+}
+
+/**
+ * 统计 JTL CSV 总请求数
+ */
+function countJtlTotal(jtlPath) {
+  const result = spawnSync(
+    'bash',
+    [
+      '-c',
+      `tail -n +2 "${jtlPath}" | wc -l | tr -dc '0-9'`,
+    ],
+    { encoding: 'utf-8' },
+  );
+  return result.stdout.trim();
+}
+
+/**
+ * 提取 JTL 失败请求的详细信息
+ */
+function extractJtlFailureDetails(jtlPath) {
+  const result = spawnSync(
+    'bash',
+    [
+      '-c',
+      `tail -n +2 "${jtlPath}" | awk -F',' '$8 == "false" {print $3 " → " $4 " (status: " $5 ")"}'`,
+    ],
+    { encoding: 'utf-8' },
+  );
+  return result.stdout;
+}
+
 describe('JMeter dry-run 脚本测试', () => {
   describe('脚本文件验证', () => {
     test('DRYRUN-UT-01: 脚本文件存在且可执行', () => {
@@ -85,16 +130,7 @@ describe('JMeter dry-run 脚本测试', () => {
       ]);
 
       try {
-        // 使用 awk 模拟脚本中的解析逻辑
-        const result = spawnSync(
-          'bash',
-          [
-            '-c',
-            `tail -n +2 "${jtlPath}" | awk -F',' '{if ($8 == "false") print}' | wc -l | tr -dc '0-9'`,
-          ],
-          { encoding: 'utf-8' },
-        );
-        expect(result.stdout.trim()).toBe('0');
+        expect(countJtlErrors(jtlPath)).toBe('0');
       } finally {
         fs.rmSync(tmpDir, { recursive: true });
       }
@@ -108,15 +144,7 @@ describe('JMeter dry-run 脚本测试', () => {
       ]);
 
       try {
-        const result = spawnSync(
-          'bash',
-          [
-            '-c',
-            `tail -n +2 "${jtlPath}" | awk -F',' '{if ($8 == "false") print}' | wc -l | tr -dc '0-9'`,
-          ],
-          { encoding: 'utf-8' },
-        );
-        expect(result.stdout.trim()).toBe('2');
+        expect(countJtlErrors(jtlPath)).toBe('2');
       } finally {
         fs.rmSync(tmpDir, { recursive: true });
       }
@@ -126,15 +154,7 @@ describe('JMeter dry-run 脚本测试', () => {
       const { tmpDir, jtlPath } = createTempJtl([]);
 
       try {
-        const result = spawnSync(
-          'bash',
-          [
-            '-c',
-            `tail -n +2 "${jtlPath}" | wc -l | tr -dc '0-9'`,
-          ],
-          { encoding: 'utf-8' },
-        );
-        expect(result.stdout.trim()).toBe('0');
+        expect(countJtlTotal(jtlPath)).toBe('0');
       } finally {
         fs.rmSync(tmpDir, { recursive: true });
       }
@@ -147,16 +167,9 @@ describe('JMeter dry-run 脚本测试', () => {
       ]);
 
       try {
-        const result = spawnSync(
-          'bash',
-          [
-            '-c',
-            `tail -n +2 "${jtlPath}" | awk -F',' '$8 == "false" {print $3 " → " $4 " (status: " $5 ")"}'`,
-          ],
-          { encoding: 'utf-8' },
-        );
-        expect(result.stdout).toContain('Create Order');
-        expect(result.stdout).toContain('400');
+        const details = extractJtlFailureDetails(jtlPath);
+        expect(details).toContain('Create Order');
+        expect(details).toContain('400');
       } finally {
         fs.rmSync(tmpDir, { recursive: true });
       }
