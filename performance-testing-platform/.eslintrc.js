@@ -9,7 +9,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['src/server.js', 'src/cluster.js', 'scripts/**/*.js'],
+      files: ['src/server.js', 'src/cluster.js', 'src/cluster-manager.js', 'scripts/**/*.js'],
       rules: { 'no-console': 'off' },
     },
   ],

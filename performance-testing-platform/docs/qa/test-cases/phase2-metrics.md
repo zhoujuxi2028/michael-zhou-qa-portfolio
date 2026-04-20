@@ -37,6 +37,14 @@
 | CLU-03b  | 重启日志含 PID                 | 日志匹配 `Worker.*PID.*died.*restarting`          | UT P1 regression |
 | CLU-03c  | 多 Worker 连续退出均触发 fork  | 3 个 Worker 退出 → fork 调用 +3 次               | UT P1 regression |
 | CLU-04a  | 单核 CPU 只 fork 1 个 Worker   | `cluster.fork()` 被调用 1 次                      | UT P2 regression |
+| CLU-05a  | Master 注册 SIGTERM 处理器     | `process.on('SIGTERM', fn)` 被调用                | UT P1 regression |
+| CLU-05b  | SIGTERM 后 exit 不再 fork      | 触发 SIGTERM → Worker exit → fork 次数不增加      | UT P1 regression |
+| CLU-05c  | SIGTERM 向所有 Worker 发信号   | 所有 Worker 收到 `kill('SIGTERM')`                | UT P1 regression |
+| CLU-05d  | SIGTERM 输出关闭日志           | 日志匹配 `Master.*SIGTERM.*shutting down`         | UT P2 regression |
+| CLU-05e  | Worker 不注册 SIGTERM 处理器   | Worker 分支不监听 SIGTERM                         | UT P2 regression |
+| CLU-06a  | CLUSTER_WORKERS 环境变量覆盖   | `CLUSTER_WORKERS=3` → fork 3 次                   | UT P2 regression |
+| CLU-06b  | numWorkers 参数优先级          | 构造参数 > 环境变量                               | UT P2 regression |
+| CLU-07a  | cluster.js 入口点集成验证      | `require('cluster.js')` 在 Primary 下触发 fork    | UT P2 regression |
 
 ### 集成测试 (`tests/integration/cluster.integration.test.js`)
 
