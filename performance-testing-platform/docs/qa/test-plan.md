@@ -477,3 +477,4 @@ npm run generate-summary                    # 生成执行摘要报告
 | 风险清单 | [risks.md](../project-management/risks.md)                            | 技术风险 + 缓解措施             |
 | 需求文档 | [requirements.md](../project-management/requirements.md)              | Phase 1~7 需求编号              |
 | 开发流程 | [dev-process-checklist.md](../../../../docs/dev-process-checklist.md) | 5 阶段流程 + checklist          |
+| **Phase 7 Stage 4 验收清单** | [phase7-stage4-validation.md](phase7-stage4-validation.md) | Phase 7 验收阶段逐轮检查清单 |
