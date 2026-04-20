@@ -15,7 +15,9 @@ export default function () {
   checkStatus(products, 200, 'products');
 
   const p = randomProduct();
-  const product = http.get(`${BASE_URL}/api/products/${p.id}`, { tags: { endpoint: '/api/products/:id' } });
+  const product = http.get(`${BASE_URL}/api/products/${p.id}`, {
+    tags: { endpoint: '/api/products/:id' },
+  });
   checkStatus(product, 200, 'product');
 
   sleep(1);

@@ -26,7 +26,9 @@ function executeFunnel(baseUrl, options = {}) {
 
   // ~50% of browsers view product detail (nested probability)
   if (Math.random() < detailProb) {
-    const detailRes = http.get(`${baseUrl}/api/products/${product.id}`, { tags: { endpoint: '/api/products/:id' } });
+    const detailRes = http.get(`${baseUrl}/api/products/${product.id}`, {
+      tags: { endpoint: '/api/products/:id' },
+    });
     checkStatus(detailRes, 200, 'product detail');
     thinkTime();
 
