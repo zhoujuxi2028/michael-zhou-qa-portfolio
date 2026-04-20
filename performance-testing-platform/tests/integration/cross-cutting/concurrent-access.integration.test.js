@@ -37,15 +37,13 @@ describe('并发访问集成测试 (CONC-INT)', () => {
     // Act: 顺序发送 5 个下单请求
     const results = [];
     for (let i = 0; i < 5; i++) {
-      const res = await agent
-        .post('/api/orders')
-        .send({ product_id: product.id, quantity: 1 });
+      const res = await agent.post('/api/orders').send({ product_id: product.id, quantity: 1 });
       results.push(res);
     }
 
     // Assert: 前 3 个成功，后 2 个冲突
-    const successCount = results.filter(r => r.status === 201).length;
-    const conflictCount = results.filter(r => r.status === 409).length;
+    const successCount = results.filter((r) => r.status === 201).length;
+    const conflictCount = results.filter((r) => r.status === 409).length;
 
     expect(successCount).toBe(3);
     expect(conflictCount).toBe(2);
@@ -85,7 +83,7 @@ describe('并发访问集成测试 (CONC-INT)', () => {
     }
 
     // Assert: 全部成功
-    results.forEach(r => {
+    results.forEach((r) => {
       expect(r.status).toBe(201);
     });
 

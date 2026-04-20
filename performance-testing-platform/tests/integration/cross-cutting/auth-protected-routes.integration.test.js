@@ -35,9 +35,7 @@ describe('跨模块认证保护路由集成测试 (CROSS-INT)', () => {
     const agent = request(app);
 
     // Act
-    const res = await agent
-      .post('/api/orders')
-      .send({ product_id: 1, quantity: 1 });
+    const res = await agent.post('/api/orders').send({ product_id: 1, quantity: 1 });
 
     // Assert
     expect(res.status).toBe(401);
@@ -52,9 +50,7 @@ describe('跨模块认证保护路由集成测试 (CROSS-INT)', () => {
     const agent = request(app);
 
     // 注册并登录
-    await agent
-      .post('/api/auth/register')
-      .send({ username: 'cross_user', password: 'Pass123' });
+    await agent.post('/api/auth/register').send({ username: 'cross_user', password: 'Pass123' });
     const loginRes = await agent
       .post('/api/auth/login')
       .send({ username: 'cross_user', password: 'Pass123' });
@@ -78,19 +74,14 @@ describe('跨模块认证保护路由集成测试 (CROSS-INT)', () => {
     const app = require('../../../src/app');
     const agent = request(app);
 
-    await agent
-      .post('/api/auth/register')
-      .send({ username: 'logout_user', password: 'Pass123' });
+    await agent.post('/api/auth/register').send({ username: 'logout_user', password: 'Pass123' });
     const loginRes = await agent
       .post('/api/auth/login')
       .send({ username: 'logout_user', password: 'Pass123' });
     const token = loginRes.body.accessToken;
 
     // Act: 登出
-    await agent
-      .post('/api/auth/logout')
-      .set('Authorization', `Bearer ${token}`)
-      .expect(200);
+    await agent.post('/api/auth/logout').set('Authorization', `Bearer ${token}`).expect(200);
 
     // Assert: 使用已登出的 token 创建订单应被拒绝
     const orderRes = await agent
@@ -109,9 +100,7 @@ describe('跨模块认证保护路由集成测试 (CROSS-INT)', () => {
     const agent = request(app);
 
     // Act
-    const res = await agent
-      .post('/api/orders')
-      .send({ product_id: 1, quantity: 1 });
+    const res = await agent.post('/api/orders').send({ product_id: 1, quantity: 1 });
 
     // Assert
     expect(res.status).toBe(201);

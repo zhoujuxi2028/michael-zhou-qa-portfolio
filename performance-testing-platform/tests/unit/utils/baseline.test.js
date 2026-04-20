@@ -4,7 +4,12 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { compareWithBaseline, appendTrend, loadBaseline, saveBaseline } = require('../../../src/utils/baseline');
+const {
+  compareWithBaseline,
+  appendTrend,
+  loadBaseline,
+  saveBaseline,
+} = require('../../../src/utils/baseline');
 
 describe('baseline regression detection', () => {
   const testDir = path.join(__dirname, '../../fixtures/baseline');
@@ -81,16 +86,16 @@ describe('baseline regression detection', () => {
   // 趋势数据保留 90 天（基于时间戳）
   test('appendTrend should retain entries from last 90 days', () => {
     const now = new Date();
-    const fiftyDaysAgo = new Date(now.getTime() - 50 * 24 * 60 * 60 * 1000);  // 50 天前（在 90 天内）
+    const fiftyDaysAgo = new Date(now.getTime() - 50 * 24 * 60 * 60 * 1000); // 50 天前（在 90 天内）
     const ninetyFiveDaysAgo = new Date(now.getTime() - 95 * 24 * 60 * 60 * 1000); // 95 天前（超过 90 天）
-    
+
     // 添加超过 90 天的条目（应被过滤）
     appendTrend({ run: 1, date: ninetyFiveDaysAgo.toISOString(), p95_ms: 421 }, trendFile);
     // 添加 90 天内的条目（应保留）
     appendTrend({ run: 2, date: fiftyDaysAgo.toISOString(), p95_ms: 422 }, trendFile);
     // 添加最近的条目（应保留）
     appendTrend({ run: 3, date: now.toISOString(), p95_ms: 423 }, trendFile);
-    
+
     const data = JSON.parse(fs.readFileSync(trendFile, 'utf-8'));
     // 应该只保留 run 2 和 run 3（run 1 已过期）
     expect(data).toHaveLength(2);

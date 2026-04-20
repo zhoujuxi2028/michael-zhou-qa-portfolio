@@ -116,12 +116,12 @@ router.post('/api/auth/login', (req, res) => {
   const db = getDatabase();
   const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username);
   if (!user) {
-    recordAuthLatency(Date.now() - startTime);  // 记录认证延迟
+    recordAuthLatency(Date.now() - startTime); // 记录认证延迟
     return res.status(401).json({ error: 'Invalid credentials' });
   }
 
   if (!bcrypt.compareSync(password, user.password_hash)) {
-    recordAuthLatency(Date.now() - startTime);  // 记录认证延迟
+    recordAuthLatency(Date.now() - startTime); // 记录认证延迟
     return res.status(401).json({ error: 'Invalid credentials' });
   }
 
@@ -130,7 +130,7 @@ router.post('/api/auth/login', (req, res) => {
     JWT_ACCESS_EXPIRES
   );
   const refreshToken = signToken({ sub: user.id, type: 'refresh' }, JWT_REFRESH_EXPIRES);
-  recordAuthLatency(Date.now() - startTime);  // 记录认证延迟
+  recordAuthLatency(Date.now() - startTime); // 记录认证延迟
   res.json({ accessToken, refreshToken });
 });
 
