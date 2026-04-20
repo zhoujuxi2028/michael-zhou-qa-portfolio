@@ -53,6 +53,8 @@
 
 > **集成测试专项文档:** 60 条集成测试的详细规格说明（含测试步骤、前/后置条件、需求追溯）见 [integration-test-cases.md](integration-test-cases.md)
 >
+> **质量门禁专项文档:** JMeter dry-run (18) + k6 smoke (24) + E2E (6) + CI (4) = 52 条测试用例，见 [jmeter-dryrun-k6-smoke-test-cases.md](jmeter-dryrun-k6-smoke-test-cases.md)
+>
 > **Release 验证规则:** 每次大版本发布前，需逐 Phase 确认所有用例已执行且通过。用例变更记录见下方 §4。
 
 ## 4. 用例变更记录
@@ -78,6 +80,7 @@
 | 2026-04-19 | 全部  | 新增     | 集成测试文档体系                                    | 新增集成测试设计文档 (integration-test-design.md)、集成测试用例详细文档 (integration-test-cases.md)；更新 test-plan.md 增加 §2.1 集成测试策略；更新 rtm.md 增加集成测试需求追溯章节 |
 | 2026-04-19 | 2     | 新增     | CLU-01a~04a, CLU-INT-01~03                          | RCA 补漏：cluster.js 从 0% 覆盖率补充 12 条单元测试 + 3 条集成测试；Phase 2 单元测试从 23 更新为 32，集成测试从 9 更新为 12；总用例从 357 更新为 369 |
 | 2026-04-19 | 2     | 重构     | CLU-01a~07a, CLU-INT-01~03                          | RCA-Flaky 修复：提取 ClusterManager 类（依赖注入），重写单元测试 17→20（+CLU-06a/b、CLU-07a）；CLU-INT-02 从日志验证改为 HTTP 验证优先；Phase 2 单元测试从 32 更新为 35；总用例从 369 更新为 372 |
+| 2026-04-20 | 横切  | 新增     | DRYRUN-UT-01~18, K6-SMOKE-UT-01~24                   | JMeter dry-run 单元测试 18 条 + k6 smoke 配置验证 24 条；新增设计文档 + 测试用例文档；总自动化用例 42 条 |
 
 > **变更类型:** `新增` / `修改` / `删除` / `初始化` / `重构`
 >
