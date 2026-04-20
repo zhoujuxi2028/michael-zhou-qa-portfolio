@@ -148,8 +148,11 @@ Step 2: Shell Runner（~10 min，需 Docker）
 | -------------- | ------------------------ | ------------------------------------------------ |
 | 单元测试       | `npm test`               | 全部 Jest 单元测试通过，且覆盖率阈值满足项目标准 |
 | Lint           | `npx eslint .`           | 0 errors                                         |
+| 格式检查       | `npm run format:check`   | 0 warnings（Prettier 独立于 ESLint，需分别检查） |
 | 覆盖率         | `npm test -- --coverage` | stmt ≥ 80%, branch ≥ 70%, func ≥ 80%, line ≥ 80% |
 | JMeter dry-run | `npm run jmeter:dryrun`  | 0 errors, 字段名/状态码正确                      |
+
+> **ISS-015 教训**: ESLint 和 Prettier 是独立的代码质量工具。ESLint 通过不代表 Prettier 通过。两者需分别验证。
 
 ### P1 — 应该通过 (强烈建议)
 
@@ -158,7 +161,7 @@ Step 2: Shell Runner（~10 min，需 Docker）
 | 集成测试     | `bash scripts/integration-test.sh` | Stage 3 只验证 SUT 单元测试与 SUT 集成测试范围，不包含 soak / 其他性能验收项 |
 | k6 smoke     | `npm run k6:smoke`                 | p95 < 500ms, error < 1%                   |
 | JMeter smoke | `npm run jmeter:smoke`             | error < 1%                                |
-| CI 流水线    | push → GitHub Actions              | 4 jobs 全绿                               |
+| CI 流水线    | push → GitHub Actions              | 6 jobs 全绿（lint + unit-test + k6 + jmeter + baseline + trend） |
 
 ### P2 — 建议执行 (发布前完成)
 
@@ -202,7 +205,7 @@ P0 (本地快速反馈，~2 min)
 
 | 条件                    | 验证方式                           |
 | ----------------------- | ---------------------------------- |
-| P0 全部通过             | npm test + lint + coverage 输出    |
+| P0 全部通过             | npm test + lint + format:check + coverage 输出 |
 | P1 全部通过             | integration-test.sh 输出 + CI 截图 |
 | 无 P0/P1 级别未修复 Bug | Bug 列表清零或降级为 P2            |
 | 测试报告已归档          | `reports/` 目录、`coverage/` 目录  |

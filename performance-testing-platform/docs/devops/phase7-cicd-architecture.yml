@@ -397,10 +397,13 @@ ci_workflow_automation:
       jobs:
         - lint:
             tool: "ESLint"
+            scope: "src/ tests/unit/ tests/integration/ scripts/"
             fail_strategy: "fast_fail"
         - format_check:
             tool: "Prettier"
-            fail_strategy: "warning_only"
+            scope: "src/**/*.js tests/**/*.js scripts/**/*.js"
+            fail_strategy: "fast_fail"
+            note: "ISS-015: Prettier 必须与 ESLint 独立执行，两者通过标准不同"
 
     phase2_testing:
       jobs:
@@ -462,6 +465,42 @@ ci_workflow_automation:
               - "performance_regression_detected"
               - "ci_pipeline_failure"
             escalation: "team_channel + project_lead"
+
+  # ISS-015 RCA 新增: 本地质量门禁层
+  local_quality_gates:
+    pre_commit_hook:
+      tool: "husky v9 + lint-staged"
+      location: ".husky/pre-commit"
+      checks:
+        - eslint: "staged JS files in performance-testing-platform/"
+        - prettier: "staged JS files in performance-testing-platform/"
+        - ruff: "staged Python files (*.py)"
+        - postman_validate: "api-testing-demo collections"
+      note: "从源头防止格式不一致的代码进入仓库"
+
+    commit_msg_hook:
+      tool: "husky v9"
+      location: ".husky/commit-msg"
+      pattern: "^(feat|fix|docs|style|refactor|test|chore|ci|perf)(\\(.+\\))?!?: .+"
+
+    lint_staged_config:
+      location: "performance-testing-platform/package.json"
+      rules:
+        "src/**/*.js": ["eslint --fix", "prettier --write"]
+        "tests/**/*.js": ["eslint --fix", "prettier --write"]
+        "scripts/**/*.js": ["eslint --fix", "prettier --write"]
+
+  # ISS-015 RCA 新增: 分支保护建议
+  branch_protection:
+    recommendation: "启用 branch protection rules，要求 CI status checks 通过后才能合并"
+    target_branches: ["main", "feature/performance-testing"]
+    required_settings:
+      require_status_checks: true
+      required_checks: ["lint", "unit-test"]
+      require_branches_up_to_date: true
+      dismiss_stale_reviews: true
+    note: "需要 repo admin 在 GitHub Settings > Branches > Branch protection rules 手动配置"
+    reference: "ISS-015 — PR #152 在 CI 未通过的情况下被合并，导致格式检查失败"
 ```
 
 ---
@@ -608,10 +647,13 @@ current_testing_capabilities:
     lines: "≥80%"
 
   quality_gates:
-    lint: "ESLint + Prettier"
+    lint: "ESLint (语法/逻辑) — fast_fail"
+    format: "Prettier (格式检查) — fast_fail，独立于 ESLint"
     unit_test: "pass required"
     smoke_test: "pass required"
     baseline_comparison: "warning/fail based on threshold"
+    pre_commit: "husky + lint-staged (ESLint + Prettier) — 本地门禁"
+    branch_protection: "建议启用 — 要求 lint + unit-test status checks 通过才能合并"
 ```
 
 ### 5.2 DevOps实施能力需求
