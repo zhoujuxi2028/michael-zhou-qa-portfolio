@@ -20,7 +20,7 @@
 
 | 项目 | 文件 | 状态 |
 |------|------|------|
-| 实施计划 | `implementation-plan-phase6.md` (6 Tasks) | ✅ 完成 |
+| 实施计划 | [`implementation-plan-phase6.md`](../implementation-plans/implementation-plan-phase6.md) (6 Tasks) | ✅ 完成 |
 | Plan Review | 8 CRITICAL + 8 WARNING 修复 | ✅ 全部应用 |
 | 架构设计 | `architecture.md` Section 7.1-7.3 | ✅ 完成 |
 | 测试策略 | `test-plan.md` Phase 6 section | ✅ 完成 |
