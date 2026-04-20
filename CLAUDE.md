@@ -166,6 +166,7 @@ pytest tests/ -v -m "not integration"
 ```bash
 cd <project-dir>
 npx eslint . || true
+npx prettier --check 'src/**/*.js' 'tests/**/*.js' 'scripts/**/*.js'
 npm test
 ```
 
@@ -204,6 +205,7 @@ grep <tool> package.json       # Node.js: eslint, prettier, newman
 | JMeter 正式测试前先 `npm run jmeter:dryrun` | 字段名/状态码错误在 dry-run 阶段拦截，避免全量测试浪费时间 | #50 |
 | 报告采集步骤需显式抑制 exit code | `npm audit --json > file` 因漏洞返回 exit 1，导致报告步骤误判为安全门控失败 | ISS-014 |
 | ESLint ≠ Prettier，PR 合并前必须分别验证 | ESLint 通过不代表 Prettier 通过，CI 需独立执行两者。PR 不应在 CI 未绿时合并 | ISS-015 |
+| 新增 .js 文件必须先 `npx prettier --write` 再提交 | ESLint 的 `--fix` 和 Prettier 对行折叠、trailing comma 规则不同，仅跑 ESLint 不保证 Prettier 通过 | ISS-016 |
 
 ## Wiki & Roadmap
 
