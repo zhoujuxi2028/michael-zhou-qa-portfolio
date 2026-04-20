@@ -7,7 +7,7 @@ on:
       - 'performance-testing-platform/**'
       - '.github/workflows/performance-ci.yml'
   pull_request:
-    branches: [main]
+    branches: [main, feature/performance-testing]
     paths:
       - 'performance-testing-platform/**'
       - '.github/workflows/performance-ci.yml'
@@ -32,6 +32,7 @@ jobs:
       - run: npx prettier --check 'src/**/*.js' 'tests/unit/**/*.js'
 
   unit-test:
+    name: Unit Tests
     runs-on: ubuntu-latest
     needs: lint
     steps:
