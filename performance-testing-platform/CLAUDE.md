@@ -52,7 +52,7 @@ bash scripts/integration-test.sh  # 集成测试 (31 cases，需 Docker)
 - **测试计划:** [docs/qa/test-plan.md](docs/qa/test-plan.md)
 - **测试用例统计:** [docs/qa/test-cases/index.md](docs/qa/test-cases/index.md) ← Phase 1~7 用例数、通过率、详细分类
 - **需求追溯矩阵:** [docs/qa/rtm.md](docs/qa/rtm.md)
-- **实施计划 Phase 6:** [docs/project-management/implementation-plan-phase6.md](docs/project-management/implementation-plan-phase6.md)
+- **实施计划 Phase 6:** [docs/project-management/implementation-plans/implementation-plan-phase6.md](docs/project-management/implementation-plans/implementation-plan-phase6.md)
 - **风险清单:** [docs/project-management/risks.md](docs/project-management/risks.md)
 
 ## SLA
