@@ -4,10 +4,7 @@
  * 验证 Helmet 中间件设置的 HTTP 安全头。
  * 跨模块集成：Helmet config + Express app + custom XSS middleware
  */
-const {
-  createTestClient,
-  resetTestEnvironment,
-} = require('../setup/test-server');
+const { createTestClient, resetTestEnvironment } = require('../setup/test-server');
 
 describe('安全头集成测试 (SEC-INT)', () => {
   let agent;

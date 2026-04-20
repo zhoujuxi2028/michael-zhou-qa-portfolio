@@ -36,7 +36,7 @@ router.post(
     const product = db.prepare('SELECT * FROM products WHERE id = ?').get(product_id);
     if (!product) return res.status(404).json({ error: 'Product not found' });
     if (product.stock < quantity) {
-      recordOrderConflict();  // 记录库存冲突
+      recordOrderConflict(); // 记录库存冲突
       return res.status(409).json({ error: 'Insufficient stock' });
     }
 
@@ -50,7 +50,7 @@ router.post(
         .run(product_id, quantity, total, 'confirmed');
     });
     const result = tx();
-    recordOrderSuccess();  // 记录订单成功
+    recordOrderSuccess(); // 记录订单成功
     const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(result.lastInsertRowid);
     res.status(201).json(order);
   }

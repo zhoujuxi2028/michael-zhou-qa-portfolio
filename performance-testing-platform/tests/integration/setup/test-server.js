@@ -36,15 +36,9 @@ async function registerAndLogin(agent, opts = {}) {
   const username = opts.username || `testuser_${Date.now()}`;
   const password = opts.password || 'TestPass123';
 
-  const regRes = await agent
-    .post('/api/auth/register')
-    .send({ username, password })
-    .expect(201);
+  const regRes = await agent.post('/api/auth/register').send({ username, password }).expect(201);
 
-  const loginRes = await agent
-    .post('/api/auth/login')
-    .send({ username, password })
-    .expect(200);
+  const loginRes = await agent.post('/api/auth/login').send({ username, password }).expect(200);
 
   return {
     userId: regRes.body.id,

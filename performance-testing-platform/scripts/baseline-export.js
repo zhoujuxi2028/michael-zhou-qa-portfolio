@@ -33,7 +33,7 @@ try {
 
   const checks = summary.checks || [];
   const totalChecks = checks.length;
-  const failedChecks = checks.filter(c => !c.passes).length;
+  const failedChecks = checks.filter((c) => !c.passes).length;
   const errorRate = totalChecks > 0 ? failedChecks / totalChecks : 0.01;
 
   const http_reqs = metrics.http_reqs?.value || 0;

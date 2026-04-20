@@ -90,9 +90,7 @@ describe('订单工作流集成测试 (ORD-INT)', () => {
       stock: 1000,
     });
     for (let i = 0; i < 5; i++) {
-      await agent
-        .post('/api/orders')
-        .send({ product_id: product.id, quantity: 1 });
+      await agent.post('/api/orders').send({ product_id: product.id, quantity: 1 });
     }
 
     // Act
@@ -126,10 +124,7 @@ describe('订单工作流集成测试 (ORD-INT)', () => {
 
   // ORD-INT-06: 缺少必填字段返回 400
   test('ORD-INT-06: 创建订单缺少 product_id 应返回 400', async () => {
-    const res = await agent
-      .post('/api/orders')
-      .send({ quantity: 1 })
-      .expect(400);
+    const res = await agent.post('/api/orders').send({ quantity: 1 }).expect(400);
 
     expect(res.body.error).toMatch(/product_id.*quantity.*required/i);
   });
