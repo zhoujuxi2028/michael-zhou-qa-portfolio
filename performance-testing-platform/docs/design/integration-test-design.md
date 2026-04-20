@@ -747,6 +747,63 @@ TREND-INT-04: 空数据兜底
   Assert:  输出 "No trend data available"
 ```
 
+#### 3.5.2 Phase 7 Soak 集成脚本 (`scripts/integration-test-phase7-soak.sh`)
+
+| 项目 | 说明 |
+|------|------|
+| **测试目标** | 验证 k6 soak → InfluxDB 数据流 + Grafana 告警规则配置的端到端链路 |
+| **执行阶段** | **Stage 4（验收阶段）**，不计入 Stage 3 集成测试范围 |
+| **执行方式** | `bash scripts/integration-test-phase7-soak.sh` |
+| **依赖环境** | Docker daemon、k6 CLI、InfluxDB 1.8 (:8086)、Grafana 10.2 (:3010)、API (:3000) |
+| **用例数** | 2 (K6-SOAK-INT-01, K6-SOAK-INT-02) |
+| **执行时长** | ~10 分钟（3 分钟 soak + 基础设施等待） |
+
+**架构：**
+
+```
+scripts/integration-test-phase7-soak.sh
+         │
+         ├── 基础设施准备
+         │     ├── 检查 Docker daemon 状态
+         │     ├── docker compose up -d --build  (API + InfluxDB + Grafana)
+         │     └── 等待三服务就绪 (最长 180s, 轮询 /health /ping /api/health)
+         │
+         ├── K6-SOAK-INT-01: k6 → InfluxDB 数据流
+         │     ├── 查询 InfluxDB 基线计数 (http_req_duration COUNT)
+         │     ├── k6 run soak-short.k6.js --out influxdb (3min, 20VUs)
+         │     ├── 等待 InfluxDB 写入刷新 (2s)
+         │     └── 验证: final_count > baseline_count
+         │           + soak_heap_used_mb 自定义指标存在
+         │
+         ├── K6-SOAK-INT-02: Grafana 告警规则验证
+         │     ├── 验证 Grafana /api/health 可达 (database=ok)
+         │     ├── 检查告警资产 (rules.yml provisioning 或 dashboard 内嵌告警)
+         │     ├── 注入流量并查询 InfluxDB p95 数据
+         │     └── 验证 soak-results dashboard UID 可查询
+         │
+         └── 清理 (trap EXIT)
+               ├── docker compose down
+               └── scripts/server.sh stop
+```
+
+**告警资产检测策略（双路径）：**
+
+| 路径 | 文件 | 检测内容 |
+|------|------|---------|
+| **路径 A：Provisioning** | `grafana/provisioning/alerting/rules.yml` | 含 HighP95Latency / HighErrorRate / HeapMemoryGrowth 规则 |
+| **路径 B：Dashboard 内嵌** | `grafana/dashboards/soak-results.json` | 含 `uid: "soak-results"` + p95/error-rate 告警定义 |
+
+两种路径任一满足即 PASS，兼容不同部署方式。
+
+**与 `integration-test.sh` Phase 4 的区别：**
+
+| 维度 | `integration-test.sh` Phase 4 | `integration-test-phase7-soak.sh` |
+|------|-------------------------------|-----------------------------------|
+| **执行阶段** | Stage 3 开发阶段 | Stage 4 验收阶段 |
+| **soak 时长** | 嵌套在多 Phase 主脚本中 | 独立 3 分钟专项 soak |
+| **验收重点** | 告警和指标可用性的快速检查 | InfluxDB 数据流量化验证 + 告警规则完整性 |
+| **计数方式** | 计入 `integration-test.sh` 统计 | 独立脚本，用例计入 Phase 7 Stage 4 |
+
 ---
 
 ## 5. 测试数据管理
