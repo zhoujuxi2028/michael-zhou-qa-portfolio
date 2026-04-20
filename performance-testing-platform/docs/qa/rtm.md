@@ -31,6 +31,7 @@
 | PERF-ENGINE-K6-FR-003  | stress test (200 VUs ramp, p95<3000ms)         | `stress.k6.js` | STRESS-01~03 | ✅   |
 | PERF-ENGINE-K6-FR-004  | spike test (100 VUs 突增, 验证恢复基线)        | `spike.k6.js`  | SPIKE-01~03  | ✅   |
 | PERF-ENGINE-K6-FR-005  | HTML 报告输出 (`--out web-dashboard`)          | `npm run k6:smoke` | K6-RPT-01~07 | ✅ |
+| PERF-ENGINE-K6-FR-006  | smoke 配置验证 (profile 解析 + 端点覆盖 + SLA 阈值) | `smoke.k6.js` + `profiles/smoke.json` + `profile-parser.js` | K6-SMOKE-UT-01~24 | ✅ |
 
 ### PERF-ENGINE-JM — JMeter 脚本
 
@@ -41,6 +42,7 @@
 | PERF-ENGINE-JM-FR-003  | stress test（参数与 k6 一致）                  | `stress.jmx` + `stress.properties` | STRESS-01~03       | ✅   |
 | PERF-ENGINE-JM-FR-004  | spike test（参数与 k6 一致）                   | `spike.jmx` + `spike.properties`   | SPIKE-01~03        | ✅   |
 | PERF-ENGINE-JM-FR-005  | HTML 报告 (`jmeter -g results.jtl -o reports/`)| `*.jmx` → `-e -o reports/`         | JM-RPT-01~03       | ✅   |
+| PERF-ENGINE-JM-FR-006  | dry-run 验证 (1 thread × 10s，字段/端点/断言检查) | `scripts/jmeter-dryrun.sh` + `dryrun.properties` | DRYRUN-UT-01~18 | ✅   |
 
 ### 测试基础设施（过程文档，不编功能需求号）
 

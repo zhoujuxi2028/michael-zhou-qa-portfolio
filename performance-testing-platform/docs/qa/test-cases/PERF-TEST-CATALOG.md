@@ -19,7 +19,9 @@
 | k6 Breakpoint 测试    | 3      | 6          |
 | k6 Helpers 迁移验证   | 4      | 6          |
 | k6 执行摘要报告       | 4      | 6          |
-| **合计**              | **53** | **1~6**    |
+| JMeter Dry-run 验证   | 18     | 横切       |
+| k6 Smoke 配置验证     | 24     | 横切       |
+| **合计**              | **95** | **1~6+横切** |
 
 ---
 
@@ -126,3 +128,26 @@
 
 > **说明:** Phase 1 k6 和 JMeter 共用场景 ID（SMOKE/LOAD/STRESS/SPIKE），为双引擎镜像测试，阈值一致。
 > Phase 6 `K6-RL-04`（熔断恢复）在 Phase 7 (#116) 中追踪实现状态。
+
+## 横切 — JMeter Dry-run 验证
+
+> 详细用例见 [jmeter-dryrun-k6-smoke-test-cases.md](jmeter-dryrun-k6-smoke-test-cases.md) |
+> 设计文档见 [jmeter-dryrun-k6-smoke-design.md](../../design/jmeter-dryrun-k6-smoke-design.md)
+
+| 用例 ID | 场景 | 验证项 | 预期 |
+| ------- | ---- | ------ | ---- |
+| DRYRUN-UT-01~03 | 脚本文件验证 | 存在性、权限、shebang | 文件可执行，使用安全模式 |
+| DRYRUN-UT-04~07 | 配置文件验证 | threads/duration/rampup | 1 thread × 10s × 1s ramp |
+| DRYRUN-UT-08~11 | JTL 解析逻辑 | 成功/失败/空/详情提取 | 正确统计错误数和详情 |
+| DRYRUN-UT-12~13 | npm 脚本验证 | jmeter:dryrun / dryrun:auth | 脚本定义正确 |
+| DRYRUN-UT-14~18 | 脚本完整性 | 核心检查逻辑 | 包含所有必要的错误检测 |
+
+## 横切 — k6 Smoke 配置验证
+
+| 用例 ID | 场景 | 验证项 | 预期 |
+| ------- | ---- | ------ | ---- |
+| K6-SMOKE-UT-01~07 | Profile 文件验证 | smoke.json 内容和格式 | vus=5, duration=60s, SLA 阈值正确 |
+| K6-SMOKE-UT-08~15 | k6 脚本验证 | smoke.k6.js 端点和 helper 使用 | 覆盖 3 个端点，使用标准 helper |
+| K6-SMOKE-UT-16~18 | Parser 验证 | profile-parser smoke 场景 | 接受合法配置，拒绝非法配置 |
+| K6-SMOKE-UT-19~22 | npm 脚本验证 | k6:smoke 命令定义 | 报告输出和目录创建 |
+| K6-SMOKE-UT-23~24 | 目录一致性 | 跨 profile 一致性 | 标准 profile 全部合法，smoke VUs 最小 |
