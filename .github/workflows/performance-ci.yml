@@ -29,7 +29,7 @@ jobs:
           cache-dependency-path: performance-testing-platform/package-lock.json
       - run: npm ci
       - run: npx eslint src/ tests/unit/ --ext .js
-      - run: npx prettier --check 'src/**/*.js' 'tests/unit/**/*.js'
+      - run: npx prettier --check 'src/**/*.js' 'tests/**/*.js' 'scripts/**/*.js'
 
   unit-test:
     runs-on: ubuntu-latest
