@@ -2,7 +2,7 @@
 
 **项目:** Performance Testing Platform  
 **版本:** Phase 1~7  
-**更新日期:** 2026-04-19  
+**更新日期:** 2026-04-21  
 **文档状态:** 发布
 
 ---
@@ -42,6 +42,7 @@
 |------|------|
 | [测试计划 (test-plan.md)](../qa/test-plan.md) | 上游：定义集成测试优先级和进入/退出标准 |
 | [集成测试用例 (integration-test-cases.md)](../qa/test-cases/integration-test-cases.md) | 下游：详细用例规格说明 |
+| [集成测试架构设计 (integration-test-architecture.md)](integration-test-architecture.md) | 详细架构重设计：重试、等待、日志、报告 |
 | [RTM (rtm.md)](../qa/rtm.md) | 平行：需求到集成测试的追溯 |
 | [架构设计 (architecture.md)](../architecture/architecture.md) | 上游：系统架构约束 |
 
