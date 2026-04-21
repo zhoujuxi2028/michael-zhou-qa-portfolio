@@ -224,13 +224,13 @@ class DefectPredictor:
 
     def _calculate_factors(self, metrics: ModuleMetrics) -> dict:
         """计算各风险因素的归一化得分 (0-100)"""
-        # 圈复杂度：1-10 低风险，10-30 高风险
+        # 圈复杂度：CC 1-30 映射到 0-100（行业阈值 CC>10 为高风险，CC=30 得满分）
         complexity_score = min(100.0, max(0.0, (metrics.cyclomatic_complexity - 1) / 29 * 100))
-        # 变更频率：每月超过 33 次 = 100 分
+        # 变更频率：每月超过 33 次 = 100 分（3 × churn，上限 100）
         churn_score = min(100.0, metrics.code_churn * 3.0)
         # 覆盖率缺口
         coverage_gap_score = 100.0 - metrics.test_coverage
-        # 历史缺陷：10 个 = 100 分
+        # 历史缺陷：10 个 = 100 分（每个缺陷权重 10）
         bug_score = min(100.0, metrics.bug_history * 10.0)
         # 代码规模：100-1000 LOC 映射到 0-100
         size_score = min(100.0, max(0.0, (metrics.lines_of_code - 100) / 900 * 100))
@@ -257,8 +257,8 @@ class DefectPredictor:
 
     def _estimate_defects(self, risk_score: float, metrics: ModuleMetrics) -> int:
         """估计预测缺陷数（最多 10 个）"""
-        base = risk_score / 100 * 5
-        adjusted = base * (1 + metrics.bug_history * 0.1)
+        base = risk_score / 100 * 5  # 满分风险对应 5 个基础缺陷
+        adjusted = base * (1 + metrics.bug_history * 0.1)  # 每个历史缺陷增加 10%（经验调整因子）
         return max(0, round(adjusted))
 
     def _generate_recommendations(self, metrics: ModuleMetrics, factors: dict, risk_level: RiskLevel) -> list:
