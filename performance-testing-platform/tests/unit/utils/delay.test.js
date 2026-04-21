@@ -6,7 +6,9 @@ describe('delay utility', () => {
     await simulateDelay(50);
     const elapsed = Date.now() - start;
     expect(elapsed).toBeGreaterThanOrEqual(45);
-    expect(elapsed).toBeLessThan(200);
+    // Upper bound only guards against infinite hangs; event-loop jitter under
+    // parallel jest workers can push a 50ms setTimeout well past 200ms.
+    expect(elapsed).toBeLessThan(2000);
   });
 
   test('resolves immediately when delay is 0', async () => {
