@@ -1,6 +1,12 @@
 const request = require('supertest');
 const app = require('../../../src/app');
-const { resetMetrics } = require('../../../src/middleware/metrics');
+const {
+  getMetrics,
+  recordAuthLatency,
+  recordOrderConflict,
+  recordOrderSuccess,
+  resetMetrics,
+} = require('../../../src/middleware/metrics');
 const { resetDatabase } = require('../../../src/db/database');
 
 beforeEach(() => resetMetrics());
@@ -26,6 +32,8 @@ describe('metrics middleware', () => {
     expect(res.body.cpu).toBeDefined();
     expect(res.body.cpu.userPercent).toBeGreaterThanOrEqual(0);
     expect(res.body.cpu.systemPercent).toBeGreaterThanOrEqual(0);
+    expect(Number.isFinite(res.body.cpu.userPercent)).toBe(true);
+    expect(Number.isFinite(res.body.cpu.systemPercent)).toBe(true);
     expect(res.body.cpu.loadavg).toHaveLength(3);
   });
 
@@ -43,5 +51,114 @@ describe('metrics middleware', () => {
     const res = await request(app).get('/metrics');
     expect(res.body.eventLoop).toBeDefined();
     expect(res.body.eventLoop.lag).toBeGreaterThanOrEqual(0);
+  });
+
+  test('tracks business order metrics and calculates conflict rate', () => {
+    recordOrderSuccess();
+    recordOrderSuccess();
+    recordOrderConflict();
+
+    expect(getMetrics().business).toEqual({
+      orderSuccess: 2,
+      orderConflict: 1,
+      orderConflictRate: '33.33%',
+      authLatencyMs: 0,
+    });
+  });
+
+  test('returns rounded average auth latency', () => {
+    recordAuthLatency(10);
+    recordAuthLatency(21);
+
+    expect(getMetrics().business.authLatencyMs).toBe(16);
+  });
+
+  test('returns zeroed business metrics when no samples exist', () => {
+    expect(getMetrics().business).toEqual({
+      orderSuccess: 0,
+      orderConflict: 0,
+      orderConflictRate: '0.00%',
+      authLatencyMs: 0,
+    });
+  });
+
+  test('resetMetrics clears business metrics state', () => {
+    recordOrderSuccess();
+    recordOrderConflict();
+    recordAuthLatency(99);
+
+    resetMetrics();
+
+    expect(getMetrics().business).toEqual({
+      orderSuccess: 0,
+      orderConflict: 0,
+      orderConflictRate: '0.00%',
+      authLatencyMs: 0,
+    });
+  });
+
+  test('keeps only the latest 100 auth latency samples', () => {
+    for (let latency = 1; latency <= 101; latency++) {
+      recordAuthLatency(latency);
+    }
+
+    expect(getMetrics().business.authLatencyMs).toBe(52);
+  });
+});
+
+// BM-01: 业务指标单元测试 (Issue #137)
+describe('business metrics', () => {
+  test('orderSuccess 计数正确', () => {
+    recordOrderSuccess();
+    recordOrderSuccess();
+    recordOrderSuccess();
+    const m = getMetrics();
+    expect(m.business.orderSuccess).toBe(3);
+  });
+
+  test('orderConflict 计数与 orderConflictRate 计算正确', () => {
+    recordOrderSuccess();
+    recordOrderSuccess();
+    recordOrderSuccess();
+    recordOrderConflict();
+    const m = getMetrics();
+    expect(m.business.orderConflict).toBe(1);
+    // 1/(3+1) = 25%
+    expect(m.business.orderConflictRate).toBe('25.00%');
+  });
+
+  test('orderConflictRate 无订单时为 0%', () => {
+    const m = getMetrics();
+    expect(m.business.orderConflictRate).toBe('0.00%');
+  });
+
+  test('authLatencyMs 平均值计算正确', () => {
+    recordAuthLatency(100);
+    recordAuthLatency(200);
+    recordAuthLatency(300);
+    const m = getMetrics();
+    // (100+200+300)/3 = 200
+    expect(m.business.authLatencyMs).toBe(200);
+  });
+
+  test('resetMetrics() 会清空业务指标', () => {
+    recordOrderSuccess();
+    recordOrderConflict();
+    recordAuthLatency(150);
+    resetMetrics();
+    const m = getMetrics();
+    expect(m.business.orderSuccess).toBe(0);
+    expect(m.business.orderConflict).toBe(0);
+    expect(m.business.authLatencyMs).toBe(0);
+  });
+
+  test('authLatencyMs 仅保留最近 100 条样本', () => {
+    // 写入 105 条数据
+    for (let i = 1; i <= 105; i++) {
+      recordAuthLatency(i);
+    }
+    const m = getMetrics();
+    // 保留最近100条: 6~105, 平均值 = (6+105)/2 = 55.5 → 56 (四舍五入)
+    expect(m.business.authLatencyMs).toBe(56);
   });
 });

@@ -83,14 +83,24 @@ describe('baseline regression detection', () => {
     expect(data[1].run).toBe(2);
   });
 
-  // 趋势数据保留max 30条
-  test('appendTrend should retain max 30 entries', () => {
-    for (let i = 1; i <= 35; i++) {
-      appendTrend({ run: i, p95_ms: 420 + i }, trendFile);
-    }
+  // 趋势数据保留 90 天（基于时间戳）
+  test('appendTrend should retain entries from last 90 days', () => {
+    const now = new Date();
+    const fiftyDaysAgo = new Date(now.getTime() - 50 * 24 * 60 * 60 * 1000); // 50 天前（在 90 天内）
+    const ninetyFiveDaysAgo = new Date(now.getTime() - 95 * 24 * 60 * 60 * 1000); // 95 天前（超过 90 天）
+
+    // 添加超过 90 天的条目（应被过滤）
+    appendTrend({ run: 1, date: ninetyFiveDaysAgo.toISOString(), p95_ms: 421 }, trendFile);
+    // 添加 90 天内的条目（应保留）
+    appendTrend({ run: 2, date: fiftyDaysAgo.toISOString(), p95_ms: 422 }, trendFile);
+    // 添加最近的条目（应保留）
+    appendTrend({ run: 3, date: now.toISOString(), p95_ms: 423 }, trendFile);
+
     const data = JSON.parse(fs.readFileSync(trendFile, 'utf-8'));
-    expect(data).toHaveLength(30);
-    expect(data[0].run).toBe(6); // oldest should be run 6
+    // 应该只保留 run 2 和 run 3（run 1 已过期）
+    expect(data).toHaveLength(2);
+    expect(data[0].run).toBe(2);
+    expect(data[1].run).toBe(3);
   });
 
   // loadBaseline / saveBaseline 互操作性

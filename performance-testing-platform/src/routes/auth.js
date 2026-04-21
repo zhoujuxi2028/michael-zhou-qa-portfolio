@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { getDatabase } = require('../db/database');
+const { recordAuthLatency } = require('../middleware/metrics');
 
 const router = Router();
 
@@ -110,12 +111,17 @@ router.post('/api/auth/register', (req, res) => {
  *         description: 凭证无效
  */
 router.post('/api/auth/login', (req, res) => {
+  const startTime = Date.now();
   const { username, password } = req.body;
   const db = getDatabase();
   const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username);
-  if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+  if (!user) {
+    recordAuthLatency(Date.now() - startTime); // 记录认证延迟
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
 
   if (!bcrypt.compareSync(password, user.password_hash)) {
+    recordAuthLatency(Date.now() - startTime); // 记录认证延迟
     return res.status(401).json({ error: 'Invalid credentials' });
   }
 
@@ -124,6 +130,7 @@ router.post('/api/auth/login', (req, res) => {
     JWT_ACCESS_EXPIRES
   );
   const refreshToken = signToken({ sub: user.id, type: 'refresh' }, JWT_REFRESH_EXPIRES);
+  recordAuthLatency(Date.now() - startTime); // 记录认证延迟
   res.json({ accessToken, refreshToken });
 });
 
