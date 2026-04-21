@@ -111,6 +111,7 @@ do_collect() {
   cd "$PROJECT_DIR"
   mkdir -p "$(dirname "$output")"
 
+  # Run node collector; trap ensures the child is cleaned up if this shell exits
   node -e "
 const os = require('os');
 const fs = require('fs');
