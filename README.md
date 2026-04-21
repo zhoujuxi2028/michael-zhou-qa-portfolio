@@ -53,6 +53,12 @@ Test automation, performance testing, and DevOps demonstration projects.
 | [sid-iam-testing-platform](./sid-iam-testing-platform/) | IAM + Data + AI Agent Testing (138 tests) | Python, Pytest, FastAPI, networkx |
 | [microservice-testing-platform](./microservice-testing-platform/) | Microservice Testing (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 |
 
+### AI 测试 (AI Testing)
+
+| Project | Description | Tech Stack |
+|---------|-------------|------------|
+| [ai-testing-platform](./ai-testing-platform/) | AI-Powered Testing Platform — 智能测试用例生成 + 缺陷预测 + 脚本生成 (43 tests) | Python, Pytest, Rule Engine |
+
 ### DevOps
 
 | Project | Description | Tech Stack |
