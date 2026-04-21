@@ -197,7 +197,9 @@ class ScriptGenerator:
 
         test_count = len(re.findall(r"def test_\w+", script))
 
-        quality_score = max(0, 100 - len(issues) * 20 - len(suggestions) * 5)
+        quality_score = max(
+            0, 100 - len(issues) * 20 - len(suggestions) * 5
+        )  # -20 per critical issue, -5 per suggestion
 
         return {
             "valid": len(issues) == 0,
