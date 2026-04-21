@@ -207,6 +207,7 @@ grep <tool> package.json       # Node.js: eslint, prettier, newman
 | ESLint ≠ Prettier，PR 合并前必须分别验证 | ESLint 通过不代表 Prettier 通过，CI 需独立执行两者。PR 不应在 CI 未绿时合并 | ISS-015 |
 | 新增 .js 文件必须先 `npx prettier --write` 再提交 | ESLint 的 `--fix` 和 Prettier 对行折叠、trailing comma 规则不同，仅跑 ESLint 不保证 Prettier 通过 | ISS-016 |
 | CI `working-directory` 下路径用相对路径；推送前完整模拟 CI 全步骤 | `working-directory: X` 下写 `X/file` 变双重嵌套；只验部分步骤会遗漏下游失败 | ISS-017 |
+| CI 输出目录必须显式 `mkdir -p`，不能依赖 git checkout 提供目录结构 | 测试产物被 git 追踪时，checkout 会恢复目录，掩盖缺失的 mkdir；产物清理后 Bug 暴露（exit 255）。用 `npm run ci:lint` 检测 | ISS-019 |
 
 ## Wiki & Roadmap
 
