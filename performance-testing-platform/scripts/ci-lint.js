@@ -41,13 +41,13 @@ const OUTPUT_PATTERNS = [
   { pattern: /\bjmeter\b.*\s-l\s+([^/\s]+)\/[^\s]+/, dirGroup: 1 },
   // gh run download -D dir/
   { pattern: /gh\s+run\s+download\b.*\s-D\s+([^/\s]+)\/?/, dirGroup: 1 },
-  // shell redirect: cmd > dir/file  (只匹配真正的重定向，不匹配注释和 HTML)
-  // 要求 > 前有空格/管道符，后跟合法路径（不含引号）
-  { pattern: /[\s|]\s*>\s*([a-zA-Z0-9_.-]+)\/[^\s"'`]+/, dirGroup: 1 },
+  // shell redirect: cmd > dir/file  或 cmd >> dir/file (含行首重定向和 >> append)
+  // 使用 (?:^|[\s|]) 允许行首或管道符后的重定向
+  { pattern: /(?:^|[\s|])\s*>>?\s*([a-zA-Z0-9_.-]+)\/[^\s"'`]+/, dirGroup: 1 },
   // pytest --output-dir dir/
   { pattern: /--output-dir\s+([^/\s]+)\//, dirGroup: 1 },
-  // trivy/tool --output subdir/file (子目录写入)
-  { pattern: /\s--output\s+([a-zA-Z0-9_.-]+)\/[^\s"'`]+/, dirGroup: 1 },
+  // tool --output subdir/file (子目录写入，使用 (?:^|\s) 支持行首)
+  { pattern: /(?:^|\s)--output\s+([a-zA-Z0-9_.-]+)\/[^\s"'`]+/, dirGroup: 1 },
 ];
 
 // ─── 核心函数 ─────────────────────────────────────────────────────────────────
@@ -73,17 +73,20 @@ function lintJobSteps(steps) {
     }
   }
 
-  // 提取已经被 mkdir -p 覆盖的目录集合
-  // 遍历所有行，凡是 `mkdir -p dir1 dir2 ...` 或 `mkdir -p dir/` 都纳入
+  // 提取已经被 mkdir 覆盖的目录集合
+  // 支持: `mkdir -p dir1 dir2`, `mkdir -pm 755 dir`, `mkdir --parents dir/`
   const mkdirDirs = new Set();
   for (const { line } of allLines) {
-    const mkdirMatch = line.match(/^mkdir\s+(?:-p\s+)?(.+)/);
+    // 匹配 mkdir（带任意 flag 组合），提取目录参数部分
+    // flag 必须以 - 开头（如 -p, -m, -pm），目录名不以 - 开头，避免贪婪吞噬目录名
+    const mkdirMatch = line.match(/^mkdir\s+((?:-[a-zA-Z0-9]+\s+)*(?:\d+\s+)*)(.+)/);
     if (!mkdirMatch) continue;
-    // 支持 `mkdir -p reports results` 或 `mkdir -p reports/`
-    const parts = mkdirMatch[1].split(/\s+/);
+    // mkdirMatch[2] 是目录参数（可能有多个）
+    const parts = mkdirMatch[2].split(/\s+/);
     for (const part of parts) {
       // 去掉尾部斜杠，取第一层目录名
-      mkdirDirs.add(part.replace(/\/$/, '').split('/')[0]);
+      const top = part.replace(/\/$/, '').split('/')[0];
+      if (top) mkdirDirs.add(top);
     }
   }
 
