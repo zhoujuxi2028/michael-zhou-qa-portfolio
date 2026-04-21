@@ -6,6 +6,7 @@ const { spawnSync } = require('child_process');
 const PROJECT_ROOT = path.join(__dirname, '../../../');
 const PHASE7_SCRIPT = path.join(PROJECT_ROOT, 'scripts/integration-test-phase7-soak.sh');
 const MAIN_SCRIPT = path.join(PROJECT_ROOT, 'scripts/integration-test.sh');
+const PHASE4_MODULE = path.join(PROJECT_ROOT, 'tests/integration/phases/phase-4-soak.sh');
 
 function writeExecutable(filePath, content) {
   fs.writeFileSync(filePath, content, { mode: 0o755 });
@@ -231,9 +232,12 @@ process.stdout.write(body);
   });
 
   test('main integration runner delegates phase 4 soak verification instead of hard-coded skip', () => {
-    const script = fs.readFileSync(MAIN_SCRIPT, 'utf8');
-    expect(script).toContain('bash scripts/integration-test-phase7-soak.sh');
-    expect(script).not.toContain('SOAK-TC-04" "SKIP"');
-    expect(script).not.toContain('SOAK-TC-05" "SKIP"');
+    const mainScript = fs.readFileSync(MAIN_SCRIPT, 'utf8');
+    const phase4Module = fs.readFileSync(PHASE4_MODULE, 'utf8');
+    expect(phase4Module).toContain('bash scripts/integration-test-phase7-soak.sh');
+    expect(mainScript).not.toContain('SOAK-TC-04" "SKIP"');
+    expect(mainScript).not.toContain('SOAK-TC-05" "SKIP"');
+    expect(phase4Module).not.toContain('SOAK-TC-04" "SKIP"');
+    expect(phase4Module).not.toContain('SOAK-TC-05" "SKIP"');
   });
 });
