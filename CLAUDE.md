@@ -63,6 +63,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | 平台测试 | `microservice-testing-platform/` — Microservice (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 | `microservice-testing-platform/CLAUDE.md` |
 | 性能测试 | `performance-testing-platform/` — k6 + JMeter dual-engine (148 unit + 31 integration + 33 perf) | k6, JMeter, Express, Grafana, InfluxDB | `performance-testing-platform/CLAUDE.md` |
 | 稳定性测试 | `k8s-auto-testing-platform/` — K8S HPA + Chaos (37 tests) | Python, Pytest, Chaos Mesh | `k8s-auto-testing-platform/CLAUDE.md` |
+| **AI 测试** | `ai-testing-platform/` — AI-Powered Testing Platform (43 tests) | Python, Pytest, Rule Engine | `ai-testing-platform/CLAUDE.md` |
 
 > **Quick Commands**: 各项目的安装、运行、测试命令详见对应子项目 `CLAUDE.md`。
 
@@ -123,6 +124,7 @@ python3 -m venv venv && source venv/bin/activate
 | `feature/sid-iam-testing` | SID IAM + Data Platform + AI Agent testing (138 tests) | In development |
 | `feature/microservice-testing` | Microservice testing platform (101 tests, 5 layers) | In development |
 | `feature/performance-testing` | Performance testing platform (k6 + JMeter dual-engine, Phase 1-5 done) | In development |
+| `copilot/ai-powered-testing-platform-research` | AI Testing Platform (43 tests, 91% coverage) | In development |
 
 ## GitHub Actions
 
@@ -143,6 +145,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `api-testing-ci.yml` | api-testing-demo | Validate collections → Newman tests (280+ assertions) |
 | `selenium-ci.yml` | selenium-demo | Code quality (black + flake8) → smoke tests |
 | `performance-ci.yml` | performance-testing-platform | Lint → unit tests → k6 + JMeter smoke gate |
+| `ai-testing-ci.yml` | ai-testing-platform | Code quality → 43 unit tests → coverage report |
 
 ## Pre-commit Checklist
 

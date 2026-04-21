@@ -1,0 +1,10 @@
+# Testing Framework
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-html==4.1.1
+pytest-xdist==3.5.0
+
+# Code Quality
+black==23.12.1
+flake8==7.0.0
+isort==5.13.2
