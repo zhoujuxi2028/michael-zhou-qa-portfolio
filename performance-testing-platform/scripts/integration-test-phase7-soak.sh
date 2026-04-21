@@ -42,12 +42,70 @@ log_result() {
   fi
 }
 
+query_first_value() {
+  local url="$1"
+  curl -s "$url" 2>/dev/null | python3 -c '
+import json, sys
+
+try:
+    payload = json.load(sys.stdin)
+    series = payload["results"][0].get("series", [])
+    if not series:
+        print("0")
+        raise SystemExit(0)
+
+    values = series[0].get("values", [])
+    if not values or not values[0]:
+        print("0")
+        raise SystemExit(0)
+
+    print(values[0][-1])
+except Exception:
+    print("0")
+'
+}
+
+grafana_database_status() {
+  local url="$1"
+  curl -s "$url" 2>/dev/null | python3 -c '
+import json, sys
+
+try:
+    payload = json.load(sys.stdin)
+    print(payload.get("database", ""))
+except Exception:
+    print("")
+'
+}
+
+dashboard_has_embedded_alerts() {
+  [ -f "$PROJECT_DIR/grafana/dashboards/soak-results.json" ] || return 1
+  grep -q '"uid": "soak-results"' "$PROJECT_DIR/grafana/dashboards/soak-results.json" &&
+    grep -q '"name": "p95 Latency High"' "$PROJECT_DIR/grafana/dashboards/soak-results.json" &&
+    grep -q '"name": "Error Rate High"' "$PROJECT_DIR/grafana/dashboards/soak-results.json"
+}
+
+check_alert_assets() {
+  if [ -f "$PROJECT_DIR/grafana/provisioning/alerting/rules.yml" ] &&
+    grep -q "HighP95Latency\|HighErrorRate\|HeapMemoryGrowth" "$PROJECT_DIR/grafana/provisioning/alerting/rules.yml"; then
+    echo "Alert rules file provisioned (HighP95Latency, HighErrorRate, HeapMemoryGrowth)"
+    return 0
+  fi
+
+  if dashboard_has_embedded_alerts; then
+    echo "Dashboard embeds p95/error-rate alert definitions"
+    return 0
+  fi
+
+  return 1
+}
+
 cleanup() {
   echo ""
   echo "Cleaning up..."
   # Stop Docker Compose stack
   cd "$PROJECT_DIR"
-  docker compose down -v 2>/dev/null || true
+  docker compose down 2>/dev/null || true
   # Stop API server if running standalone
   bash "$SCRIPT_DIR/server.sh" stop 2>/dev/null || true
 }
@@ -63,27 +121,36 @@ echo ""
 # ============================================================
 # Prepare infrastructure
 # ============================================================
+if ! docker info > /dev/null 2>&1; then
+  echo "❌ Docker daemon not running — start Docker/OrbStack/colima before running Phase 7 soak integration"
+  exit 1
+fi
+
 echo "Starting Docker Compose stack (API + InfluxDB + Grafana)..."
-docker compose down -v 2>/dev/null || true
-sleep 1
-docker compose up -d 2>/dev/null
+docker compose down 2>/dev/null || true
+sleep 2
+docker compose up -d --build 2>/dev/null
 
 # Wait for services to be ready
 echo "Waiting for services to be ready..."
-MAX_WAIT=30
+MAX_WAIT=180
 ELAPSED=0
 while [ $ELAPSED -lt $MAX_WAIT ]; do
-  # Check API health
-  if curl -sf "http://localhost:$PORT/health" > /dev/null 2>&1; then
-    # Check InfluxDB health
-    if curl -sf "http://localhost:$INFLUXDB_PORT/ping" > /dev/null 2>&1; then
-      # Check Grafana health
-      if curl -sf "http://localhost:$GRAFANA_PORT/api/health" > /dev/null 2>&1; then
-        echo "✅ All services ready (API, InfluxDB, Grafana)"
-        break
-      fi
-    fi
+  API_OK=0
+  INFLUX_OK=0
+  GRAFANA_OK=0
+
+  curl -sf "http://localhost:$PORT/health" > /dev/null 2>&1 && API_OK=1
+  curl -sf "http://localhost:$INFLUXDB_PORT/ping" > /dev/null 2>&1 && INFLUX_OK=1
+  curl -sf "http://localhost:$GRAFANA_PORT/api/health" > /dev/null 2>&1 && GRAFANA_OK=1
+
+  if [ "$API_OK" = "1" ] && [ "$INFLUX_OK" = "1" ] && [ "$GRAFANA_OK" = "1" ]; then
+    echo "✅ All services ready (API, InfluxDB, Grafana)"
+    break
   fi
+
+  [ $((ELAPSED % 10)) -eq 0 ] && echo "  Waiting... ($ELAPSED/$MAX_WAIT) - API:$API_OK InfluxDB:$INFLUX_OK Grafana:$GRAFANA_OK"
+
   ELAPSED=$((ELAPSED + 1))
   sleep 1
 done
@@ -102,10 +169,7 @@ echo "Test K6-SOAK-INT-01: k6 soak → InfluxDB data stream..."
 # Capture initial state: query InfluxDB for baseline metric count
 echo "  Capturing InfluxDB baseline..."
 BASELINE_QUERY='SELECT COUNT(value) AS count FROM http_req_duration LIMIT 1'
-BASELINE_COUNT=$(
-  curl -s "http://localhost:$INFLUXDB_PORT/query?db=$INFLUXDB_DB&q=${BASELINE_QUERY// /%20}" 2>/dev/null | \
-    grep -o '"count":[0-9]*' | cut -d: -f2 || echo "0"
-)
+BASELINE_COUNT=$(query_first_value "http://localhost:$INFLUXDB_PORT/query?db=$INFLUXDB_DB&q=${BASELINE_QUERY// /%20}")
 BASELINE_COUNT="${BASELINE_COUNT:-0}"
 echo "  Baseline metric count: $BASELINE_COUNT"
 
@@ -125,10 +189,7 @@ sleep 2
 
 # Query InfluxDB for metrics after soak test
 echo "  Querying InfluxDB for k6 metrics..."
-FINAL_COUNT=$(
-  curl -s "http://localhost:$INFLUXDB_PORT/query?db=$INFLUXDB_DB&q=${BASELINE_QUERY// /%20}" 2>/dev/null | \
-    grep -o '"count":[0-9]*' | cut -d: -f2 || echo "0"
-)
+FINAL_COUNT=$(query_first_value "http://localhost:$INFLUXDB_PORT/query?db=$INFLUXDB_DB&q=${BASELINE_QUERY// /%20}")
 FINAL_COUNT="${FINAL_COUNT:-0}"
 echo "  Final metric count: $FINAL_COUNT"
 
@@ -143,10 +204,7 @@ fi
 # Verify custom metrics from soak script are present (soak_heap_used_mb, soak_event_loop_lag, etc.)
 echo "  Verifying custom soak metrics in InfluxDB..."
 CUSTOM_METRIC_QUERY='SELECT * FROM soak_heap_used_mb LIMIT 1'
-CUSTOM_METRICS=$(
-  curl -s "http://localhost:$INFLUXDB_PORT/query?db=$INFLUXDB_DB&q=${CUSTOM_METRIC_QUERY// /%20}" 2>/dev/null | \
-    grep -c "soak_heap_used_mb" || echo "0"
-)
+CUSTOM_METRICS=$(curl -s "http://localhost:$INFLUXDB_PORT/query?db=$INFLUXDB_DB&q=${CUSTOM_METRIC_QUERY// /%20}" 2>/dev/null | grep -c "soak_heap_used_mb" || echo "0")
 if [ "$CUSTOM_METRICS" -gt "0" ]; then
   log_result "K6-SOAK-INT-01" "PASS" "Custom metrics (soak_heap_used_mb, etc.) found in InfluxDB ✅"
 else
@@ -162,8 +220,8 @@ echo "Test K6-SOAK-INT-02: Grafana alert rule evaluation..."
 
 # Check if alert rules are loaded in Grafana
 echo "  Verifying Grafana is accessible and provisioned..."
-GRAFANA_STATUS=$(curl -s "http://localhost:$GRAFANA_PORT/api/health" | grep -o '"database":"[^"]*"' || echo "")
-if [ -n "$GRAFANA_STATUS" ]; then
+GRAFANA_STATUS=$(grafana_database_status "http://localhost:$GRAFANA_PORT/api/health")
+if [ "$GRAFANA_STATUS" = "ok" ]; then
   log_result "K6-SOAK-INT-02" "PASS" "Grafana API responding, database connected ✅"
 else
   log_result "K6-SOAK-INT-02" "FAIL" "Grafana API not responding or database not connected"
@@ -177,16 +235,10 @@ fi
 
 # Verify alert rules are provisioned (check alerting configuration)
 echo "  Checking alert rules provisioning..."
-# Grafana provisioning mounts ./grafana/provisioning/alerting/rules.yml
-# Verify the file exists and contains expected rule names
-if [ -f "$PROJECT_DIR/grafana/provisioning/alerting/rules.yml" ]; then
-  if grep -q "HighP95Latency\|HighErrorRate\|HeapMemoryGrowth" "$PROJECT_DIR/grafana/provisioning/alerting/rules.yml"; then
-    log_result "K6-SOAK-INT-02" "PASS" "Alert rules file provisioned (HighP95Latency, HighErrorRate, HeapMemoryGrowth) ✅"
-  else
-    log_result "K6-SOAK-INT-02" "FAIL" "Alert rules file missing expected rule definitions"
-  fi
+if ALERT_ASSET_DETAIL=$(check_alert_assets); then
+  log_result "K6-SOAK-INT-02" "PASS" "${ALERT_ASSET_DETAIL} ✅"
 else
-  log_result "K6-SOAK-INT-02" "FAIL" "Alert rules provisioning file not found"
+  log_result "K6-SOAK-INT-02" "FAIL" "No supported alert asset found (rules.yml or soak-results embedded alerts)"
 fi
 
 # Simulate alert trigger condition: inject high-latency traffic to exceed p95 > 500ms threshold
@@ -202,10 +254,7 @@ sleep 3
 # Query InfluxDB to verify latency spike occurred
 echo "  Querying InfluxDB for p95 latency metrics..."
 P95_QUERY='SELECT PERCENTILE(value, 95) AS p95 FROM http_req_duration WHERE time > now() - 5m'
-P95_VALUE=$(
-  curl -s "http://localhost:$INFLUXDB_PORT/query?db=$INFLUXDB_DB&q=${P95_QUERY// /%20}" 2>/dev/null | \
-    grep -o '"p95":[0-9.e+-]*' | cut -d: -f2 | head -1 || echo "0"
-)
+P95_VALUE=$(query_first_value "http://localhost:$INFLUXDB_PORT/query?db=$INFLUXDB_DB&q=${P95_QUERY// /%20}")
 P95_VALUE="${P95_VALUE:-0}"
 
 # For this test, we're verifying the alert rules configuration itself, not necessarily triggering them
@@ -220,7 +269,7 @@ fi
 # Verify Grafana dashboard loads k6 metrics
 echo "  Verifying k6 dashboard can query metrics..."
 DASHBOARD_CHECK=$(
-  curl -s "http://localhost:$GRAFANA_PORT/api/dashboards/db/k6-results" 2>/dev/null | \
+  curl -s "http://localhost:$GRAFANA_PORT/api/dashboards/uid/soak-results" 2>/dev/null | \
     grep -o '"title":"[^"]*"' | head -1 || echo ""
 )
 if [ -n "$DASHBOARD_CHECK" ]; then

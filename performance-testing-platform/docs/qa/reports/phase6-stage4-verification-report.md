@@ -194,7 +194,7 @@ All files: 92.76% Statements, 91.26% Branches, 97.95% Functions, 94.46% Lines
 - ✅ `docs/qa/test-cases/index.md` - 用例索引更新 (214 → 214 cases)
 - ✅ `docs/qa/rtm.md` - RTM 100% 覆盖
 - ✅ `docs/project-management/risks.md` - 风险管理 (H-17 added)
-- ✅ `docs/project-management/implementation-plan-phase6.md` - 实施计划完成
+- ✅ `docs/project-management/implementation-plans/implementation-plan-phase6.md` - 实施计划完成
 - ✅ `CLAUDE.md` - 集成测试锁机制文档
 
 ### 6.4 提交历史
