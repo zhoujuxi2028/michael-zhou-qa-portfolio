@@ -17,3 +17,5 @@ docs/qa/reports/*.log
 docs/qa/reports/test-execution-report-*.md
 jmeter.log
 index.html
+# 集成测试产生的临时 metrics CSV，持续被后台进程写入，不应追踪 (ISS #141)
+reports/system-metrics-int.csv
