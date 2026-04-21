@@ -112,3 +112,23 @@ jobs:
 - 对比逻辑: `src/ci/baseline-compare.js` (utility)
 - 趋势收集: `src/ci/trend-collect.js` (utility)
 - Workflow: `.github/workflows/performance-ci.yml`
+
+---
+
+## 输出目录规范（ISS-019）
+
+**规则**: 每个 CI job 中，向子目录写入文件的步骤前必须有 `mkdir -p <dir>`。
+
+```yaml
+# ❌ 禁止（依赖 git checkout 提供目录）
+run: k6 run --out json=reports/k6-summary.json smoke.k6.js
+
+# ✅ 必须（显式创建目录）
+run: |
+  mkdir -p reports
+  k6 run --out json=reports/k6-summary.json smoke.k6.js
+```
+
+**验证工具**: `npm run ci:lint`（检查 performance-ci.yml 是否符合规范）
+
+**背景**: RCA-2026-04-21 — `reports/` 被意外 git 追踪时 Bug 潜伏 3 天，测试产物清理后暴露（见 `docs/project-management/postmortems/RCA-2026-04-21-reports-dir-latent-bug.md`）
