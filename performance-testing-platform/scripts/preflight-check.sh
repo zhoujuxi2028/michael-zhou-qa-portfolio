@@ -103,9 +103,49 @@ if [[ "$*" == *"--stage4"* ]]; then
   echo ""
   echo "[ 5/5 ] Checking Docker for Stage 4 Integration Tests..."
   if ! docker info > /dev/null 2>&1; then
-    echo "  ❌ Docker daemon not running"
-    HINTS="${HINTS}\n  → Start Docker: open -a Docker (or OrbStack/colima)"
-    PASS=false
+    echo "  ⏳ Docker daemon not running — attempting auto-start..."
+    
+    # Auto-detect and start container runtime
+    if command -v open &> /dev/null; then
+      # macOS: try OrbStack first (fastest), then Docker, then Colima
+      if [ -d "/Applications/OrbStack.app" ]; then
+        echo "  → Starting OrbStack..."
+        open -a OrbStack
+        sleep 5
+      elif [ -d "/Applications/Docker.app" ]; then
+        echo "  → Starting Docker Desktop..."
+        open -a Docker
+        sleep 8
+      elif command -v colima &> /dev/null; then
+        echo "  → Starting Colima..."
+        colima start
+        sleep 5
+      else
+        echo "  ❌ No container runtime found (OrbStack, Docker, or Colima)"
+        HINTS="${HINTS}\n  → Install OrbStack (recommended) or Docker Desktop"
+        PASS=false
+      fi
+    else
+      # Linux: try systemctl
+      if command -v systemctl &> /dev/null; then
+        echo "  → Starting Docker via systemctl..."
+        sudo systemctl start docker
+        sleep 3
+      else
+        echo "  ❌ Cannot auto-start Docker on this system"
+        HINTS="${HINTS}\n  → Please start Docker manually"
+        PASS=false
+      fi
+    fi
+    
+    # Verify Docker is now running
+    if docker info > /dev/null 2>&1; then
+      echo "  ✅ Docker daemon started successfully"
+    else
+      echo "  ❌ Docker daemon failed to start"
+      HINTS="${HINTS}\n  → Check container runtime logs or start manually"
+      PASS=false
+    fi
   else
     echo "  ✅ Docker daemon OK"
   fi
