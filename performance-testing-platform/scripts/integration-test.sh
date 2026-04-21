@@ -16,6 +16,7 @@ PASS=0
 FAIL=0
 SKIP=0
 RESULTS=""
+COLLECTOR_PID=""
 
 log_result() {
   local id="$1" status="$2" detail="$3"
@@ -39,6 +40,13 @@ echo ""
 cleanup() {
   echo ""
   echo "Cleaning up..."
+  # Stop metrics collector if running
+  if [ -n "$COLLECTOR_PID" ]; then
+    kill "$COLLECTOR_PID" 2>/dev/null || true
+    wait "$COLLECTOR_PID" 2>/dev/null || true
+    COLLECTOR_PID=""
+  fi
+  rm -f /tmp/metrics-collector.pid
   bash scripts/server.sh stop 2>/dev/null || true
   docker compose down 2>/dev/null || true
   bash scripts/lock.sh release "$LOCK_DIR"
@@ -136,24 +144,32 @@ bash scripts/server.sh stop 2>/dev/null || true
 bash scripts/server.sh start single 2>/dev/null
 sleep 2
 rm -f reports/system-metrics-int.csv
-node -e "
-const { execSync } = require('child_process');
-const { writeFileSync, readFileSync } = require('fs');
-execSync('bash scripts/server.sh collect 3 reports/system-metrics-int.csv &', { stdio: 'ignore' });
-setTimeout(() => {
-  try {
-    const csv = readFileSync('reports/system-metrics-int.csv', 'utf8');
-    const lines = csv.trim().split('\n');
-    const hasHeader = lines[0].includes('timestamp');
-    const hasData = lines.length > 1;
-    const cols = lines[0].split(',').length;
-    console.log(JSON.stringify({ hasHeader, rows: lines.length - 1, cols }));
-  } catch(e) { console.log(JSON.stringify({ hasHeader: false, rows: 0, cols: 0 })); }
-  process.exit(0);
-}, 5000);
-" 2>/dev/null > /tmp/csv_result.json
 
-CSV_RESULT=$(cat /tmp/csv_result.json 2>/dev/null || echo '{"hasHeader":false,"rows":0,"cols":0}')
+# Start collector at shell level to capture PID for proper lifecycle management
+bash scripts/server.sh collect 3 reports/system-metrics-int.csv &
+COLLECTOR_PID=$!
+echo "$COLLECTOR_PID" > /tmp/metrics-collector.pid
+
+# Wait for collector to write at least a few rows
+sleep 5
+
+CSV_RESULT=$(node -e "
+const { readFileSync } = require('fs');
+try {
+  const csv = readFileSync('reports/system-metrics-int.csv', 'utf8');
+  const lines = csv.trim().split('\n');
+  const hasHeader = lines[0].includes('timestamp');
+  const hasData = lines.length > 1;
+  const cols = lines[0].split(',').length;
+  console.log(JSON.stringify({ hasHeader, rows: lines.length - 1, cols }));
+} catch(e) { console.log(JSON.stringify({ hasHeader: false, rows: 0, cols: 0 })); }
+" 2>/dev/null || echo '{"hasHeader":false,"rows":0,"cols":0}')
+
+# Stop collector immediately after reading data — prevents lingering background process
+kill "$COLLECTOR_PID" 2>/dev/null || true
+wait "$COLLECTOR_PID" 2>/dev/null || true
+COLLECTOR_PID=""
+rm -f /tmp/metrics-collector.pid
 CSV_HEADER=$(echo "$CSV_RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin)['hasHeader'])" 2>/dev/null)
 CSV_ROWS=$(echo "$CSV_RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin)['rows'])" 2>/dev/null)
 CSV_COLS=$(echo "$CSV_RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin)['cols'])" 2>/dev/null)
