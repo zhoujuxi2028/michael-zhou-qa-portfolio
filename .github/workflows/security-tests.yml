@@ -187,7 +187,7 @@ jobs:
           target: 'http://localhost:80'
           rules_file_name: 'security-testing-demo/.zap/rules.tsv'
           cmd_options: '-a'
-          allow_issue_writing: ${{ github.event_name != 'workflow_dispatch' }}
+          allow_issue_writing: false
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v7
