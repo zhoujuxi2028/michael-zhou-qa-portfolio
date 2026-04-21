@@ -1,4 +1,5 @@
 """根级 conftest：共享 fixtures 和 markers"""
+
 import pytest
 
 from src.case_generator.generator import TestCaseGenerator
