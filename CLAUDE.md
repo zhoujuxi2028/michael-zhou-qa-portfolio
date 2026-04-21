@@ -179,8 +179,10 @@ grep <tool> package.json       # Node.js: eslint, prettier, newman
 
 **CI 防假绿灯规则（详见 `docs/dev-process-checklist.md` 阶段 3/4）：**
 - 禁止 `|| true`、`continue-on-error`、`--collect-only` 作为最终方案
-- 临时 workaround 必须同时创建 follow-up issue 追踪
+- 临时 workaround 必须同时创建 follow-up issue（标签 `workaround`，标注 deadline = 今天+5天）
+- Workaround issue 超过 deadline 未关闭 → 手动升级优先级为 `P1`
 - 测试阶段：移除所有 workaround 后再验证一次 + 故意失败确认 CI 能报红
+- 活跃 workaround 追踪：`docs/guides/workaround-tracking.md`
 
 ### Common Pitfalls
 
