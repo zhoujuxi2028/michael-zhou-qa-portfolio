@@ -1,7 +1,7 @@
-# DVWA (Damn Vulnerable Web Application) 是刻意设计的漏洞靶机。
-# 以下告警均为 DVWA 的已知/预期安全特征，设置为 IGNORE 避免重复创建噪音 issue。
-# 参考 postmortem #37 (ZAP issue writing 权限变更) 和 issue #87 (告警反复 open/close)。
-# 如需恢复告警，将 IGNORE 改回 WARN。
+# DVWA (Damn Vulnerable Web Application) is an intentionally vulnerable target.
+# All alerts below are expected/known DVWA behaviors. Set to IGNORE to prevent noisy issues.
+# Reference: postmortem #37 (ZAP issue-writing permission change) and issue #87.
+# To restore alerts, change IGNORE back to WARN.
 10003	IGNORE	(Vulnerable JS Library - expected in DVWA)
 10010	IGNORE	(Cookie No HttpOnly Flag - expected in DVWA)
 10011	IGNORE	(Cookie Without Secure Flag - expected in DVWA)
