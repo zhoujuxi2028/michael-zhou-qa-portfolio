@@ -9,7 +9,7 @@
 | `docs/` | 项目级规范、架构、流程 | `ARCHITECTURE.md` (本文) | 规范不变 |
 | `docs/dev-process-checklist.md` | 5 阶段开发流程检查清单 | 官方 | 阶段规则、交付物 |
 | `docs/superpowers/` | 实施计划、技术方案 | 计划文件 | 按时间戳组织 |
-| `docs/guides/` | 操作指南、最佳实践 | 各文件 | 学习资源、故障排查 |
+| `docs/guides/` | 操作指南、最佳实践 | 各文件 | 学习资源、故障排查、CI 优化 |
 | `docs/reports/` | 项目总结、事后分析 | 各文件 | 学习记录、改进建议 |
 | 各项目 `CLAUDE.md` | 项目级配置、快速命令 | 各项目维护 | 项目独立 |
 | 各项目 `README.md` | 项目级文档入口 | 各项目维护 | 优先于其他 |
@@ -129,6 +129,16 @@ PR reviewer 必须检查：
 
 ---
 
-**最后更新**: 2026-04-15
+**最后更新**: 2026-04-21
 **维护人**: Copilot + Team
 **权威性**: ✅ 架构规范，所有文档工作必须遵循
+
+## 主要指南文档
+
+| 指南文件 | 用途 |
+|---------|------|
+| `docs/guides/claude-code-review-optimization.md` | Claude Code Review 引入原因、好处、性能优化决策 |
+| `docs/guides/ci-workflow-verification-checklist.md` | CI 工作流验证防假绿灯 checklist |
+| `docs/guides/workaround-tracking.md` | Workaround 生命周期追踪规范 |
+| `docs/guides/pre-commit-hook-coverage.md` | Pre-commit hook 覆盖范围路线图 |
+| `docs/guides/third-party-action-audit.md` | 第三方 GitHub Action 安全审计记录 |

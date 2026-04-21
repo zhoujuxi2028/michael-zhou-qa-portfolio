@@ -560,6 +560,39 @@ gh pr merge --squash
 
 ---
 
+---
+
+## GitHub Actions 集成
+
+本项目使用 `anthropics/claude-code-action` 将 Claude Code Review **自动化集成到 CI/CD 流水线**中。
+
+### 工作流位置
+
+`.github/workflows/claude-code-review.yml`
+
+### 触发时机
+
+| 事件 | 是否触发 | 说明 |
+|------|---------|------|
+| PR 打开（`opened`） | ✅ | 首次创建 PR 时审查 |
+| 新 push（`synchronize`） | ✅ | 新提交推送时重新审查 |
+| Draft → Ready（`ready_for_review`） | ✅ | 草稿转正式时审查 |
+| Draft PR | ❌ 跳过 | 未完成的工作无需审查 |
+| Dependabot PR | ❌ 跳过 | 自动依赖更新无需 AI 审查 |
+| 纯文档改动 | ❌ 跳过 | `.md` 文件变更不触发 |
+
+### 性能优化（2026-04-21 更新）
+
+每次 Claude 审查约需 **3-4 分钟**（受 AI API 推理时间限制）。通过以下方式减少不必要运行：
+
+- **并发控制** (`concurrency`)：同一 PR 有新 push 时，取消前一次未完成的运行
+- **路径过滤** (`paths`)：只对代码文件（.js/.ts/.py/.yml/.json）触发
+- **条件过滤** (`if`)：跳过 Draft PR 和 bot PR
+
+详见：[claude-code-review-optimization.md](../../../guides/claude-code-review-optimization.md)
+
+---
+
 **下一步**：[Phase 3 - 高阶提示工程](../phase3/M7-context-management.md)
 
-*最后更新：2026-04-14 | 状态：完整* | 预计学习时间：90 分钟 | 代码示例：可复制
+*最后更新：2026-04-21 | 状态：完整* | 预计学习时间：90 分钟 | 代码示例：可复制
