@@ -26,13 +26,15 @@ function executeFunnel(baseUrl, options = {}) {
   const product = randomProduct();
 
   // 100% browse products list
-  const browseRes = http.get(`${baseUrl}/api/products`);
+  const browseRes = http.get(`${baseUrl}/api/products`, { tags: { endpoint: '/api/products' } });
   checkStatus(browseRes, 200, 'browse products');
   thinkTime();
 
   // ~50% of browsers view product detail (nested probability)
   if (Math.random() < detailProb) {
-    const detailRes = http.get(`${baseUrl}/api/products/${product.id}`);
+    const detailRes = http.get(`${baseUrl}/api/products/${product.id}`, {
+      tags: { endpoint: '/api/products/:id' },
+    });
     checkStatus(detailRes, 200, 'product detail');
     thinkTime();
 
@@ -45,7 +47,7 @@ function executeFunnel(baseUrl, options = {}) {
           product_id: Number(product.id),
           quantity: 1,
         }),
-        { headers: { 'Content-Type': 'application/json' } }
+        { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/orders' } }
       );
       checkStatus(orderRes, 201, 'create order');
 
@@ -126,7 +128,10 @@ export function runSoakLoad() {
     let recovered = false;
 
     while (Date.now() - recoveryStart < 60000) {
-      const res = http.get(`${BASE_URL}/api/products`, { timeout: '5s' });
+      const res = http.get(`${BASE_URL}/api/products`, {
+        tags: { endpoint: '/api/products' },
+        timeout: '5s',
+      });
       if (res.status === 200) {
         recovered = true;
         const recoveryTimeMs = Date.now() - recoveryStart;
@@ -159,7 +164,7 @@ export function runSoakLoad() {
     const loginRes = http.post(
       `${BASE_URL}/api/auth/login`,
       JSON.stringify({ username: 'soakuser', password: 'soakpass' }),
-      { headers: { 'Content-Type': 'application/json' } }
+      { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/auth/login' } }
     );
     soakAuthLatency.add(loginRes.timings.duration);
   }
@@ -180,7 +185,7 @@ export function observeMetrics() {
 }
 
 export function teardown(data) {
-  const m = http.get(`${BASE_URL}/metrics`);
+  const m = http.get(`${BASE_URL}/metrics`, { tags: { endpoint: '/metrics' } });
   let finalHeap = 0;
   if (m.status === 200) {
     try {

@@ -1,6 +1,6 @@
 # CLAUDE.md - 性能测试平台 (Performance Testing Platform)
 
-**分类:** 性能测试 | k6 + JMeter 双引擎 | 148 unit + 31 integration + 33 performance tests
+**分类:** 性能测试 | k6 + JMeter 双引擎 | 217 unit + 60 integration + 33 performance + 47 other (357 total)
 
 ## 🔴 分支规则
 
@@ -12,16 +12,24 @@ git checkout feature/performance-testing
 
 ## Worktree 约定
 
-- 默认使用全局 worktree 目录：`~/.config/superpowers/worktrees/michael-zhou-qa-portfolio/`
-- `performance-testing-platform` 的隔离工作建议放在该目录下的独立子目录中
-- 需要设计验证、可行性评估或并行修复时，优先在 worktree 中执行，避免污染当前工作区
+| 项目 | 约定 |
+|------|------|
+| 默认位置 | 当前仓库目录下的 `./.worktrees/<branch-name>/` |
+| 推荐方式 | 在仓库根目录创建 `./.worktrees/feature-.../` |
+| 禁止位置 | `~/.config/...`、`~/worktrees/...` 等家目录路径 |
+
+- `performance-testing-platform` 的隔离工作建议放在**当前仓库目录**下的独立 worktree 子目录中
+- 需要设计验证、可行性评估或并行修复时，优先在本地 worktree 中执行，避免污染当前工作区
 
 ## 快速命令
 
 ```bash
 npm install && npm start &        # 启动 API
-npm test                          # 单元测试 (148 tests)
+npm test                          # 单元测试 (220 tests, 26 suites, coverage ≥80%)
 npm run k6:smoke                  # k6 smoke test
+npm run k6:rate-limit             # k6 rate limiting test
+npm run k6:breakpoint             # k6 breakpoint test
+npm run generate-summary          # 生成测试摘要报告
 bash scripts/integration-test.sh  # 集成测试 (31 cases，需 Docker)
 ```
 
@@ -44,7 +52,7 @@ bash scripts/integration-test.sh  # 集成测试 (31 cases，需 Docker)
 - **测试计划:** [docs/qa/test-plan.md](docs/qa/test-plan.md)
 - **测试用例统计:** [docs/qa/test-cases/index.md](docs/qa/test-cases/index.md) ← Phase 1~7 用例数、通过率、详细分类
 - **需求追溯矩阵:** [docs/qa/rtm.md](docs/qa/rtm.md)
-- **实施计划 Phase 6:** [docs/project-management/implementation-plan-phase6.md](docs/project-management/implementation-plan-phase6.md)
+- **实施计划 Phase 6:** [docs/project-management/implementation-plans/implementation-plan-phase6.md](docs/project-management/implementation-plans/implementation-plan-phase6.md)
 - **风险清单:** [docs/project-management/risks.md](docs/project-management/risks.md)
 
 ## SLA
@@ -130,4 +138,47 @@ rm -rf /tmp/integration-test.lock
 
 ## CI 工作流
 
-`performance-ci.yml` — lint → unit test → k6/JMeter smoke gate
+`performance-ci.yml` — lint → unit test (coverage ≥80%) → k6/JMeter smoke gate + baseline compare + trend collect
+
+### CI 目录卫生规则（ISS-019）
+
+**所有 CI job 中向子目录写入文件的步骤，必须显式 `mkdir -p <dir>`，禁止依赖 git checkout 提供目录结构。**
+
+```bash
+# 验证 performance-ci.yml 是否符合规范
+npm run ci:lint
+```
+
+| 写入模式 | 示例 | 必须 |
+|---------|------|------|
+| `k6 --out json=dir/file` | `reports/k6-summary.json` | `mkdir -p reports` |
+| `jmeter -l dir/file` | `results/smoke.jtl` | `mkdir -p results` |
+| `gh run download -D dir/` | `reports/` | `mkdir -p reports` |
+
+背景：`reports/` 被 git 追踪时 Bug 潜伏 3 天（runs 197-212），清理测试产物后暴露（RCA-2026-04-21）。
+
+### Phase 7 新增命令
+
+```bash
+# 生成 k6 执行摘要报告
+npm run generate-summary              # 从 k6-result.json 生成 k6-summary.md
+
+# Rate limiting test
+npm run k6:rate-limit                # 测试 API 限流功能 (需 RATE_LIMIT_ENABLED=true)
+
+# Breakpoint test - 寻找系统崩溃点
+npm run k6:breakpoint               # 从 50 req/s 递增至崩溃点 (耗时较长)
+
+# 基线管理
+node scripts/baseline-export.js      # 导出当前性能基线
+node scripts/baseline-compare.js    # 对比性能基线，检测回归
+node scripts/trend-collect.js       # 收集趋势数据
+```
+
+### CI 工作流特点
+
+- **覆盖率门禁**: Jest coverage < 80% 时 CI 直接 fail
+- **并行执行**: k6 和 JMeter smoke test 同时运行，提高效率
+- **基线对比**: 自动检测性能回归，标记有显著变化的指标
+- **趋势收集**: 持续记录性能趋势，支持长期分析
+- **失败策略**: 禁用 `|| true`，任何失败都导致 CI fail

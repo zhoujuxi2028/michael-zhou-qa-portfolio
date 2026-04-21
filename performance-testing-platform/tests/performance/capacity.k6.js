@@ -1,5 +1,6 @@
 import http from 'k6/http';
 import { Trend } from 'k6/metrics';
+import { sleep } from 'k6';
 import { BASE_URL, checkStatus } from './helpers/utils.js';
 import {
   buildLoadThresholds,
@@ -25,13 +26,15 @@ function executeFunnel(baseUrl, options = {}) {
   const product = randomProduct();
 
   // 100% browse products list
-  const browseRes = http.get(`${baseUrl}/api/products`);
+  const browseRes = http.get(`${baseUrl}/api/products`, { tags: { endpoint: '/api/products' } });
   checkStatus(browseRes, 200, 'browse products');
   thinkTime();
 
   // ~50% of browsers view product detail (nested probability)
   if (Math.random() < detailProb) {
-    const detailRes = http.get(`${baseUrl}/api/products/${product.id}`);
+    const detailRes = http.get(`${baseUrl}/api/products/${product.id}`, {
+      tags: { endpoint: '/api/products/:id' },
+    });
     checkStatus(detailRes, 200, 'product detail');
     thinkTime();
 
@@ -44,7 +47,7 @@ function executeFunnel(baseUrl, options = {}) {
           product_id: Number(product.id),
           quantity: 1,
         }),
-        { headers: { 'Content-Type': 'application/json' } }
+        { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/orders' } }
       );
       checkStatus(orderRes, 201, 'create order');
 
@@ -83,6 +86,26 @@ export const options = {
 
 export function runCapacityLoad() {
   executeFunnel(BASE_URL);
+
+  // Poll server metrics every 5 seconds (fixed interval, non-random)
+  // Changed from random 10% sampling to fixed 5-second polling
+  // Benefit: reduce /metrics load from ~166 req/s to ~0.2 req/s (80x reduction)
+  // Fixed interval provides stable time-series data without random fluctuations
+  if (__ITER % 50 === 0) {
+    // Every 50 iterations ≈ 5 seconds (assuming ~10 iter/sec per VU)
+    const m = http.get(`${BASE_URL}/metrics`, { tags: { endpoint: '/metrics' } });
+    if (m.status === 200) {
+      try {
+        const body = JSON.parse(m.body);
+        if (body.eventLoop) serverEventLoopLag.add(body.eventLoop.lag);
+        if (body.memory) serverHeapUsedMb.add(body.memory.heapUsed / 1024 / 1024);
+        if (body.cpu) serverCpuUser.add(body.cpu.userPercent);
+      } catch {
+        // ignore parse errors
+      }
+    }
+  }
+
   thinkTime(0.5, 1.0);
 }
 

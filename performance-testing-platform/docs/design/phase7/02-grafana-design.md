@@ -13,29 +13,33 @@
 
 ## 新增 3 个面板
 
-### 1. 错误分布面板 (PERF-OBS-FR-001)
+### 1. 错误分布面板 (PERF-OBS-DASH-FR-001)
 
-**Query:**
+**Query (InfluxQL):**
 ```sql
-SELECT time, endpoint, error_rate FROM measurement WHERE test=soak
+SELECT sum("value") FROM "http_req_failed"
+WHERE $timeFilter
+GROUP BY time($__interval), "endpoint"
 ```
 
 **Visualization:** Graph (line) - 按 endpoint 分组
 
 ---
 
-### 2. 延迟热力图 (PERF-OBS-FR-002)
+### 2. 延迟热力图 (PERF-OBS-DASH-FR-002)
 
-**Query:**
+**Query (InfluxQL):**
 ```sql
-SELECT time, p95_ms, p99_ms FROM measurement
+SELECT mean("value") FROM "http_req_duration"
+WHERE $timeFilter
+GROUP BY time($__interval), "endpoint"
 ```
 
 **Visualization:** Heatmap - 请求延迟分布
 
 ---
 
-### 3. 自定义指标聚合 (PERF-OBS-FR-003)
+### 3. 自定义指标聚合 (PERF-OBS-DASH-FR-003)
 
 **Metrics:**
 - `soak_heap_used_mb` (Trend from k6)
@@ -46,7 +50,7 @@ SELECT time, p95_ms, p99_ms FROM measurement
 
 ---
 
-## 告警规则 (PERF-OBS-FR-004)
+## 告警规则 (PERF-OBS-ALERT-FR-001)
 
 ### SLA 与告警阈值对应表
 
@@ -71,7 +75,7 @@ SELECT time, p95_ms, p99_ms FROM measurement
 
 ---
 
-## Webhook 配置示例 (PERF-OBS-FR-004-WEBHOOK)
+## Webhook 配置示例 (PERF-OBS-ALERT-FR-001-WEBHOOK)
 
 ### 方式 1: 本地测试 - curl 模拟告警
 

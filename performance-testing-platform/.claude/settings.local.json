@@ -52,7 +52,20 @@
       "Bash(wc -l /Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio/performance-testing-platform/docs/qa/reports/*.md)",
       "Read(//tmp/**)",
       "Bash(xargs basename *)",
-      "Skill(phase-gate)"
+      "Skill(phase-gate)",
+      "Bash(curl -sf \"http://localhost:3000/health\")",
+      "Bash(curl -sf \"http://localhost:8086/ping\")",
+      "Bash(curl -sf \"http://localhost:3010/api/health\")",
+      "Bash(docker-compose ps *)",
+      "Bash(bash *)",
+      "Bash(docker --version)",
+      "Bash(docker compose *)",
+      "Bash(curl -sf http://localhost:3000/health)",
+      "Bash(curl -sf http://localhost:3010/api/health)",
+      "Bash(curl -sf http://localhost:8086/ping)",
+      "Bash(npm --version)",
+      "Bash(npm ls *)",
+      "Skill(claude-api)"
     ]
   }
 }

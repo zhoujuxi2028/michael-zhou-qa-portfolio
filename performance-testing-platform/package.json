@@ -4,10 +4,10 @@
   "description": "Performance testing platform — k6 load/stress/spike/smoke testing with Grafana + InfluxDB",
   "private": true,
   "scripts": {
-    "lint": "eslint src/ tests/unit/ --ext .js",
-    "lint:fix": "eslint src/ tests/unit/ --ext .js --fix",
-    "format": "prettier --write 'src/**/*.js' 'tests/unit/**/*.js'",
-    "format:check": "prettier --check 'src/**/*.js' 'tests/unit/**/*.js'",
+    "lint": "eslint src/ tests/unit/ tests/integration/ scripts/ --ext .js",
+    "lint:fix": "eslint src/ tests/unit/ tests/integration/ scripts/ --ext .js --fix",
+    "format": "prettier --write 'src/**/*.js' 'tests/unit/**/*.js' 'tests/integration/**/*.js' 'scripts/**/*.js'",
+    "format:check": "prettier --check 'src/**/*.js' 'tests/unit/**/*.js' 'tests/integration/**/*.js' 'scripts/**/*.js'",
     "start": "bash scripts/server.sh start cluster",
     "start:single": "bash scripts/server.sh start single",
     "stop": "bash scripts/server.sh stop",
@@ -17,6 +17,7 @@
     "restart:clean:single": "bash scripts/server.sh restart single --clean",
     "test": "NODE_ENV=test jest",
     "test:unit": "NODE_ENV=test jest --testPathPattern=tests/unit",
+    "test:integration": "NODE_ENV=test jest --testPathPattern=tests/integration --verbose",
     "test:coverage": "NODE_ENV=test jest --testPathPattern=tests/unit --coverage",
     "k6:smoke": "mkdir -p reports && k6 run --out 'web-dashboard=export=reports/k6-smoke.html' tests/performance/smoke.k6.js",
     "k6:load": "mkdir -p reports && k6 run --out 'web-dashboard=export=reports/k6-load.html' tests/performance/load.k6.js",
@@ -49,7 +50,8 @@
     "baseline:export": "node scripts/baseline-export.js",
     "trend:collect": "node scripts/trend-collect.js",
     "docker:up": "docker compose up -d",
-    "docker:down": "docker compose down"
+    "docker:down": "docker compose down",
+    "ci:lint": "node scripts/ci-lint.js ../.github/workflows/performance-ci.yml"
   },
   "devDependencies": {
     "eslint": "^8.56.0",
@@ -69,7 +71,17 @@
     "swagger-ui-express": "^5.0.1"
   },
   "lint-staged": {
-    "src/**/*.js": "eslint --fix",
-    "tests/**/*.js": "eslint --fix"
+    "src/**/*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "tests/**/*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "scripts/**/*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   }
 }
