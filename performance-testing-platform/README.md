@@ -347,6 +347,7 @@ performance-testing-platform/
 | `npm run capacity:test`    | 容量测试 (采集器 + k6 + 报告归档)                 |
 | `npm run lint`             | ESLint 检查                                       |
 | `npm run format:check`     | Prettier 格式检查                                 |
+| `npm run ci:lint`          | CI 目录卫生检查（ISS-019 预防）                   |
 | `npm run docker:up`        | 启动所有 Docker 服务                              |
 | `npm run docker:down`      | 停止所有 Docker 服务                              |
 
