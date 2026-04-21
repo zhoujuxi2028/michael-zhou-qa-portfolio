@@ -11,7 +11,7 @@
 |------|------|
 | **必须创建 Issue** | 每个临时 workaround 上线前，必须同时创建对应的 follow-up Issue |
 | **必须打 label** | Issue 必须包含 `workaround` label |
-| **必须标注 deadline** | Issue 标题或正文标注到期日，格式：`[expires: YYYY-MM-DD]`，默认 5 天 |
+| **必须标注 deadline** | Issue 标题或正文标注到期日，格式：`[expires: YYYY-MM-DD]`，默认 **5 个自然日** |
 | **超期升级** | deadline 超过未关闭 → 自动升级优先级为 `P1` |
 | **禁止无 Issue 的 workaround** | 无对应 Issue 的 workaround 不得合并进主分支 |
 
@@ -90,8 +90,31 @@ gh issue list --label workaround --state open
 查看超期 workaround（需结合日期过滤手动判断）：
 
 ```bash
-gh issue list --label workaround --state open --json number,title,createdAt
+gh issue list --label workaround --state open --json number,title,createdAt,body \
+  | python3 -c "
+import json, sys
+from datetime import datetime, timedelta
+issues = json.load(sys.stdin)
+today = datetime.utcnow()
+for i in issues:
+    # 从 title 提取 [expires: YYYY-MM-DD]
+    import re
+    m = re.search(r'\[expires:\s*(\d{4}-\d{2}-\d{2})\]', i.get('title','') + i.get('body',''))
+    if m:
+        exp = datetime.strptime(m.group(1), '%Y-%m-%d')
+        overdue = (today - exp).days
+        if overdue > 0:
+            print(f'⚠️ #{i[\"number\"]} overdue {overdue}d: {i[\"title\"]}')
+    else:
+        # 无 deadline 标注 → 按创建日期 + 5 天判断
+        created = datetime.strptime(i['createdAt'][:10], '%Y-%m-%d')
+        overdue = (today - created - timedelta(days=5)).days
+        if overdue > 0:
+            print(f'⚠️ #{i[\"number\"]} overdue {overdue}d (no deadline tag): {i[\"title\"]}')
+"
 ```
+
+> **注意**：deadline 使用 **自然日**（calendar days），不是工作日。
 
 ---
 
