@@ -122,7 +122,9 @@ jobs:
             sleep 1
           done
       - name: Run k6 smoke test (performance gate)
-        run: k6 run --out json=reports/k6-smoke-summary.json tests/performance/smoke.k6.js
+        run: |
+          mkdir -p reports
+          k6 run --out json=reports/k6-smoke-summary.json tests/performance/smoke.k6.js
       - name: Extract baseline metrics
         run: node scripts/baseline-export.js
       - name: Stop API
