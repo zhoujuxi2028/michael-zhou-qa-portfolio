@@ -9,6 +9,9 @@ on:
     branches: [main]
     paths: ['ai-testing-platform/**']
 
+permissions:
+  contents: read
+
 defaults:
   run:
     working-directory: ai-testing-platform
@@ -16,6 +19,8 @@ defaults:
 jobs:
   code-quality:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -31,6 +36,8 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     needs: code-quality
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -51,6 +58,8 @@ jobs:
   verify-by-module:
     runs-on: ubuntu-latest
     needs: unit-tests
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -59,11 +68,11 @@ jobs:
           cache: pip
           cache-dependency-path: ai-testing-platform/requirements.txt
       - run: pip install -r requirements.txt
-      - name: TestCaseGenerator tests (14)
+      - name: TestCaseGenerator tests
         run: pytest tests/test_case_generator/ -v -m "generation" --tb=short
-      - name: DefectPredictor tests (13)
+      - name: DefectPredictor tests
         run: pytest tests/test_defect_predictor/ -v -m "prediction" --tb=short
-      - name: ScriptGenerator tests (16)
+      - name: ScriptGenerator tests
         run: pytest tests/test_script_generator/ -v -m "script_gen" --tb=short
       - name: P0 critical tests
         run: pytest tests/ -v -m P0 --tb=short -q
