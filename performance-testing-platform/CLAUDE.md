@@ -140,6 +140,23 @@ rm -rf /tmp/integration-test.lock
 
 `performance-ci.yml` — lint → unit test (coverage ≥80%) → k6/JMeter smoke gate + baseline compare + trend collect
 
+### CI 目录卫生规则（ISS-019）
+
+**所有 CI job 中向子目录写入文件的步骤，必须显式 `mkdir -p <dir>`，禁止依赖 git checkout 提供目录结构。**
+
+```bash
+# 验证 performance-ci.yml 是否符合规范
+npm run ci:lint
+```
+
+| 写入模式 | 示例 | 必须 |
+|---------|------|------|
+| `k6 --out json=dir/file` | `reports/k6-summary.json` | `mkdir -p reports` |
+| `jmeter -l dir/file` | `results/smoke.jtl` | `mkdir -p results` |
+| `gh run download -D dir/` | `reports/` | `mkdir -p reports` |
+
+背景：`reports/` 被 git 追踪时 Bug 潜伏 3 天（runs 197-212），清理测试产物后暴露（RCA-2026-04-21）。
+
 ### Phase 7 新增命令
 
 ```bash
