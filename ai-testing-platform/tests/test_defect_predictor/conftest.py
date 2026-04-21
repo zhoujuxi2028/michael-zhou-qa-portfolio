@@ -1,4 +1,5 @@
 """conftest for test_defect_predictor tests"""
+
 import pytest
 
 from src.defect_predictor.predictor import DefectPredictor, ModuleMetrics

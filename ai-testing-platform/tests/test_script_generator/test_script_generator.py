@@ -2,6 +2,7 @@
 TC-SCR-*: ScriptGenerator 单元测试
 验证基于测试规范自动生成 Pytest 脚本的功能
 """
+
 import logging
 
 import pytest

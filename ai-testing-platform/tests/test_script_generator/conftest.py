@@ -1,4 +1,5 @@
 """conftest for test_script_generator tests"""
+
 import pytest
 
 from src.script_generator.generator import ScriptGenerator, TestSpec
