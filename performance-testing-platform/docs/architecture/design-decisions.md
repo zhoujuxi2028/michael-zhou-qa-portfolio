@@ -133,6 +133,58 @@ router.post('/api/products', (req, res) => {
 
 ---
 
+## 4. CI 输出目录约定（DD-04）
+
+### 决策
+
+CI job 中所有向子目录写入文件的步骤，**必须在同一 job 内显式执行 `mkdir -p <dir>`**，禁止依赖 git checkout 或其他外部机制提供目录结构。
+
+### 原因
+
+RCA（2026-04-21）发现：`reports/` 目录被意外提交 git 后，CI checkout 会自动恢复该目录，掩盖了缺失 `mkdir -p` 的 Bug 约 3 天（runs 197-212）。一旦测试产物从 git 移除（正确做法），Bug 立即暴露（runs 213-215，exit code 255）。
+
+**核心原则**: CI runner 是全新空目录（tabula rasa），job 对执行环境应**零假设**。
+
+### 规范
+
+```yaml
+# ❌ 错误（依赖 git checkout 提供 reports/ 目录）
+- name: Run k6
+  run: k6 run --out json=reports/k6-summary.json smoke.k6.js
+
+# ✅ 正确（显式创建目录）
+- name: Run k6
+  run: |
+    mkdir -p reports
+    k6 run --out json=reports/k6-summary.json smoke.k6.js
+```
+
+### 覆盖范围
+
+| 写入模式 | 示例 | 要求 |
+|---------|------|------|
+| `k6 --out json=dir/file` | `reports/k6-summary.json` | `mkdir -p reports` |
+| `jmeter -l dir/file` | `results/smoke.jtl` | `mkdir -p results` |
+| `gh run download -D dir/` | `reports/` | `mkdir -p reports` |
+| shell 重定向 `> dir/file` | `reports/scan.json` | `mkdir -p reports` |
+
+### 自动检查工具
+
+`scripts/ci-lint.js` — 检测 workflow 中所有违规的输出目录写入。
+
+```bash
+npm run ci:lint                     # 检查 performance-ci.yml
+node scripts/ci-lint.js path/to.yml # 检查指定文件
+```
+
+### 代码位置
+
+- 检查脚本: `scripts/ci-lint.js`
+- 单元测试: `tests/unit/scripts/ci-lint.test.js` (12 tests)
+- 相关 CLAUDE.md 条目: ISS-019
+
+---
+
 ## 参考
 
 - Issue #103: M5-002 - 故意关闭，因为是性能测试的设计需求

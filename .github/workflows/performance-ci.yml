@@ -222,6 +222,7 @@ jobs:
         # 首次运行无 baseline artifact 时允许失败（已知 exemption，见 risks.md R-27）
         continue-on-error: true
         run: |
+          mkdir -p reports
           gh run list -w performance-ci.yml --json conclusion,databaseId -q '.[] | select(.conclusion=="success") | .databaseId' | head -1 | xargs -I {} gh run download {} -n baseline-artifact -D reports/
       - name: Compare baseline (CI-BASE-02)
         run: node scripts/baseline-compare.js
@@ -246,7 +247,9 @@ jobs:
           node-version: '18'
       - run: npm ci
       - name: Collect trend data (CI-TREND-01)
-        run: node scripts/trend-collect.js
+        run: |
+          mkdir -p reports
+          node scripts/trend-collect.js
       - name: Upload trend artifact
         if: always()
         uses: actions/upload-artifact@v7

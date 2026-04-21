@@ -50,7 +50,8 @@
     "baseline:export": "node scripts/baseline-export.js",
     "trend:collect": "node scripts/trend-collect.js",
     "docker:up": "docker compose up -d",
-    "docker:down": "docker compose down"
+    "docker:down": "docker compose down",
+    "ci:lint": "node scripts/ci-lint.js ../.github/workflows/performance-ci.yml"
   },
   "devDependencies": {
     "eslint": "^8.56.0",
