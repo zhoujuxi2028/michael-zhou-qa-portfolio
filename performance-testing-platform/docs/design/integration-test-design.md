@@ -97,6 +97,8 @@
 | **Jest Runner** | Jest + Supertest | 13 | 61 | API 模块交互、中间件行为、工具函数端到端 |
 | **Shell Runner** | Bash + curl + Docker | 3 | ~40 | 基础设施集成（Grafana/InfluxDB/k6/JMeter） |
 
+> Shell Runner 的实现已拆分为 `scripts/lib/common.sh`、`setup.sh`、`execute.sh`、`report.sh`，并通过 `tests/integration/registry.sh` + `tests/integration/phases/*.sh` 注册各阶段任务。
+
 **选型理由：**
 
 - **Jest Runner**：进程内测试，无需启动真实 HTTP 服务器，通过 Supertest 直接调用 Express app；启动快（< 2s）、隔离性好（内存数据库）、断言丰富
