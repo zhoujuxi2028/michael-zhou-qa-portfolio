@@ -124,4 +124,18 @@ describe('loadProfile', () => {
     });
     expect(() => loadProfile(json)).toThrow('observer.vus');
   });
+
+  test('UT-PROF-13: accepts observer config when enabled is explicitly false', () => {
+    const json = JSON.stringify({
+      stages: [{ duration: '1m', target: 10 }],
+      thresholds: { 'http_req_duration{scenario:load}': ['p(95)<500'] },
+      observer: {
+        enabled: false,
+        exec: 'observeMetrics',
+        vus: 1,
+      },
+    });
+    const result = loadProfile(json);
+    expect(result.observer.enabled).toBe(false);
+  });
 });
