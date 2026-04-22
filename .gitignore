@@ -4,4 +4,4 @@ security-testing-demo/.claude/
 .claude/settings.local.json
 coverage/
 .worktrees/
-/jmeter.log
+**/jmeter.log
