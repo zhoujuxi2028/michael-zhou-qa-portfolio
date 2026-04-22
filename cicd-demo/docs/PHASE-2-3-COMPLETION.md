@@ -43,11 +43,12 @@ Two jobs triggered on push/PR to `main` or `develop`:
 
 ### Workflow Execution Matrix
 
-| Event | pr-checks.yml | docker-tests.yml | validation.yml |
-|-------|---------------|------------------|----------------|
-| PR to main | Yes | No | Yes |
-| Push to main | No | Yes | Yes |
-| Manual dispatch | Yes | Yes | Yes |
+| Event | docker-tests.yml | security-scan.yml |
+|-------|------------------|-------------------|
+| PR to main | No | Yes |
+| Push to main | No | Yes |
+| Scheduled run | Yes | Yes |
+| Manual dispatch | Yes | Yes |
 
 ---
 
