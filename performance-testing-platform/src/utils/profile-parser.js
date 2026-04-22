@@ -47,7 +47,7 @@ function validateObserver(observer) {
   }
 
   if ('enabled' in observer && typeof observer.enabled !== 'boolean') {
-    throw new Error('Profile "observer.enabled" must be boolean');
+    throw new Error(`Profile "observer.enabled" must be boolean, got ${typeof observer.enabled}`);
   }
 
   if ('exec' in observer && typeof observer.exec !== 'string') {

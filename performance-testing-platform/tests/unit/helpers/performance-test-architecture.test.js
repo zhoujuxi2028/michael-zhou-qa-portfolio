@@ -22,7 +22,7 @@ describe('五类性能测试架构配置', () => {
       const profile = loadProfile(fs.readFileSync(path.join(PROFILES_DIR, fileName), 'utf-8'));
       expect(profile.thresholds).toBeDefined();
 
-      if (profile.vus != null) {
+      if (typeof profile.vus !== 'undefined') {
         expect(profile.duration).toBeDefined();
       } else {
         expect(Array.isArray(profile.stages)).toBe(true);
