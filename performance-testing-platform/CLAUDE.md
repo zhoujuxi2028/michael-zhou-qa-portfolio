@@ -26,4 +26,4 @@ npm run k6:smoke
 - 集成测试有锁：`/tmp/integration-test.lock`；若异常残留可执行 `rm -rf /tmp/integration-test.lock`
 - 锁机制与排障说明见 `README.md`
 - JMeter 正式运行前优先执行 `npm run jmeter:dryrun`
-- CI 相关改动禁止使用 `|| true` 或 `continue-on-error` 掩盖失败
+- CI 相关改动不要用 `|| true` 或 `continue-on-error` 掩盖失败，详细规则见 `../docs/dev-process-checklist.md`
