@@ -249,7 +249,7 @@ k6 run --out 'web-dashboard=export=reports/k6-smoke.html' tests/performance/smok
 performance-ci.yml workflow:
 
   ┌─────┐     ┌──────────┐     ┌──────────────────────────┐
-  │ lint │ ──► │ unit-test │ ──► │ smoke-gate (parallel)    │
+  │ lint │ ──► │ unit-tests │ ──► │ smoke-gate (parallel)    │
   └─────┘     └──────────┘     │  ├── k6 smoke test       │
                                 │  └── JMeter smoke test   │
                                 └──────────────────────────┘
