@@ -1,6 +1,6 @@
 # Azure Pipelines vs GitHub Actions — FAQ
 
-> 基于本项目 `pipeline.yml` → `azure-pipelines.yml` 的实际翻译经验总结。
+> 基于本项目**历史** `pipeline.yml` 设计稿 → `azure-pipelines.yml` 的翻译经验总结；当前根目录已不再保留该 workflow。
 
 ## 1. Pipeline 概念对比
 
@@ -132,7 +132,7 @@ deploy:                              - stage: Deploy
 
 ### Q: 两个平台核心概念能 1:1 映射吗？
 
-> 可以。stages/jobs/steps、environment gates、artifact publishing 都能直接翻译（见本项目 `pipeline.yml` → `azure-pipelines.yml`），迁移成本很低。
+> 可以。stages/jobs/steps、environment gates、artifact publishing 都能直接翻译（见本项目历史 `pipeline.yml` 设计稿 → `azure-pipelines.yml`），迁移成本很低。
 
 ### Q: 两个平台怎么选？
 
