@@ -13,8 +13,13 @@ on:
       - '.github/workflows/performance-ci.yml'
   workflow_dispatch:
 
+concurrency:
+  group: performance-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
+  actions: read
 
 defaults:
   run:
@@ -26,12 +31,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-          cache: npm
+          working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
-      - run: npm ci
       - run: npx eslint src/ tests/unit/ --ext .js
       - run: npx prettier --check 'src/**/*.js' 'tests/**/*.js' 'scripts/**/*.js'
 
@@ -41,12 +45,11 @@ jobs:
     needs: performance-lint
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-          cache: npm
+          working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
-      - run: npm ci
       - run: npx jest tests/unit/ --coverage --coverageReporters=text --coverageReporters=lcov
       - name: Check coverage thresholds
         run: |
@@ -107,17 +110,16 @@ jobs:
     needs: unit-tests
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-          cache: npm
+          working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
       - name: Install k6
         run: |
           curl -sSL https://github.com/grafana/k6/releases/download/v1.7.0/k6-v1.7.0-linux-amd64.tar.gz | tar xz
           sudo mv k6-v1.7.0-linux-amd64/k6 /usr/local/bin/
           k6 version
-      - run: npm ci
       - name: Start target API
         run: node src/server.js &
       - name: Wait for API
@@ -142,12 +144,11 @@ jobs:
     needs: unit-tests
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-          cache: npm
+          working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
-      - run: npm ci
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -221,10 +222,11 @@ jobs:
       actions: read
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-      - run: npm ci
+          working-directory: performance-testing-platform
+          cache-dependency-path: performance-testing-platform/package-lock.json
       - name: Download baseline artifact
         # 首次运行无 baseline artifact 时允许失败（已知 exemption，见 risks.md R-27）
         continue-on-error: true
@@ -250,10 +252,11 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-      - run: npm ci
+          working-directory: performance-testing-platform
+          cache-dependency-path: performance-testing-platform/package-lock.json
       - name: Collect trend data (CI-TREND-01)
         run: |
           mkdir -p reports

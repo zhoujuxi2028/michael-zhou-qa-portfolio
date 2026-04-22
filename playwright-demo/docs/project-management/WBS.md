@@ -72,7 +72,7 @@ WBS 1.0 (Scaffolding)
 
 | ID | Task | Files | Status |
 |----|------|-------|--------|
-| 6.1 | GitHub Actions workflow (matrix: 3 browsers, artifacts) | `.github/workflows/playwright-tests.yml` | ✅ Complete |
+| 6.1 | GitHub Actions workflow 设计（历史方案，当前根目录未保留该文件） | `.github/workflows/playwright-tests.yml` | 🗂️ Archived |
 | 6.2 | Verify all tests pass in CI environment (3/3 browser jobs green) | — | ✅ Complete |
 
 ## WBS 7.0 — Documentation
