@@ -1,13 +1,14 @@
-# CLAUDE.md
+# CLAUDE.md - QA Portfolio
 
 ## 仓库定位
 - QA / Test Automation / DevOps 作品集仓库
-- 顶层目录下每个子项目基本可独立安装、运行、测试
-- 优先修改对应子项目，不要在根目录堆放临时产物
+- 顶层目录下各子项目基本可独立安装、运行、测试
+- 优先在对应子项目内修改，避免在根目录堆放临时产物
 
 ## 分支规则
 - 开发、测试、验证只在 `feature/*` 或 `fix/*` 分支进行
 - 不在 `main` 上直接改代码、跑修复、做验证
+- 需要隔离工作目录时，优先使用仓库内 `./.worktrees/feature-*`
 
 ## 顶层项目
 | 项目 | 类型 | 主要技术 |
@@ -42,6 +43,7 @@ pytest tests/ -v
 ## 文档与约定
 - 项目说明看各子项目 `README.md` / `CLAUDE.md`
 - 文档索引见 `docs/README.md`
-- 详细踩坑记录见 `docs/project-management/postmortems/`，workaround 规则见 `docs/guides/workaround-tracking.md`
-- 常见坑：新增依赖要同步更新依赖文件；新增 marker 要更新 `pytest.ini`；CI 写文件前先 `mkdir -p`
+- 详细复盘见 `docs/project-management/postmortems/`
+- workaround 规则见 `docs/guides/workaround-tracking.md`
+- 常见坑：新增依赖要同步依赖文件；新增 marker 要更新 `pytest.ini`；CI 写文件前先 `mkdir -p`
 - 修改 CI 时先本地验证，避免 `|| true` 或 `continue-on-error` 掩盖失败
