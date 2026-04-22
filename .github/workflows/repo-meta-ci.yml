@@ -35,69 +35,44 @@ jobs:
             git ls-files > changed-files.txt
           fi
 
-          count=$(wc -l < changed-files.txt | tr -d ' ')
+          count=$(awk 'END { print NR }' changed-files.txt)
           echo "changed_count=$count" >> "$GITHUB_OUTPUT"
           echo "Changed files: $count"
           cat changed-files.txt
 
-      - name: Validate workflow YAML syntax
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          import pathlib
-          import sys
-          import yaml
-
-          changed = [line.strip() for line in pathlib.Path("changed-files.txt").read_text(encoding="utf-8").splitlines() if line.strip()]
-          targets = [pathlib.Path(path) for path in changed if path.startswith(".github/workflows/") and path.endswith((".yml", ".yaml"))]
-
-          for target in targets:
-            with target.open("r", encoding="utf-8") as handle:
-              yaml.safe_load(handle)
-
-          print(f"Workflow YAML OK: {len(targets)} file(s)")
-          PY
-
-      - name: Validate JSON syntax
+      - name: Run repository meta lint
         shell: bash
         run: |
           python3 - <<'PY'
           import json
           import pathlib
-
-          changed = [line.strip() for line in pathlib.Path("changed-files.txt").read_text(encoding="utf-8").splitlines() if line.strip()]
-          targets = [pathlib.Path(path) for path in changed if path.endswith(".json")]
-
-          for target in targets:
-            with target.open("r", encoding="utf-8") as handle:
-              json.load(handle)
-
-          print(f"JSON OK: {len(targets)} file(s)")
-          PY
-
-      - name: Validate shell syntax
-        shell: bash
-        run: |
-          while IFS= read -r file; do
-            if [[ "$file" == *.sh ]]; then
-              bash -n "$file"
-            fi
-          done < changed-files.txt
-
-      - name: Validate Markdown relative links
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          import pathlib
           import re
+          import subprocess
           import sys
           from urllib.parse import unquote
+          import yaml
 
+          repo_root = pathlib.Path.cwd().resolve()
           changed = [line.strip() for line in pathlib.Path("changed-files.txt").read_text(encoding="utf-8").splitlines() if line.strip()]
-          markdown_files = [pathlib.Path(path) for path in changed if path.endswith(".md")]
           pattern = re.compile(r'!?\[[^\]]*\]\(([^)]+)\)')
-          failures = []
 
+          workflow_files = [pathlib.Path(path) for path in changed if path.startswith(".github/workflows/") and path.endswith((".yml", ".yaml"))]
+          json_files = [pathlib.Path(path) for path in changed if path.endswith(".json")]
+          shell_files = [pathlib.Path(path) for path in changed if path.endswith(".sh")]
+          markdown_files = [pathlib.Path(path) for path in changed if path.endswith(".md")]
+
+          for workflow_file in workflow_files:
+            with workflow_file.open("r", encoding="utf-8") as handle:
+              yaml.safe_load(handle)
+
+          for json_file in json_files:
+            with json_file.open("r", encoding="utf-8") as handle:
+              json.load(handle)
+
+          for shell_file in shell_files:
+            subprocess.run(["bash", "-n", str(shell_file)], check=True)
+
+          failures = []
           for markdown_file in markdown_files:
             text = markdown_file.read_text(encoding="utf-8")
             for raw_target in pattern.findall(text):
@@ -112,6 +87,12 @@ jobs:
                 continue
 
               resolved = (markdown_file.parent / target).resolve()
+              try:
+                resolved.relative_to(repo_root)
+              except ValueError:
+                failures.append(f"{markdown_file}: {raw_target} (outside repository)")
+                continue
+
               if not resolved.exists():
                 failures.append(f"{markdown_file}: {raw_target}")
 
@@ -121,5 +102,8 @@ jobs:
               print(f" - {failure}")
             sys.exit(1)
 
+          print(f"Workflow YAML OK: {len(workflow_files)} file(s)")
+          print(f"JSON OK: {len(json_files)} file(s)")
+          print(f"Shell syntax OK: {len(shell_files)} file(s)")
           print(f"Markdown links OK: {len(markdown_files)} file(s)")
           PY
