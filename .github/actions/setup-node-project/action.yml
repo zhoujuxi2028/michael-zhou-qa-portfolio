@@ -31,4 +31,6 @@ runs:
     - name: Install dependencies
       shell: bash
       working-directory: ${{ inputs.working-directory }}
-      run: ${{ inputs.install-command }}
+      run: |
+        set -euo pipefail
+        ${{ inputs.install-command }}
