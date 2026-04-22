@@ -287,14 +287,14 @@
 
 | Issue | 改进项 | 优先级 | 状态 |
 |-------|--------|--------|------|
-| [#68](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/68) | workaround 到期机制 | P1 | Open |
+| [#68](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/68) | workaround 到期机制 | P1 | ✅ Done (2026-04-21, `docs/guides/workaround-tracking.md`, CLAUDE.md 规则更新, LABEL_STRATEGY.md `workaround` label) |
 | [#69](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/69) | k6 setup tag 隔离 + 模板 | P2 | Open |
 | [#70](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/70) | JMeter dry-run 验证 | P2 | Open |
-| [#71](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/71) | 第三方 action 季度巡检 | P3 | Open |
+| [#71](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/71) | 第三方 action 季度巡检 | P3 | ✅ Done (2026-04-21, `docs/guides/third-party-action-audit.md`) |
 | [#72](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/72) | Newman 断言数量验证 | P1 | Open |
 | [#73](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/73) | CI trigger 路径验证 checklist | P2 | Open |
 | [#74](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/74) | pre-commit hook 补全 | P2 | Open |
-| [#75](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/75) | CI workflow 模板 | P2 | Open |
+| [#75](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/75) | CI workflow 模板 | P2 | ✅ Done (2026-04-03, `.github/workflow-template.yml`) |
 | [#76](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/76) | 移除残留 continue-on-error | P1 | Open |
-| [#77](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/77) | 设计文档源码行号引用 | P1 | Open |
+| [#77](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/77) | 设计文档源码行号引用 | P1 | ✅ Done (2026-04-03, `architecture.md` 已有行号引用) |
 | [#78](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/78) | shell 输出清洗统一 | P3 | Open |

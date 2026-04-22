@@ -115,7 +115,7 @@ do_collect() {
 
   # 停止残留的采集器进程
   do_stop_collect 2>/dev/null || true
-
+  # Run node collector; trap ensures the child is cleaned up if this shell exits
   node -e "
 const os = require('os');
 const fs = require('fs');

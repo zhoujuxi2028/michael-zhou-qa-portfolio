@@ -1,8 +1,8 @@
 # GitHub Labels Strategy
 
-**Last Updated**: 2026-04-15  
-**Current Total Labels**: 30  
-**New Labels Created**: 4 (bug/security, phase-6, test-gap, performance-testing)
+**Last Updated**: 2026-04-21  
+**Current Total Labels**: 31  
+**New Labels Created**: 5 (bug/security, phase-6, test-gap, performance-testing, workaround)
 
 ---
 
@@ -71,6 +71,7 @@
 | `documentation` | 文档改进 |
 | `enhancement` | 新功能请求 |
 | `known-issue/external` | 上游/第三方问题 |
+| `workaround` | 临时绕过方案，必须附 deadline（默认 5 天），超期升级 P1，详见 `docs/guides/workaround-tracking.md` |
 | `good first issue` | 适合新手的任务 |
 | `help wanted` | 需要帮助 |
 | `duplicate` | 重复 Issue |
@@ -168,6 +169,7 @@ Root Cause:        Test design gap
 - [ ] `bug/performance` — 性能缺陷
 - [ ] `test-coverage` — 测试覆盖改进
 - [ ] `phase-2`, `phase-3`, `phase-4`, `phase-5`, `phase-7` — 其他阶段
+- [x] ~~`workaround`~~ — ✅ 已创建 (2026-04-21, Issue #68)
 
 ### 可选增强标签 (Optional)
 - [ ] `breaking-change` — 破坏性变更
