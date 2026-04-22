@@ -135,19 +135,15 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 
 | Workflow | Project | Purpose |
 |----------|---------|---------|
-| `pipeline.yml` | cicd-demo | Full CI/CD pipeline (lint→build→E2E→deploy) |
-| `pr-checks.yml` | cicd-demo | PR quick checks (validation + tests + lint) |
+| `api-testing-ci.yml` | api-testing-demo | Validate collections → Newman tests (280+ assertions) |
+| `k8s-ci.yml` | k8s-auto-testing-platform | K8S CI (code quality, unit tests, integration) |
+| `performance-ci.yml` | performance-testing-platform | Lint → unit tests → k6 + JMeter smoke gate |
+| `security-tests.yml` | security-testing-demo | Security tests (DVWA, Juice Shop, ZAP, OWASP Top 10) |
+| `sid-iam-ci.yml` | sid-iam-testing-platform | SID IAM CI (code quality, unit tests, integration) |
 | `docker-tests.yml` | cicd-demo | Docker-based nightly regression tests |
 | `security-scan.yml` | cicd-demo | Security scanning (Trivy, npm audit, SARIF) |
-| `helm-deploy.yml` | cicd-demo | Helm chart validation & deploy |
-| `security-tests.yml` | security-testing-demo | Security tests (DVWA, Juice Shop, ZAP, OWASP Top 10) |
-| `k8s-ci.yml` | k8s-auto-testing-platform | K8S CI (code quality, unit tests, integration) |
-| `playwright-tests.yml` | playwright-demo | Cross-browser E2E tests (Chromium, Firefox, WebKit) |
-| `sid-iam-ci.yml` | sid-iam-testing-platform | SID IAM CI (code quality, unit tests, integration) |
-| `microservice-ci.yml` | microservice-testing-platform | Lint → unit → contract → integration → E2E (101 tests) |
-| `api-testing-ci.yml` | api-testing-demo | Validate collections → Newman tests (280+ assertions) |
-| `selenium-ci.yml` | selenium-demo | Code quality (black + flake8) → smoke tests |
-| `performance-ci.yml` | performance-testing-platform | Lint → unit tests → k6 + JMeter smoke gate |
+| `claude.yml` | repository | Claude Code 助手触发入口 |
+| `claude-code-review.yml` | repository | Claude Code PR review |
 
 ## Pre-commit Checklist
 

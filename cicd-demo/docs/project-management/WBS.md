@@ -24,6 +24,9 @@
 
 ## Phase 2: CI/CD Pipeline Integration (⬜ Planned)
 
+> 注：本阶段中提到的 `pr-checks.yml`、`pipeline.yml`、`helm-deploy.yml`、`validation.yml` 为历史规划名称。
+> 当前仓库根目录实际保留的 `cicd-demo` workflow 只有 `docker-tests.yml` 与 `security-scan.yml`。
+
 ### Design Principle
 
 Phase 1 built the infrastructure pieces. Phase 2 **connects them into a real CI/CD pipeline**:
@@ -63,11 +66,11 @@ Every task in Phase 2 must answer: **"How does this connect to the pipeline?"**
 | 2.1.4 | Write values.yaml (dev), values-staging.yaml, values-production.yaml | 30m | ✅ |
 | 2.1.5 | Test: helm lint → template → install → upgrade → rollback | 30m | ✅ |
 | 2.1.6 | Update ArgoCD Application to use Helm chart as source | 20m | ✅ |
-| 2.1.7 | Create `helm-deploy.yml` GitHub Actions workflow | 45m | ✅ |
+| 2.1.7 | Historical design: `helm-deploy.yml` GitHub Actions workflow | 45m | 🗂️ Archived |
 | 2.1.8 | Test: git push → CI passes → Helm chart updated → ArgoCD syncs | 15m | ⬜ |
 | 2.1.9 | Write Chart README with release procedures | 10m | ⬜ |
 
-**Key Workflow** (`helm-deploy.yml`):
+**Historical Workflow Design** (`helm-deploy.yml`):
 ```yaml
 # Triggered after tests pass on main branch
 # 1. Lint Helm chart
@@ -83,7 +86,7 @@ helm/qa-portfolio/
 ├── templates/ (8 templates + _helpers.tpl + NOTES.txt)
 └── README.md
 .github/workflows/
-└── helm-deploy.yml          # NEW — CD pipeline
+└── helm-deploy.yml          # 历史规划文件，当前仓库未保留
 ```
 
 ---
@@ -96,7 +99,7 @@ helm/qa-portfolio/
 
 | ID | Task | Time | Status |
 |----|------|------|--------|
-| 2.2.1 | Create `pipeline.yml` — unified orchestration workflow | 1h | ✅ |
+| 2.2.1 | Historical design: `pipeline.yml` — unified orchestration workflow | 1h | 🗂️ Archived |
 | 2.2.2 | Stage 1: Lint + Unit test (fast gate, <2min) | 20m | ✅ |
 | 2.2.3 | Stage 2: Build Docker images + Security scan (parallel) | 20m | ✅ |
 | 2.2.4 | Stage 3: Integration test (Cypress + Newman in Docker) | 20m | ✅ |
@@ -139,12 +142,12 @@ helm/qa-portfolio/
 **Files**:
 ```
 .github/workflows/
-├── pr-checks.yml            # Existing (fast PR gate)
-├── docker-tests.yml         # Existing (production tests)
-├── security-scan.yml        # Existing (Trivy)
-├── validation.yml           # Existing
-├── helm-deploy.yml          # From 2.1 (CD)
-└── pipeline.yml             # NEW — full orchestration
+├── docker-tests.yml         # Current
+├── security-scan.yml        # Current
+├── pr-checks.yml            # Historical reference
+├── validation.yml           # Historical reference
+├── helm-deploy.yml          # Historical reference
+└── pipeline.yml             # Historical reference
 ```
 
 ---
