@@ -1,43 +1,43 @@
 #!/bin/bash
-# Script to create test PR for verifying pr-checks workflow
+# Script to create test PR for verifying security-scan workflow
 
 gh pr create \
-  --title "Test: Verify PR Workflow Automatic Triggering" \
+  --title "Test: Verify Security Scan Workflow Triggering" \
   --body "$(cat <<'EOF'
 ## Purpose
 
-This is a **test Pull Request** to verify that the `pr-checks.yml` workflow triggers automatically.
+This is a **test Pull Request** to verify that the `security-scan.yml` workflow triggers automatically.
 
 ## What This Tests
 
 - ✅ Automatic workflow triggering on `pull_request.opened` event
-- ✅ Node.js based test execution (Cypress + Newman)
-- ✅ ESLint code quality checks
-- ✅ Parallel job execution (tests + lint)
-- ✅ Test artifact uploads
-- ✅ PR check status reporting
+- ✅ npm audit job execution
+- ✅ Trivy filesystem / Docker / IaC scans
+- ✅ SARIF upload to GitHub Security tab
+- ✅ PR status reporting
 
 ## Expected Behavior
 
 Within ~10 seconds of creating this PR:
 
 1. GitHub detects the `pull_request.opened` event
-2. `pr-checks.yml` workflow starts automatically
-3. Two jobs run in parallel:
-   - "Fast Tests (Node.js Native)"
-   - "Code Linting"
-4. Newman API tests execute (18 assertions)
-5. ESLint runs on Cypress test files
-6. Green checkmark appears on PR (or red X if fails)
+2. `security-scan.yml` workflow starts automatically
+3. Security jobs begin running:
+   - "NPM Dependency Audit"
+   - "Trivy Filesystem Scan"
+   - "Trivy Docker Image Scan"
+   - "Trivy IaC Scan"
+4. SARIF results upload to the Security tab
+5. Green checkmark appears on PR (or red X if fails)
 
-**Expected completion time:** 2-3 minutes
+**Expected completion time:** 5-10 minutes
 
 ## Verification Checklist
 
 - [ ] Check "Checks" section below shows workflow running
-- [ ] Verify both jobs appear (tests + lint)
-- [ ] Confirm Newman tests pass (18/18 assertions)
-- [ ] Confirm ESLint passes (0 errors acceptable)
+- [ ] Verify security scan jobs appear
+- [ ] Confirm npm audit job completes
+- [ ] Confirm Trivy jobs complete and upload artifacts
 - [ ] Check artifacts are uploaded (Newman reports)
 - [ ] Verify green checkmark appears
 
