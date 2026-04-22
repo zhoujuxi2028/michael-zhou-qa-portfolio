@@ -94,8 +94,8 @@
 
 | 引擎 | 框架 | 测试文件数 | 用例数 | 适用场景 |
 |------|------|-----------|--------|---------|
-| **Jest Runner** | Jest + Supertest | 13 | 61 | API 模块交互、中间件行为、工具函数端到端 |
-| **Shell Runner** | Bash + curl + Docker | 3 | ~40 | 基础设施集成（Grafana/InfluxDB/k6/JMeter） |
+| **Jest Runner** | Jest + Supertest | 13 | 64 | API 模块交互、中间件行为、工具函数端到端 |
+| **Shell Runner** | Bash + curl + Docker | 7 个 phase 模块 | ~40 | 基础设施集成（Grafana/InfluxDB/k6/JMeter） |
 
 > Shell Runner 的实现已拆分为 `scripts/lib/common.sh`、`setup.sh`、`execute.sh`、`report.sh`，并通过 `tests/integration/registry.sh` + `tests/integration/phases/*.sh` 注册各阶段任务。
 
@@ -919,7 +919,7 @@ afterEach(() => {
 ### 7.3 执行命令
 
 ```bash
-# 全量集成测试（Jest）
+# 全量集成测试（仅 Jest Runner）
 npm run test:integration
 
 # 按模块执行
@@ -931,12 +931,14 @@ npx jest tests/integration/utils/
 # 单文件执行
 npx jest tests/integration/api/auth-flow.integration.test.js
 
-# Shell 集成测试（需 Docker）
+# Shell 集成测试（仅 Shell Runner，需 Docker/k6，部分 phase 还需 JMeter）
 bash scripts/integration-test.sh
 
 # 覆盖率（含集成测试）
 npm test -- --coverage
 ```
+
+`npm run test:integration` 与 `bash scripts/integration-test.sh` 是两个不同的集成测试入口：前者覆盖进程内 API / middleware / utils 集成，后者覆盖 Docker、Grafana、InfluxDB、k6、JMeter 等外部进程编排。做完整集成回归时通常需要两者都覆盖；若改动只影响其中一个维度，也可以按影响范围定向执行。
 
 ---
 

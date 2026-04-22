@@ -110,7 +110,7 @@
 ```
 主程序 (integration-test.sh)
   │
-  ├─ Parse CLI args (--phase N / --test-id XXX / --verbose)
+  ├─ Parse CLI args (--phase N|phaseN / --verbose)
   │
   ├─ Source libs (common, setup, execute, report)
   │
@@ -632,9 +632,6 @@ bash scripts/integration-test.sh
 # 运行特定 phase
 bash scripts/integration-test.sh --phase phase1
 
-# 运行单个测试（带重试）
-bash scripts/integration-test.sh --test-id JM-GRF-01
-
 # 详细日志输出
 bash scripts/integration-test.sh --verbose
 
@@ -707,4 +704,3 @@ bash scripts/integration-test.sh --verbose
 ---
 
 **文档完成。** 等待 review。
-
