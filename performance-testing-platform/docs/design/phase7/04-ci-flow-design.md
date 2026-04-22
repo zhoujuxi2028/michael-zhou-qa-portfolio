@@ -81,7 +81,7 @@ jobs:
     - npx eslint src/ tests/unit/ --ext .js
     - npx prettier --check 'src/**/*.js' 'tests/unit/**/*.js'
 
-  unit-test:
+  unit-tests:
     - npx jest tests/unit/ --coverage --coverageReporters=text --coverageReporters=lcov
 
   smoke-test:

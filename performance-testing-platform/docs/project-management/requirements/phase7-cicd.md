@@ -70,7 +70,7 @@ PERF-[子系统]-[子模块]-FR-[序号]
 
 | ID               | 需求                                                                                                  | 优先级 | 工作量 |
 | ---------------- | ----------------------------------------------------------------------------------------------------- | ------ | ------ |
-| PERF-CI-COV-FR-001   | `performance-ci.yml` unit-test job 添加 `--coverage` 参数，生成覆盖率报告                                      | P1     | 小     |
+| PERF-CI-COV-FR-001   | `performance-ci.yml` unit-tests job 添加 `--coverage` 参数，生成覆盖率报告                                     | P1     | 小     |
 | PERF-CI-COV-FR-002   | 上传 coverage 报告为 CI artifact (`actions/upload-artifact`)                                                   | P1     | 小     |
 | PERF-CI-COV-FR-003   | Jest 覆盖率阈值 (statements ≥80%, branches ≥70%, functions ≥80%, lines ≥80%) 在 CI 中强制执行，低于阈值则 fail | P1     | 小     |
 

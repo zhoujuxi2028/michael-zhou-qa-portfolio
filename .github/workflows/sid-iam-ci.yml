@@ -15,6 +15,7 @@ defaults:
 
 jobs:
   code-quality:
+    name: SID IAM / Code Quality
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -29,6 +30,7 @@ jobs:
       - run: flake8 src/ tests/ --max-line-length=120 --extend-ignore=E203
 
   unit-tests:
+    name: SID IAM / Unit Tests
     runs-on: ubuntu-latest
     needs: code-quality
     steps:
@@ -49,6 +51,7 @@ jobs:
           path: sid-iam-testing-platform/coverage.xml
 
   integration-tests:
+    name: SID IAM / Integration Tests
     runs-on: ubuntu-latest
     needs: unit-tests
     steps:
@@ -63,6 +66,7 @@ jobs:
         run: pytest tests/ -v -m integration
 
   all-tests:
+    name: SID IAM / Full Test Matrix
     runs-on: ubuntu-latest
     needs: [unit-tests, integration-tests]
     steps:

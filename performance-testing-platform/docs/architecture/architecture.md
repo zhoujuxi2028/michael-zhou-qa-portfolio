@@ -442,8 +442,8 @@ executor: ramping-arrival-rate
 ### 7.3 CI Pipeline 架构
 
 ```
-lint (ESLint + Prettier) → unit-test → ┬─ k6 smoke gate      (grafana/setup-k6-action)
-                                       └─ jmeter smoke gate   (apt-get install + wget)
+performance-lint → unit-tests → ┬─ smoke-test         (grafana/setup-k6-action)
+                                └─ jmeter-smoke-test  (apt-get install + wget)
 ```
 
 两个 smoke gate 并行运行，均通过才算 CI 绿灯。lint 阶段包含 ESLint 和 Prettier 两个独立检查。
@@ -453,10 +453,10 @@ lint (ESLint + Prettier) → unit-test → ┬─ k6 smoke gate      (grafana/se
 ### 8.1 CI Pipeline 架构
 
 ```
-lint (ESLint + Prettier) → unit-test (coverage ≥80%) → ┬─ k6 smoke gate
-                                                        ├─ jmeter smoke gate
-                                                        ├─ baseline-compare (regression detection)
-                                                        └─ trend-collect (historical analysis)
+performance-lint → unit-tests (coverage ≥80%) → ┬─ smoke-test       (k6 smoke gate)
+                                                 ├─ jmeter-smoke-test
+                                                 ├─ baseline-compare (regression detection)
+                                                 └─ trend-collect    (historical analysis)
 ```
 
 **CI 流程特点：**
@@ -466,6 +466,7 @@ lint (ESLint + Prettier) → unit-test (coverage ≥80%) → ┬─ k6 smoke gat
 - **基线对比**: 自动对比历史性能数据，检测回归
 - **趋势收集**: 持续收集性能趋势，支持长期分析
 - **失败策略**: 禁用 `|| true`，任何失败直接导致 CI fail
+- **命名规范**: GitHub Checks 使用 `Performance Testing / <Stage>` 显示名，避免 monorepo 内多个 `Unit Tests` 混淆
 
 **Prettier 检查范围** (ISS-015 后扩展):
 - `src/**/*.js` — 源代码
@@ -478,7 +479,7 @@ lint (ESLint + Prettier) → unit-test (coverage ≥80%) → ┬─ k6 smoke gat
 
 **分支保护建议** (ISS-015 RCA):
 - 建议在 `main` 和 `feature/performance-testing` 分支启用 branch protection rules
-- 要求 `lint` 和 `unit-test` status checks 通过后才能合并
+- 要求 `Performance Testing / Code Quality` 和 `Performance Testing / Unit Tests` status checks 通过后才能合并
 - 需要 repo admin 在 GitHub Settings → Branches → Branch protection rules 手动配置
 
 ### 8.2 CI 工作流程组件
