@@ -69,10 +69,11 @@
 
 ### 4.5 soak
 - 目标：验证长时间稳定性、内存泄漏、observer 观测平面
-- 负载：长稳态运行，脚本按环境变量覆写 stage
+- 负载：默认采用 `2m ramp-up + 1h steady + 1m ramp-down`，其中 1h 稳态期用于覆盖 test-plan 中“长时间运行稳定性”目标；脚本可按环境变量覆写 stage
 - 场景：`load + observer`
 - 门禁：仅针对 `scenario:load` 计算业务 SLA
 - 观测：heap、event loop、认证延迟、恢复时间
+- 缩短验证：`soak-short.k6.js` 负责短时门禁，避免日常验证强制执行 1h 稳态
 
 ## 5. TDD 实施设计
 
