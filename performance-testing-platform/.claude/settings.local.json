@@ -65,7 +65,12 @@
       "Bash(curl -sf http://localhost:8086/ping)",
       "Bash(npm --version)",
       "Bash(npm ls *)",
-      "Skill(claude-api)"
+      "Skill(claude-api)",
+      "Bash(sort -rn -k2)",
+      "Bash(awk '$2 > 0 { del=$2; ins=$1; print del, $3 }')",
+      "Bash(awk '{print $2, $3}')",
+      "Bash(awk '$2 ~ /^[0-9]+$/ { sum += $2; if \\($2 > max\\) { max=$2; file=$3 } } END { print \"total_del=\"sum, \"max=\"max, \"file=\"file }')",
+      "Bash(awk '$1 ~ /^[0-9]+$/ && $2 ~ /^[0-9]+$/ { ins += $1; del += $2 } END { print \"ins=\"ins, \"del=\"del }')"
     ]
   }
 }
