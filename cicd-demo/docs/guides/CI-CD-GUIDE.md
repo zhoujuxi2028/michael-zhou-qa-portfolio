@@ -25,8 +25,9 @@
 graph TD
     A[代码变更] --> B{触发类型}
     B -->|Push / PR| C[security-scan.yml]
-    B -->|Manual / Schedule| D[docker-tests.yml]
-    B -->|Manual / Schedule| C
+    B -->|Schedule| C
+    B -->|Workflow Dispatch| C
+    B -->|Schedule / Workflow Dispatch| D[docker-tests.yml]
     C --> E[npm audit + Trivy]
     D --> F[Docker Compose 回归测试]
     E --> G[Security Tab / Artifacts]

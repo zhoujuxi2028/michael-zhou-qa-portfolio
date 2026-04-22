@@ -39,7 +39,9 @@ jobs:
       # - uses: ./.github/actions/setup-node-project
       #   with:
       #     node-version: '22'
-      #     working-directory: <project>
+      #     # 若 workflow 已设置 defaults.run.working-directory: <project>
+      #     # 这里应传 '.'；否则传 '<project>'
+      #     working-directory: .
       #     cache-dependency-path: <project>/package-lock.json
       # - run: npx eslint .
 
@@ -47,7 +49,9 @@ jobs:
       # - uses: ./.github/actions/setup-python-project
       #   with:
       #     python-version: '3.11'
-      #     working-directory: <project>
+      #     # 若 workflow 已设置 defaults.run.working-directory: <project>
+      #     # 这里应传 '.'；否则传 '<project>'
+      #     working-directory: .
       #     cache-dependency-path: <project>/requirements.txt
       # - run: black --check src/ tests/
       # - run: isort --check-only src/ tests/
@@ -65,7 +69,9 @@ jobs:
       # - uses: ./.github/actions/setup-node-project
       #   with:
       #     node-version: '22'
-      #     working-directory: <project>
+      #     # 若 workflow 已设置 defaults.run.working-directory: <project>
+      #     # 这里应传 '.'；否则传 '<project>'
+      #     working-directory: .
       #     cache-dependency-path: <project>/package-lock.json
       # - run: npm test          # Do NOT add continue-on-error: true
 
