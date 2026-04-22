@@ -149,7 +149,7 @@ Page load tests enforce a performance budget (`< 5000ms`) using the Navigation T
 
 ## CI/CD Integration
 
-GitHub Actions workflow (`.github/workflows/playwright-tests.yml`) runs tests across all 3 browsers in parallel:
+历史设计中曾规划 `playwright-tests.yml` 覆盖 3 浏览器并行执行；当前仓库根目录未保留独立 Playwright workflow：
 
 - **Trigger**: PRs and pushes to `main` branch, filtered to `playwright-demo/**`
 - **Matrix**: Chromium, Firefox, WebKit running as parallel jobs
@@ -170,10 +170,10 @@ GitHub Actions workflow (`.github/workflows/playwright-tests.yml`) runs tests ac
 
 | Document | Description |
 |----------|-------------|
-| [DESIGN.md](docs/DESIGN.md) | Architecture, design patterns, cross-browser strategy |
-| [TEST_CASES.md](docs/TEST_CASES.md) | All 38 test cases with IDs and validation details |
-| [TEST_REPORT.md](docs/TEST_REPORT.md) | CI execution report with per-browser results |
-| [WBS.md](docs/WBS.md) | Work Breakdown Structure (8 phases) |
+| [DESIGN.md](docs/architecture/DESIGN.md) | Architecture, design patterns, cross-browser strategy |
+| [TEST_CASES.md](docs/test-cases/TEST_CASES.md) | All 38 test cases with IDs and validation details |
+| [TEST_REPORT.md](docs/test-cases/TEST_REPORT.md) | CI execution report with per-browser results |
+| [WBS.md](docs/project-management/WBS.md) | Work Breakdown Structure (8 phases) |
 
 ## Dependencies
 

@@ -193,7 +193,7 @@
 
 ### #41 假 deployment environment
 - **现象：** GitHub Deployments 25+ 条空记录
-- **根因：** `pipeline.yml` 用 `environment:` 但只有 echo
+- **根因：** 历史 `pipeline.yml` 用 `environment:` 但只有 echo
 - **修复：** 移除 `environment:` 配置
 - **防御措施：** 已修复并清理
 - **改进计划：** CI workflow 模板 → [#75](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/75)
