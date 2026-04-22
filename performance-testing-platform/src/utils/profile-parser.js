@@ -46,23 +46,15 @@ function validateObserver(observer) {
     throw new Error('Profile "observer" must be an object');
   }
 
-  if (
-    observer.enabled !== null &&
-    observer.enabled !== undefined &&
-    typeof observer.enabled !== 'boolean'
-  ) {
+  if ('enabled' in observer && typeof observer.enabled !== 'boolean') {
     throw new Error('Profile "observer.enabled" must be boolean');
   }
 
-  if (observer.exec !== null && observer.exec !== undefined && typeof observer.exec !== 'string') {
+  if ('exec' in observer && typeof observer.exec !== 'string') {
     throw new Error('Profile "observer.exec" must be string');
   }
 
-  if (
-    observer.vus !== null &&
-    observer.vus !== undefined &&
-    (!Number.isInteger(observer.vus) || observer.vus < 1)
-  ) {
+  if ('vus' in observer && (!Number.isInteger(observer.vus) || observer.vus < 1)) {
     throw new Error('Profile "observer.vus" must be an integer >= 1');
   }
 }
