@@ -918,6 +918,8 @@ afterEach(() => {
 
 ### 7.3 执行命令
 
+`npm run test:integration` 与 `bash scripts/integration-test.sh` 是两个不同的集成测试入口：前者覆盖进程内 API / middleware / utils 集成，后者覆盖 Docker、Grafana、InfluxDB、k6、JMeter 等外部进程编排。做完整集成回归时通常需要两者都覆盖；若改动只影响其中一个维度，也可以按影响范围定向执行。
+
 ```bash
 # 全量集成测试（仅 Jest Runner）
 npm run test:integration
@@ -937,8 +939,6 @@ bash scripts/integration-test.sh
 # 覆盖率（含集成测试）
 npm test -- --coverage
 ```
-
-`npm run test:integration` 与 `bash scripts/integration-test.sh` 是两个不同的集成测试入口：前者覆盖进程内 API / middleware / utils 集成，后者覆盖 Docker、Grafana、InfluxDB、k6、JMeter 等外部进程编排。做完整集成回归时通常需要两者都覆盖；若改动只影响其中一个维度，也可以按影响范围定向执行。
 
 ---
 
