@@ -43,11 +43,12 @@ Two jobs triggered on push/PR to `main` or `develop`:
 
 ### Workflow Execution Matrix
 
-| Event | pr-checks.yml | docker-tests.yml | validation.yml |
-|-------|---------------|------------------|----------------|
-| PR to main | Yes | No | Yes |
-| Push to main | No | Yes | Yes |
-| Manual dispatch | Yes | Yes | Yes |
+| Event | docker-tests.yml | security-scan.yml |
+|-------|------------------|-------------------|
+| PR to main | No | Yes |
+| Push to main | No | Yes |
+| Scheduled run | Yes | Yes |
+| Manual dispatch | Yes | Yes |
 
 ---
 
@@ -86,10 +87,10 @@ Pure HTML/CSS/JS dashboard showing: total runs, pass rate, average duration, lat
 
 ## Related Documentation
 
-- Error codes & prevention: [ERROR-CLASSIFICATION.md](../ERROR-CLASSIFICATION.md)
+- Error codes & prevention: [ERROR-CLASSIFICATION.md](./ERROR-CLASSIFICATION.md)
 - Troubleshooting: [TROUBLESHOOTING.md](./guides/TROUBLESHOOTING.md)
 - CI/CD architecture: [CI-CD-GUIDE.md](./guides/CI-CD-GUIDE.md)
-- Interview preparation: [INTERVIEW-GUIDE.md](./INTERVIEW-GUIDE.md)
+- Interview preparation: [FAQ-GUIDE.md](./guides/FAQ-GUIDE.md)
 
 ---
 
