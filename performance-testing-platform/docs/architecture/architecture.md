@@ -611,8 +611,8 @@ jobs:
 | k6-smoke | ✅ PASS | 45ms | 0.0% | +2% |
 | jmeter-smoke | ✅ PASS | 52ms | 0.0% | -1% |
 
-📈 Trend Analysis: [View Dashboard](...)
-📄 Baseline Comparison: [View Details](...)
+📈 Trend Analysis: Dashboard link（运行时生成）
+📄 Baseline Comparison: comparison-result.json artifact
 
 ⚠️ No regressions detected
 ```
