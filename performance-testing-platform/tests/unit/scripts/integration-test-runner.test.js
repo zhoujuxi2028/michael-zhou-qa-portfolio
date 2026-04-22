@@ -7,16 +7,24 @@ const PROJECT_ROOT = path.join(__dirname, '../../../');
 const MAIN_SCRIPT = path.join(PROJECT_ROOT, 'scripts/integration-test.sh');
 
 function runBash(script, options = {}) {
-  return spawnSync('/bin/bash', ['-c', script], {
-    cwd: options.cwd || PROJECT_ROOT,
-    encoding: 'utf8',
-    timeout: options.timeout || 60000,
-    env: { ...process.env, ...(options.env || {}) },
-  });
+  const scriptDir = fs.mkdtempSync(path.join(os.tmpdir(), 'integration-runner-script-'));
+  const scriptPath = path.join(scriptDir, 'run.sh');
+  fs.writeFileSync(scriptPath, script, { mode: 0o700 });
+
+  try {
+    return spawnSync('/bin/bash', [scriptPath], {
+      cwd: options.cwd || PROJECT_ROOT,
+      encoding: 'utf8',
+      timeout: options.timeout || 60000,
+      env: { ...process.env, ...(options.env || {}) },
+    });
+  } finally {
+    fs.rmSync(scriptDir, { recursive: true, force: true });
+  }
 }
 
 describe('integration-test shell runner', () => {
-  test('run_critical 成功时返回 0 并输出成功日志', () => {
+  test('测试 run_critical 成功时返回 0 并输出成功日志', () => {
     const result = runBash(`
       source scripts/lib/common.sh
       run_critical "bash -lc 'exit 0'" "successful command"
@@ -26,7 +34,7 @@ describe('integration-test shell runner', () => {
     expect(result.stdout).toContain('✅ successful command');
   });
 
-  test('run_critical 返回原始退出码，避免隐藏失败', () => {
+  test('测试 run_critical 返回原始退出码，避免隐藏失败', () => {
     const result = runBash(`
       source scripts/lib/common.sh
       run_critical "bash -lc 'exit 7'" "failing command"
@@ -36,7 +44,7 @@ describe('integration-test shell runner', () => {
     expect(result.stderr).toContain('exit code 7');
   });
 
-  test('retry_with_backoff 成功时返回 0', () => {
+  test('测试 retry_with_backoff 成功时返回 0', () => {
     const result = runBash(`
       source scripts/lib/common.sh
       retry_with_backoff 2 0 "bash -lc 'exit 0'"
@@ -46,7 +54,7 @@ describe('integration-test shell runner', () => {
     expect(result.stdout).toContain('Success after 1 attempt(s)');
   });
 
-  test('retry_with_backoff 在重试耗尽后返回最后一次退出码', () => {
+  test('测试 retry_with_backoff 在重试耗尽后返回最后一次退出码', () => {
     const result = runBash(`
       source scripts/lib/common.sh
       retry_with_backoff 2 0 "bash -lc 'exit 9'"
@@ -56,7 +64,7 @@ describe('integration-test shell runner', () => {
     expect(result.stderr).toContain('last exit code: 9');
   });
 
-  test('execute_phase 支持数字 phase，并在失败后继续汇总后续结果', () => {
+  test('测试 execute_phase 支持数字 phase 参数，并在失败后继续汇总后续结果', () => {
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'integration-runner-execute-'));
     fs.mkdirSync(path.join(tempDir, 'tests/integration'), { recursive: true });
     fs.writeFileSync(
@@ -93,7 +101,7 @@ ALL_TESTS=("\${PHASE1_TESTS[@]}")
     expect(result.stdout).toContain('row2=PASS-CASE|PASS|');
   });
 
-  test('main runner 失败时仍生成报告并释放锁', () => {
+  test('测试主 runner 失败时仍生成报告并释放锁', () => {
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'integration-runner-main-'));
     const scriptsDir = path.join(tempDir, 'scripts');
     const libDir = path.join(scriptsDir, 'lib');
