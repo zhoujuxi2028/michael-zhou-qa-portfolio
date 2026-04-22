@@ -7,6 +7,7 @@
 #   - workflow_dispatch always included
 #   - NO continue-on-error on test/lint/security steps
 #   - NO environment: unless real deployment exists
+#   - Reuse local composite actions for Node.js / Python setup
 #   - Artifact upload with v7+
 # ============================================================================
 
@@ -35,19 +36,23 @@ jobs:
       - uses: actions/checkout@v6
 
       # --- Node.js projects ---
-      # - uses: actions/setup-node@v6
+      # - uses: ./.github/actions/setup-node-project
       #   with:
       #     node-version: '22'
-      #     cache: 'npm'
+      #     # 若 workflow 已设置 defaults.run.working-directory: <project>
+      #     # 这里应传 '.'；否则传 '<project>'
+      #     working-directory: .
       #     cache-dependency-path: <project>/package-lock.json
-      # - run: npm ci
       # - run: npx eslint .
 
       # --- Python projects ---
-      # - uses: actions/setup-python@v6
+      # - uses: ./.github/actions/setup-python-project
       #   with:
       #     python-version: '3.11'
-      # - run: pip install -r requirements.txt
+      #     # 若 workflow 已设置 defaults.run.working-directory: <project>
+      #     # 这里应传 '.'；否则传 '<project>'
+      #     working-directory: .
+      #     cache-dependency-path: <project>/requirements.txt
       # - run: black --check src/ tests/
       # - run: isort --check-only src/ tests/
       # - run: flake8 src/ tests/ --max-line-length=120
@@ -61,12 +66,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      # - uses: actions/setup-node@v6
+      # - uses: ./.github/actions/setup-node-project
       #   with:
       #     node-version: '22'
-      #     cache: 'npm'
+      #     # 若 workflow 已设置 defaults.run.working-directory: <project>
+      #     # 这里应传 '.'；否则传 '<project>'
+      #     working-directory: .
       #     cache-dependency-path: <project>/package-lock.json
-      # - run: npm ci
       # - run: npm test          # Do NOT add continue-on-error: true
 
       # --- Upload artifacts (always, for debugging failed runs) ---
