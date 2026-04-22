@@ -6,8 +6,8 @@ This document categorizes all discovered issues in the cicd-demo project, assign
 
 **This project uses GitHub Actions** for continuous integration and deployment. All automated checks, tests, and validations are orchestrated through GitHub Actions workflows located in `.github/workflows/`:
 
-- **pr-checks.yml** - Fast feedback loop for pull requests (2-3 minutes)
-- **docker-tests.yml** - Production-like Docker tests on main branch (5-8 minutes)
+- **docker-tests.yml** - Nightly / manual Docker regression tests (5-8 minutes)
+- **security-scan.yml** - Push / PR / daily security scanning (npm audit + Trivy)
 
 The error prevention strategies in this document are specifically designed for GitHub Actions integration.
 

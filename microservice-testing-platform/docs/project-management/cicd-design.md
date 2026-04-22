@@ -33,7 +33,7 @@
 
 ## 2. GitHub Actions Workflow
 
-### 2.1 CI Workflow (`microservice-ci.yml`)
+### 2.1 CI Workflow（历史方案：`microservice-ci.yml`，当前根目录未保留）
 
 | Job | Trigger | Runner | 依赖 |
 |-----|---------|--------|------|
