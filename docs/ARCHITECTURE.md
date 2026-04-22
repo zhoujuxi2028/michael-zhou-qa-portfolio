@@ -4,20 +4,20 @@
 
 ## 职责分工矩阵
 
-| 目录 | 职责 | 权威来源 | 说明 |
-|------|------|--------|------|
-| `docs/` | 项目级规范、架构、流程 | `ARCHITECTURE.md` (本文) | 规范不变 |
+| 目录 / 文件 | 职责 | 权威来源 | 说明 |
+|-------------|------|----------|------|
+| `docs/README.md` | 根目录导航、分类入口、归档规则 | `README.md` | 先看这里，再进入具体目录 |
+| `docs/ARCHITECTURE.md` | 文档治理规范、职责分工、命名约定 | `ARCHITECTURE.md` (本文) | 文档架构的 SSOT |
 | `docs/dev-process-checklist.md` | 5 阶段开发流程检查清单 | 官方 | 阶段规则、交付物 |
-| `docs/superpowers/` | 实施计划、技术方案 | 计划文件 | 按时间戳组织 |
-| `docs/guides/` | 操作指南、最佳实践 | 各文件 | 学习资源、故障排查 |
-| `docs/reports/` | 项目总结、事后分析 | 各文件 | 学习记录、改进建议 |
-| 各项目 `CLAUDE.md` | 项目级配置、快速命令 | 各项目维护 | 项目独立 |
-| 各项目 `README.md` | 项目级文档入口 | 各项目维护 | 优先于其他 |
-| `docs/copilot-cli-journey/` | GitHub Copilot 学习中心 | 中心权威 | 集中记录学习进度 |
-| `docs/copilot-cli-journey/PHASE*-COMPLETION-REPORT.md` | 学习阶段完成报告 | 官方记录 | 唯一的学习进度来源 |
-| `docs/copilot-cli-journey/LEARNING-BRANCH-GUIDE.md` | 分支使用指南 | 官方 | 指导实验工作流 |
-| `feature/copilot-learning` 分支 | 代码实验示例 | 链接指向主分支报告 | **仅链接，不复制** |
-| `feature/copilot-learning/experiments/README.md` | 实验指南 | 链接到 copilot-cli-journey | 指向权威来源 |
+| `docs/GIT-COMMIT-CONVENTION.md` | Git 提交规范 | 官方 | 统一 commit 规则 |
+| `docs/guides/` | 操作指南、环境搭建、最佳实践 | 各文件 | 面向执行与落地 |
+| `docs/project-management/` | 项目管理归档 | 各文件 | 需求、计划、事后分析等管理记录 |
+| `docs/project-management/postmortems/` | Portfolio 级 postmortem / RCA 归档 | 各文件 | 时间序列沉淀，不放操作指南 |
+| `docs/reports/` | 实施总结、验证记录、专项报告 | 各文件 | 输出结果，不放流程规范 |
+| `docs/learning/` | 学习模块、阶段报告、学习资产 | 各文件 | 面向学习沉淀 |
+| `docs/superpowers/` | AI 辅助 specs / plans | 各文件 | 按主题或时间戳归档 |
+| 各项目 `README.md` | 项目级文档入口 | 各项目维护 | 优先于其他项目文档 |
+| 各项目 `CLAUDE.md` | 项目级配置、命令、规则 | 各项目维护 | 项目独立维护 |
 
 ## 禁止的模式
 
@@ -38,6 +38,10 @@
 4. **隐含的职责重叠**
    - ✗ `docs/guides/X.md` 和 `docs/how-to/X.md` 记录相同内容
    - ✓ 统一为一个位置，建立清晰的链接
+
+5. **根目录堆积归档文档**
+   - ✗ 把 postmortem、实施总结、环境笔记直接堆在 `docs/` 根层
+   - ✓ `docs/` 根层仅保留治理类核心文档，归档内容进入对应子目录
 
 ### ✅ 正确的做法
 
@@ -60,7 +64,7 @@
 
 3. **文档链接模板**
    ```markdown
-   详见 [中心权威来源](../../docs/center-file.md)
+   详见 [中心权威来源](README.md)
    不在此处重复信息。
    ```
 
@@ -84,7 +88,7 @@
   - 如果两者都不是 → **先与 reviewer 讨论职责**
 
 - [ ] **Q4: 有没有更新导航？**
-  - 新文档是否添加到相关目录的 `README.md`？
+  - 新文档是否添加到 `docs/README.md` 或相关目录导航？
   - 相关的权威来源是否需要链接更新？
 
 - [ ] **Q5: 文件名是否符合约定？**
@@ -102,6 +106,7 @@
 检查清单:           <task>-checklist.md
 故障排查:           troubleshooting-<issue>.md
 事后分析:           postmortem-<YYYY-QN>.md
+专项 RCA:           RCA-<issue>-<topic>.md
 ```
 
 ## 审查流程 (在 PR 中)
@@ -129,6 +134,6 @@ PR reviewer 必须检查：
 
 ---
 
-**最后更新**: 2026-04-15
+**最后更新**: 2026-04-22
 **维护人**: Copilot + Team
 **权威性**: ✅ 架构规范，所有文档工作必须遵循
