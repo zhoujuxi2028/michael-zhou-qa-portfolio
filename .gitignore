@@ -4,4 +4,5 @@ security-testing-demo/.claude/
 .claude/settings.local.json
 coverage/
 .worktrees/
+# JMeter execution logs - test artifacts
 **/jmeter.log
