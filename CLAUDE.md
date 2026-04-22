@@ -43,4 +43,4 @@ pytest tests/ -v
 - 项目说明看各子项目 `README.md`
 - 面向 Agent 的简明规则看各子项目 `CLAUDE.md`
 - 历史问题与排查经验见 `docs/postmortem-2026-Q1.md`、`docs/guides/workaround-tracking.md`
-- 修改 CI 时，先本地验证对应命令，禁止用 `|| true` 或 `continue-on-error` 掩盖失败
+- 修改 CI 时，先本地验证对应命令，禁止用 shell 兜底写法或 `continue-on-error` 掩盖失败
