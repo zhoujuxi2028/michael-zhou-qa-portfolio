@@ -161,7 +161,7 @@ Step 2: Shell Runner（~10 min，需 Docker）
 | 集成测试     | `bash scripts/integration-test.sh` | Stage 3 只验证 SUT 单元测试与 SUT 集成测试范围，不包含 soak / 其他性能验收项 |
 | k6 smoke     | `npm run k6:smoke`                 | p95 < 500ms, error < 1%                   |
 | JMeter smoke | `npm run jmeter:smoke`             | error < 1%                                |
-| CI 流水线    | push → GitHub Actions              | 6 jobs 全绿（lint + unit-test + k6 + jmeter + baseline + trend） |
+| CI 流水线    | push → GitHub Actions              | 6 jobs 全绿（Performance Testing / Code Quality、Performance Testing / Unit Tests、Performance Testing / k6 Smoke Tests、Performance Testing / JMeter Smoke Tests、Performance Testing / Baseline Compare、Performance Testing / Trend Collect） |
 
 ### P2 — 建议执行 (发布前完成)
 
@@ -484,5 +484,5 @@ npm run generate-summary                    # 生成执行摘要报告
 | 架构设计 | [architecture.md](../architecture/architecture.md)                    | 系统架构 + 数据流               |
 | 风险清单 | [risks.md](../project-management/risks.md)                            | 技术风险 + 缓解措施             |
 | 需求文档 | [requirements.md](../project-management/requirements.md)              | Phase 1~7 需求编号              |
-| 开发流程 | [dev-process-checklist.md](../../../../docs/dev-process-checklist.md) | 5 阶段流程 + checklist          |
+| 开发流程 | [dev-process-checklist.md](../../../docs/dev-process-checklist.md) | 5 阶段流程 + checklist          |
 | **Phase 7 Stage 4 验收清单** | [phase7-stage4-validation.md](phase7-stage4-validation.md) | Phase 7 验收阶段逐轮检查清单 |

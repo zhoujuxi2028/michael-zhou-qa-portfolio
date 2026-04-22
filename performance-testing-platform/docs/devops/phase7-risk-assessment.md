@@ -140,7 +140,7 @@
 ```bash
 # 运行测试CI workflow
 - 触发: 手动workflow_dispatch
-- 验证: unit-test → smoke-test → baseline-compare → trend-collect
+- 验证: unit-tests → smoke-test → baseline-compare → trend-collect
 - 检查: 所有job按顺序执行
 - 验证: 失败时阻止后续job
 ```
