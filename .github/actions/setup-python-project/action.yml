@@ -36,6 +36,7 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
+        set -euo pipefail
         python -m pip install --upgrade pip
         pip install -r ${{ inputs.requirements-file }}
         if [ -n "${{ inputs.extra-packages }}" ]; then
