@@ -48,7 +48,7 @@ pytest tests/ -v
 
 ## GitHub Actions
 
-当前仓库主要工作流位于 `.github/workflows/`：
+当前仓库现有 workflow 文件位于 `.github/workflows/`：
 - `api-testing-ci.yml`
 - `k8s-ci.yml`
 - `performance-ci.yml`
