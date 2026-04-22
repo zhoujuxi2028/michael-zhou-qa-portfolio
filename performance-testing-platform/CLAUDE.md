@@ -25,3 +25,4 @@ npm run k6:smoke
 - API 默认端口 `3000`，Grafana `3010`，InfluxDB `8086`
 - 集成测试有锁：`/tmp/integration-test.lock`
 - JMeter 正式运行前优先执行 `npm run jmeter:dryrun`
+- CI 相关改动禁止使用 `|| true` 或 `continue-on-error` 掩盖失败
