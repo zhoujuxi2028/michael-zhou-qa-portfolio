@@ -3,26 +3,32 @@ name: Claude Code Review
 on:
   pull_request:
     types: [opened, synchronize, ready_for_review, reopened]
-    # Optional: Only run on specific file changes
-    # paths:
-    #   - "src/**/*.ts"
-    #   - "src/**/*.tsx"
-    #   - "src/**/*.js"
-    #   - "src/**/*.jsx"
+    # 只对代码变更触发；故意排除 .github/workflows/ 下的 yml 文件：
+    # 修改 workflow 文件的 PR 会导致 OIDC token 校验失败（运行中的 workflow
+    # 与 main 分支内容不一致），排除后可完全避免该报错。
+    paths:
+      - "**/*.js"
+      - "**/*.ts"
+      - "**/*.py"
+      - "**/*.json"
+
+# 并发控制：同一 PR 有新 push 时，取消上一次未完成的运行
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   claude-review:
-    # Optional: Filter by PR author
-    # if: |
-    #   github.event.pull_request.user.login == 'external-contributor' ||
-    #   github.event.pull_request.user.login == 'new-developer' ||
-    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
+    # 跳过：Draft PR 和 dependabot[bot] 的自动安全更新
+    if: |
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.user.login != 'dependabot[bot]'
 
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      pull-requests: read
-      issues: read
+      contents: write
+      pull-requests: write
+      issues: write
       id-token: write
 
     steps:
