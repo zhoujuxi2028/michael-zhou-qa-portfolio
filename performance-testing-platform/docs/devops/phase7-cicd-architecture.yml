@@ -496,7 +496,7 @@ ci_workflow_automation:
     target_branches: ["main", "feature/performance-testing"]
     required_settings:
       require_status_checks: true
-      required_checks: ["lint", "unit-test"]
+      required_checks: ["Performance Testing / Code Quality", "Performance Testing / Unit Tests"]
       require_branches_up_to_date: true
       dismiss_stale_reviews: true
     note: "需要 repo admin 在 GitHub Settings > Branches > Branch protection rules 手动配置"
@@ -653,7 +653,7 @@ current_testing_capabilities:
     smoke_test: "pass required"
     baseline_comparison: "warning/fail based on threshold"
     pre_commit: "husky + lint-staged (ESLint + Prettier) — 本地门禁"
-    branch_protection: "建议启用 — 要求 lint + unit-test status checks 通过才能合并"
+    branch_protection: "建议启用 — 要求 Performance Testing / Code Quality + Performance Testing / Unit Tests status checks 通过才能合并"
 ```
 
 ### 5.2 DevOps实施能力需求
