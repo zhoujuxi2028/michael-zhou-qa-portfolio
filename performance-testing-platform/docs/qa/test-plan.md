@@ -161,7 +161,7 @@ Step 2: Shell Runner（~10 min，需 Docker）
 | 集成测试     | `bash scripts/integration-test.sh` | Stage 3 只验证 SUT 单元测试与 SUT 集成测试范围，不包含 soak / 其他性能验收项 |
 | k6 smoke     | `npm run k6:smoke`                 | p95 < 500ms, error < 1%                   |
 | JMeter smoke | `npm run jmeter:smoke`             | error < 1%                                |
-| CI 流水线    | push → GitHub Actions              | 6 jobs 全绿（Performance Testing / Code Quality + Performance Testing / Unit Tests + smoke / jmeter / baseline / trend） |
+| CI 流水线    | push → GitHub Actions              | 6 jobs 全绿（Performance Testing / Code Quality、Performance Testing / Unit Tests、Performance Testing / k6 Smoke Tests、Performance Testing / JMeter Smoke Tests、Performance Testing / Baseline Compare、Performance Testing / Trend Collect） |
 
 ### P2 — 建议执行 (发布前完成)
 
