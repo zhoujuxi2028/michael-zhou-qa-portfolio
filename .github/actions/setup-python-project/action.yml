@@ -40,5 +40,6 @@ runs:
         python -m pip install --upgrade pip
         pip install -r ${{ inputs.requirements-file }}
         if [ -n "${{ inputs.extra-packages }}" ]; then
-          pip install ${{ inputs.extra-packages }}
+          read -r -a extra_packages <<<"${{ inputs.extra-packages }}"
+          pip install "${extra_packages[@]}"
         fi

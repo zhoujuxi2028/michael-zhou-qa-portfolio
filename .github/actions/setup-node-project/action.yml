@@ -13,10 +13,6 @@ inputs:
     description: 项目工作目录
     required: false
     default: .
-  install-command:
-    description: 依赖安装命令
-    required: false
-    default: npm ci
 
 runs:
   using: composite
@@ -33,4 +29,4 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
         set -euo pipefail
-        ${{ inputs.install-command }}
+        npm ci
