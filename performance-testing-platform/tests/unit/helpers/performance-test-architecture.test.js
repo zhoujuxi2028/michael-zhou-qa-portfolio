@@ -41,6 +41,7 @@ describe('五类性能测试架构配置', () => {
     );
 
     expect(content).toContain("loadProfile('spike')");
+    expect(content).not.toContain('export const options = {');
   });
 
   test('K6-ARCH-UT-05: soak 脚本通过统一 helper 构建多场景 options', () => {
