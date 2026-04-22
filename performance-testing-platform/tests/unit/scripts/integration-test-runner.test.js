@@ -7,15 +7,25 @@ const PROJECT_ROOT = path.join(__dirname, '../../../');
 const MAIN_SCRIPT = path.join(PROJECT_ROOT, 'scripts/integration-test.sh');
 
 function runBash(script, options = {}) {
-  return spawnSync('/bin/bash', ['-lc', script], {
+  return spawnSync('/bin/bash', ['-c', script], {
     cwd: options.cwd || PROJECT_ROOT,
     encoding: 'utf8',
-    timeout: options.timeout || 30000,
+    timeout: options.timeout || 60000,
     env: { ...process.env, ...(options.env || {}) },
   });
 }
 
 describe('integration-test shell runner', () => {
+  test('run_critical 成功时返回 0 并输出成功日志', () => {
+    const result = runBash(`
+      source scripts/lib/common.sh
+      run_critical "bash -lc 'exit 0'" "successful command"
+    `);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('✅ successful command');
+  });
+
   test('run_critical 返回原始退出码，避免隐藏失败', () => {
     const result = runBash(`
       source scripts/lib/common.sh
@@ -24,6 +34,16 @@ describe('integration-test shell runner', () => {
 
     expect(result.status).toBe(7);
     expect(result.stderr).toContain('exit code 7');
+  });
+
+  test('retry_with_backoff 成功时返回 0', () => {
+    const result = runBash(`
+      source scripts/lib/common.sh
+      retry_with_backoff 2 0 "bash -lc 'exit 0'"
+    `);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('Success after 1 attempt(s)');
   });
 
   test('retry_with_backoff 在重试耗尽后返回最后一次退出码', () => {
