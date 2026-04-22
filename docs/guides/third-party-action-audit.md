@@ -141,5 +141,5 @@ grep -rn "node-version" .github/workflows/
 ## 相关文档
 
 - [CLAUDE.md Common Pitfalls](../../CLAUDE.md) — ISS-009: 升级 action 全量扫描
-- [Postmortem 2026 Q1](../postmortem-2026-Q1.md) — #35, #37, #39 详细分析
+- [Postmortem 2026 Q1](../project-management/postmortems/postmortem-2026-Q1.md) — #35, #37, #39 详细分析
 - [CI Workflow Verification Checklist](./ci-workflow-verification-checklist.md)
