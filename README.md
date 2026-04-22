@@ -48,16 +48,7 @@ pytest tests/ -v
 
 ## GitHub Actions
 
-当前仓库现有 workflow 文件位于 `.github/workflows/`：
-- `api-testing-ci.yml`
-- `k8s-ci.yml`
-- `performance-ci.yml`
-- `security-tests.yml`
-- `security-scan.yml`
-- `sid-iam-ci.yml`
-- `docker-tests.yml`
-- `claude.yml`
-- `claude-code-review.yml`
+仓库当前 workflow 文件统一放在 `.github/workflows/`，请直接以该目录为准。
 
 ## 参考文档
 - 根目录规范：[`CLAUDE.md`](./CLAUDE.md)
