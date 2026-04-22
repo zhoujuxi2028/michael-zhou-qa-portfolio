@@ -148,6 +148,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `api-testing-ci.yml` | api-testing-demo | Validate collections → Newman tests (280+ assertions) |
 | `selenium-ci.yml` | selenium-demo | Code quality (black + flake8) → smoke tests |
 | `performance-ci.yml` | performance-testing-platform | Lint → unit tests → k6 + JMeter smoke gate |
+| `repo-meta-ci.yml` | repository root | PR 级轻量 lint（docs / workflow / JSON / shell / Markdown links） |
 
 ## Pre-commit Checklist
 
