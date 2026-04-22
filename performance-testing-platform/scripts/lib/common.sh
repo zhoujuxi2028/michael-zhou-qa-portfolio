@@ -108,9 +108,10 @@ retry_with_backoff() {
     if eval "$command"; then
       log_info "Success after $attempt attempt(s)"
       return 0
+    else
+      exit_code=$?
     fi
 
-    exit_code=$?
     if [ "$attempt" -lt "$max_attempts" ]; then
       log_warn "Attempt $attempt failed (exit $exit_code), retrying in ${delay}s"
       sleep "$delay"
@@ -169,12 +170,14 @@ wait_for_endpoint() {
 run_critical() {
   local command="$1"
   local description="$2"
+  local exit_code=1
   log_debug "Running critical: $description"
   if eval "$command"; then
     log_info "✅ $description"
     return 0
+  else
+    exit_code=$?
   fi
-  local exit_code=$?
   log_error "CRITICAL FAILURE: $description (exit code $exit_code)"
   return "$exit_code"
 }
@@ -182,12 +185,14 @@ run_critical() {
 run_optional() {
   local command="$1"
   local description="$2"
+  local exit_code=1
   log_debug "Running optional: $description"
   if eval "$command"; then
     log_info "✅ $description"
     return 0
+  else
+    exit_code=$?
   fi
-  local exit_code=$?
   log_warn "OPTIONAL FAILED (non-blocking): $description (exit code $exit_code)"
   return "$exit_code"
 }
