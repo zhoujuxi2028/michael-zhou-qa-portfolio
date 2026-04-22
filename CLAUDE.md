@@ -40,8 +40,8 @@ pytest tests/ -v
 ```
 
 ## 文档与约定
-- 项目说明看各子项目 `README.md`
-- 面向 Agent 的简明规则看各子项目 `CLAUDE.md`
-- 详细踩坑记录与排查经验见 `docs/postmortem-2026-Q1.md`、`docs/guides/workaround-tracking.md`
+- 项目说明看各子项目 `README.md` / `CLAUDE.md`
+- 文档索引见 `docs/README.md`
+- 详细踩坑记录见 `docs/project-management/postmortems/`，workaround 规则见 `docs/guides/workaround-tracking.md`
 - 常见坑：新增依赖要同步更新依赖文件；新增 marker 要更新 `pytest.ini`；CI 写文件前先 `mkdir -p`
-- 修改 CI 时，先本地验证对应命令，禁止用 shell 兜底写法或 `continue-on-error` 掩盖失败
+- 修改 CI 时先本地验证，避免 `|| true` 或 `continue-on-error` 掩盖失败
