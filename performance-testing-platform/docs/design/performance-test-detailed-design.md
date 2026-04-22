@@ -13,7 +13,7 @@
 | `stages` / `vus + duration` | 是 | 单场景或多阶段负载模型 |
 | `thresholds` | 是 | SLA / 错误率门禁 |
 | `setupTimeout` | 否 | setup 超时控制 |
-| `observer.enabled` | 否 | 是否启用 observer 场景 |
+| `observer.enabled` | 否 | 是否启用 observer 场景；缺省或 `true` 为启用，显式 `false` 为禁用 |
 | `observer.exec` | 否 | observer 执行函数名 |
 | `observer.vus` | 否 | observer 并发数，必须 ≥ 1 |
 
