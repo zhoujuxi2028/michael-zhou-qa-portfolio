@@ -35,6 +35,10 @@ source scripts/lib/report.sh
 
 main() {
   init_logging
+  if [ "$PHASE" = "soak" ]; then
+    bash scripts/integration-test-phase7-soak.sh
+    return
+  fi
   setup_phase
   execute_phase "$PHASE"
   report_phase
