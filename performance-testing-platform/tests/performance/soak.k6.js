@@ -1,12 +1,7 @@
 import http from 'k6/http';
 import { sleep, check } from 'k6';
 import { Trend, Counter } from 'k6/metrics';
-import {
-  BASE_URL,
-  checkStatus,
-  checkMemoryLeak,
-  LEAK_THRESHOLD,
-} from './helpers/utils.js';
+import { BASE_URL, checkStatus, checkMemoryLeak, LEAK_THRESHOLD } from './helpers/utils.js';
 import {
   buildLoadThresholds,
   buildObserverDurationFromStages,

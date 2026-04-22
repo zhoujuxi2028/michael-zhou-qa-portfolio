@@ -26,7 +26,11 @@ import {
   options as capacityOptions,
   runCapacityLoad,
 } from './capacity.k6.js';
-import { observeMetrics as observeSoakMetrics, options as soakOptions, runSoakLoad } from './soak.k6.js';
+import {
+  observeMetrics as observeSoakMetrics,
+  options as soakOptions,
+  runSoakLoad,
+} from './soak.k6.js';
 import {
   observeMetrics as observeSoakShortMetrics,
   options as soakShortOptions,
@@ -124,14 +128,18 @@ export default function () {
     },
     {
       'parseDurationToSeconds is a function': (obj) => obj.parseDurationToSeconds === 'function',
-      'buildObserverDurationFromStages is a function': (obj) => obj.buildObserverDurationFromStages === 'function',
+      'buildObserverDurationFromStages is a function': (obj) =>
+        obj.buildObserverDurationFromStages === 'function',
       'buildObserverScenario is a function': (obj) => obj.buildObserverScenario === 'function',
       'buildLoadThresholds is a function': (obj) => obj.buildLoadThresholds === 'function',
       'observeMetricsCycle is a function': (obj) => obj.observeMetricsCycle === 'function',
       'parseDurationToSeconds converts minutes': (obj) => obj.parsedMinutes === 120,
-      'buildObserverDurationFromStages sums stage durations': (obj) => obj.observerDuration === '90s',
-      'buildObserverScenario defaults to observeMetrics exec': (obj) => obj.observerScenarioExec === 'observeMetrics',
-      'buildLoadThresholds scopes duration to load scenario': (obj) => obj.thresholdDuration === 'p(95)<500',
+      'buildObserverDurationFromStages sums stage durations': (obj) =>
+        obj.observerDuration === '90s',
+      'buildObserverScenario defaults to observeMetrics exec': (obj) =>
+        obj.observerScenarioExec === 'observeMetrics',
+      'buildLoadThresholds scopes duration to load scenario': (obj) =>
+        obj.thresholdDuration === 'p(95)<500',
     },
     { test: 'K6-HLP-INT-03' }
   );
@@ -142,26 +150,35 @@ export default function () {
       runCapacityLoad: typeof runCapacityLoad,
       observeCapacityMetrics: typeof observeCapacityMetrics,
       capacityHasLoadScenario: Boolean(capacityOptions.scenarios && capacityOptions.scenarios.load),
-      capacityHasObserverScenario: Boolean(capacityOptions.scenarios && capacityOptions.scenarios.observer),
+      capacityHasObserverScenario: Boolean(
+        capacityOptions.scenarios && capacityOptions.scenarios.observer
+      ),
       capacityObserverExec: capacityOptions.scenarios && capacityOptions.scenarios.observer.exec,
       capacityDurationThreshold:
-        capacityOptions.thresholds && capacityOptions.thresholds['http_req_duration{scenario:load}'][0],
+        capacityOptions.thresholds &&
+        capacityOptions.thresholds['http_req_duration{scenario:load}'][0],
       runSoakLoad: typeof runSoakLoad,
       observeSoakMetrics: typeof observeSoakMetrics,
       soakHasLoadScenario: Boolean(soakOptions.scenarios && soakOptions.scenarios.load),
       soakHasObserverScenario: Boolean(soakOptions.scenarios && soakOptions.scenarios.observer),
       runSoakShortLoad: typeof runSoakShortLoad,
       observeSoakShortMetrics: typeof observeSoakShortMetrics,
-      soakShortHasLoadScenario: Boolean(soakShortOptions.scenarios && soakShortOptions.scenarios.load),
-      soakShortHasObserverScenario: Boolean(soakShortOptions.scenarios && soakShortOptions.scenarios.observer),
+      soakShortHasLoadScenario: Boolean(
+        soakShortOptions.scenarios && soakShortOptions.scenarios.load
+      ),
+      soakShortHasObserverScenario: Boolean(
+        soakShortOptions.scenarios && soakShortOptions.scenarios.observer
+      ),
     },
     {
       'runCapacityLoad is exported': (obj) => obj.runCapacityLoad === 'function',
       'observeCapacityMetrics is exported': (obj) => obj.observeCapacityMetrics === 'function',
       'capacity has load scenario': (obj) => obj.capacityHasLoadScenario === true,
       'capacity has observer scenario': (obj) => obj.capacityHasObserverScenario === true,
-      'capacity observer exec is observeMetrics': (obj) => obj.capacityObserverExec === 'observeMetrics',
-      'capacity thresholds are scoped to load scenario': (obj) => obj.capacityDurationThreshold === 'p(95)<500',
+      'capacity observer exec is observeMetrics': (obj) =>
+        obj.capacityObserverExec === 'observeMetrics',
+      'capacity thresholds are scoped to load scenario': (obj) =>
+        obj.capacityDurationThreshold === 'p(95)<500',
       'runSoakLoad is exported': (obj) => obj.runSoakLoad === 'function',
       'observeSoakMetrics is exported': (obj) => obj.observeSoakMetrics === 'function',
       'soak has load scenario': (obj) => obj.soakHasLoadScenario === true,

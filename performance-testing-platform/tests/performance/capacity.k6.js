@@ -78,7 +78,8 @@ export const options = {
       gracefulRampDown: '0s',
     },
     observer: buildObserverScenario({
-      duration: __ENV.CAPACITY_OBSERVER_DURATION || buildObserverDurationFromStages(CAPACITY_STAGES),
+      duration:
+        __ENV.CAPACITY_OBSERVER_DURATION || buildObserverDurationFromStages(CAPACITY_STAGES),
     }),
   },
   thresholds: buildLoadThresholds(),

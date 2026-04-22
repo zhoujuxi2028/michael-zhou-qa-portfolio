@@ -19,11 +19,18 @@ export function parseDurationToSeconds(duration) {
 }
 
 export function buildObserverDurationFromStages(stages) {
-  const totalSeconds = stages.reduce((sum, stage) => sum + parseDurationToSeconds(stage.duration), 0);
+  const totalSeconds = stages.reduce(
+    (sum, stage) => sum + parseDurationToSeconds(stage.duration),
+    0
+  );
   return `${totalSeconds}s`;
 }
 
-export function buildObserverScenario({ duration, exec = 'observeMetrics', vus = DEFAULT_OBSERVER_VUS } = {}) {
+export function buildObserverScenario({
+  duration,
+  exec = 'observeMetrics',
+  vus = DEFAULT_OBSERVER_VUS,
+} = {}) {
   return {
     executor: 'constant-vus',
     exec,
