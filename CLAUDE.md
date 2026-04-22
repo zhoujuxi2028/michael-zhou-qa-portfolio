@@ -150,6 +150,13 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `performance-ci.yml` | performance-testing-platform | Lint → unit tests → k6 + JMeter smoke gate |
 | `repo-meta-ci.yml` | repository root | PR 级轻量 lint（docs / workflow / JSON / shell / Markdown links） |
 
+### CI Job Naming Convention
+
+- workflow 名使用 `<Project> CI`
+- job id 使用稳定 kebab-case，测试 job 统一为 `unit-tests`
+- job 显示名使用 `<Project> / <Stage>`，例如 `Performance Testing / Unit Tests`
+- 修改 check 名称后，需同步清理 branch protection / rulesets 中的历史 required checks（如 `Unit-Tests`、`unit-test`）
+
 ## Pre-commit Checklist
 
 ### Python Projects
