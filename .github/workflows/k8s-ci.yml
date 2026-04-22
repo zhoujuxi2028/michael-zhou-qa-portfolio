@@ -22,6 +22,9 @@ concurrency:
   group: k8s-ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 defaults:
   run:
     working-directory: k8s-auto-testing-platform
