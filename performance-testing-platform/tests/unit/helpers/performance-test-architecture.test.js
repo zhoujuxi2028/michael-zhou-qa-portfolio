@@ -16,9 +16,7 @@ describe('五类性能测试架构配置', () => {
   });
 
   test('K6-ARCH-UT-02: soak profile 包含 observer 场景设计元数据', () => {
-    const soakProfile = loadProfile(
-      fs.readFileSync(path.join(PROFILES_DIR, 'soak.json'), 'utf-8')
-    );
+    const soakProfile = loadProfile(fs.readFileSync(path.join(PROFILES_DIR, 'soak.json'), 'utf-8'));
 
     expect(soakProfile.observer).toEqual(
       expect.objectContaining({
@@ -30,9 +28,7 @@ describe('五类性能测试架构配置', () => {
   });
 
   test('K6-ARCH-UT-03: soak profile 阈值只作用于 load scenario', () => {
-    const soakProfile = loadProfile(
-      fs.readFileSync(path.join(PROFILES_DIR, 'soak.json'), 'utf-8')
-    );
+    const soakProfile = loadProfile(fs.readFileSync(path.join(PROFILES_DIR, 'soak.json'), 'utf-8'));
 
     expect(soakProfile.thresholds).toHaveProperty('http_req_duration{scenario:load}');
     expect(soakProfile.thresholds).toHaveProperty('http_req_failed{scenario:load}');
