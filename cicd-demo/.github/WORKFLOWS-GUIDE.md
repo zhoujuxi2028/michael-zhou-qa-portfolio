@@ -11,7 +11,7 @@
 
 - **Docker 回归**：保留为夜间/手动执行，避免在每次代码变更时拉长主流程
 - **安全扫描**：对 `cicd-demo/**` 的 push / PR 持续执行，并每日定时补扫
-- **历史引用说明**：旧文档中出现的 `pr-checks.yml`、`pipeline.yml`、`helm-deploy.yml` 仅代表历史设计，不是当前仓库中的有效 workflow
+- **历史引用说明**：旧文档中出现的 `pr-checks.yml`、`pipeline.yml`、`helm-deploy.yml` 仅代表历史设计；这些文件当前已不在根目录 `.github/workflows/` 中
 
 ## 快速验证
 
