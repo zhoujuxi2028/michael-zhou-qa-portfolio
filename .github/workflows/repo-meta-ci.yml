@@ -1,0 +1,109 @@
+name: Repository Meta CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: repo-meta-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Collect changed files
+        id: changes
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" > changed-files.txt
+          elif git rev-parse HEAD^ >/dev/null 2>&1; then
+            git diff --name-only HEAD^ HEAD > changed-files.txt
+          else
+            git ls-files > changed-files.txt
+          fi
+
+          count=$(awk 'END { print NR }' changed-files.txt)
+          echo "changed_count=$count" >> "$GITHUB_OUTPUT"
+          echo "Changed files: $count"
+          cat changed-files.txt
+
+      - name: Run repository meta lint
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import pathlib
+          import re
+          import subprocess
+          import sys
+          from urllib.parse import unquote
+          import yaml
+
+          repo_root = pathlib.Path.cwd().resolve()
+          changed = [line.strip() for line in pathlib.Path("changed-files.txt").read_text(encoding="utf-8").splitlines() if line.strip()]
+          pattern = re.compile(r'!?\[[^\]]*\]\(([^)]+)\)')
+
+          workflow_files = [pathlib.Path(path) for path in changed if path.startswith(".github/workflows/") and path.endswith((".yml", ".yaml"))]
+          json_files = [pathlib.Path(path) for path in changed if path.endswith(".json")]
+          shell_files = [pathlib.Path(path) for path in changed if path.endswith(".sh")]
+          markdown_files = [pathlib.Path(path) for path in changed if path.endswith(".md")]
+
+          for workflow_file in workflow_files:
+            with workflow_file.open("r", encoding="utf-8") as handle:
+              yaml.safe_load(handle)
+
+          for json_file in json_files:
+            with json_file.open("r", encoding="utf-8") as handle:
+              json.load(handle)
+
+          for shell_file in shell_files:
+            subprocess.run(["bash", "-n", str(shell_file)], check=True)
+
+          failures = []
+          for markdown_file in markdown_files:
+            text = markdown_file.read_text(encoding="utf-8")
+            for raw_target in pattern.findall(text):
+              target = raw_target.strip()
+              if not target or target.startswith(("#", "http://", "https://", "mailto:")):
+                continue
+              if target.startswith("<") and target.endswith(">"):
+                target = target[1:-1]
+              target = target.split()[0]
+              target = unquote(target.split("#", 1)[0])
+              if not target:
+                continue
+
+              resolved = (markdown_file.parent / target).resolve()
+              try:
+                resolved.relative_to(repo_root)
+              except ValueError:
+                failures.append(f"{markdown_file}: {raw_target} (outside repository)")
+                continue
+
+              if not resolved.exists():
+                failures.append(f"{markdown_file}: {raw_target}")
+
+          if failures:
+            print("Broken Markdown links detected:")
+            for failure in failures:
+              print(f" - {failure}")
+            sys.exit(1)
+
+          print(f"Workflow YAML OK: {len(workflow_files)} file(s)")
+          print(f"JSON OK: {len(json_files)} file(s)")
+          print(f"Shell syntax OK: {len(shell_files)} file(s)")
+          print(f"Markdown links OK: {len(markdown_files)} file(s)")
+          PY
