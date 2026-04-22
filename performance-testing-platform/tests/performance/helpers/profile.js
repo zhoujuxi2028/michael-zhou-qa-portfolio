@@ -70,7 +70,7 @@ export function buildScenarioProfile(
   }
 
   // 默认启用 observer；只有显式配置 enabled=false 时才关闭。
-  const observerEnabled = observer.enabled !== false;
+  const observerEnabled = observer.enabled === undefined || observer.enabled === true;
 
   if (observerEnabled) {
     options.scenarios.observer = buildObserverScenario({

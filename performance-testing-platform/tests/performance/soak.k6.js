@@ -70,7 +70,7 @@ const SOAK_STAGES = [
 export const options = buildScenarioProfile('soak', {
   loadExec: 'runSoakLoad',
   loadStages: SOAK_STAGES,
-  observerDuration: __ENV.SOAK_OBSERVER_DURATION || undefined,
+  observerDuration: __ENV.SOAK_OBSERVER_DURATION ?? undefined,
 });
 
 export function setup() {

@@ -21,7 +21,7 @@ const SOAK_SHORT_STAGES = [
 export const options = buildScenarioProfile('soak', {
   loadExec: 'runSoakShortLoad',
   loadStages: SOAK_SHORT_STAGES,
-  observerDuration: __ENV.SOAK_SHORT_OBSERVER_DURATION || undefined,
+  observerDuration: __ENV.SOAK_SHORT_OBSERVER_DURATION ?? undefined,
 });
 
 export function setup() {
