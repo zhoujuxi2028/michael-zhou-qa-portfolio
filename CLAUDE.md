@@ -1,88 +1,31 @@
 # CLAUDE.md - QA Portfolio
 
-Michael Zhou's QA Portfolio - Test automation & DevOps demos.
+## 仓库定位
+- QA / Test Automation / DevOps 作品集仓库
+- 顶层目录下各子项目基本可独立安装、运行、测试
+- 优先在对应子项目内修改，避免在根目录堆放临时产物
 
-## Claude Code Guidelines
+## 分支规则
+- 开发、测试、验证只在 `feature/*` 或 `fix/*` 分支进行
+- 不在 `main` 上直接改代码、跑修复、做验证
+- 需要隔离工作目录时，优先使用仓库内 `./.worktrees/feature-*`
 
-- **Be concise**: Keep responses and file content brief and to the point
-- **No fluff**: Avoid unnecessary explanations, verbose comments, or filler text
-- **Tables over prose**: Use tables/lists instead of paragraphs when possible
+## 顶层项目
+| 项目 | 类型 | 主要技术 |
+|---|---|---|
+| `performance-testing-platform` | 性能测试 | k6, JMeter, Express, Grafana |
+| `playwright-demo` | E2E/UI/API | Playwright, TypeScript |
+| `api-testing-demo` | API 测试 | Postman, Newman, json-server |
+| `selenium-demo` | UI 自动化 | Selenium, Pytest |
+| `iwsva-cypress-e2e` | E2E | Cypress |
+| `security-testing-demo` | 安全测试 | Pytest, OWASP ZAP, Docker |
+| `k8s-auto-testing-platform` | K8S 测试 | Pytest, Kubernetes, Chaos Mesh |
+| `sid-iam-testing-platform` | 平台测试 | Pytest, FastAPI, networkx |
+| `microservice-testing-platform` | 微服务测试 | Node.js, Jest, Redis |
+| `cicd-demo` | DevOps Demo | GitHub Actions, Docker, Terraform |
 
-## ⚠️ Branch Discipline
-
-**CRITICAL: Never work on `main` branch for development, testing, or verification.**
-
-| Phase | 工作内容 | 分支要求 |
-|-------|---------|----------|
-| 1-5 (需求→收尾) | 代码编写、测试、验证 | ✅ 使用 `feature/*` 分支 |
-| 收尾 (PR 合并后) | 文档同步、Wiki 更新 | ✅ main 已合并，可直接更新 |
-
-**Rule**: 
-- Stage 3 (开发) → Stage 4 (测试) → Stage 5 (收尾 PR) 都必须在 feature 分支上
-- Main 分支仅用于：(1) 接收 PR merge，(2) 生产部署
-- 误操作示例：在 main 上 run tests, commit fixes, git merge —abort ❌
-
-**历史教训**: 2026-04-15 在 main 上触发 merge，导致需要回滚到 feature/performance-testing 重新开始 Stage 4 verification
-
-## Worktree Convention
-
-| 项目 | 约定 |
-|------|------|
-| 默认位置 | 当前仓库目录下的 `./.worktrees/<branch-name>/` |
-| 本仓库推荐路径 | `./.worktrees/feature-.../` |
-| 禁止位置 | `~/.config/...`、`~/worktrees/...` 等家目录路径 |
-
-- 需要隔离开发、测试、设计验证时，优先在**当前仓库目录下**创建 worktree
-- 不要把本仓库的 worktree 放在 `~` 目录下
-
-## Development Process（开发流程）
-
-每个新功能/项目遵循 5 阶段流程，**每阶段结束必须暂停等待人工评审**，通过后才能进入下一阶段。
-
-| 阶段 | 活动 | 交付物 | 评审要点 |
-|------|------|--------|----------|
-| 1. 需求 | Issue 分析、scope 确认、可行性评估 | 需求描述 + 可行性评估 | scope 是否合理、本机环境是否支持 |
-| 2. 设计 | 实施计划、架构设计、Plan Review | 实施计划文档 | 架构合理、任务拆分清晰、reviewer 问题已修复 |
-| 3. 开发 | TDD 编码、逐步提交 | 代码 + 单元测试 | 代码质量、测试覆盖、commit 规范 |
-| 4. 测试 | 本地自测、lint、CI 验证 | 全部测试通过 | lint 通过、所有测试 PASS、CI 绿灯 |
-| 5. 收尾 | PR 创建、文档更新、root 注册 | PR merged + 文档同步 | README/CLAUDE.md 更新、Wiki 同步 |
-
-**规则：**
-- **每阶段开始时，先对照 checklist 列出本阶段所有交付物**，再逐项完成
-- Claude 在每个阶段完成后必须**报告状态并等待确认**，不得自行跳到下一阶段
-- 如果评审发现问题，在当前阶段修复后重新评审
-- 阶段可根据任务规模简化（小 bugfix 可合并阶段），但需用户同意
-- 详见 [Development Process Checklist](docs/dev-process-checklist.md)
-
-## Projects (by Testing Category)
-
-| Category | Project | Key Tech | CLAUDE.md |
-|----------|---------|----------|-----------|
-| 功能测试 | `iwsva-cypress-e2e/` — IWSVA E2E (77 tests) | Cypress, Page Objects | `iwsva-cypress-e2e/CLAUDE.md` |
-| DevOps | `cicd-demo/` — DevOps Infrastructure Platform | Terraform, K8S, ArgoCD, Prometheus | `cicd-demo/CLAUDE.md` |
-| 功能测试 | `api-testing-demo/` — API testing (280+ assertions) | Newman, Postman, json-server | `api-testing-demo/CLAUDE.md` |
-| 功能测试 | `playwright-demo/` — Cross-browser E2E (38 tests) | Playwright, TypeScript, axe-core | `playwright-demo/CLAUDE.md` |
-| 功能测试 | `selenium-demo/` — Browser automation | Selenium, Python, Allure | `selenium-demo/CLAUDE.md` |
-| 安全测试 | `security-testing-demo/` — Security (~182 tests, OWASP Top 10) | Pytest, OWASP ZAP, Nessus, SQLMap | `security-testing-demo/CLAUDE.md` |
-| 平台测试 | `sid-iam-testing-platform/` — IAM + Data + AI Agent (163 tests) | Python, Pytest, FastAPI, networkx | `sid-iam-testing-platform/CLAUDE.md` |
-| 平台测试 | `microservice-testing-platform/` — Microservice (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 | `microservice-testing-platform/CLAUDE.md` |
-| 性能测试 | `performance-testing-platform/` — k6 + JMeter dual-engine (217 unit + 60 integration + 33 perf, 357 total) | k6, JMeter, Express, Grafana, InfluxDB | `performance-testing-platform/CLAUDE.md` |
-| 稳定性测试 | `k8s-auto-testing-platform/` — K8S HPA + Chaos (37 tests) | Python, Pytest, Chaos Mesh | `k8s-auto-testing-platform/CLAUDE.md` |
-
-> **Quick Commands**: 各项目的安装、运行、测试命令详见对应子项目 `CLAUDE.md`。
-
-## Standard docs/ Template
-
-```
-docs/
-├── architecture/           # ARCHITECTURE.md, design decisions, API specs
-├── qa/                     # test-plan, test-cases/, rtm, reports/
-├── project-management/     # WBS.md, ISSUES.md, requirements, defects
-└── guides/                 # FAQ, troubleshooting, learning guides (optional)
-```
-
-## Virtual Environment (Python Projects)
-
+## 通用命令
+### Node.js 项目
 ```bash
 python3 -m venv venv && source venv/bin/activate
 ```
@@ -174,55 +117,18 @@ npx prettier --check 'src/**/*.js' 'tests/**/*.js' 'scripts/**/*.js'
 npm test
 ```
 
-### Writing CI Workflows
-
-Before pushing a new `.github/workflows/*.yml`:
-
+### Python 项目
 ```bash
-# 1. Verify every command in the workflow exists in deps
-grep <tool> requirements.txt   # Python: black, flake8, isort, pylint
-grep <tool> package.json       # Node.js: eslint, prettier, newman
-
-# 2. Run each CI step locally in order
-# 3. Confirm all steps pass before pushing
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+pytest tests/ -v
 ```
 
-**CI 防假绿灯规则（详见 `docs/dev-process-checklist.md` 阶段 3/4）：**
-- 禁止 `|| true`、`continue-on-error`、`--collect-only` 作为最终方案
-- 临时 workaround 必须同时创建 follow-up issue（标签 `workaround`，标注 deadline = 今天+5个自然日）
-- Workaround issue 超过 deadline 未关闭 → 手动升级优先级为 `P1`
-- 测试阶段：移除所有 workaround 后再验证一次 + 故意失败确认 CI 能报红
-- 活跃 workaround 追踪：`docs/guides/workaround-tracking.md`
-
-### Common Pitfalls
-
-| Check | Why | Learned From |
-|-------|-----|--------------|
-| `black` / `isort` / `flake8` | CI enforces formatting | ISS-001, ISS-002 |
-| New imports → `requirements.txt` | Missing deps = `ModuleNotFoundError` in CI | ISS-003 |
-| New markers → `pytest.ini` | `--strict-markers` rejects undeclared markers | ISS-004 |
-| Contract schemas match actual responses | Validate response shape before writing schema | ISS-005, ISS-006 |
-| CI tools must be in dependency files | `command not found` (exit 127) if missing | ISS-007 |
-| Run tests locally before pushing CI | Pre-existing test failures break CI | ISS-008 |
-| Upgrade tasks: scan ALL refs, verify ALL workflows | Partial scan misses third-party actions; partial CI check misses untriggered workflows | ISS-009 |
-| `$(cmd)` 捕获数值必须清洗输出 | Node.js/Python 子进程可能输出 warning，污染 shell 变量导致 `-ge` 比较异常 | ISS-010 |
-| k6 `setup()` 请求必须用 tag 隔离 | setup/teardown 的 HTTP 请求计入全局 metrics，会污染 threshold 判定 | ISS-011 |
-| CI 绿灯 ≠ 测试通过，禁止 `continue-on-error` 掩盖失败 | 22 个 Newman 断言失败被隐藏，临时 workaround 变成永久遗留 | ISS-012, ISS-013 |
-| JMeter 正式测试前先 `npm run jmeter:dryrun` | 字段名/状态码错误在 dry-run 阶段拦截，避免全量测试浪费时间 | #50 |
-| 报告采集步骤需显式抑制 exit code | `npm audit --json > file` 因漏洞返回 exit 1，导致报告步骤误判为安全门控失败 | ISS-014 |
-| ESLint ≠ Prettier，PR 合并前必须分别验证 | ESLint 通过不代表 Prettier 通过，CI 需独立执行两者。PR 不应在 CI 未绿时合并 | ISS-015 |
-| 新增 .js 文件必须先 `npx prettier --write` 再提交 | ESLint 的 `--fix` 和 Prettier 对行折叠、trailing comma 规则不同，仅跑 ESLint 不保证 Prettier 通过 | ISS-016 |
-| CI `working-directory` 下路径用相对路径；推送前完整模拟 CI 全步骤 | `working-directory: X` 下写 `X/file` 变双重嵌套；只验部分步骤会遗漏下游失败 | ISS-017 |
-| CI 输出目录必须显式 `mkdir -p`，不能依赖 git checkout 提供目录结构 | 测试产物被 git 追踪时，checkout 会恢复目录，掩盖缺失的 mkdir；产物清理后 Bug 暴露（exit 255）。用 `npm run ci:lint` 检测 | ISS-019 |
-| 引入第三方 action 时对照其 required permissions，写操作需 `write` scope | `read` 权限导致 token exchange 401，action 无法回写 PR 评论 | ISS-015 |
-
-## Wiki & Roadmap
-
-- Wiki: https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki
-- Roadmap: https://github.com/users/zhoujuxi2028/projects/1
-
-## Security
-
-- Never commit credentials
-- Check `.gitignore` before committing
-- Code scanning alerts (Trivy): CI runner global packages → dismiss as "false positive"; K8S/Helm/Terraform/Dockerfile demo configs → dismiss as "won't fix"
+## 文档与约定
+- 项目说明看各子项目 `README.md` / `CLAUDE.md`
+- 文档索引见 `docs/README.md`
+- 详细复盘见 `docs/project-management/postmortems/`
+- workaround 规则见 `docs/guides/workaround-tracking.md`
+- 常见坑：新增依赖要同步依赖文件；新增 marker 要更新 `pytest.ini`；CI 写文件前先 `mkdir -p`
+- 修改 CI 时先本地验证，避免 `|| true` 或 `continue-on-error` 掩盖失败

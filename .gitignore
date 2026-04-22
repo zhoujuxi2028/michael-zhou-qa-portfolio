@@ -1,8 +1,8 @@
-CLAUDE.md
-**/CLAUDE.md
 venv/
 .venv/
 security-testing-demo/.claude/
 .claude/settings.local.json
 coverage/
 .worktrees/
+# JMeter execution logs - test artifacts
+**/jmeter.log

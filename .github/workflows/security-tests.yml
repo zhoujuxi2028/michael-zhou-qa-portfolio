@@ -3,12 +3,20 @@ name: Security Tests
 on:
   push:
     branches: [main]
-    paths:
-      - 'security-testing-demo/**'
+    paths: &security_test_trigger_paths
+      - '.github/workflows/security-tests.yml'
+      - '.github/actions/setup-python-project/**'
+      - 'security-testing-demo/tests/**'
+      - 'security-testing-demo/scripts/**'
+      - 'security-testing-demo/utils/**'
+      - 'security-testing-demo/docker/**'
+      - 'security-testing-demo/.zap/**'
+      - 'security-testing-demo/zap/**'
+      - 'security-testing-demo/requirements.txt'
+      - 'security-testing-demo/pyproject.toml'
   pull_request:
     branches: [main]
-    paths:
-      - 'security-testing-demo/**'
+    paths: *security_test_trigger_paths
   schedule:
     # Run weekly on Sunday at 00:00 UTC
     - cron: '0 0 * * 0'

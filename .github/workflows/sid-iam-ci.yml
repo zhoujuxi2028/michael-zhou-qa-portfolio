@@ -4,10 +4,18 @@ on:
   workflow_dispatch:
   push:
     branches: [main, feature/sid-iam-testing]
-    paths: ['sid-iam-testing-platform/**']
+    paths: &sid_iam_trigger_paths
+      - '.github/workflows/sid-iam-ci.yml'
+      - '.github/actions/setup-python-project/**'
+      - 'sid-iam-testing-platform/src/**'
+      - 'sid-iam-testing-platform/tests/**'
+      - 'sid-iam-testing-platform/scripts/**'
+      - 'sid-iam-testing-platform/requirements.txt'
+      - 'sid-iam-testing-platform/pytest.ini'
+      - 'sid-iam-testing-platform/pyproject.toml'
   pull_request:
     branches: [main]
-    paths: ['sid-iam-testing-platform/**']
+    paths: *sid_iam_trigger_paths
 
 permissions:
   contents: read
