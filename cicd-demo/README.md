@@ -20,7 +20,7 @@ Code Push → GitHub Actions (CI) → Docker Build & Test → Helm Package
 | **GitOps** | ArgoCD | 2 apps (dev auto-sync, staging manual), self-healing |
 | **Security Scanning** | Trivy + npm audit | 4-layer scanning (filesystem, Docker, IaC, dependencies) |
 | **Monitoring** | Prometheus + Grafana | Metrics collection, 2 dashboards (14 panels) |
-| **CI Pipeline** | GitHub Actions | 5 workflows: pipeline, PR checks, Docker tests, security scan, Helm deploy |
+| **CI Pipeline** | GitHub Actions | 2 active workflows: Docker regression + security scan |
 | **Validation Layer** | Cypress + Newman | 16 E2E tests + 18 API assertions (pipeline validation) |
 | **Containerization** | Docker Compose | Cypress + Newman in containers, reproducible test env |
 
@@ -34,7 +34,7 @@ Code Push → GitHub Actions (CI) → Docker Build & Test → Helm Package
 | **Pipeline Metrics** | Pushgateway | Track build times, test pass rates, deployment frequency |
 | **Log Aggregation** | Loki + Promtail | Centralized logging, debug failed deployments in Grafana |
 
-See [WBS.md](docs/WBS.md) for detailed task breakdown.
+See [WBS.md](docs/project-management/WBS.md) for detailed task breakdown.
 
 ## Quick Start
 
@@ -198,10 +198,10 @@ Total Pods: 30+
 
 | Document | What It Covers |
 |----------|---------------|
-| [WBS.md](docs/WBS.md) | Phase 1 (complete) + Phase 2 (planned) task breakdown |
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technical architecture, design decisions, scaling |
-| [FAQ-GUIDE.md](docs/FAQ-GUIDE.md) | 35+ Q&A across 6 technology areas |
-| [QUICKSTART.md](docs/QUICKSTART.md) | 5-minute setup from zero to running cluster |
+| [WBS.md](docs/project-management/WBS.md) | Phase 1 (complete) + Phase 2 (planned) task breakdown |
+| [ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md) | Technical architecture, design decisions, scaling |
+| [FAQ-GUIDE.md](docs/guides/FAQ-GUIDE.md) | 35+ Q&A across 6 technology areas |
+| [QUICKSTART.md](docs/guides/QUICKSTART.md) | 5-minute setup from zero to running cluster |
 | [CI-CD-GUIDE.md](docs/guides/CI-CD-GUIDE.md) | CI/CD pipeline setup and integration |
 | [azure-pipelines.yml](azure-pipelines.yml) | GitHub Actions → Azure Pipelines translation |
 | [Azure vs GitHub Actions](docs/AZURE-VS-GITHUB-ACTIONS.md) | Cross-platform CI/CD FAQ |
@@ -219,7 +219,7 @@ Total Pods: 30+
 - **GitOps**: ArgoCD with auto-sync, self-heal, manual approval gate
 - **Security Scanning**: Trivy 4-layer (filesystem, Docker, IaC, deps) + SARIF → GitHub Security
 - **Monitoring**: Prometheus metrics, Grafana dashboards (14 panels), PromQL, AlertManager
-- **CI/CD Pipeline Design**: Dual-layer strategy (fast PR checks + nightly Docker regression)
+- **CI/CD Pipeline Design**: security scan 持续检查 + nightly/manual Docker regression
 - **Docker**: Multi-container orchestration, custom images, volume caching
 
 ### Pre-Demo Checklist
@@ -237,4 +237,4 @@ kubectl port-forward -n argocd svc/argocd-server 9090:443 &
 npm test                                        # All pass
 ```
 
-See [FAQ-GUIDE.md](docs/FAQ-GUIDE.md) for 35+ Q&A with detailed answers.
+See [FAQ-GUIDE.md](docs/guides/FAQ-GUIDE.md) for 35+ Q&A with detailed answers.
