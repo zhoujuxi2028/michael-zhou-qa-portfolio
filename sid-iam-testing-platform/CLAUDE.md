@@ -2,7 +2,6 @@
 
 ## 项目定位
 - SID IAM / Data / AI Agent 测试平台
-- 138 个测试，覆盖 auth / data / ai 三个域
 - 所有测试基于 mock services，无需真实 SID 环境
 
 ## 常用命令
