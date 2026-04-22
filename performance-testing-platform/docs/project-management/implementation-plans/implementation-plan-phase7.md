@@ -19,7 +19,7 @@
 
 ```text
 lint
-  → unit-test (coverage threshold enforced)
+  → unit-tests (coverage threshold enforced)
   → smoke-test (k6)
   → jmeter-smoke-test
   → baseline-compare / trend-collect (Phase 7 target)

@@ -354,7 +354,7 @@ acceptance_criteria:
 **需求描述**:
 ```yaml
 functional_requirements:
-  - unit-test job生成覆盖率报告
+  - unit-tests job生成覆盖率报告
   - 支持多种覆盖率报告格式（lcov、JSON、HTML）
   - 报告包含详细的覆盖率数据（statements/branches/functions/lines）
 
@@ -382,7 +382,7 @@ technical_requirements:
 **验收标准**:
 ```yaml
 acceptance_criteria:
-  - ✅ unit-test job成功生成coverage/目录
+  - ✅ unit-tests job成功生成coverage/目录
   - ✅ 包含lcov.info文件
   - ✅ 包含HTML可视化报告
   - ✅ 控制台输出显示覆盖率百分比

@@ -319,7 +319,7 @@ apache-jmeter-*/
 ```yaml
 jmeter-smoke-test:
   runs-on: ubuntu-latest
-  needs: unit-test
+  needs: unit-tests
   steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -389,7 +389,7 @@ jmeter-smoke-test:
 ## 6. CI Pipeline
 
 ```
-lint → unit-test → ┬─ k6 smoke gate
+lint → unit-tests → ┬─ k6 smoke gate
                    └─ jmeter smoke gate
 ```
 

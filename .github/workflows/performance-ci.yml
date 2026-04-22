@@ -27,6 +27,7 @@ defaults:
 
 jobs:
   performance-lint:
+    name: Performance Testing / Code Quality
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -38,8 +39,8 @@ jobs:
       - run: npx eslint src/ tests/unit/ --ext .js
       - run: npx prettier --check 'src/**/*.js' 'tests/**/*.js' 'scripts/**/*.js'
 
-  unit-test:
-    name: Unit Tests
+  unit-tests:
+    name: Performance Testing / Unit Tests
     runs-on: ubuntu-latest
     needs: performance-lint
     steps:
@@ -104,8 +105,9 @@ jobs:
           path: performance-testing-platform/coverage/
 
   smoke-test:
+    name: Performance Testing / k6 Smoke Tests
     runs-on: ubuntu-latest
-    needs: unit-test
+    needs: unit-tests
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-node-project
@@ -137,8 +139,9 @@ jobs:
         run: kill $(lsof -ti:3000) 2>/dev/null || true
 
   jmeter-smoke-test:
+    name: Performance Testing / JMeter Smoke Tests
     runs-on: ubuntu-latest
-    needs: unit-test
+    needs: unit-tests
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-node-project
@@ -211,6 +214,7 @@ jobs:
           path: performance-testing-platform/results/
 
   baseline-compare:
+    name: Performance Testing / Baseline Compare
     runs-on: ubuntu-latest
     needs: [smoke-test, jmeter-smoke-test]
     permissions:
@@ -241,6 +245,7 @@ jobs:
             performance-testing-platform/reports/comparison-result.json
 
   trend-collect:
+    name: Performance Testing / Trend Collect
     runs-on: ubuntu-latest
     needs: smoke-test
     permissions:
