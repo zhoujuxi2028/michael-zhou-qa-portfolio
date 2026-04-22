@@ -93,12 +93,9 @@ kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-prometheus 909
 
 ```
 cicd-demo/
-├── .github/workflows/           # CI/CD pipelines
-│   ├── pipeline.yml             #   Full CI/CD: Lint → Build → E2E → Deploy
-│   ├── pr-checks.yml            #   Fast PR validation (2-3 min)
-│   ├── docker-tests.yml         #   Nightly Docker regression tests
-│   ├── security-scan.yml        #   Trivy 4-layer security scanning
-│   └── helm-deploy.yml          #   Helm chart validation & deploy
+├── .github/workflows/           # Active root workflows
+│   ├── docker-tests.yml         #   Nightly / manual Docker regression tests
+│   └── security-scan.yml        #   Push / PR / daily security scanning
 │
 ├── cypress/                     # Cypress E2E tests (16 tests)
 ├── postman/                     # Newman API tests (18 assertions)
@@ -153,11 +150,8 @@ cicd-demo/
 ### Current (Phase 1): CI with Manual CD
 
 ```
-Push to main ──→ pipeline.yml ──→ Lint → Build → E2E → Deploy Dev → Deploy Staging
-PR opened ──→ pr-checks.yml ──→ Lint + Test (2-3 min) ──→ PR status
-Nightly ──→ docker-tests.yml ──→ Docker Build + Test (5-8 min) ──→ Artifacts
-Push/PR/Daily ──→ security-scan.yml ──→ Trivy + npm audit ──→ SARIF → GitHub Security
-Push to main (helm/**) ──→ helm-deploy.yml ──→ Helm lint → template → validate → ArgoCD sync
+Nightly / Manual ──→ docker-tests.yml ──→ Docker Build + Test ──→ Artifacts
+Push / PR / Daily / Manual ──→ security-scan.yml ──→ Trivy + npm audit ──→ SARIF → GitHub Security
 ```
 
 ArgoCD watches the Git repo and syncs K8s manifests, but there's no automated CI → CD handoff.
@@ -197,11 +191,8 @@ Total Pods: 30+
 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
-| `pipeline.yml` | Push to main (`cicd-demo/**`), manual | Full CI/CD: Lint → Build → E2E → Deploy Dev → Deploy Staging |
-| `pr-checks.yml` | PR to main (`cicd-demo/**`) | Fast PR validation: env check + tests + lint (2-3 min) |
 | `docker-tests.yml` | Nightly (02:00 UTC), manual | Docker container regression tests (Cypress + Newman) |
-| `security-scan.yml` | Push/PR to main (`cicd-demo/**`), daily (03:00 UTC), manual | Trivy 4-layer scanning (filesystem, Docker, IaC) + npm audit → SARIF |
-| `helm-deploy.yml` | Push to main (`cicd-demo/helm/**`), PR, manual | Helm chart lint → template → validate → ArgoCD sync |
+| `security-scan.yml` | Push/PR to main (`cicd-demo/**`), daily (03:00 UTC), manual | Trivy filesystem / Docker / IaC + npm audit → SARIF |
 
 ## Documentation
 

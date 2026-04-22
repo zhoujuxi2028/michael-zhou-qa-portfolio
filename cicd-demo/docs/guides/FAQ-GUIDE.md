@@ -101,8 +101,8 @@ Package Manager:    Helm 3.10+
 1. **GitHub Actions workflows**
    ```bash
    # Show: .github/workflows/
-   # - pr-checks.yml (fast Node.js checks)
-   # - docker-tests.yml (Docker containerized tests)
+   # - docker-tests.yml (Docker containerized regression tests)
+   # - security-scan.yml (npm audit + Trivy security scanning)
    ```
 
 2. **Trigger a test run** (optional)
@@ -255,7 +255,7 @@ Package Manager:    Helm 3.10+
 - Docker Compose orchestrates multi-container setup
 - Environment isolation prevents flaky tests
 
-**Demo Path**: Show docker-compose.yml and pr-checks.yml
+**Demo Path**: Show docker-compose.yml and docker-tests.yml
 
 ---
 
