@@ -190,7 +190,7 @@
 ### 8. CI/CD (持续集成/持续部署)
 
 #### 8.1 GitHub Actions 配置
-- [x] 8.1.1 创建 workflow 文件 (ci.yml, pr-checks.yml)
+- [x] 8.1.1 创建 workflow 文件 (`k8s-ci.yml`)
 - [x] 8.1.2 配置测试任务 (unit-tests, integration-tests)
 - [x] 8.1.3 配置代码质量检查 (black, flake8, pylint)
 - [x] 8.1.4 配置测试报告上传 (artifacts)
@@ -374,7 +374,7 @@
 5. ✅ 混沌工程测试 (Pod删除、容器重启)
 6. ✅ HTML/JSON 测试报告
 7. ✅ 完整项目文档
-8. ✅ CI/CD (GitHub Actions: ci.yml, pr-checks.yml)
+8. ✅ CI/CD (GitHub Actions: k8s-ci.yml)
 9. ✅ 代码质量检查 (pylint 9.68/10, flake8, black)
 10. ✅ pyproject.toml 配置
 11. ✅ API 文档 (API-DOCUMENTATION.md)

@@ -177,4 +177,4 @@ grep "workaround" LABEL_STRATEGY.md
 - [Issue #34](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/34) — 22 个 Newman 断言失败修复
 - [Issue #68](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/68) — 本文档对应的改进 issue
 - [postmortem-2026-Q1.md](postmortem-2026-Q1.md) — Q1 全量 defect 分析
-- [workaround-tracking.md](guides/workaround-tracking.md) — Workaround 追踪规范（本次新建）
+- [workaround-tracking.md](../../guides/workaround-tracking.md) — Workaround 追踪规范（本次新建）

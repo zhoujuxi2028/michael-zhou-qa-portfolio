@@ -104,7 +104,7 @@
 │   └── 1.4.7 编写测试报告                    → docs/test-report.md
 │
 └── 1.5 收尾阶段
-    ├── 1.5.1 CI/CD workflow 实现              → .github/workflows/microservice-ci.yml
+    ├── 1.5.1 CI/CD workflow 设计（历史方案）    → .github/workflows/microservice-ci.yml
     ├── 1.5.2 CLAUDE.md 编写                   → CLAUDE.md
     ├── 1.5.3 根目录 README 更新               → ../../README.md
     └── 1.5.4 创建 PR 合并到 main

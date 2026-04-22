@@ -1,5 +1,5 @@
 # Azure DevOps Pipeline — Full Orchestration
-# Translated from .github/workflows/pipeline.yml to demonstrate cross-platform CI/CD skills.
+# Translated from the historical .github/workflows/pipeline.yml design to demonstrate cross-platform CI/CD skills.
 #
 # Key differences from GitHub Actions:
 # - Explicit stage → job → step hierarchy (GitHub Actions has flat jobs)
