@@ -1,12 +1,7 @@
 import http from 'k6/http';
 import { sleep } from 'k6';
 import { Trend, Counter } from 'k6/metrics';
-import {
-  BASE_URL,
-  checkStatus,
-  checkMemoryLeak,
-  LEAK_THRESHOLD,
-} from './helpers/utils.js';
+import { BASE_URL, checkStatus, checkMemoryLeak, LEAK_THRESHOLD } from './helpers/utils.js';
 import {
   buildLoadThresholds,
   buildObserverDurationFromStages,
@@ -38,7 +33,8 @@ export const options = {
       gracefulRampDown: '0s',
     },
     observer: buildObserverScenario({
-      duration: __ENV.SOAK_SHORT_OBSERVER_DURATION || buildObserverDurationFromStages(SOAK_SHORT_STAGES),
+      duration:
+        __ENV.SOAK_SHORT_OBSERVER_DURATION || buildObserverDurationFromStages(SOAK_SHORT_STAGES),
     }),
   },
   thresholds: buildLoadThresholds(),

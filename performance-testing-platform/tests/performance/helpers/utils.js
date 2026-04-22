@@ -21,7 +21,9 @@ export function checkDuration(res, maxMs, name) {
 
 export function pollMetrics(customMetrics, tags) {
   const requestOptions = tags ? { tags } : undefined;
-  const m = requestOptions ? http.get(`${BASE_URL}/metrics`, requestOptions) : http.get(`${BASE_URL}/metrics`);
+  const m = requestOptions
+    ? http.get(`${BASE_URL}/metrics`, requestOptions)
+    : http.get(`${BASE_URL}/metrics`);
   if (m.status === 200) {
     try {
       const body = JSON.parse(m.body);
