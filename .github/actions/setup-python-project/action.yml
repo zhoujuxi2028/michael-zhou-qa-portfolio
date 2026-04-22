@@ -1,0 +1,43 @@
+name: Setup Python project
+description: 统一安装 Python、配置 pip cache，并执行项目依赖安装
+
+inputs:
+  python-version:
+    description: Python 版本
+    required: false
+    default: '3.11'
+  cache-dependency-path:
+    description: requirements 文件路径
+    required: true
+  working-directory:
+    description: 项目工作目录
+    required: false
+    default: .
+  requirements-file:
+    description: requirements 文件名
+    required: false
+    default: requirements.txt
+  extra-packages:
+    description: 额外 pip 包（空格分隔）
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: pip
+        cache-dependency-path: ${{ inputs.cache-dependency-path }}
+
+    - name: Install dependencies
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r ${{ inputs.requirements-file }}
+        if [ -n "${{ inputs.extra-packages }}" ]; then
+          pip install ${{ inputs.extra-packages }}
+        fi
