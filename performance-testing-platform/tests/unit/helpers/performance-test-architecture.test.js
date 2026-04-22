@@ -15,6 +15,22 @@ describe('五类性能测试架构配置', () => {
     }
   });
 
+  test('K6-ARCH-UT-01A: 五类 profile 都满足标准契约', () => {
+    const expectedProfiles = ['smoke.json', 'load.json', 'stress.json', 'spike.json', 'soak.json'];
+
+    for (const fileName of expectedProfiles) {
+      const profile = loadProfile(fs.readFileSync(path.join(PROFILES_DIR, fileName), 'utf-8'));
+      expect(profile.thresholds).toBeDefined();
+
+      if (profile.vus != null) {
+        expect(profile.duration).toBeDefined();
+      } else {
+        expect(Array.isArray(profile.stages)).toBe(true);
+        expect(profile.stages.length).toBeGreaterThan(0);
+      }
+    }
+  });
+
   test('K6-ARCH-UT-02: soak profile 包含 observer 场景设计元数据', () => {
     const soakProfile = loadProfile(fs.readFileSync(path.join(PROFILES_DIR, 'soak.json'), 'utf-8'));
 
