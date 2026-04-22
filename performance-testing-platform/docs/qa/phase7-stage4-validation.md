@@ -189,7 +189,7 @@ bash scripts/integration-test-phase7-soak.sh
 
 | 检查项 | 验证方式 | 预期 | 状态 |
 |-------|---------|------|------|
-| CI 全部 job 绿灯 | push → GitHub Actions | lint + unit-test + k6 + jmeter + baseline + trend 全绿 | ⬜ |
+| CI 全部 job 绿灯 | push → GitHub Actions | 6 个 `Performance Testing / <Stage>` checks 全绿（Code Quality、Unit Tests、k6 Smoke Tests、JMeter Smoke Tests、Baseline Compare、Trend Collect） | ⬜ |
 | 故意失败验证（CI 报红验证） | 临时删一行断言，push | CI 正确报红 | ⬜ |
 | 无 `continue-on-error` workaround | `grep -r "continue-on-error" .github/workflows/` | 0 matches | ⬜ |
 
