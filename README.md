@@ -1,4 +1,4 @@
-# Michael Zhou QA Portfolio
+# Michael Zhou - QA Portfolio | QA 作品集
 
 测试自动化、性能测试、安全测试与 DevOps 演示仓库。
 
@@ -48,7 +48,7 @@ pytest tests/ -v
 
 ## GitHub Actions
 
-仓库当前 workflow 文件统一放在 `.github/workflows/`，请直接以该目录为准。
+仓库 workflow 文件统一放在 `.github/workflows/`，请直接以该目录为准。
 
 ## 参考文档
 - 根目录规范：[`CLAUDE.md`](./CLAUDE.md)
