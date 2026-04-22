@@ -170,10 +170,10 @@ Page load tests enforce a performance budget (`< 5000ms`) using the Navigation T
 
 | Document | Description |
 |----------|-------------|
-| [DESIGN.md](docs/DESIGN.md) | Architecture, design patterns, cross-browser strategy |
-| [TEST_CASES.md](docs/TEST_CASES.md) | All 38 test cases with IDs and validation details |
-| [TEST_REPORT.md](docs/TEST_REPORT.md) | CI execution report with per-browser results |
-| [WBS.md](docs/WBS.md) | Work Breakdown Structure (8 phases) |
+| [DESIGN.md](docs/architecture/DESIGN.md) | Architecture, design patterns, cross-browser strategy |
+| [TEST_CASES.md](docs/test-cases/TEST_CASES.md) | All 38 test cases with IDs and validation details |
+| [TEST_REPORT.md](docs/test-cases/TEST_REPORT.md) | CI execution report with per-browser results |
+| [WBS.md](docs/project-management/WBS.md) | Work Breakdown Structure (8 phases) |
 
 ## Dependencies
 
