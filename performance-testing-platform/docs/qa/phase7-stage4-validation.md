@@ -8,12 +8,12 @@
 
 ## 📋 相关文档导航
 
-| 文档 | 用途 | 位置 |
-|------|------|------|
-| **测试计划** | 进入/退出标准、SLA 定义 | [`docs/qa/test-plan.md`](test-plan.md) |
-| **Phase 7 用例** | CI/CD + 可观测性详细用例 | [`docs/qa/test-cases/phase7-cicd.md`](test-cases/phase7-cicd.md) |
-| **设计文档汇总** | 架构设计 + 实现路线图 | [`docs/design/phase7/`](../design/phase7/) |
-| **集成测试设计** | integration-test-phase7-soak.sh 架构设计 | [`docs/design/integration-test-design.md`](../design/integration-test-design.md) |
+| 文档             | 用途                                   | 位置                                                                               |
+| -------------- | ------------------------------------ | -------------------------------------------------------------------------------- |
+| **测试计划**       | 进入/退出标准、SLA 定义                       | [`docs/qa/test-plan.md`](test-plan.md)                                           |
+| **Phase 7 用例** | CI/CD + 可观测性详细用例                     | [`docs/qa/test-cases/phase7-cicd.md`](test-cases/phase7-cicd.md)                 |
+| **设计文档汇总**     | 架构设计 + 实现路线图                         | [`docs/design/phase7/`](../design/phase7/)                                       |
+| **集成测试设计**     | integration-test-phase7-soak.sh 架构设计 | [`docs/design/integration-test-design.md`](../design/integration-test-design.md) |
 
 ---
 
@@ -21,14 +21,14 @@
 
 > 参照 `test-plan.md §7.3`
 
-| 检查项 | 验证命令 | 状态 |
-|--------|---------|------|
-| 单元测试全部通过 (以当前 Jest 单元套件为准) | `npm run test:unit` | ⬜ |
-| 代码覆盖率达标 (stmt≥80 / branch≥70 / func≥80 / line≥80) | `npm run test:coverage` | ⬜ |
-| 代码质量门禁通过 | `npm run lint` + `npm run format:check` | ⬜ |
-| JMeter dry-run 无错误 | `npm run jmeter:dryrun` | ⬜ |
-| k6 smoke 无报错 | `npm run k6:smoke` | ⬜ |
-| 环境检测通过（Docker daemon 运行中） | `bash scripts/preflight-check.sh --stage4` | ⬜ |
+| 检查项                                               | 验证命令                                       | 状态  |
+| ------------------------------------------------- | ------------------------------------------ | --- |
+| 单元测试全部通过 (以当前 Jest 单元套件为准)                        | `npm run test:unit`                        | ⬜   |
+| 代码覆盖率达标 (stmt≥80 / branch≥70 / func≥80 / line≥80) | `npm run test:coverage`                    | ⬜   |
+| 代码质量门禁通过                                          | `npm run lint` + `npm run format:check`    | ⬜   |
+| JMeter dry-run 无错误                                | `npm run jmeter:dryrun`                    | ⬜   |
+| k6 smoke 无报错                                      | `npm run k6:smoke`                         | ⬜   |
+| 环境检测通过（Docker daemon 运行中）                         | `bash scripts/preflight-check.sh --stage4` | ⬜   |
 
 ---
 
@@ -36,14 +36,14 @@
 
 ### 基线回归单元测试 (`UT-BL-01~06`)
 
-| 用例 ID | 验证项 | 执行命令 | 预期 | 状态 |
-|---------|-------|---------|------|------|
-| UT-BL-01 | p95 偏差 < 20% → pass | `npm test -- baseline` | PASS | ⬜ |
-| UT-BL-02 | p95 退化 > 20% → warning | `npm test -- baseline` | WARNING | ⬜ |
-| UT-BL-03 | p95 退化 > 50% → fail | `npm test -- baseline` | FAIL | ⬜ |
-| UT-BL-04 | 首次运行无 baseline | `npm test -- baseline` | PASS (首次建基线) | ⬜ |
-| UT-BL-05 | baseline JSON 格式异常 | `npm test -- baseline` | 报错提示，不 crash | ⬜ |
-| UT-BL-06 | 趋势数据追加 | `npm test -- baseline` | trend.json 新增一行 | ⬜ |
+| 用例 ID    | 验证项                    | 执行命令                   | 预期              | 状态  |
+| -------- | ---------------------- | ---------------------- | --------------- | --- |
+| UT-BL-01 | p95 偏差 < 20% → pass    | `npm test -- baseline` | PASS            | ⬜   |
+| UT-BL-02 | p95 退化 > 20% → warning | `npm test -- baseline` | WARNING         | ⬜   |
+| UT-BL-03 | p95 退化 > 50% → fail    | `npm test -- baseline` | FAIL            | ⬜   |
+| UT-BL-04 | 首次运行无 baseline         | `npm test -- baseline` | PASS (首次建基线)    | ⬜   |
+| UT-BL-05 | baseline JSON 格式异常     | `npm test -- baseline` | 报错提示，不 crash    | ⬜   |
+| UT-BL-06 | 趋势数据追加                 | `npm test -- baseline` | trend.json 新增一行 | ⬜   |
 
 ### k6 脚本能力单元测试 (`K6-CLASS-01~02`, `K6-FUNNEL-01~03`)
 

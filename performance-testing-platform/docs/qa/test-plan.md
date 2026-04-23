@@ -147,13 +147,13 @@ Step 2: Shell Runner（~10 min，需 Docker）
 
 ### P0 — 必须通过 (阻塞发布)
 
-| 检查项         | 命令                     | 通过标准                                         |
-| -------------- | ------------------------ | ------------------------------------------------ |
-| 单元测试       | `npm run test:unit`      | 全部 Jest 单元测试通过                            |
-| Lint           | `npm run lint`           | 0 errors                                         |
-| 格式检查       | `npm run format:check`   | 0 warnings（Prettier 独立于 ESLint，需分别检查） |
-| 覆盖率         | `npm run test:coverage`  | stmt ≥ 80%, branch ≥ 70%, func ≥ 80%, line ≥ 80% |
-| JMeter dry-run | `npm run jmeter:dryrun`  | 0 errors, 字段名/状态码正确                      |
+| 检查项            | 命令                      | 通过标准                                             |
+| -------------- | ----------------------- | ------------------------------------------------ |
+| 单元测试           | `npm run test:unit`     | 全部 Jest 单元测试通过                                   |
+| Lint           | `npm run lint`          | 0 errors                                         |
+| 格式检查           | `npm run format:check`  | 0 warnings（Prettier 独立于 ESLint，需分别检查）            |
+| 覆盖率            | `npm run test:coverage` | stmt ≥ 80%, branch ≥ 70%, func ≥ 80%, line ≥ 80% |
+| JMeter dry-run | `npm run jmeter:dryrun` | 0 errors, 字段名/状态码正确                              |
 
 > **ISS-015 教训**: ESLint 和 Prettier 是独立的代码质量工具。ESLint 通过不代表 Prettier 通过。两者需分别验证。
 
@@ -161,12 +161,12 @@ Step 2: Shell Runner（~10 min，需 Docker）
 
 ### P1 — 应该通过 (强烈建议)
 
-| 检查项       | 命令                               | 通过标准                                  |
-| ------------ | ---------------------------------- | ----------------------------------------- |
-| 集成测试     | `bash scripts/integration-test.sh` | Stage 3 只验证 SUT 单元测试与 SUT 集成测试范围，不包含 soak / 其他性能验收项 |
-| k6 smoke     | `npm run k6:smoke`                 | p95 < 500ms, error < 1%                   |
-| JMeter smoke | `npm run jmeter:smoke`             | error < 1%                                |
-| CI 流水线    | push → GitHub Actions              | 7 jobs 全绿（Performance Testing / Code Quality、Performance Testing / Unit Tests、Performance Testing / JMeter Dry Run、Performance Testing / k6 Smoke Tests、Performance Testing / JMeter Smoke Tests、Performance Testing / Baseline Compare、Performance Testing / Trend Collect） |
+| 检查项          | 命令                                 | 通过标准                                                                                                                                                                                                                                                                         |
+| ------------ | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 集成测试         | `bash scripts/integration-test.sh` | Stage 3 只验证 SUT 单元测试与 SUT 集成测试范围，不包含 soak / 其他性能验收项                                                                                                                                                                                                                          |
+| k6 smoke     | `npm run k6:smoke`                 | p95 < 500ms, error < 1%                                                                                                                                                                                                                                                      |
+| JMeter smoke | `npm run jmeter:smoke`             | error < 1%                                                                                                                                                                                                                                                                   |
+| CI 流水线       | push → GitHub Actions              | 7 jobs 全绿（Performance Testing / Code Quality、Performance Testing / Unit Tests、Performance Testing / JMeter Dry Run、Performance Testing / k6 Smoke Tests、Performance Testing / JMeter Smoke Tests、Performance Testing / Baseline Compare、Performance Testing / Trend Collect） |
 
 ### P2 — 建议执行 (发布前完成)
 
@@ -466,15 +466,15 @@ npm run generate-summary                    # 生成执行摘要报告
 
 > **权威来源:** SLA 指标定义见 [requirements.md §SLA 定义](../project-management/requirements.md#sla-定义)，本节仅做快速引用。
 
-| 指标              | 阈值     | 适用场景                              |
-| ----------------- | -------- | ------------------------------------- |
-| p95 latency       | < 500ms  | 所有 API 端点 (smoke/load/stress)     |
+| 指标                | 阈值       | 适用场景                          |
+| ----------------- | -------- | ----------------------------- |
+| p95 latency       | < 500ms  | 所有 API 端点 (smoke/load/stress) |
 | p99 latency       | < 2000ms | 认证相关端点 (bcrypt 开销)            |
-| Error rate        | < 1%     | 所有场景                              |
-| Throughput        | ≥ 30 rps | smoke 场景 (5 VUs)                    |
-| Heap growth       | < 50%    | Soak test (1h+)                       |
-| Coverage (stmt)   | ≥ 80%    | Jest 单元测试                         |
-| Coverage (branch) | ≥ 70%    | Jest 单元测试                         |
+| Error rate        | < 1%     | 所有场景                          |
+| Throughput        | ≥ 30 rps | smoke 场景 (5 VUs)              |
+| Heap growth       | < 50%    | Soak test (1h+)               |
+| Coverage (stmt)   | ≥ 80%    | Jest 单元测试                     |
+| Coverage (branch) | ≥ 70%    | Jest 单元测试                     |
 
 ---
 
