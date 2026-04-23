@@ -225,8 +225,8 @@ Implements internationalization (i18n) support to enable the application to serv
 
 ## 📚 Related Resources
 - [i18n Design Doc](https://docs.example.com/i18n-design)
-- [Locale Keys Reference](./docs/LOCALES.md)
-- [Release Notes Template](./RELEASE.md)
+- `docs/LOCALES.md`（示例中的 Locale Keys Reference）
+- `RELEASE.md`（示例中的 Release Notes Template）
 
 ## ✅ Checklist
 - [x] Code follows style guide
@@ -560,6 +560,6 @@ gh pr merge --squash
 
 ---
 
-**下一步**：[Phase 3 - 高阶提示工程](../phase3/M7-context-management.md)
+**下一步**：Phase 3 - 高阶提示工程（M7-M9，待发布）
 
 *最后更新：2026-04-14 | 状态：完整* | 预计学习时间：90 分钟 | 代码示例：可复制
