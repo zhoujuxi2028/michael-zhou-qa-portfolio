@@ -77,4 +77,65 @@ describe('loadProfile', () => {
     expect(result.thresholds).toHaveProperty('http_req_duration');
     expect(result).not.toHaveProperty('stages');
   });
+
+  test('UT-PROF-10: supports observer metadata for multi-scenario profile', () => {
+    const json = JSON.stringify({
+      stages: [{ duration: '1m', target: 10 }],
+      thresholds: {
+        'http_req_duration{scenario:load}': ['p(95)<500'],
+        'http_req_failed{scenario:load}': ['rate<0.01'],
+      },
+      observer: {
+        enabled: true,
+        exec: 'observeMetrics',
+        vus: 1,
+      },
+    });
+    const result = loadProfile(json);
+    expect(result.observer).toEqual(
+      expect.objectContaining({
+        enabled: true,
+        exec: 'observeMetrics',
+        vus: 1,
+      })
+    );
+  });
+
+  test('UT-PROF-11: rejects observer config with non-boolean enabled flag', () => {
+    const json = JSON.stringify({
+      stages: [{ duration: '1m', target: 10 }],
+      thresholds: { 'http_req_duration{scenario:load}': ['p(95)<500'] },
+      observer: {
+        enabled: 'yes',
+        vus: 1,
+      },
+    });
+    expect(() => loadProfile(json)).toThrow('observer.enabled');
+  });
+
+  test('UT-PROF-12: rejects observer config with invalid vus value', () => {
+    const json = JSON.stringify({
+      stages: [{ duration: '1m', target: 10 }],
+      thresholds: { 'http_req_duration{scenario:load}': ['p(95)<500'] },
+      observer: {
+        enabled: true,
+        vus: 0,
+      },
+    });
+    expect(() => loadProfile(json)).toThrow('observer.vus');
+  });
+
+  test('UT-PROF-13: accepts observer config when enabled is explicitly false', () => {
+    const json = JSON.stringify({
+      stages: [{ duration: '1m', target: 10 }],
+      thresholds: { 'http_req_duration{scenario:load}': ['p(95)<500'] },
+      observer: {
+        enabled: false,
+        exec: 'observeMetrics',
+        vus: 1,
+      },
+    });
+    const result = loadProfile(json);
+    expect(result.observer.enabled).toBe(false);
+  });
 });

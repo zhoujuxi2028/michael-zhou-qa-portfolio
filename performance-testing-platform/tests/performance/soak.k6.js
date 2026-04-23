@@ -2,12 +2,8 @@ import http from 'k6/http';
 import { sleep, check } from 'k6';
 import { Trend, Counter } from 'k6/metrics';
 import { BASE_URL, checkStatus, checkMemoryLeak, LEAK_THRESHOLD } from './helpers/utils.js';
-import {
-  buildLoadThresholds,
-  buildObserverDurationFromStages,
-  buildObserverScenario,
-  observeMetricsCycle,
-} from './helpers/metricsObserver.js';
+import { observeMetricsCycle } from './helpers/metricsObserver.js';
+import { buildScenarioProfile } from './helpers/profile.js';
 import { thinkTime } from './helpers/thinkTime.js';
 import { randomProduct } from './helpers/data.js';
 
@@ -71,22 +67,11 @@ const SOAK_STAGES = [
   { duration: __ENV.SOAK_RAMP_DOWN_DURATION || '1m', target: 0 },
 ];
 
-export const options = {
-  setupTimeout: '30s',
-  scenarios: {
-    load: {
-      executor: 'ramping-vus',
-      exec: 'runSoakLoad',
-      startVUs: 0,
-      stages: SOAK_STAGES,
-      gracefulRampDown: '0s',
-    },
-    observer: buildObserverScenario({
-      duration: __ENV.SOAK_OBSERVER_DURATION || buildObserverDurationFromStages(SOAK_STAGES),
-    }),
-  },
-  thresholds: buildLoadThresholds(),
-};
+export const options = buildScenarioProfile('soak', {
+  loadExec: 'runSoakLoad',
+  loadStages: SOAK_STAGES,
+  observerDuration: __ENV.SOAK_OBSERVER_DURATION ?? undefined,
+});
 
 export function setup() {
   // Record baseline heap

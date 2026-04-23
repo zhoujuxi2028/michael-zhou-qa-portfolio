@@ -2,12 +2,8 @@ import http from 'k6/http';
 import { sleep } from 'k6';
 import { Trend, Counter } from 'k6/metrics';
 import { BASE_URL, checkStatus, checkMemoryLeak, LEAK_THRESHOLD } from './helpers/utils.js';
-import {
-  buildLoadThresholds,
-  buildObserverDurationFromStages,
-  buildObserverScenario,
-  observeMetricsCycle,
-} from './helpers/metricsObserver.js';
+import { observeMetricsCycle } from './helpers/metricsObserver.js';
+import { buildScenarioProfile } from './helpers/profile.js';
 
 // Custom metrics (SOAK-04)
 const soakHeapUsedMb = new Trend('soak_heap_used_mb');
@@ -22,23 +18,11 @@ const SOAK_SHORT_STAGES = [
   { duration: __ENV.SOAK_SHORT_RAMP_DOWN_DURATION || '30s', target: 0 },
 ];
 
-export const options = {
-  setupTimeout: '30s',
-  scenarios: {
-    load: {
-      executor: 'ramping-vus',
-      exec: 'runSoakShortLoad',
-      startVUs: 0,
-      stages: SOAK_SHORT_STAGES,
-      gracefulRampDown: '0s',
-    },
-    observer: buildObserverScenario({
-      duration:
-        __ENV.SOAK_SHORT_OBSERVER_DURATION || buildObserverDurationFromStages(SOAK_SHORT_STAGES),
-    }),
-  },
-  thresholds: buildLoadThresholds(),
-};
+export const options = buildScenarioProfile('soak', {
+  loadExec: 'runSoakShortLoad',
+  loadStages: SOAK_SHORT_STAGES,
+  observerDuration: __ENV.SOAK_SHORT_OBSERVER_DURATION ?? undefined,
+});
 
 export function setup() {
   // Record baseline heap

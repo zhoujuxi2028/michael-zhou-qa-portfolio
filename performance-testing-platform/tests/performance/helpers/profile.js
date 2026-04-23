@@ -1,3 +1,5 @@
+import { buildObserverDurationFromStages, buildObserverScenario } from './metricsObserver.js';
+
 // k6 profile parser — uses open() + JSON.parse (NOT Node.js)
 // Path: k6 open() resolves relative to MAIN SCRIPT (tests/performance/) → ../../profiles/<name>.json
 
@@ -27,4 +29,53 @@ export function loadProfile(name) {
   }
 
   return profile;
+}
+
+export function buildScenarioProfile(
+  name,
+  {
+    loadExec = 'default',
+    loadStages = null,
+    observerDuration = null,
+    observerExec = null,
+    observerVus = null,
+  } = {}
+) {
+  const profile = loadProfile(name);
+  const stages = Array.isArray(loadStages) && loadStages.length > 0 ? loadStages : profile.stages;
+
+  if (!Array.isArray(stages) || stages.length === 0) {
+    throw new Error(`Profile "${name}" must provide stages for scenario execution`);
+  }
+
+  const observer = profile.observer || {};
+  const options = {
+    thresholds: profile.thresholds,
+    scenarios: {
+      load: {
+        executor: 'ramping-vus',
+        exec: loadExec,
+        startVUs: 0,
+        stages,
+        gracefulRampDown: profile.gracefulRampDown || '0s',
+      },
+    },
+  };
+
+  if (profile.setupTimeout) {
+    options.setupTimeout = profile.setupTimeout;
+  }
+
+  // 默认启用 observer；只有显式配置 enabled=false 时才关闭。
+  const observerEnabled = observer.enabled !== false;
+
+  if (observerEnabled) {
+    options.scenarios.observer = buildObserverScenario({
+      duration: observerDuration || buildObserverDurationFromStages(stages),
+      exec: observerExec || observer.exec || 'observeMetrics',
+      vus: observerVus || observer.vus,
+    });
+  }
+
+  return options;
 }
