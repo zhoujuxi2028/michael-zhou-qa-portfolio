@@ -20,7 +20,7 @@
 
 | 用例 ID   | 需求 ID        | 验证项                                  | 预期                             | 标签 |
 | --------- | --------------- | --------------------------------------- | -------------------------------- | ---- |
-| CI-COV-01 | PERF-CI-COV-FR-001 | `npm test -- --coverage` 生成覆盖率报告 | `coverage/` 目录生成 lcov + HTML | CI P1 regression |
+| CI-COV-01 | PERF-CI-COV-FR-001 | `npm run test:coverage` 生成覆盖率报告 | `coverage/` 目录生成 lcov + HTML | CI P1 regression |
 | CI-COV-02 | PERF-CI-COV-FR-003 | statements ≥ 80% 通过                   | CI job pass                      | CI P1 regression |
 | CI-COV-03 | PERF-CI-COV-FR-003 | statements < 80% 失败                   | CI job fail (故意删测试验证)     | CI P1 regression |
 | CI-COV-04 | PERF-CI-COV-FR-002 | coverage 报告上传为 artifact            | Actions Artifacts 可下载         | CI P1 regression |
