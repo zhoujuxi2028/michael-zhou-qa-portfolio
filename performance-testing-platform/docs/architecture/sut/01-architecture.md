@@ -32,19 +32,16 @@
 ## 2. 模式支持
 
 ### 默认模式：Cluster
-
 ```
 npm start → scripts/server.sh start cluster → src/cluster.js
 ```
 
 ### 单进程模式：调试 / 集成测试
-
 ```
 npm run start:single → scripts/server.sh start single → src/server.js
 ```
 
 ### Cluster 运行模式
-
 ```
 npm start (default)
   ├─ Master (PID: 主)
@@ -58,40 +55,36 @@ npm start (default)
 
 ## 3. 中间件栈（顺序重要）
 
-| 顺序 | 中间件            | 作用                                                  |
-| ---- | ----------------- | ----------------------------------------------------- |
-| 1    | helmet            | 安全头 (CSP, HSTS, X-Frame-Options, ...)              |
-| 2    | express.json()    | 解析 JSON body                                        |
-| 3    | rateLimiter       | 限流（始终挂载，仅 `RATE_LIMIT_ENABLED=true` 时生效） |
-| 4    | metricsMiddleware | 采集请求计数、延迟、CPU、内存、eventLoopLag           |
-| 5    | 路由              | 业务逻辑处理                                          |
+| 顺序 | 中间件 | 作用 |
+|-----|--------|------|
+| 1 | helmet | 安全头 (CSP, HSTS, X-Frame-Options, ...) |
+| 2 | express.json() | 解析 JSON body |
+| 3 | rateLimiter | 限流（始终挂载，仅 `RATE_LIMIT_ENABLED=true` 时生效） |
+| 4 | metricsMiddleware | 采集请求计数、延迟、CPU、内存、eventLoopLag |
+| 5 | 路由 | 业务逻辑处理 |
 
 **认证中间件**（可选）：`POST /api/orders` 在 `AUTH_ENABLED=true` 时使用。
 
 ## 4. 性能指标采集
 
 ### 进程级指标（实时，/metrics 端点）
-
 - CPU: userPercent/systemPercent/loadavg
 - Memory: rss/heapUsed/heapTotal/external
 - Event Loop Lag: setImmediate 延迟 (ms)
 - Request Count & Avg Duration
 
 **业务指标 (PERF-BUSINESS-METRICS-001):**
-
 - `orderSuccess`: 订单成功创建数
 - `orderConflict`: 库存冲突数（409 响应）
 - `orderConflictRate`: 订单冲突率（百分比）
 - `authLatencyMs`: 平均认证延迟（毫秒）
 
 采集点位置:
-
 - 订单成功：`src/routes/orders.js` POST /api/orders 返回 201 时
 - 库存冲突：`src/routes/orders.js` POST /api/orders 返回 409 时
 - 认证延迟：`src/routes/auth.js` POST /api/auth/login 全程计时
 
 **示例 /metrics 响应:**
-
 ```json
 {
   "cpu": { "userPercent": 5.2, "systemPercent": 2.1, "loadavg": [2.5, 2.3, 2.1] },
@@ -107,7 +100,6 @@ npm start (default)
 ```
 
 ### 系统级指标（后台采集，CSV 输出）
-
 - 脚本：`bash scripts/server.sh collect <duration> <output>`
 - 采集项：CPU% / 内存% / 磁盘 I/O / 网络 I/O
 - 频率：每秒一条

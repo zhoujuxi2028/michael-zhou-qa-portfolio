@@ -18,17 +18,17 @@
 
 ### Phase 1 (#17)
 
-| ID    | 角色        | 故事                                         | 验收标准                                      |
-| ----- | ----------- | -------------------------------------------- | --------------------------------------------- |
-| US-01 | QA Engineer | 我想运行 smoke test 快速验证 API 是否可用    | 5 VUs, 60s, p95 < 500ms, error rate < 1%      |
-| US-02 | QA Engineer | 我想运行 load test 验证正常流量下的性能      | 50 VUs ramp, 5min, p95 < 2000ms               |
-| US-03 | QA Engineer | 我想运行 stress test 找到系统极限            | 200 VUs ramp, p95 < 3000ms                    |
-| US-04 | QA Engineer | 我想运行 spike test 验证突发流量恢复能力     | 100 VUs 突增, 验证恢复到基线                  |
-| US-05 | DevOps      | 我想在 CI 中自动运行 smoke test 作为性能门禁 | CI pipeline 中 k6/JMeter smoke 失败则阻断     |
-| US-06 | DevOps      | 我想在 Grafana 中查看测试结果                | Docker Compose 一键启动, 自动加载 dashboard   |
-| US-07 | QA Engineer | 我想用 JMeter 运行与 k6 相同的 4 种测试模式  | JMeter smoke/load/stress/spike 与 k6 参数一致 |
-| US-08 | QA Engineer | 我想查看 JMeter HTML 测试报告                | `jmeter -g results.jtl -o reports/` 生成报告  |
-| US-09 | QA Engineer | 我想在 Grafana 中查看 JMeter 测试结果        | Backend Listener → InfluxDB → Grafana         |
+| ID    | 角色        | 故事                                          | 验收标准                                      |
+| ----- | ----------- | --------------------------------------------- | --------------------------------------------- |
+| US-01 | QA Engineer | 我想运行 smoke test 快速验证 API 是否可用     | 5 VUs, 60s, p95 < 500ms, error rate < 1%      |
+| US-02 | QA Engineer | 我想运行 load test 验证正常流量下的性能       | 50 VUs ramp, 5min, p95 < 2000ms               |
+| US-03 | QA Engineer | 我想运行 stress test 找到系统极限             | 200 VUs ramp, p95 < 3000ms                    |
+| US-04 | QA Engineer | 我想运行 spike test 验证突发流量恢复能力      | 100 VUs 突增, 验证恢复到基线                  |
+| US-05 | DevOps      | 我想在 CI 中自动运行 smoke test 作为性能门禁  | CI pipeline 中 k6/JMeter smoke 失败则阻断     |
+| US-06 | DevOps      | 我想在 Grafana 中查看测试结果                 | Docker Compose 一键启动, 自动加载 dashboard   |
+| US-07 | QA Engineer | 我想用 JMeter 运行与 k6 相同的 4 种测试模式   | JMeter smoke/load/stress/spike 与 k6 参数一致 |
+| US-08 | QA Engineer | 我想查看 JMeter HTML 测试报告                 | `jmeter -g results.jtl -o reports/` 生成报告  |
+| US-09 | QA Engineer | 我想在 Grafana 中查看 JMeter 测试结果         | Backend Listener → InfluxDB → Grafana         |
 
 ### Phase 2 (#54)
 
@@ -84,31 +84,31 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 
 #### PERF-API-ROUTE（路由层）
 
-| 需求 ID               | 需求                                                                                       | 关联 US  | 优先级 |
-| --------------------- | ------------------------------------------------------------------------------------------ | -------- | ------ |
-| PERF-API-ROUTE-FR-001 | `GET /health`：返回服务状态 `{ status: "ok" }`，供 smoke test 验证 API 可用性              | US-01~04 | P0     |
-| PERF-API-ROUTE-FR-002 | `GET /api/products`：返回商品列表，支持分页参数 `?page=&limit=`，默认 limit=10             | US-01~04 | P0     |
-| PERF-API-ROUTE-FR-003 | `GET /api/products/:id`：按 ID 查询单个商品详情，不存在返回 404                            | US-01~04 | P0     |
-| PERF-API-ROUTE-FR-004 | `POST /api/products`：创建商品（name + price + stock），写入 SQLite                        | US-01~04 | P0     |
-| PERF-API-ROUTE-FR-005 | `GET /api/orders`：返回订单列表（按 created_at DESC），支持分页                            | US-01~04 | P0     |
+| 需求 ID               | 需求                                                                                                      | 关联 US  | 优先级 |
+| --------------------- | --------------------------------------------------------------------------------------------------------- | -------- | ------ |
+| PERF-API-ROUTE-FR-001 | `GET /health`：返回服务状态 `{ status: "ok" }`，供 smoke test 验证 API 可用性                        | US-01~04 | P0     |
+| PERF-API-ROUTE-FR-002 | `GET /api/products`：返回商品列表，支持分页参数 `?page=&limit=`，默认 limit=10                            | US-01~04 | P0     |
+| PERF-API-ROUTE-FR-003 | `GET /api/products/:id`：按 ID 查询单个商品详情，不存在返回 404                                           | US-01~04 | P0     |
+| PERF-API-ROUTE-FR-004 | `POST /api/products`：创建商品（name + price + stock），写入 SQLite                                       | US-01~04 | P0     |
+| PERF-API-ROUTE-FR-005 | `GET /api/orders`：返回订单列表（按 created_at DESC），支持分页                                           | US-01~04 | P0     |
 | PERF-API-ROUTE-FR-006 | `POST /api/orders`：下单接口；校验库存（不足返回 409），事务扣减库存，调用 `simulateDelay` | US-01~04 | P0     |
 
 #### PERF-API-MW（中间件层）
 
-| 需求 ID            | 需求                                                                                                                                                                                        | 关联 US  | 优先级 |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------ |
+| 需求 ID            | 需求                                                                                                            | 关联 US  | 优先级 |
+| ------------------ | --------------------------------------------------------------------------------------------------------------- | -------- | ------ |
 | PERF-API-MW-FR-001 | metrics 中间件：Phase 1 首次引入 `GET /metrics` 端点，采集 requestCount、avgDuration(ms)、CPU(userPercent/systemPercent/loadavg)、Memory(rss/heapUsed/heapTotal/external)、eventLoopLag(ms) | US-01~04 | P0     |
 
 #### PERF-API-DB（数据层）
 
-| 需求 ID            | 需求                                                                                                                                                      | 关联 US  | 优先级 |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------ |
+| 需求 ID            | 需求                                                                                                 | 关联 US  | 优先级 |
+| ------------------ | ---------------------------------------------------------------------------------------------------- | -------- | ------ |
 | PERF-API-DB-FR-001 | SQLite 数据库（`test` 环境 `:memory:`，正常运行文件模式 `data/perf.db` + WAL），启动时写入 5 种商品种子数据，每种库存 100,000，支持负载测试全程不耗尽库存 | US-01~04 | P0     |
 
 #### PERF-API-UTIL（工具层）
 
-| 需求 ID              | 需求                                                                                                        | 关联 US  | 优先级 |
-| -------------------- | ----------------------------------------------------------------------------------------------------------- | -------- | ------ |
+| 需求 ID              | 需求                                                                                           | 关联 US  | 优先级 |
+| -------------------- | ---------------------------------------------------------------------------------------------- | -------- | ------ |
 | PERF-API-UTIL-FR-001 | `simulateDelay(ms)`：`POST /api/orders` 专用延迟注入，延迟时长由 `ORDER_DELAY_MS` 环境变量控制（默认 50ms） | US-01~04 | P0     |
 
 ---
@@ -117,23 +117,23 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 
 #### PERF-ENGINE-K6（k6 脚本）
 
-| 需求 ID               | 需求                                                                                                                   | 关联 US  | 优先级 |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------- | -------- | ------ |
-| PERF-ENGINE-K6-FR-001 | smoke test：vus=5，duration=60s；阈值 p95 < 500ms，error rate < 1%                                                     | US-01    | P0     |
-| PERF-ENGINE-K6-FR-002 | load test：stages 20 VUs→50 VUs ramp，duration=300s；阈值 p95 < 2000ms，p99 < 3000ms，error < 1%，throughput > 8 req/s | US-02    | P0     |
-| PERF-ENGINE-K6-FR-003 | stress test：stages 50→100→150→200 VUs ramp；阈值 p95 < 3000ms，error < 5%                                             | US-03    | P0     |
-| PERF-ENGINE-K6-FR-004 | spike test：stages 5→100→5 VUs（快速突增/回落）；阈值 p95 < 2000ms，error < 10%                                        | US-04    | P0     |
-| PERF-ENGINE-K6-FR-005 | HTML 报告输出：通过 `--out web-dashboard` 生成 `reports/k6-*.html`                                                     | US-01~04 | P0     |
+| 需求 ID               | 需求                                                                                                       | 关联 US | 优先级 |
+| --------------------- | ---------------------------------------------------------------------------------------------------------- | ------- | ------ |
+| PERF-ENGINE-K6-FR-001 | smoke test：vus=5，duration=60s；阈值 p95 < 500ms，error rate < 1%                                        | US-01   | P0     |
+| PERF-ENGINE-K6-FR-002 | load test：stages 20 VUs→50 VUs ramp，duration=300s；阈值 p95 < 2000ms，p99 < 3000ms，error < 1%，throughput > 8 req/s | US-02   | P0     |
+| PERF-ENGINE-K6-FR-003 | stress test：stages 50→100→150→200 VUs ramp；阈值 p95 < 3000ms，error < 5%                                | US-03   | P0     |
+| PERF-ENGINE-K6-FR-004 | spike test：stages 5→100→5 VUs（快速突增/回落）；阈值 p95 < 2000ms，error < 10%                           | US-04   | P0     |
+| PERF-ENGINE-K6-FR-005 | HTML 报告输出：通过 `--out web-dashboard` 生成 `reports/k6-*.html`                                        | US-01~04 | P0    |
 
 #### PERF-ENGINE-JM（JMeter 脚本）
 
-| 需求 ID               | 需求                                                                             | 关联 US | 优先级 |
-| --------------------- | -------------------------------------------------------------------------------- | ------- | ------ |
-| PERF-ENGINE-JM-FR-001 | smoke test：threads=5，duration=60s，rampup=10s                                  | US-07   | P0     |
-| PERF-ENGINE-JM-FR-002 | load test：phase1=20 threads，phase2=30 threads，duration=300s，rampup=60s       | US-07   | P0     |
-| PERF-ENGINE-JM-FR-003 | stress test：threads_per_stage=50，stages=4，duration=210s，rampup=30s           | US-07   | P0     |
-| PERF-ENGINE-JM-FR-004 | spike test：base=5 threads，spike=95 threads，spike_rampup=5s，duration=90s      | US-07   | P0     |
-| PERF-ENGINE-JM-FR-005 | HTML 报告：`jmeter -g results.jtl -o reports/`，需 duration ≥ 60s 且 threads ≥ 5 | US-08   | P0     |
+| 需求 ID               | 需求                                                                                              | 关联 US | 优先级 |
+| --------------------- | ------------------------------------------------------------------------------------------------- | ------- | ------ |
+| PERF-ENGINE-JM-FR-001 | smoke test：threads=5，duration=60s，rampup=10s                                                   | US-07   | P0     |
+| PERF-ENGINE-JM-FR-002 | load test：phase1=20 threads，phase2=30 threads，duration=300s，rampup=60s                        | US-07   | P0     |
+| PERF-ENGINE-JM-FR-003 | stress test：threads_per_stage=50，stages=4，duration=210s，rampup=30s                            | US-07   | P0     |
+| PERF-ENGINE-JM-FR-004 | spike test：base=5 threads，spike=95 threads，spike_rampup=5s，duration=90s                       | US-07   | P0     |
+| PERF-ENGINE-JM-FR-005 | HTML 报告：`jmeter -g results.jtl -o reports/`，需 duration ≥ 60s 且 threads ≥ 5                 | US-08   | P0     |
 
 ---
 
@@ -219,40 +219,40 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 
 ### 本机环境
 
-| 工具           | 状态      | 版本    | 解决方案                                                   |
-| -------------- | --------- | ------- | ---------------------------------------------------------- |
-| Node.js        | ✅ 已安装 | v25.8.1 | —                                                          |
-| npm            | ✅ 已安装 | 11.11.0 | —                                                          |
-| Docker         | ✅ 已安装 | 29.3.0  | 使用 OrbStack 替代 Docker Desktop（Docker Desktop 不稳定） |
-| Docker Compose | ✅ 已安装 | v5.0.2  | 由 OrbStack 提供，行为与 Docker Desktop 兼容               |
-| k6             | ✅ 已安装 | v1.7.0  | `brew install k6`                                          |
-| JMeter         | ✅ 已安装 | 5.6.3   | `brew install jmeter`                                      |
-| Grafana        | ✅ Docker | 10.2.0  | `docker compose up`                                        |
-| InfluxDB       | ✅ Docker | 1.8     | `docker compose up`                                        |
+| 工具           | 状态      | 版本    | 解决方案              |
+| -------------- | --------- | ------- | --------------------- |
+| Node.js        | ✅ 已安装 | v25.8.1 | —                     |
+| npm            | ✅ 已安装 | 11.11.0 | —                     |
+| Docker         | ✅ 已安装 | 29.3.0  | 使用 OrbStack 替代 Docker Desktop（Docker Desktop 不稳定）|
+| Docker Compose | ✅ 已安装 | v5.0.2  | 由 OrbStack 提供，行为与 Docker Desktop 兼容              |
+| k6             | ✅ 已安装 | v1.7.0  | `brew install k6`     |
+| JMeter         | ✅ 已安装 | 5.6.3   | `brew install jmeter` |
+| Grafana        | ✅ Docker | 10.2.0  | `docker compose up`   |
+| InfluxDB       | ✅ Docker | 1.8     | `docker compose up`   |
 
 ### 本机硬件基线
 
-| 项目     | 规格                                              |
-| -------- | ------------------------------------------------- |
-| 硬件     | MacBook Pro 13″ 2020 (MacBookPro16,2)             |
+| 项目     | 规格                                               |
+| -------- | -------------------------------------------------- |
+| 硬件     | MacBook Pro 13″ 2020 (MacBookPro16,2)              |
 | CPU      | Intel Core i5-1038NG7 @ 2.00GHz, 4 核 8 线程 (HT) |
-| L2 Cache | 512 KB / core                                     |
-| L3 Cache | 6 MB                                              |
-| 内存     | 16 GB DDR4                                        |
-| 磁盘     | 466 GB SSD (约 58 GB 可用)                        |
-| OS       | macOS 26.3.1 (Build 25D2128)                      |
+| L2 Cache | 512 KB / core                                      |
+| L3 Cache | 6 MB                                               |
+| 内存     | 16 GB DDR4                                         |
+| 磁盘     | 466 GB SSD (约 58 GB 可用)                         |
+| OS       | macOS 26.3.1 (Build 25D2128)                       |
 
 ### 技术风险
 
-| 风险                                  | 影响                   | 缓解措施                                  |
-| ------------------------------------- | ---------------------- | ----------------------------------------- |
-| k6 使用 ES Module 语法                | ESLint 不兼容          | `.eslintignore` 排除 `tests/performance/` |
-| 库存耗尽导致 load/stress 测试大量 409 | 测试结果不准确         | 种子数据库存 100,000 + 每轮重建 DB        |
-| SQLite 并发写入限制                   | Cluster 模式下写锁竞争 | WAL 模式 + 这正是要观测的 I/O 瓶颈        |
-| CI 环境无 k6                          | smoke gate 无法运行    | 使用 `grafana/setup-k6-action@v1`         |
-| JMeter .jmx 文件体积大                | 不易 review            | 参数化外置到 properties 文件              |
-| Cluster 模式下 `:memory:` DB 不共享   | 多 Worker 数据隔离     | 改为 SQLite 文件模式                      |
-| 冷启动影响 p95 统计                   | 容量测试结果不准确     | 预热 30s                                  |
+| 风险                                  | 影响                   | 缓解措施                                   |
+| ------------------------------------- | ---------------------- | ------------------------------------------ |
+| k6 使用 ES Module 语法                | ESLint 不兼容          | `.eslintignore` 排除 `tests/performance/`  |
+| 库存耗尽导致 load/stress 测试大量 409 | 测试结果不准确         | 种子数据库存 100,000 + 每轮重建 DB         |
+| SQLite 并发写入限制                   | Cluster 模式下写锁竞争 | WAL 模式 + 这正是要观测的 I/O 瓶颈         |
+| CI 环境无 k6                          | smoke gate 无法运行    | 使用 `grafana/setup-k6-action@v1`          |
+| JMeter .jmx 文件体积大                | 不易 review            | 参数化外置到 properties 文件               |
+| Cluster 模式下 `:memory:` DB 不共享   | 多 Worker 数据隔离     | 改为 SQLite 文件模式                       |
+| 冷启动影响 p95 统计                   | 容量测试结果不准确     | 预热 30s                                   |
 
 ---
 
@@ -290,12 +290,12 @@ UC-05: 容量测试 + 瓶颈定位 (Phase 2)
 
 ## 1.7 需求 Checklist
 
-| #   | 检查项                                     | 状态                                                                                                                      |
-| --- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Issue 已读取，目标明确                     | ✅ Issue #17                                                                                                              |
-| 2   | 完整用户故事，use cases                    | ✅ US-01~09, UC-01~04                                                                                                     |
+| #   | 检查项                                     | 状态                                                        |
+| --- | ------------------------------------------ | ----------------------------------------------------------- |
+| 1   | Issue 已读取，目标明确                     | ✅ Issue #17                                                |
+| 2   | 完整用户故事，use cases                    | ✅ US-01~09, UC-01~04                                       |
 | 3   | 需求已按子系统分组编号                     | ✅ PERF-API-ROUTE(6) + PERF-API-MW(1) + PERF-API-DB(1) + PERF-API-UTIL(1) + PERF-ENGINE-K6(5) + PERF-ENGINE-JM(5) = 19 条 |
-| 4   | 测试基础设施已明确归属                     | ✅ OBS(US-06/09) + CI/CD(US-05) 标注为过程文档                                                                            |
-| 5   | Scope 已确认（Phase 划分、功能边界）       | ✅ Phase 1/2/3/4 + 边界定义                                                                                               |
-| 6   | 可行性评估（本机环境、依赖工具、技术风险） | ✅ 7 项风险已识别                                                                                                         |
-| 7   | 依赖已识别（需安装的工具、需引入的库）     | ✅ k6 + JMeter + 7 npm 包 + 4 CI Actions                                                                                  |
+| 4   | 测试基础设施已明确归属                     | ✅ OBS(US-06/09) + CI/CD(US-05) 标注为过程文档              |
+| 5   | Scope 已确认（Phase 划分、功能边界）       | ✅ Phase 1/2/3/4 + 边界定义                                 |
+| 6   | 可行性评估（本机环境、依赖工具、技术风险） | ✅ 7 项风险已识别                                           |
+| 7   | 依赖已识别（需安装的工具、需引入的库）     | ✅ k6 + JMeter + 7 npm 包 + 4 CI Actions                    |
