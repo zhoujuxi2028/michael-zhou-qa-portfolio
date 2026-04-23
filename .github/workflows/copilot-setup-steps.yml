@@ -1,0 +1,61 @@
+name: Copilot Setup Steps
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            api-testing-demo/package-lock.json
+            cicd-demo/package-lock.json
+            iwsva-cypress-e2e/package-lock.json
+            microservice-testing-platform/package-lock.json
+            performance-testing-platform/package-lock.json
+            playwright-demo/package-lock.json
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            ai-testing-platform/pyproject.toml
+            ai-testing-platform/requirements.txt
+            k8s-auto-testing-platform/app/requirements.txt
+            k8s-auto-testing-platform/pyproject.toml
+            k8s-auto-testing-platform/requirements.txt
+            security-testing-demo/pyproject.toml
+            security-testing-demo/requirements.txt
+            selenium-demo/pyproject.toml
+            selenium-demo/requirements.txt
+            sid-iam-testing-platform/pyproject.toml
+            sid-iam-testing-platform/requirements.txt
+
+      - name: Show warmed dependency manifests
+        shell: bash
+        run: |
+          echo "Node lockfiles cached:"
+          find . -name package-lock.json | sort
+          echo
+          echo "Python dependency manifests cached:"
+          find . \( -name requirements.txt -o -name pyproject.toml \) | sort
