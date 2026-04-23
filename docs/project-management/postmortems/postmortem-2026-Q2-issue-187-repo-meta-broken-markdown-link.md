@@ -64,9 +64,9 @@ workflow 在 Markdown 链接检查阶段失败，原因是 `docs/guides/label-st
 - 补充本次 RCA 与 postmortem 文档
 - 更新相关导航索引，避免后续追踪困难
 
-### 未完成 / 继续观察
+### 回归观察结论
 
-- 等待 PR #187 的下一次线上 `Repository Meta CI` 运行，确认检查项恢复绿色
+- 已完成：PR #187 合并后，后续 `Repository Meta CI` 已再次成功运行（最新观察 run `#24822640946` 为 `success`）
 
 ---
 
@@ -102,7 +102,7 @@ workflow 在 Markdown 链接检查阶段失败，原因是 `docs/guides/label-st
 
 | 行动项 | 类型 | 状态 |
 |--------|------|------|
-| 观察 PR #187 下一次 `Repository Meta CI` 结果 | 验证 | 待执行 |
+| 观察 PR #187 下一次 `Repository Meta CI` 结果 | 验证 | ✅ 已完成 |
 | 后续涉及跨项目文档链接时，优先使用本地脚本做路径回归 | 流程 | 已采纳 |
 
 ---
