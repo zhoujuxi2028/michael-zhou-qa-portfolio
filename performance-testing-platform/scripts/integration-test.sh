@@ -34,14 +34,29 @@ source scripts/lib/execute.sh
 source scripts/lib/report.sh
 
 main() {
+  local exit_code=0
   init_logging
+  trap setup_cleanup EXIT
+
   if [ "$PHASE" = "soak" ]; then
     bash scripts/integration-test-phase7-soak.sh
-    return
+    return $?
   fi
-  setup_phase
-  execute_phase "$PHASE"
+
+  if setup_phase; then
+    :
+  else
+    return $?
+  fi
+
+  if execute_phase "$PHASE"; then
+    :
+  else
+    exit_code=$?
+  fi
+
   report_phase
+  return "$exit_code"
 }
 
 main
