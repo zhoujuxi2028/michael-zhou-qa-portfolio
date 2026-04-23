@@ -104,8 +104,8 @@ npm test -- --runInBand
 | 2026-04-23 00:55 | PR #184 触发 `Performance Testing CI` |
 | 2026-04-23 00:56 | `Performance Testing / Code Quality` job 开始执行 |
 | 2026-04-23 00:57 | Prettier 报告 `tests/performance/helpers/profile.js` 格式不符合规范 |
-| 2026-04-23 01:xx | 本地复现确认：CI 命令失败，但 `npm run format:check` 误报通过 |
-| 2026-04-23 01:xx | 修复格式、对齐脚本 glob、补充 postmortem |
+| 2026-04-23 ~01:12 | 本地复现确认：CI 命令失败，但 `npm run format:check` 误报通过 |
+| 2026-04-23 ~01:19 | 修复格式、对齐脚本 glob、补充 postmortem |
 
 ---
 
