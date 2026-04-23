@@ -17,6 +17,7 @@ bash scripts/integration-test.sh
 ## 提交前检查
 ```bash
 npm run lint
+npm run format:check
 npm run test:coverage
 npm run k6:smoke
 ```
