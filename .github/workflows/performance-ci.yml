@@ -36,8 +36,8 @@ jobs:
           node-version: '18'
           working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
-      - run: npx eslint src/ tests/unit/ --ext .js
-      - run: npx prettier --check 'src/**/*.js' 'tests/**/*.js' 'scripts/**/*.js'
+      - run: npm run lint
+      - run: npm run format:check
 
   unit-tests:
     name: Performance Testing / Unit Tests
@@ -50,53 +50,7 @@ jobs:
           node-version: '18'
           working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
-      - run: npx jest tests/unit/ --coverage --coverageReporters=text --coverageReporters=lcov
-      - name: Check coverage thresholds
-        run: |
-          COVERAGE_FILE=coverage/lcov-report/index.html
-          if [ ! -f "$COVERAGE_FILE" ]; then
-            echo "FAIL: Coverage report not found"
-            exit 1
-          fi
-
-          # Extract coverage percentages from lcov HTML report
-          # HTML format: <span class="strong">95.27% </span>\n<span class="quiet">Statements</span>
-          Statements=$(grep -A1 'class="strong"' "$COVERAGE_FILE" | grep -B1 'Statements' | grep -o '[0-9.]*%' | tr -d '%')
-          Branches=$(grep -A1 'class="strong"' "$COVERAGE_FILE" | grep -B1 'Branches' | grep -o '[0-9.]*%' | tr -d '%')
-          Functions=$(grep -A1 'class="strong"' "$COVERAGE_FILE" | grep -B1 'Functions' | grep -o '[0-9.]*%' | tr -d '%')
-          Lines=$(grep -A1 'class="strong"' "$COVERAGE_FILE" | grep -B1 'Lines' | grep -o '[0-9.]*%' | tr -d '%')
-
-          echo "Statements: ${Statements}%"
-          echo "Branches: ${Branches}%"
-          echo "Functions: ${Functions}%"
-          echo "Lines: ${Lines}%"
-
-          # Validate extraction succeeded (ISS-017: prevent silent pass on empty values)
-          for metric in Statements Branches Functions Lines; do
-            val=$(eval echo "\$$metric")
-            if [ -z "$val" ]; then
-              echo "FAIL: Could not extract $metric coverage from report"
-              exit 1
-            fi
-          done
-
-          # Check thresholds (CI-COV-01)
-          if (( $(echo "$Statements < 80" | bc -l) )); then
-            echo "FAIL: Statements coverage (${Statements}%) < 80% threshold"
-            exit 1
-          fi
-          if (( $(echo "$Branches < 70" | bc -l) )); then
-            echo "FAIL: Branches coverage (${Branches}%) < 70% threshold"
-            exit 1
-          fi
-          if (( $(echo "$Functions < 80" | bc -l) )); then
-            echo "FAIL: Functions coverage (${Functions}%) < 80% threshold"
-            exit 1
-          fi
-          if (( $(echo "$Lines < 80" | bc -l) )); then
-            echo "FAIL: Lines coverage (${Lines}%) < 80% threshold"
-            exit 1
-          fi
+      - run: npm run test:coverage
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v7
