@@ -11,10 +11,12 @@ if [ -n "$CHANGED_PY" ]; then
     ./venv/bin/ruff format --check $CHANGED_PY
 fi
 
-# Lint JS files in performance-testing-platform
-CHANGED_JS=$(git diff --cached --name-only --diff-filter=ACM -- 'performance-testing-platform/src/*.js' 'performance-testing-platform/tests/*.js')
+# Lint + format check JS files in performance-testing-platform
+CHANGED_JS=$(git diff --cached --name-only --diff-filter=ACM -- 'performance-testing-platform/src/*.js' 'performance-testing-platform/tests/*.js' 'performance-testing-platform/scripts/*.js')
 if [ -n "$CHANGED_JS" ]; then
     echo "Running eslint on staged JS files (performance-testing-platform)..."
     cd performance-testing-platform && npx eslint $CHANGED_JS --no-warn-ignored
+    echo "Running prettier --check on staged JS files (performance-testing-platform)..."
+    npx prettier --check $CHANGED_JS
     cd ..
 fi

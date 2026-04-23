@@ -15,7 +15,11 @@ docs/qa/reports/logs-*/
 docs/qa/reports/logs-stage*/
 docs/qa/reports/*.log
 docs/qa/reports/test-execution-report-*.md
+tests/integration/logs/
 jmeter.log
 index.html
-# 集成测试产生的临时 metrics CSV，持续被后台进程写入，不应追踪 (ISS #141)
+# Test artifacts: 忽略测试生成的临时 baseline/trend 文件
+reports/baseline-*.json
+reports/trend-*.json
 reports/system-metrics-int.csv
+reports/

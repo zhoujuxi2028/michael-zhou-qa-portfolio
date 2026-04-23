@@ -4,7 +4,6 @@
  * Usage: node scripts/baseline-export.js [summary.json] [output.json]
  */
 const fs = require('fs');
-const path = require('path');
 const { saveBaseline } = require('../src/utils/baseline');
 
 const summaryFile = process.argv[2] || 'summary.json';
@@ -34,7 +33,7 @@ try {
 
   const checks = summary.checks || [];
   const totalChecks = checks.length;
-  const failedChecks = checks.filter(c => !c.passes).length;
+  const failedChecks = checks.filter((c) => !c.passes).length;
   const errorRate = totalChecks > 0 ? failedChecks / totalChecks : 0.01;
 
   const http_reqs = metrics.http_reqs?.value || 0;

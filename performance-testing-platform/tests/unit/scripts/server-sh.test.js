@@ -172,4 +172,93 @@ describe('server.sh', () => {
     });
     expect(JSON.parse(health)).toHaveProperty('status', 'ok');
   });
+
+  // --- stop-collect ---
+  test('stop-collect: no PID file → prints message, exits 0', () => {
+    // 确保 PID 文件不存在
+    try {
+      fs.unlinkSync('/tmp/metrics-collector.pid');
+    } catch {
+      /* ignore */
+    }
+    const output = run('stop-collect');
+    expect(output).toMatch(/[Nn]o collector PID file/);
+  });
+
+  test('stop-collect: stale PID file → cleans up, exits 0', () => {
+    // 写入一个不存在的 PID
+    fs.writeFileSync('/tmp/metrics-collector.pid', '999999');
+    const output = run('stop-collect');
+    expect(output).toMatch(/[Nn]o running collector/);
+    expect(fs.existsSync('/tmp/metrics-collector.pid')).toBe(false);
+  });
+
+  test('collect + stop-collect: starts collector, saves PID, stop-collect kills it', () => {
+    const csvPath = path.join(__dirname, '../../../reports/test-metrics.csv');
+    try {
+      fs.unlinkSync(csvPath);
+    } catch {
+      /* ignore */
+    }
+    try {
+      fs.unlinkSync('/tmp/metrics-collector.pid');
+    } catch {
+      /* ignore */
+    }
+
+    // 在后台启动 collector
+    const child = require('child_process').spawn(
+      'bash',
+      [SCRIPT, 'collect', '100', 'reports/test-metrics.csv'],
+      {
+        env: { ...process.env, PORT: String(PORT), NODE_ENV: 'development' },
+        detached: true,
+        stdio: 'ignore',
+      }
+    );
+    child.unref();
+
+    // 等待 PID 文件创建
+    const deadline = Date.now() + 5000;
+    while (!fs.existsSync('/tmp/metrics-collector.pid') && Date.now() < deadline) {
+      execSync('sleep 0.2');
+    }
+    expect(fs.existsSync('/tmp/metrics-collector.pid')).toBe(true);
+
+    const pid = fs.readFileSync('/tmp/metrics-collector.pid', 'utf-8').trim();
+    expect(pid).toMatch(/^\d+$/);
+
+    // 等待 CSV 数据写入（短暂等待后轮询确认，避免硬编码 sleep 导致不稳定）
+    const csvDeadline = Date.now() + 3000;
+    while (!fs.existsSync(csvPath) && Date.now() < csvDeadline) {
+      execSync('sleep 0.2');
+    }
+    expect(fs.existsSync(csvPath)).toBe(true);
+
+    // 在调用 stop-collect 前确认 PID 文件仍然存在（防止采集器已提前退出）
+    expect(fs.existsSync('/tmp/metrics-collector.pid')).toBe(true);
+
+    // 调用 stop-collect 停止采集器
+    const output = run('stop-collect');
+    expect(output).toMatch(/[Ss]topping collector|[Ss]topped/);
+    expect(fs.existsSync('/tmp/metrics-collector.pid')).toBe(false);
+
+    // 验证进程已被终止
+    try {
+      execSync(`kill -0 ${pid} 2>/dev/null`);
+      // 如果没抛出异常，说明进程还在 — 清理并失败
+      execSync(`kill -9 ${pid} 2>/dev/null || true`);
+      throw new Error('Collector process should have been killed');
+    } catch (e) {
+      if (e.message === 'Collector process should have been killed') throw e;
+      // kill -0 失败 = 进程已终止，符合预期
+    }
+
+    // 清理测试文件
+    try {
+      fs.unlinkSync(csvPath);
+    } catch {
+      /* ignore */
+    }
+  });
 });

@@ -132,20 +132,23 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 
 | Workflow | Project | Purpose |
 |----------|---------|---------|
-| `pipeline.yml` | cicd-demo | Full CI/CD pipeline (lint→build→E2E→deploy) |
-| `pr-checks.yml` | cicd-demo | PR quick checks (validation + tests + lint) |
+| `api-testing-ci.yml` | api-testing-demo | Validate collections → Newman tests (280+ assertions) |
+| `k8s-ci.yml` | k8s-auto-testing-platform | K8S CI (code quality, unit tests, integration) |
+| `performance-ci.yml` | performance-testing-platform | Lint → unit tests → k6 + JMeter smoke gate |
+| `security-tests.yml` | security-testing-demo | Security tests (DVWA, Juice Shop, ZAP, OWASP Top 10) |
+| `sid-iam-ci.yml` | sid-iam-testing-platform | SID IAM CI (code quality, unit tests, integration) |
 | `docker-tests.yml` | cicd-demo | Docker-based nightly regression tests |
 | `security-scan.yml` | cicd-demo | Security scanning (Trivy, npm audit, SARIF) |
-| `helm-deploy.yml` | cicd-demo | Helm chart validation & deploy |
-| `security-tests.yml` | security-testing-demo | Security tests (DVWA, Juice Shop, ZAP, OWASP Top 10) |
-| `k8s-ci.yml` | k8s-auto-testing-platform | K8S CI (code quality, unit tests, integration) |
-| `playwright-tests.yml` | playwright-demo | Cross-browser E2E tests (Chromium, Firefox, WebKit) |
-| `sid-iam-ci.yml` | sid-iam-testing-platform | SID IAM CI (code quality, unit tests, integration) |
-| `microservice-ci.yml` | microservice-testing-platform | Lint → unit → contract → integration → E2E (101 tests) |
-| `api-testing-ci.yml` | api-testing-demo | Validate collections → Newman tests (280+ assertions) |
-| `selenium-ci.yml` | selenium-demo | Code quality (black + flake8) → smoke tests |
-| `performance-ci.yml` | performance-testing-platform | Lint → unit tests → k6 + JMeter smoke gate |
-| `ai-testing-ci.yml` | ai-testing-platform | Code quality → 43 unit tests → coverage report |
+| `repo-meta-ci.yml` | repository root | PR 级轻量 lint（docs / workflow / JSON / shell / Markdown links） |
+| `claude.yml` | repository | Claude Code 助手触发入口 |
+| `claude-code-review.yml` | repository | Claude Code PR review |
+
+### CI Job Naming Convention
+
+- workflow 名使用 `<Project> CI`
+- job id 使用稳定 kebab-case，测试 job 统一为 `unit-tests`
+- job 显示名使用 `<Project> / <Stage>`，例如 `Performance Testing / Unit Tests`
+- 修改 check 名称后，需同步清理 branch protection / rulesets 中的历史 required checks（如 `Unit-Tests`、`unit-test`）
 
 ## Pre-commit Checklist
 
@@ -164,54 +167,23 @@ pytest tests/ -v -m "not integration"
 ```bash
 cd <project-dir>
 npx eslint . || true
+npx prettier --check 'src/**/*.js' 'tests/**/*.js' 'scripts/**/*.js'
 npm test
 ```
 
-### Writing CI Workflows
-
-Before pushing a new `.github/workflows/*.yml`:
-
+### Python 项目
 ```bash
-# 1. Verify every command in the workflow exists in deps
-grep <tool> requirements.txt   # Python: black, flake8, isort, pylint
-grep <tool> package.json       # Node.js: eslint, prettier, newman
-
-# 2. Run each CI step locally in order
-# 3. Confirm all steps pass before pushing
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+pytest tests/ -v
 ```
 
-**CI 防假绿灯规则（详见 `docs/dev-process-checklist.md` 阶段 3/4）：**
-- 禁止 `|| true`、`continue-on-error`、`--collect-only` 作为最终方案
-- 临时 workaround 必须同时创建 follow-up issue（标签 `workaround`，标注 deadline = 今天+5个自然日）
-- Workaround issue 超过 deadline 未关闭 → 手动升级优先级为 `P1`
-- 测试阶段：移除所有 workaround 后再验证一次 + 故意失败确认 CI 能报红
-- 活跃 workaround 追踪：`docs/guides/workaround-tracking.md`
-
-### Common Pitfalls
-
-| Check | Why | Learned From |
-|-------|-----|--------------|
-| `black` / `isort` / `flake8` | CI enforces formatting | ISS-001, ISS-002 |
-| New imports → `requirements.txt` | Missing deps = `ModuleNotFoundError` in CI | ISS-003 |
-| New markers → `pytest.ini` | `--strict-markers` rejects undeclared markers | ISS-004 |
-| Contract schemas match actual responses | Validate response shape before writing schema | ISS-005, ISS-006 |
-| CI tools must be in dependency files | `command not found` (exit 127) if missing | ISS-007 |
-| Run tests locally before pushing CI | Pre-existing test failures break CI | ISS-008 |
-| Upgrade tasks: scan ALL refs, verify ALL workflows | Partial scan misses third-party actions; partial CI check misses untriggered workflows | ISS-009 |
-| `$(cmd)` 捕获数值必须清洗输出 | Node.js/Python 子进程可能输出 warning，污染 shell 变量导致 `-ge` 比较异常 | ISS-010 |
-| k6 `setup()` 请求必须用 tag 隔离 | setup/teardown 的 HTTP 请求计入全局 metrics，会污染 threshold 判定 | ISS-011 |
-| CI 绿灯 ≠ 测试通过，禁止 `continue-on-error` 掩盖失败 | 22 个 Newman 断言失败被隐藏，临时 workaround 变成永久遗留 | ISS-012, ISS-013 |
-| JMeter 正式测试前先 `npm run jmeter:dryrun` | 字段名/状态码错误在 dry-run 阶段拦截，避免全量测试浪费时间 | #50 |
-| 报告采集步骤需显式抑制 exit code | `npm audit --json > file` 因漏洞返回 exit 1，导致报告步骤误判为安全门控失败 | ISS-014 |
-| 引入第三方 action 时对照其 required permissions，写操作需 `write` scope | `read` 权限导致 token exchange 401，action 无法回写 PR 评论 | ISS-015 |
-
-## Wiki & Roadmap
-
-- Wiki: https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki
-- Roadmap: https://github.com/users/zhoujuxi2028/projects/1
-
-## Security
-
-- Never commit credentials
-- Check `.gitignore` before committing
-- Code scanning alerts (Trivy): CI runner global packages → dismiss as "false positive"; K8S/Helm/Terraform/Dockerfile demo configs → dismiss as "won't fix"
+## 文档与约定
+- 项目说明看各子项目 `README.md` / `CLAUDE.md`
+- 文档索引见 `docs/README.md`
+- 标签策略见 `docs/guides/label-strategy.md`
+- 详细复盘见 `docs/project-management/postmortems/`
+- workaround 规则见 `docs/guides/workaround-tracking.md`
+- 常见坑：新增依赖要同步依赖文件；新增 marker 要更新 `pytest.ini`；CI 写文件前先 `mkdir -p`
+- 修改 CI 时先本地验证，避免 `|| true` 或 `continue-on-error` 掩盖失败

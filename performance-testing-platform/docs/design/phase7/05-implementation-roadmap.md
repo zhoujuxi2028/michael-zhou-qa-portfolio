@@ -20,7 +20,7 @@
 |----|------|------|--------|------|
 | 1 | baseline.json 导出 (k6 → CI artifact) | 01 | 2h | `npm run k6:smoke` 输出 baseline.json |
 | 2 | baseline-compare 逻辑 (>50% fail) | 01 + 04 | 1h | 单元测试 100% pass |
-| 3 | trend.json 追加机制 (max 30 rows) | 01 + 04 | 1h | 集成测试验证 append + truncate |
+| 3 | trend.json 追加机制 (保留最近 90 天) | 01 + 04 | 1h | 集成测试验证 append + 90 天清理 |
 | 4 | k6 helper 迁移 (funnel/checkStatus/thinkTime) | 03 | 2h | 3 脚本通过 k6 validate |
 | 5 | k6 breakpoint test (capacity extension) | 03 | 3h | capacity.js 检测 breakpoint VU ≥ 50 |
 | 6 | k6 熔断恢复验证 (soak.js) | 03 | 2h | soak.js 通过恢复标准验收 |
@@ -92,7 +92,7 @@
 |------|------|
 | breakpoint 难以稳定复现 | 使用固定 VU 增量（10/min），多次运行取平均 |
 | 熔断恢复定义过严 | 10s 是可调参，可改为 20-30s 如果测试环境波动大 |
-| trend.json 长期累积 | 自动截断为最近 30 行，每周 review |
+| trend.json 长期累积 | 按时间戳过滤保留最近 90 天数据，超期自动清理 |
 | Grafana dashboard 导入失败 | 提供 SQL 查询和 JSON 备份方案 |
 
 ---
