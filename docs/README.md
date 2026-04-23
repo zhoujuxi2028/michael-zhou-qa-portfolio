@@ -35,6 +35,11 @@ docs/
 | 查看学习资料 | [learning/](learning/) |
 | 查看 AI 辅助 specs | [superpowers/specs/](superpowers/specs/) |
 
+## 最近新增
+
+- [RCA-187-repo-meta-broken-markdown-link.md](reports/RCA-187-repo-meta-broken-markdown-link.md) — Repository Meta CI Markdown 断链 RCA
+- [postmortem-2026-Q2-issue-187-repo-meta-broken-markdown-link.md](project-management/postmortems/postmortem-2026-Q2-issue-187-repo-meta-broken-markdown-link.md) — 本次 CI 故障复盘
+
 ## 分类原则
 
 | 目录 | 定位 | 放什么 | 不放什么 |
