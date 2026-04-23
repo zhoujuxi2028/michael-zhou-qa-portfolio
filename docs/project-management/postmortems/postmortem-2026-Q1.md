@@ -7,8 +7,34 @@
 - [1. Defect 总表](#1-defect-总表)
 - [2. 统计分析](#2-统计分析)
 - [3. 逐项分析](#3-逐项分析)
+  - [#8 ISS-001: black formatting failure](#q1-8)
+  - [#9 ISS-002: isort import ordering](#q1-9)
+  - [#10 ISS-003: missing jsonschema dependency](#q1-10)
+  - [#11 ISS-004: unregistered contract marker](#q1-11)
+  - [#12 ISS-005: SAML schema mismatch](#q1-12)
+  - [#13 ISS-006: OIDC auth param wrong](#q1-13)
+  - [#24 ISS-007: flake8 command not found](#q1-24)
+  - [#25 ISS-008: Newman test failures (workaround)](#q1-25)
+  - [#27 selenium-ci smoke 占位符](#q1-27)
+  - [#34 ISS-010: 22 Newman failures masked](#q1-34)
+  - [#35 trivy-action Node.js 20](#q1-35)
+  - [#36 K8S namespace missing](#q1-36)
+  - [#37 ZAP issue writing 变更](#q1-37)
+  - [#38 缺少 workflow_dispatch](#q1-38)
+  - [#39 k6 action Node.js 20](#q1-39)
+  - [#41 假 deployment environment](#q1-41)
+  - [#43 ESLint no-console warning](#q1-43)
+  - [#45 JMeter smoke 报告无数据](#q1-45)
+  - [#47 smoke 参数设计根因](#q1-47)
+  - [#48 Phase 4 验证不完整](#q1-48)
+  - [#50 JMX 字段名错误](#q1-50)
+  - [#51 JM-LOAD-02 吞吐量不达标](#q1-51)
+  - [#61 preflight MEM_MIN_GB=0](#q1-61)
+  - [#62 k6 setup 污染 metrics](#q1-62)
+  - [#63 k6 setup timeout bcrypt](#q1-63)
 - [4. 已建立的防御措施](#4-已建立的防御措施)
 - [5. 改进计划追踪](#5-改进计划追踪)
+  - [Q1 改进项当前状态](#q1-backlog-status)
 
 ---
 
@@ -83,6 +109,7 @@
 
 ## 3. 逐项分析
 
+<a id="q1-8"></a>
 ### #8 ISS-001: black formatting failure
 - **现象：** PR #7 CI 报红，3 个文件未格式化
 - **根因：** 提交前未运行 `black`
@@ -90,6 +117,7 @@
 - **防御措施：** Pre-commit Checklist 加入 `black --check`
 - **改进计划：** 引入 `pre-commit` hook 自动运行 black → [#74](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/74)
 
+<a id="q1-9"></a>
 ### #9 ISS-002: isort import ordering
 - **现象：** PR #7 CI 报红，conftest.py import 顺序不对
 - **根因：** 提交前未运行 `isort`
@@ -97,6 +125,7 @@
 - **防御措施：** Pre-commit Checklist 加入 `isort --check-only`
 - **改进计划：** 同 #8 → [#74](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/74)
 
+<a id="q1-10"></a>
 ### #10 ISS-003: missing jsonschema dependency
 - **现象：** CI `ModuleNotFoundError: No module named 'jsonschema'`
 - **根因：** 代码引用了 jsonschema 但未加入 `requirements.txt`
@@ -104,6 +133,7 @@
 - **防御措施：** CLAUDE.md Pitfall: "New imports → requirements.txt"
 - **改进计划：** CI 加 `pip check` 验证依赖完整性
 
+<a id="q1-11"></a>
 ### #11 ISS-004: unregistered contract marker
 - **现象：** CI `'contract' not found in markers configuration option`
 - **根因：** `--strict-markers` 下新 marker 未声明
@@ -111,6 +141,7 @@
 - **防御措施：** CLAUDE.md Pitfall: "New markers → pytest.ini"
 - **改进计划：** 设计阶段实施计划中明确列出 pytest.ini 变更项
 
+<a id="q1-12"></a>
 ### #12 ISS-005: SAML schema mismatch
 - **现象：** 合约测试失败，`is not of type 'string'`（实际返回 object）
 - **根因：** 编写 schema 时**假设** SAML 返回 string，未对照实际 API 返回值
@@ -118,6 +149,7 @@
 - **防御措施：** CLAUDE.md Pitfall: "Contract schemas match actual responses"
 - **改进计划：** 设计阶段接口定义附源码行号引用 → [#77](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/77)
 
+<a id="q1-13"></a>
 ### #13 ISS-006: OIDC auth param wrong
 - **现象：** 测试 401，expected 200
 - **根因：** 测试用 `headers=` 传 auth，但 FastAPI 端点用 query param（无 `Header()` 注解）
@@ -125,6 +157,7 @@
 - **防御措施：** 同 #12
 - **改进计划：** 同 #12 → [#77](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/77)
 
+<a id="q1-24"></a>
 ### #24 ISS-007: flake8 command not found
 - **现象：** CI exit 127，`flake8: command not found`
 - **根因：** CI workflow 写了 flake8 步骤但 `requirements.txt` 没有 flake8
@@ -132,6 +165,7 @@
 - **防御措施：** CLAUDE.md Pitfall: "CI tools must be in dependency files"
 - **改进计划：** CI workflow 编写时强制自检 → [#75](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/75)
 
+<a id="q1-25"></a>
 ### #25 ISS-008: Newman test failures (workaround)
 - **现象：** Newman 测试失败，用 `continue-on-error: true` 绕过
 - **根因：** `db.json` 数据与 Collection 断言不匹配
@@ -139,6 +173,7 @@
 - **防御措施：** CLAUDE.md 禁止 `continue-on-error` 作为最终方案
 - **改进计划：** workaround 到期机制 → [#68](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/68)
 
+<a id="q1-27"></a>
 ### #27 selenium-ci smoke 占位符
 - **现象：** CI 永远绿灯，实际无任何测试执行
 - **根因：** `--collect-only` + `|| true`，`tests/smoke/` 为空目录
@@ -146,6 +181,7 @@
 - **防御措施：** CLAUDE.md 禁止 `|| true` / `--collect-only` 作为最终方案
 - **改进计划：** CI 残留 continue-on-error 清理 → [#76](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/76)
 
+<a id="q1-34"></a>
 ### #34 ISS-010: 22 Newman failures masked
 
 > **本项目最严重的 defect。** `continue-on-error` 掩盖 22 个断言失败长达 9 天。
@@ -156,6 +192,7 @@
 - **防御措施：** Phase 4 增加 "移除 workaround 复验 + 故意失败验证"；ISS-012/013 规则
 - **改进计划：** Newman 显式断言验证 → [#72](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/72)
 
+<a id="q1-35"></a>
 ### #35 trivy-action Node.js 20
 - **现象：** trivy-action 内部依赖 `actions/cache@v4.2.4`（Node 20）
 - **根因：** 第三方 action 硬编码 SHA
@@ -163,6 +200,7 @@
 - **防御措施：** `known-issue/external` label 追踪
 - **改进计划：** 季度巡检 → [#71](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/71)
 
+<a id="q1-36"></a>
 ### #36 K8S namespace missing
 - **现象：** `workflow_dispatch` 触发时 `namespace "k8s-testing" not found`
 - **根因：** push/PR 路径下该 job 被 skip，只在手动触发才暴露
@@ -170,6 +208,7 @@
 - **防御措施：** ISS-009: 升级后需全量验证所有 trigger 路径
 - **改进计划：** trigger 路径验证 checklist → [#73](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/73)
 
+<a id="q1-37"></a>
 ### #37 ZAP issue writing 变更
 - **现象：** ZAP 升级后 403，不再自动创建 GitHub issues
 - **根因：** `workflow_dispatch` 的 GITHUB_TOKEN 是 read-only
@@ -177,6 +216,7 @@
 - **防御措施：** 升级 action 时检查 changelog 和权限变化
 - **改进计划：** 季度巡检 → [#71](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/71)
 
+<a id="q1-38"></a>
 ### #38 缺少 workflow_dispatch
 - **现象：** 无法手动触发 microservice-ci 和 sid-iam-ci
 - **根因：** 编写 workflow 时只加了 push/PR trigger
@@ -184,6 +224,7 @@
 - **防御措施：** 已修复
 - **改进计划：** CI workflow 模板 → [#75](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/75)
 
+<a id="q1-39"></a>
 ### #39 k6 action Node.js 20
 - **现象：** `grafana/setup-k6-action@v1` 无 Node 24 版本
 - **根因：** 上游未更新
@@ -191,6 +232,7 @@
 - **防御措施：** 已替换，不再依赖该 action
 - **改进计划：** 季度巡检 → [#71](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/71)
 
+<a id="q1-41"></a>
 ### #41 假 deployment environment
 - **现象：** GitHub Deployments 25+ 条空记录
 - **根因：** 历史 `pipeline.yml` 用 `environment:` 但只有 echo
@@ -198,6 +240,7 @@
 - **防御措施：** 已修复并清理
 - **改进计划：** CI workflow 模板 → [#75](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/75)
 
+<a id="q1-43"></a>
 ### #43 ESLint no-console warning
 - **现象：** CI annotation warning `Unexpected console statement`
 - **根因：** eslint 规则一刀切，server.js 入口 log 属合理用法
@@ -205,6 +248,7 @@
 - **防御措施：** 已添加 overrides
 - **改进计划：** pre-commit hook 补全 → [#74](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/74)
 
+<a id="q1-45"></a>
 ### #45 JMeter smoke 报告无数据
 - **现象：** HTML 报告图表空白，样本仅 18 个
 - **根因：** threads=2, duration=30s，数据量不足
@@ -212,6 +256,7 @@
 - **防御措施：** Memory: JMeter HTML 需 ≥60s + ≥5 threads
 - **改进计划：** JMeter dry-run 验证步骤 → [#70](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/70)
 
+<a id="q1-47"></a>
 ### #47 smoke 参数设计根因
 - **现象：** #45 根因追溯到设计阶段
 - **根因：** 设计文档参数过小；验收标准只写"成功运行"无量化
@@ -219,6 +264,7 @@
 - **防御措施：** 验收标准已量化（`test-cases.md`）
 - **改进计划：** 禁止模糊验收标准，强制量化
 
+<a id="q1-48"></a>
 ### #48 Phase 4 验证不完整
 - **现象：** 只验证 smoke，遗漏 load/stress/spike
 - **根因：** 测试阶段未对照实施计划逐项列 checklist
@@ -226,6 +272,7 @@
 - **防御措施：** Checklist 规则: "每阶段开始先列出所有交付物"
 - **改进计划：** Phase 4 生成 RTM 验证表（已有 `rtm.md`）
 
+<a id="q1-50"></a>
 ### #50 JMX 字段名错误
 - **现象：** load test 32.5% 错误率，POST 返回 400
 - **根因：** JMX 写 `productId`，API 期望 `product_id`
@@ -233,6 +280,7 @@
 - **防御措施：** 已修复
 - **改进计划：** JMeter dry-run 验证 → [#70](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/70)；接口行号引用 → [#77](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/77)
 
+<a id="q1-51"></a>
 ### #51 JM-LOAD-02 吞吐量不达标
 - **现象：** 阈值 >10 req/s，实际 8.6 req/s
 - **根因：** 阈值未考虑 think time 对吞吐量的影响
@@ -240,6 +288,7 @@
 - **防御措施：** `performance-testing-parameters.md` 含 Little's Law 推导
 - **改进计划：** 性能阈值必须附推导公式
 
+<a id="q1-61"></a>
 ### #61 preflight MEM_MIN_GB=0
 - **现象：** 5297 MB ≥ 0 MB 应 PASS，实际 FAIL
 - **根因：** `$(node -e ...)` 输出被 warning 污染，bash `-ge` 比较异常
@@ -247,6 +296,7 @@
 - **防御措施：** CLAUDE.md ISS-010 规则
 - **改进计划：** 统一清洗模式 → [#78](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/78)
 
+<a id="q1-62"></a>
 ### #62 k6 setup 污染 metrics
 - **现象：** `http_req_failed` 1.35%，100 个 setup 请求被计入
 - **根因：** k6 `setup()` HTTP 请求默认计入全局 metrics
@@ -254,6 +304,7 @@
 - **防御措施：** CLAUDE.md ISS-011 规则
 - **改进计划：** k6 脚本 tag 隔离 + 模板 → [#69](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/69)
 
+<a id="q1-63"></a>
 ### #63 k6 setup timeout bcrypt
 - **现象：** setup() 注册 500 用户超时（60s 默认限制）
 - **根因：** bcrypt 10 rounds ≈ 100ms/hash × 500 = 50s+
@@ -285,16 +336,23 @@
 
 ## 5. 改进计划追踪
 
+<a id="q1-backlog-status"></a>
+
 | Issue | 改进项 | 优先级 | 状态 |
 |-------|--------|--------|------|
-| [#68](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/68) | workaround 到期机制 | P1 | ✅ Done (2026-04-21, `docs/guides/workaround-tracking.md`, CLAUDE.md 规则更新, `docs/guides/label-strategy.md` `workaround` label) |
-| [#69](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/69) | k6 setup tag 隔离 + 模板 | P2 | Open |
-| [#70](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/70) | JMeter dry-run 验证 | P2 | Open |
+| [#68](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/68) | workaround 到期机制 | P1 | ✅ Done (2026-04-21，规则文档落地；GitHub `workaround` label 已创建) |
+| [#69](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/69) | k6 setup tag 隔离 + 模板 | P2 | ✅ Done (2026-04-04，脚本与模板已补齐) |
+| [#70](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/70) | JMeter dry-run 验证 | P2 | ✅ Done (2026-04-04，`jmeter:dryrun` 已落地) |
 | [#71](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/71) | 第三方 action 季度巡检 | P3 | ✅ Done (2026-04-21, `docs/guides/third-party-action-audit.md`) |
-| [#72](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/72) | Newman 断言数量验证 | P1 | Open |
-| [#73](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/73) | CI trigger 路径验证 checklist | P2 | Open |
-| [#74](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/74) | pre-commit hook 补全 | P2 | Open |
+| [#72](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/72) | Newman 断言数量验证 | P1 | ✅ Done (2026-04-04，CI 已显式校验断言数量) |
+| [#73](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/73) | CI trigger 路径验证 checklist | P2 | ✅ Done (2026-04-14，checklist 已补充) |
+| [#74](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/74) | pre-commit hook 补全 | P2 | ✅ Done (2026-04-14，hook 覆盖已完善) |
 | [#75](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/75) | CI workflow 模板 | P2 | ✅ Done (2026-04-03, `.github/workflow-template.yml`) |
-| [#76](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/76) | 移除残留 continue-on-error | P1 | Open |
+| [#76](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/76) | 移除残留 continue-on-error | P1 | ✅ Done (2026-04-04，关键路径残留已清理) |
 | [#77](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/77) | 设计文档源码行号引用 | P1 | ✅ Done (2026-04-03, `architecture.md` 已有行号引用) |
-| [#78](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/78) | shell 输出清洗统一 | P3 | Open |
+| [#78](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/78) | shell 输出清洗统一 | P3 | ✅ Done (2026-04-04，脚本数值提取模式已统一) |
+
+### Q1 改进项当前状态
+
+- **结论：** Q1 postmortem 中登记的 11 个改进 issue 已全部闭环。
+- **当前待办来源：** 后续未完成 backlog 已转移到 Q2 / 专项 RCA 的运营跟踪项，见本目录 `README.md` 的优先级执行清单。
