@@ -30,13 +30,116 @@
 
 ## 2. 测试类型与职责
 
+> **五类性能测试设计文档:** [架构设计](../design/performance-test-architecture.md) |
+> [详细设计](../design/performance-test-detailed-design.md)
+
 | 类型     | 工具                  | 用例数  | 职责                                                                                                                   | 执行方式                           |
 | -------- | --------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| 单元测试 | Jest + Supertest      | 156     | API 功能正确性、helpers 解析逻辑、中间件行为、baseline 判定、k6 补完能力                                              | `npm test` / `npx jest tests/unit/` |
-| 集成测试 | Shell + curl + Docker | 34      | 端到端链路验证 (k6→InfluxDB→Grafana、认证流程、k6 helpers、限流中间件、摘要报告、Grafana 集成)                        | `bash scripts/integration-test.sh` |
+| 单元测试 | Jest + Supertest      | 217     | API 功能正确性、helpers 解析逻辑、中间件行为、baseline 判定、k6 补完能力                                              | `npm test` / `npx jest tests/unit/` |
+| 集成测试 | Shell + curl + Docker | 60      | 端到端链路验证 (k6→InfluxDB→Grafana、认证流程、k6 helpers、限流中间件、摘要报告、Grafana 集成)                        | `bash scripts/integration-test.sh` |
 | 性能测试 | k6 + JMeter           | 33      | 延迟/吞吐/错误率、SLA 达标、瓶颈定位、长时间稳定性                                                                     | npm scripts 手动触发               |
-| 其他     | 手动验证              | 43      | 报告完整性、脚本行为、CI/Grafana/调度设计验证                                                                          | 人工检查                           |
-| **合计** |                       | **266** |                                                                                                                        |                                    |
+| 其他     | 手动验证              | 47      | 报告完整性、脚本行为、CI/Grafana/调度设计验证                                                                          | 人工检查                           |
+| **合计** |                       | **357** |                                                                                                                        |                                    |
+
+---
+
+## 2.1 集成测试策略 (Integration Test Strategy)
+
+> **详细设计文档:** [集成测试设计文档](../design/integration-test-design.md) |
+> **详细用例:** [集成测试用例详细文档](test-cases/integration-test-cases.md)
+
+### 2.1.1 集成测试目标
+
+| 目标 | 说明 |
+|------|------|
+| **模块协同验证** | 验证 API 路由、数据库、中间件、认证模块之间的交互 |
+| **数据流完整性** | 确认请求从入口到数据库再到响应的完整链路 |
+| **业务规则跨模块执行** | 验证库存扣减、Token 黑名单、限额共享等跨模块业务逻辑 |
+| **基础设施链路验证** | 确认 k6→InfluxDB→Grafana 的数据采集和可视化链路 |
+| **安全防护集成** | 验证 Helmet + 限流器 + JWT 认证的协同安全效果 |
+
+### 2.1.2 双执行引擎
+
+集成测试采用双执行引擎架构：
+
+| 引擎 | 框架 | 文件数 | 用例数 | 适用场景 | 执行命令 |
+|------|------|--------|--------|---------|---------|
+| **Jest Runner** | Jest + Supertest | 12 | 61 | 进程内 API 交互、中间件、工具函数 | `npm run test:integration` |
+| **Shell Runner** | Bash + curl + Docker | 3 | ~40 | 外部进程编排（Docker/k6/JMeter） | `bash scripts/integration-test.sh` |
+
+**选型决策：**
+- **Jest Runner**：利用 Supertest 直接调用 Express app（无真实 HTTP），内存 SQLite 保证隔离性，适合快速反馈
+- **Shell Runner**：编排多进程工作流（API 服务 + Docker 容器 + k6/JMeter 进程），适合真实环境集成
+
+### 2.1.3 集成测试分层
+
+```
+                      集成测试分层结构
+┌─────────────────────────────────────────────────────┐
+│ Layer 4: 基础设施集成 (Shell Runner)                  │
+│   Grafana / InfluxDB / k6 / JMeter 联动             │
+├─────────────────────────────────────────────────────┤
+│ Layer 3: 横切关注点 (Jest)                            │
+│   认证保护路由 / 错误处理统一 / 并发访问安全          │
+├─────────────────────────────────────────────────────┤
+│ Layer 2: 中间件集成 (Jest)                            │
+│   限流器行为 / 安全头验证                             │
+├─────────────────────────────────────────────────────┤
+│ Layer 1: API 模块交互 (Jest)                          │
+│   Products / Orders / Auth / Health & Metrics         │
+└─────────────────────────────────────────────────────┘
+```
+
+### 2.1.4 隔离策略
+
+| 策略 | Jest Runner | Shell Runner |
+|------|-------------|-------------|
+| **数据库** | SQLite `:memory:`，每次 beforeEach 重建 | 文件模式 SQLite，测试前后清理 |
+| **HTTP** | Supertest 进程内调用（无真实端口） | 真实 HTTP（端口 3000） |
+| **外部服务** | 无外部依赖 | Docker Compose (InfluxDB/Grafana) |
+| **环境变量** | `jest.resetModules()` 实现模块重载 | Bash `export` / 子 shell 隔离 |
+| **并发控制** | Jest 并行 + 文件内串行 | `lock.sh` 互斥锁（全局唯一执行） |
+
+### 2.1.5 环境要求
+
+| 环境 | Jest Runner | Shell Runner |
+|------|-------------|-------------|
+| **Node.js** | ≥ 18 ✅ 必须 | ≥ 18 ✅ 必须 |
+| **Docker** | ❌ 不需要 | ✅ 必须（≥ 24） |
+| **k6** | ❌ 不需要 | ✅ 需要（≥ 0.50） |
+| **端口 3000** | ❌ 不占用 | ✅ 占用 |
+| **端口 3010/8086** | ❌ 不需要 | ✅ Grafana/InfluxDB |
+
+### 2.1.6 集成测试执行顺序
+
+```
+Step 1: Jest Runner（~30s，无外部依赖）
+  npm run test:integration
+  ├── API 层 (27 用例)
+  ├── 横切关注点 (13 用例)
+  ├── 中间件 (9 用例)
+  └── 工具函数 (12 用例)
+
+Step 2: Shell Runner（~10 min，需 Docker）
+  bash scripts/integration-test.sh
+  ├── Phase 1: Grafana + InfluxDB
+  ├── Phase 2: 系统指标 + Cluster
+  ├── Phase 3: 认证流程
+  ├── Phase 4: Soak 可观测性
+  ├── Phase 5: k6 Helpers
+  ├── Phase 6: Rate Limiter + 摘要
+  └── Phase 7: CI/CD 集成
+```
+
+### 2.1.7 失败处理策略
+
+| 失败类型 | 影响评估 | 处理方式 |
+|---------|---------|---------|
+| **Jest 用例失败** | P1 用例阻塞发布 | 修复后重跑 `npx jest <failed-file>` |
+| **Shell 阶段失败** | 检查是否环境问题 | 查看日志 → 修复 → `bash scripts/integration-test.sh` |
+| **Docker 启动失败** | Shell Runner 不可用 | `docker ps` 排查 → 重启 Docker → 重试 |
+| **端口冲突** | Shell Runner 阻塞 | `lsof -ti:3000 \| xargs kill` → 重试 |
+| **互斥锁残留** | Shell Runner 无法获取锁 | `rm -rf /tmp/integration-test.lock` → 重试 |
 
 ---
 
@@ -46,19 +149,24 @@
 
 | 检查项         | 命令                     | 通过标准                                         |
 | -------------- | ------------------------ | ------------------------------------------------ |
-| 单元测试       | `npm test`               | 全部 Jest 单元测试通过，且覆盖率阈值满足项目标准 |
-| Lint           | `npx eslint .`           | 0 errors                                         |
-| 覆盖率         | `npm test -- --coverage` | stmt ≥ 80%, branch ≥ 70%, func ≥ 80%, line ≥ 80% |
+| 单元测试       | `npm run test:unit`      | 全部 Jest 单元测试通过                            |
+| Lint           | `npm run lint`           | 0 errors                                         |
+| 格式检查       | `npm run format:check`   | 0 warnings（Prettier 独立于 ESLint，需分别检查） |
+| 覆盖率         | `npm run test:coverage`  | stmt ≥ 80%, branch ≥ 70%, func ≥ 80%, line ≥ 80% |
 | JMeter dry-run | `npm run jmeter:dryrun`  | 0 errors, 字段名/状态码正确                      |
+
+> **ISS-015 教训**: ESLint 和 Prettier 是独立的代码质量工具。ESLint 通过不代表 Prettier 通过。两者需分别验证。
+
+> **CI 建议**: P0 里的 `lint`、`format:check`、`test:coverage` 和 `jmeter:dryrun` 都可以进入 CI；其中 `format:check` 应和 lint 同属代码质量门禁，`jmeter:dryrun` 应作为 JMeter smoke 之前的前置门禁。
 
 ### P1 — 应该通过 (强烈建议)
 
 | 检查项       | 命令                               | 通过标准                                  |
 | ------------ | ---------------------------------- | ----------------------------------------- |
-| 集成测试     | `bash scripts/integration-test.sh` | 当前自动化集成检查全部通过；Phase 7 设计项按实施计划补齐 |
+| 集成测试     | `bash scripts/integration-test.sh` | Stage 3 只验证 SUT 单元测试与 SUT 集成测试范围，不包含 soak / 其他性能验收项 |
 | k6 smoke     | `npm run k6:smoke`                 | p95 < 500ms, error < 1%                   |
 | JMeter smoke | `npm run jmeter:smoke`             | error < 1%                                |
-| CI 流水线    | push → GitHub Actions              | 4 jobs 全绿                               |
+| CI 流水线    | push → GitHub Actions              | 7 jobs 全绿（Performance Testing / Code Quality、Performance Testing / Unit Tests、Performance Testing / JMeter Dry Run、Performance Testing / k6 Smoke Tests、Performance Testing / JMeter Smoke Tests、Performance Testing / Baseline Compare、Performance Testing / Trend Collect） |
 
 ### P2 — 建议执行 (发布前完成)
 
@@ -68,6 +176,23 @@
 | CI workaround 复验 | 移除 `continue-on-error` / `\|\| true` | 真实结果 0 failures    |
 | 性能基线           | load/stress/spike 各跑一轮             | 结果记录到 reports/    |
 | Soak 短时          | `npm run k6:soak:short`                | 10 min heap < 50% 增长 |
+
+### CI 落地建议
+
+| 建议项 | 说明 |
+| ------ | ---- |
+| 代码质量门禁 | `npm run lint` + `npm run format:check` 一起跑，避免只看 ESLint 不看 Prettier。 |
+| 单测门禁 | `npm run test:coverage` 直接复用 Jest 覆盖率阈值，避免 CI 里重复解析 HTML 报告。 |
+| JMeter 前置门禁 | `npm run jmeter:dryrun` 放在 smoke 之前，先拦截字段名、状态码和断言错误。 |
+| 产物归档 | `coverage/`、`results/`、`reports/` 建议作为 artifact 上传，便于失败回溯。 |
+| 禁止项 | 门禁 job 不应使用 `continue-on-error` 或 `|| true` 掩盖失败。 |
+
+### 阶段边界说明
+
+| 阶段 | 关注点 | 包含内容 | 不包含内容 |
+| ---- | ------ | -------- | ---------- |
+| Stage 3（开发阶段） | 开发自测 | SUT 单元测试、SUT 集成测试 | soak / load / stress / spike 等性能验收 |
+| Stage 4（验收阶段） | 验收验证 | SUT 性能测试（含 smoke / load / stress / spike / soak） | 与本项目无关的部署/回滚门禁 |
 
 ### 执行顺序
 
@@ -95,7 +220,7 @@ P0 (本地快速反馈，~2 min)
 
 | 条件                    | 验证方式                           |
 | ----------------------- | ---------------------------------- |
-| P0 全部通过             | npm test + lint + coverage 输出    |
+| P0 全部通过             | npm test + lint + format:check + coverage 输出 |
 | P1 全部通过             | integration-test.sh 输出 + CI 截图 |
 | 无 P0/P1 级别未修复 Bug | Bug 列表清零或降级为 P2            |
 | 测试报告已归档          | `reports/` 目录、`coverage/` 目录  |
@@ -256,7 +381,7 @@ npm run generate-summary                    # 生成执行摘要报告
 | ------------------- | ------------------------------------ |
 | 内存泄漏检测逻辑    | UT-SOAK-01~07                        |
 | Soak 短时验证       | SOAK-TC-01 (`npm run k6:soak:short`) |
-| Grafana 面板 + 告警 | SOAK-TC-04~05 (手动, Docker)         |
+| Grafana 面板 + 告警 | `bash scripts/integration-test-phase7-soak.sh` |
 
 ### Phase 5 — 基础设施 Helper
 
@@ -339,14 +464,17 @@ npm run generate-summary                    # 生成执行摘要报告
 
 ## 9. SLA 定义
 
-| 指标              | 阈值     | 适用场景                          |
-| ----------------- | -------- | --------------------------------- |
-| p95 latency       | < 500ms  | 所有 API 端点 (smoke/load/stress) |
-| p99 latency       | < 2000ms | 认证相关端点 (bcrypt 开销)        |
-| Error rate        | < 1%     | 所有场景                          |
-| Heap growth       | < 50%    | Soak test (1h+)                   |
-| Coverage (stmt)   | ≥ 80%    | Jest 单元测试                     |
-| Coverage (branch) | ≥ 70%    | Jest 单元测试                     |
+> **权威来源:** SLA 指标定义见 [requirements.md §SLA 定义](../project-management/requirements.md#sla-定义)，本节仅做快速引用。
+
+| 指标              | 阈值     | 适用场景                              |
+| ----------------- | -------- | ------------------------------------- |
+| p95 latency       | < 500ms  | 所有 API 端点 (smoke/load/stress)     |
+| p99 latency       | < 2000ms | 认证相关端点 (bcrypt 开销)            |
+| Error rate        | < 1%     | 所有场景                              |
+| Throughput        | ≥ 30 rps | smoke 场景 (5 VUs)                    |
+| Heap growth       | < 50%    | Soak test (1h+)                       |
+| Coverage (stmt)   | ≥ 80%    | Jest 单元测试                         |
+| Coverage (branch) | ≥ 70%    | Jest 单元测试                         |
 
 ---
 
@@ -367,8 +495,9 @@ npm run generate-summary                    # 生成执行摘要报告
 
 | 文档     | 路径                                                                  | 关系                            |
 | -------- | --------------------------------------------------------------------- | ------------------------------- |
-| 用例索引 | [test-cases/index.md](test-cases/index.md)                            | 266 条用例清单 + per-phase 详情 |
+| 用例索引 | [test-cases/index.md](test-cases/index.md)                            | 357 条用例清单 + per-phase 详情 |
 | 架构设计 | [architecture.md](../architecture/architecture.md)                    | 系统架构 + 数据流               |
 | 风险清单 | [risks.md](../project-management/risks.md)                            | 技术风险 + 缓解措施             |
 | 需求文档 | [requirements.md](../project-management/requirements.md)              | Phase 1~7 需求编号              |
-| 开发流程 | [dev-process-checklist.md](../../../../docs/dev-process-checklist.md) | 5 阶段流程 + checklist          |
+| 开发流程 | [dev-process-checklist.md](../../../docs/dev-process-checklist.md) | 5 阶段流程 + checklist          |
+| **Phase 7 Stage 4 验收清单** | [phase7-stage4-validation.md](phase7-stage4-validation.md) | Phase 7 验收阶段逐轮检查清单 |

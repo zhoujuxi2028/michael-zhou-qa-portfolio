@@ -13,37 +13,44 @@ on:
       - '.github/workflows/performance-ci.yml'
   workflow_dispatch:
 
+concurrency:
+  group: performance-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+
 defaults:
   run:
     working-directory: performance-testing-platform
 
 jobs:
-  lint:
+  performance-lint:
+    name: Performance Testing / Code Quality
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-          cache: npm
+          working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
-      - run: npm ci
-      - run: npx eslint src/ tests/unit/ --ext .js
-      - run: npx prettier --check 'src/**/*.js' 'tests/unit/**/*.js'
+      - run: npm run lint
+      - run: npm run format:check
 
-  unit-test:
-    name: Unit Tests
+  unit-tests:
+    name: Performance Testing / Unit Tests
     runs-on: ubuntu-latest
-    needs: lint
+    needs: performance-lint
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-          cache: npm
+          working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
-      - run: npm ci
-      - run: npx jest tests/unit/ --coverage --coverageReporters=text --coverageReporters=lcov
+      - run: npm run test:coverage
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v7
@@ -51,22 +58,65 @@ jobs:
           name: coverage-report
           path: performance-testing-platform/coverage/
 
-  smoke-test:
+  jmeter-dryrun:
+    name: Performance Testing / JMeter Dry Run
     runs-on: ubuntu-latest
-    needs: unit-test
+    needs: unit-tests
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-          cache: npm
+          working-directory: performance-testing-platform
+          cache-dependency-path: performance-testing-platform/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Cache JMeter
+        id: cache-jmeter
+        uses: actions/cache@v4
+        with:
+          path: performance-testing-platform/apache-jmeter-5.6.3
+          key: jmeter-5.6.3
+      - name: Download JMeter
+        if: steps.cache-jmeter.outputs.cache-hit != 'true'
+        run: |
+          wget -q https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.3.tgz
+          tar -xzf apache-jmeter-5.6.3.tgz
+          rm -f apache-jmeter-5.6.3.tgz
+      - name: Add JMeter to PATH
+        run: echo "$PWD/apache-jmeter-5.6.3/bin" >> $GITHUB_PATH
+      - name: Start target API
+        run: node src/server.js &
+      - name: Wait for API
+        run: |
+          for i in $(seq 1 10); do
+            curl -sf http://localhost:3000/health && break
+            sleep 1
+          done
+      - name: Run JMeter dry run (performance gate)
+        run: npm run jmeter:dryrun
+      - name: Stop API
+        if: always()
+        run: kill $(lsof -ti:3000) 2>/dev/null || true
+
+  smoke-test:
+    name: Performance Testing / k6 Smoke Tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-node-project
+        with:
+          node-version: '18'
+          working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
       - name: Install k6
         run: |
           curl -sSL https://github.com/grafana/k6/releases/download/v1.7.0/k6-v1.7.0-linux-amd64.tar.gz | tar xz
           sudo mv k6-v1.7.0-linux-amd64/k6 /usr/local/bin/
           k6 version
-      - run: npm ci
       - name: Start target API
         run: node src/server.js &
       - name: Wait for API
@@ -76,51 +126,44 @@ jobs:
             sleep 1
           done
       - name: Run k6 smoke test (performance gate)
-        run: k6 run --out json=reports/k6-smoke-summary.json tests/performance/smoke.k6.js
-      - name: Extract baseline metrics
-        if: always()
-        run: node scripts/baseline-export.js
-      - name: Download previous baseline
-        if: always()
-        continue-on-error: true
         run: |
-          gh run list -w performance-ci.yml --json conclusion,databaseId -q '.[] | select(.conclusion=="success") | .databaseId' | head -1 | xargs -I {} gh run download {} -n baseline-artifact -D reports/
-      - name: Compare baseline (regression detection)
-        if: always()
-        run: node scripts/baseline-compare.js
-      - name: Collect trend data
-        if: always()
-        run: node scripts/trend-collect.js
-      - name: Upload baseline artifacts
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: baseline-artifact
-          path: |
-            performance-testing-platform/reports/baseline.json
-            performance-testing-platform/reports/trend.json
+          mkdir -p reports
+          k6 run --out json=reports/k6-smoke-summary.json tests/performance/smoke.k6.js
+      - name: Extract baseline metrics
+        run: node scripts/baseline-export.js
       - name: Stop API
         if: always()
         run: kill $(lsof -ti:3000) 2>/dev/null || true
 
   jmeter-smoke-test:
+    name: Performance Testing / JMeter Smoke Tests
     runs-on: ubuntu-latest
-    needs: unit-test
+    needs: jmeter-dryrun
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-          cache: npm
+          working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
-      - run: npm ci
-      - name: Install JMeter
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Cache JMeter
+        id: cache-jmeter
+        uses: actions/cache@v4
+        with:
+          path: performance-testing-platform/apache-jmeter-5.6.3
+          key: jmeter-5.6.3
+      - name: Download JMeter
+        if: steps.cache-jmeter.outputs.cache-hit != 'true'
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq default-jre > /dev/null
           wget -q https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.3.tgz
           tar -xzf apache-jmeter-5.6.3.tgz
-          echo "$PWD/apache-jmeter-5.6.3/bin" >> $GITHUB_PATH
+          rm -f apache-jmeter-5.6.3.tgz
+      - name: Add JMeter to PATH
+        run: echo "$PWD/apache-jmeter-5.6.3/bin" >> $GITHUB_PATH
       - name: Start target API
         run: node src/server.js &
       - name: Wait for API
@@ -133,7 +176,7 @@ jobs:
         run: |
           mkdir -p results
           jmeter -n -t tests/jmeter/smoke.jmx -q tests/jmeter/config/smoke.properties -l results/jmeter-smoke.jtl
-      - name: Check JMeter results (fail on errors)
+      - name: Check JMeter results (fail on errors + latency)
         run: |
           ERROR_COUNT=$(tail -n +2 results/jmeter-smoke.jtl | awk -F',' '{if($8=="false") count++} END{print count+0}')
           TOTAL_COUNT=$(tail -n +2 results/jmeter-smoke.jtl | wc -l | tr -d ' ')
@@ -148,6 +191,15 @@ jobs:
             echo "FAIL: Error rate >= 1% threshold"
             exit 1
           fi
+
+          # p95 latency check (aligned with k6 SLA: p95 < 500ms)
+          # JMeter CSV 默认格式: column 2 = elapsed time (ms)
+          P95=$(tail -n +2 results/jmeter-smoke.jtl | awk -F',' '{print $2}' | sort -n | awk 'BEGIN{c=0} {a[c++]=$1} END{print a[int(c*0.95)]}')
+          echo "p95 latency: ${P95}ms"
+          if [ "$(echo "$P95 >= 500" | bc)" -eq 1 ]; then
+            echo "FAIL: p95 latency (${P95}ms) >= 500ms threshold"
+            exit 1
+          fi
       - name: Stop API
         if: always()
         run: kill $(lsof -ti:3000) 2>/dev/null || true
@@ -157,3 +209,58 @@ jobs:
         with:
           name: jmeter-smoke-results
           path: performance-testing-platform/results/
+
+  baseline-compare:
+    name: Performance Testing / Baseline Compare
+    runs-on: ubuntu-latest
+    needs: [smoke-test, jmeter-smoke-test]
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-node-project
+        with:
+          node-version: '18'
+          working-directory: performance-testing-platform
+          cache-dependency-path: performance-testing-platform/package-lock.json
+      - name: Download baseline artifact
+        # 首次运行无 baseline artifact 时允许失败（已知 exemption，见 risks.md R-27）
+        continue-on-error: true
+        run: |
+          mkdir -p reports
+          gh run list -w performance-ci.yml --json conclusion,databaseId -q '.[] | select(.conclusion=="success") | .databaseId' | head -1 | xargs -I {} gh run download {} -n baseline-artifact -D reports/
+      - name: Compare baseline (CI-BASE-02)
+        run: node scripts/baseline-compare.js
+      - name: Upload comparison result
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: baseline-comparison
+          path: |
+            performance-testing-platform/reports/baseline.json
+            performance-testing-platform/reports/comparison-result.json
+
+  trend-collect:
+    name: Performance Testing / Trend Collect
+    runs-on: ubuntu-latest
+    needs: smoke-test
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-node-project
+        with:
+          node-version: '18'
+          working-directory: performance-testing-platform
+          cache-dependency-path: performance-testing-platform/package-lock.json
+      - name: Collect trend data (CI-TREND-01)
+        run: |
+          mkdir -p reports
+          node scripts/trend-collect.js
+      - name: Upload trend artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: trend-data
+          path: performance-testing-platform/reports/trend.json

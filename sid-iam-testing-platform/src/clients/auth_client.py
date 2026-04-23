@@ -325,7 +325,6 @@ class AuthClient:
             raise NotImplementedError("Zero Trust engine not configured")
         return self.zt.evaluate_device(device_info)
 
-
     def evaluate_access(self, context):
         if not self.zt:
             raise NotImplementedError("Zero Trust engine not configured")
@@ -388,7 +387,6 @@ class AuthClient:
         if not self.sessions:
             raise NotImplementedError("Session manager not configured")
         return self.sessions.create_session(user_id, metadata)
-
 
     def validate_session(self, session_id):
         if not self.sessions:

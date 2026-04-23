@@ -32,7 +32,31 @@ function validateProfile(profile) {
     throw new Error('Profile must contain a "thresholds" object');
   }
 
+  validateObserver(profile.observer);
+
   return profile;
 }
 
-module.exports = { loadProfile, validateProfile };
+function validateObserver(observer) {
+  if (observer === null || observer === undefined) {
+    return;
+  }
+
+  if (typeof observer !== 'object' || Array.isArray(observer)) {
+    throw new Error('Profile "observer" must be an object');
+  }
+
+  if ('enabled' in observer && typeof observer.enabled !== 'boolean') {
+    throw new Error(`Profile "observer.enabled" must be boolean, got ${typeof observer.enabled}`);
+  }
+
+  if ('exec' in observer && typeof observer.exec !== 'string') {
+    throw new Error('Profile "observer.exec" must be string');
+  }
+
+  if ('vus' in observer && (!Number.isInteger(observer.vus) || observer.vus < 1)) {
+    throw new Error('Profile "observer.vus" must be an integer >= 1');
+  }
+}
+
+module.exports = { loadProfile, validateProfile, validateObserver };

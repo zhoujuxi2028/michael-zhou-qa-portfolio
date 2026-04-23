@@ -132,6 +132,6 @@ PR review 时，审查以下内容：
 ## 7. 相关文档
 
 - [CLAUDE.md](../../CLAUDE.md) — CI 防假绿灯规则
-- [LABEL_STRATEGY.md](../../LABEL_STRATEGY.md) — `workaround` label 说明
+- [label-strategy.md](label-strategy.md) — `workaround` label 说明
 - [dev-process-checklist.md](../dev-process-checklist.md) — Phase 4 workaround 复验规则
-- [postmortem-2026-Q1.md](../postmortem-2026-Q1.md) — #25 #34 假绿灯事件 RCA
+- [postmortem-2026-Q1.md](../project-management/postmortems/postmortem-2026-Q1.md) — #25 #34 假绿灯事件 RCA

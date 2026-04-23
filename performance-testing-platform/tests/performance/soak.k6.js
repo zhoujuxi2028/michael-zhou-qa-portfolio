@@ -1,18 +1,9 @@
 import http from 'k6/http';
 import { sleep, check } from 'k6';
 import { Trend, Counter } from 'k6/metrics';
-import {
-  BASE_URL,
-  checkStatus,
-  checkMemoryLeak,
-  LEAK_THRESHOLD,
-} from './helpers/utils.js';
-import {
-  buildLoadThresholds,
-  buildObserverDurationFromStages,
-  buildObserverScenario,
-  observeMetricsCycle,
-} from './helpers/metricsObserver.js';
+import { BASE_URL, checkStatus, checkMemoryLeak, LEAK_THRESHOLD } from './helpers/utils.js';
+import { observeMetricsCycle } from './helpers/metricsObserver.js';
+import { buildScenarioProfile } from './helpers/profile.js';
 import { thinkTime } from './helpers/thinkTime.js';
 import { randomProduct } from './helpers/data.js';
 
@@ -26,13 +17,15 @@ function executeFunnel(baseUrl, options = {}) {
   const product = randomProduct();
 
   // 100% browse products list
-  const browseRes = http.get(`${baseUrl}/api/products`);
+  const browseRes = http.get(`${baseUrl}/api/products`, { tags: { endpoint: '/api/products' } });
   checkStatus(browseRes, 200, 'browse products');
   thinkTime();
 
   // ~50% of browsers view product detail (nested probability)
   if (Math.random() < detailProb) {
-    const detailRes = http.get(`${baseUrl}/api/products/${product.id}`);
+    const detailRes = http.get(`${baseUrl}/api/products/${product.id}`, {
+      tags: { endpoint: '/api/products/:id' },
+    });
     checkStatus(detailRes, 200, 'product detail');
     thinkTime();
 
@@ -45,7 +38,7 @@ function executeFunnel(baseUrl, options = {}) {
           product_id: Number(product.id),
           quantity: 1,
         }),
-        { headers: { 'Content-Type': 'application/json' } }
+        { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/orders' } }
       );
       checkStatus(orderRes, 201, 'create order');
 
@@ -74,22 +67,11 @@ const SOAK_STAGES = [
   { duration: __ENV.SOAK_RAMP_DOWN_DURATION || '1m', target: 0 },
 ];
 
-export const options = {
-  setupTimeout: '30s',
-  scenarios: {
-    load: {
-      executor: 'ramping-vus',
-      exec: 'runSoakLoad',
-      startVUs: 0,
-      stages: SOAK_STAGES,
-      gracefulRampDown: '0s',
-    },
-    observer: buildObserverScenario({
-      duration: __ENV.SOAK_OBSERVER_DURATION || buildObserverDurationFromStages(SOAK_STAGES),
-    }),
-  },
-  thresholds: buildLoadThresholds(),
-};
+export const options = buildScenarioProfile('soak', {
+  loadExec: 'runSoakLoad',
+  loadStages: SOAK_STAGES,
+  observerDuration: __ENV.SOAK_OBSERVER_DURATION ?? undefined,
+});
 
 export function setup() {
   // Record baseline heap
@@ -126,7 +108,10 @@ export function runSoakLoad() {
     let recovered = false;
 
     while (Date.now() - recoveryStart < 60000) {
-      const res = http.get(`${BASE_URL}/api/products`, { timeout: '5s' });
+      const res = http.get(`${BASE_URL}/api/products`, {
+        tags: { endpoint: '/api/products' },
+        timeout: '5s',
+      });
       if (res.status === 200) {
         recovered = true;
         const recoveryTimeMs = Date.now() - recoveryStart;
@@ -159,7 +144,7 @@ export function runSoakLoad() {
     const loginRes = http.post(
       `${BASE_URL}/api/auth/login`,
       JSON.stringify({ username: 'soakuser', password: 'soakpass' }),
-      { headers: { 'Content-Type': 'application/json' } }
+      { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/auth/login' } }
     );
     soakAuthLatency.add(loginRes.timings.duration);
   }
@@ -180,7 +165,7 @@ export function observeMetrics() {
 }
 
 export function teardown(data) {
-  const m = http.get(`${BASE_URL}/metrics`);
+  const m = http.get(`${BASE_URL}/metrics`, { tags: { endpoint: '/metrics' } });
   let finalHeap = 0;
   if (m.status === 200) {
     try {

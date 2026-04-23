@@ -1,0 +1,1051 @@
+# Phase 7 DevOps需求文档 - CI/CD Pipeline Implementation
+
+**需求来源**: Issue #88
+**设计文档**: docs/devops/phase7-cicd-architecture.yml
+**创建日期**: 2026-04-18
+
+---
+
+## 1. 需求概述
+
+### 1.1 目标
+
+将测试结果接入 CI/CD 流水线和可观测性平台，实现：
+1. **性能基线回归检测** - 自动对比当前与历史性能
+2. **覆盖率门禁系统** - 强制执行，防止覆盖率退化
+3. **Grafana面板增强** - 错误分布、延迟热力图、自定义指标
+4. **定时调度系统** - nightly soak 和 weekly capacity 自动执行
+5. **趋势分析** - 多次运行数据的可视化
+6. **PR评论集成** - 自动在PR中显示测试结果
+
+### 1.2 需求结构
+
+| 模块 | 需求ID | 优先级 | 预估工作量 |
+|------|----------|----------|------------|
+| Baseline | PERF-CI-BL-FR-001~006 | P1 | 12小时 |
+| Coverage | PERF-CI-COV-FR-001~003 | P1 | 6小时 |
+| Observability | PERF-OBS-DASH-FR-001~003 / PERF-OBS-ALERT-FR-001 | P2 | 8小时 |
+| Schedule | PERF-CI-SCHED-FR-001~002 | P3 | 10小时 |
+| k6 Scripts | PERF-ENGINE-K6-FR-011~017 | P2 | 8小时 |
+
+---
+
+## 2. 详细需求
+
+### 2.1 Baseline模块 (PERF-CI-BL-FR-001~006)
+
+> **权威需求来源:** [phase7-cicd.md](../project-management/requirements/phase7-cicd.md)，本文件为 DevOps 实施补充参考。
+
+#### PERF-CI-BL-FR-001: CI性能基线存储
+
+**用户故事**: 作为性能工程师，我想在CI中自动对比当前p95与历史基线
+
+**需求描述**:
+```yaml
+functional_requirements:
+  - smoke_gate执行后自动生成baseline
+  - 将p95/error_rate/throughput保存为JSON artifact
+  - artifact命名规范：baseline-{timestamp}.json
+
+technical_requirements:
+  artifact_data_structure:
+    name: "baseline-{YYYYMMDD-HHMMSS}.json"
+    format:
+      timestamp: "ISO 8601 string"
+      metrics:
+        p95:
+          value: "number (ms)"
+          metric_name: "http_req_duration.p(95)"
+        error_rate:
+          value: "number (percentage)"
+          metric_name: "http_req_failed"
+        throughput:
+          value: "number (req/s)"
+          metric_name: "http_reqs"
+
+  artifact_upload:
+    tool: "GitHub Actions actions/upload-artifact@v7"
+    retention: "90 days"
+    compression: "gzip for artifacts > 10MB"
+
+implementation_details:
+  data_extraction:
+    - 从k6 JSON output中提取metrics
+    - 使用jq解析关键指标
+    - 计算p95百分位数
+    - 计算error_rate = failed/total * 100
+
+  storage_strategy:
+    - 每次CI运行覆盖前次baseline
+    - 保留最近3个baseline版本
+    - 90天后自动清理旧baseline
+```
+
+**验收标准**:
+```yaml
+acceptance_criteria:
+  - ✅ smoke test成功后自动生成baseline artifact
+  - ✅ baseline.json包含所有必需字段
+  - ✅ artifact成功上传到GitHub
+  - ✅ 旧baseline按90天策略自动清理
+  - ✅ 首次运行没有baseline时创建初始baseline
+```
+
+#### PERF-BL-FR-002: 基线回归检测
+
+**用户故事**: 作为性能工程师，我想在CI中下载上次baseline artifact，对比当前p95，退化>20%则warning，>50%则fail
+
+**需求描述**:
+```yaml
+functional_requirements:
+  - CI下载上次成功的baseline artifact
+  - 对比当前指标与baseline
+  - 基于阈值判断：warning (20%) / fail (50%)
+  - 在CI log中输出详细的对比结果
+
+technical_requirements:
+  baseline_download:
+    - GitHub API endpoint: /repos/{owner}/{repo}/actions/artifacts
+    - artifact name pattern: baseline-{timestamp}.json
+    - 下载失败时的fallback: 使用默认baseline
+
+  comparison_algorithm:
+    degradation_calculation:
+      formula: "(current_p95 - baseline_p95) / baseline_p95 * 100"
+      positive_value: "性能提升 (improvement)"
+      negative_value: "性能退化 (degradation)"
+
+    threshold_logic:
+      warning_threshold: "20%退化"
+      fail_threshold: "50%退化"
+      tolerance: "绝对值差异 ±50ms内不算退化"
+
+  multi_metric_comparison:
+    metrics:
+      - p95: 主要对比指标
+      - error_rate: 辅助对比指标
+      - throughput: 辅助对比指标
+    rule: "任一指标超过fail_threshold则整体fail"
+
+  output_format:
+    ci_log_output:
+      format: "Console + GitHub Actions annotation"
+      content:
+        - current_values: 所有指标的当前值
+        - baseline_values: 所有指标的基线值
+        - percentage_diff: 百分比差异
+        - status: PASS / WARNING / FAIL
+        - details: 具体差异说明
+```
+
+**验收标准**:
+```yaml
+acceptance_criteria:
+  - ✅ 成功下载上次baseline artifact
+  - ✅ 正确计算所有指标的退化百分比
+  - ✅ 基于阈值设置正确的status
+  - ✅ 退化≤20%时CI继续
+  - ✅ 退化>50%时CI失败
+  - ✅ CI log中输出清晰的对比结果
+  - ✅ baseline不存在时创建新baseline并continue
+```
+
+#### PERF-BL-FR-003: 趋势数据收集
+
+**用户故事**: 作为性能工程师，我想每次CI运行提取p95/throughput/error rate追加到reports/trend.json
+
+**需求描述**:
+```yaml
+functional_requirements:
+  - 每次CI运行自动收集性能指标
+  - 追加式写入trend.json文件
+  - 维护最近90天的历史数据
+  - 自动清理90天前的旧数据
+
+technical_requirements:
+  trend_data_structure:
+    file_path: "reports/trend.json"
+    format:
+      array:
+        - timestamp: "ISO 8601"
+        - metrics:
+          p95: "number"
+          error_rate: "number"
+          throughput: "number"
+          test_type: "string (smoke/load/stress/soak/capacity)"
+
+  data_collection:
+    source: "从k6 JSON output或JMeter JTL文件"
+    tool: "jq for JSON parsing"
+    extraction_method: "p95百分位数、计数、平均值计算"
+
+  retention_policy:
+    max_age_days: "90 days"
+    cleanup_strategy: "remove entries older than 90 days"
+    min_entries: "keep at least 30 data points for trend analysis"
+
+  file_operations:
+    write_mode: "append to existing array (jq --argjson '. += $new_entry')"
+    atomic_operation: "使用临时文件+重命名确保数据完整性"
+    backup_before_cleanup: "cleanup前创建backup"
+```
+
+**验收标准**:
+```yaml
+acceptance_criteria:
+  - ✅ 每次CI运行后trend.json新增一条记录
+  - ✅ 记录包含timestamp和所有必需的metrics
+  - ✅ 90天前的旧数据自动删除
+  - ✅ 文件格式有效的JSON数组
+  - ✅ 保留至少最近30条记录用于趋势分析
+```
+
+#### PERF-BL-FR-004: 趋势可视化
+
+**用户故事**: 作为性能工程师，我想在Grafana中查看历史p95/throughput折线图（从InfluxDB聚合）
+
+**需求描述**:
+```yaml
+functional_requirements:
+  - 在Grafana中创建历史趋势面板
+  - 支持按测试类型筛选（smoke/load/stress/soak/capacity）
+  - 显示最近N次运行的p95趋势线
+  - 支持时间范围选择（7天/30天/90天）
+
+technical_requirements:
+  grafana_panel_config:
+    panel_type: "Time Series"
+    data_source: "InfluxDB"
+    query_language: "Flux"
+
+  flux_query_template:
+    basic: |
+      from(bucket: "k6_metrics")
+        |> range(start: -30d)
+        |> filter(fn: (r) => r.test_type == "${test_type}")
+        |> aggregateWindow(every: 1d, fn: mean, column: "http_req_duration.p(95)")
+
+    variable_support:
+      - test_type: "${test_type}" (dropdown: all/smoke/load/stress/soak/capacity)
+      - time_range: "${time_range}" (dropdown: 7d/30d/90d)
+
+  visualization_config:
+    y-axis: "Latency (ms)"
+    x-axis: "Time"
+    legend: "Current vs Baseline"
+    threshold_lines:
+      - p95_baseline: "基线p95参考线"
+      - regression_threshold: "warn if 20% above baseline"
+
+  performance_optimization:
+    query_cache: "Redis TTL 60s for frequent queries"
+    data_downsampling: "对90天以上的数据使用1小时聚合点"
+    lazy_loading: "面板按需加载，不自动刷新"
+```
+
+**验收标准**:
+```yaml
+acceptance_criteria:
+  - ✅ Grafana中存在历史趋势面板
+  - ✅ 支持测试类型筛选
+  - ✅ 显示p95时间序列图
+  - ✅ 包含基线参考线
+  - ✅ 查询性能优化（缓存+聚合）
+  - ✅ 面板可以交互选择时间范围
+```
+
+#### PERF-BL-FR-005: Grafana趋势表
+
+**用户故事**: 作为性能工程师，我想在Grafana中查看最近N次运行的指标对比表格（Markdown格式）
+
+**需求描述**:
+```yaml
+functional_requirements:
+  - 生成Markdown格式的趋势对比表
+  - 对比最近N次运行的关键指标
+  - 按测试类型分组显示
+  - 包含趋势指示符（↑↓=）
+
+technical_requirements:
+  table_generation:
+    format: "Markdown table"
+    columns:
+      - "Run #"
+      - "Timestamp"
+      - "Type"
+      - "p95 (ms)"
+      - "Error Rate (%)"
+      - "Throughput (req/s)"
+      - "Trend vs Previous"
+      - "Status"
+
+  trend_indicators:
+    improvement: "↑" (绿色)
+    degradation_small: "↓" (黄色, <20%)
+    degradation_large: "↓⚠️" (橙色, ≥20% but <50%)
+    regression: "↓🔴" (红色, ≥50%)
+
+  comparison_logic:
+    - 与上一次运行对比（显示"Trend vs Previous"列）
+    - 与基线对比（如果有）
+    - 计算百分比差异
+    - 根据阈值设置Status和趋势指示符
+```
+
+**验收标准**:
+```yaml
+acceptance_criteria:
+  - ✅ 趋势表生成在Grafana中显示
+  - ✅ 表格包含所有必需列
+  - ✅ 趋势指示符正确反映性能变化
+  - ✅ 支持按测试类型分组
+  - ✅ Markdown格式正确渲染
+```
+
+#### PERF-BL-FR-006: 基线对比单元测试
+
+**用户故事**: 作为QA工程师，我想验证基线对比逻辑的正确性（阈值判定、首次运行兜底、异常值处理）
+
+**需求描述**:
+```yaml
+functional_requirements:
+  - 验证退化>20%时返回warning
+  - 验证退化>50%时返回fail
+  - 验证首次运行无baseline时创建baseline而不fail
+  - 验证baseline JSON格式异常时的错误处理
+
+technical_requirements:
+  test_framework: "Jest unit tests"
+  test_file: "tests/unit/scripts/baseline-comparator.test.js"
+
+  test_cases:
+    UT-BL-01: "当前p95与baseline偏差<20% → PASS"
+    UT-BL-02: "当前p95与baseline偏差>20% → warning"
+    UT-BL-03: "当前p95与baseline偏差>50% → FAIL"
+    UT-BL-04: "首次运行无baseline → 创建baseline并PASS"
+    UT-BL-05: "baseline JSON格式异常 → 报错并兜底"
+    UT-BL-06: "trend.json追加逻辑 → 验证新行添加"
+
+  edge_cases:
+    - baseline值为0或负数
+    - p95无穷大值处理
+    - 除零保护（防止除以0错误）
+    - 百分比计算精度处理
+```
+
+**验收标准**:
+```yaml
+acceptance_criteria:
+  - ✅ 6个单元测试全部通过
+  - ✅ 测试覆盖所有edge case
+  - ✅ 退化计算逻辑准确
+  - ✅ 首次运行兜底逻辑正确
+  - ✅ 异常值处理优雅（不crash）
+```
+
+---
+
+### 2.2 Coverage模块 (PERF-COV-FR-001~003)
+
+#### PERF-COV-FR-001: CI覆盖率报告生成
+
+**用户故事**: 作为性能工程师，我想在CI中强制覆盖率门禁，以便防止测试覆盖率退化
+
+**需求描述**:
+```yaml
+functional_requirements:
+  - unit-tests job生成覆盖率报告
+  - 支持多种覆盖率报告格式（lcov、JSON、HTML）
+  - 报告包含详细的覆盖率数据（statements/branches/functions/lines）
+
+technical_requirements:
+  coverage_tool: "Jest内置coverage"
+
+  report_formats:
+    lcov: "行级覆盖率数据"
+    json_summary: "覆盖率概要JSON"
+    html_report: "可视化HTML报告"
+
+  output_directory:
+    path: "coverage/"
+    artifacts:
+      - lcov-report: "coverage/lcov-report/"
+      - coverage-summary: "coverage/coverage-summary.json"
+      - html-report: "coverage/lcov-report/index.html"
+
+  execution:
+    command: "npm test -- --coverage --coverageReporters=text --coverageReporters=lcov"
+    output_capture: "Jest自动生成覆盖率数据"
+    exit_code: "coverage低于阈值时exit 1"
+```
+
+**验收标准**:
+```yaml
+acceptance_criteria:
+  - ✅ unit-tests job成功生成coverage/目录
+  - ✅ 包含lcov.info文件
+  - ✅ 包含HTML可视化报告
+  - ✅ 控制台输出显示覆盖率百分比
+  - ✅ 所有覆盖率类型都有数据
+```
+
+#### PERF-COV-FR-002: Coverage artifact上传
+
+**用户故事**: 作为性能工程师，我想将覆盖率报告上传为CI artifact，以便长期归档
+
+**需求描述**:
+```yaml
+functional_requirements:
+  - 将覆盖率报告上传为GitHub Actions artifact
+  - 支持多artifact上传（lcov、HTML、JSON summary）
+  - 设置artifact retention为90天
+
+technical_requirements:
+  upload_tool: "GitHub Actions actions/upload-artifact@v7"
+
+  artifact_config:
+    name: "coverage-report"
+    path: "coverage/"
+    retention_days: 90
+    compression: "自动压缩large artifacts"
+    if_no_artifacts: "不报错，仅warning"
+```
+
+**验收标准**:
+```yaml
+acceptance_criteria:
+  - ✅ 覆盖率artifact成功上传
+  - ✅ artifact在GitHub Actions页面可见
+  - ✅ retention策略设置为90天
+  - ✅ artifact包含所有必需的覆盖率文件
+  - ✅ 上传失败时有适当的错误处理
+```
+
+#### PERF-COV-FR-003: CI覆盖率阈值强制
+
+**用户故事**: 作为性能工程师，我想在CI中强制执行覆盖率阈值，低于阈值则fail
+
+**需求描述**:
+```yaml
+functional_requirements:
+  - Jest coverage thresholds配置为fail-fast
+  - thresholds: statements ≥80%, branches ≥70%, functions ≥80%, lines ≥80%
+  - 任一指标低于阈值则CI job失败
+  - 详细的错误信息指示哪个指标未达标
+
+technical_requirements:
+  threshold_configuration:
+    location: "jest.config.js"
+    config_section: "coverageThresholds"
+    thresholds:
+      global:
+        statements: 80
+        branches: 70
+        functions: 80
+        lines: 80
+
+  enforcement_strategy:
+    mode: "fail-fast (立即失败)"
+    output_format:
+      - 列出每个指标的当前值
+      - 列出阈值要求
+      - 列出差值（多少个百分点）
+      - 清晰的错误消息
+
+  validation:
+    - 运行已知高覆盖率代码验证threshold生效
+    - 运行已知低覆盖率代码验证fail逻辑正确
+```
+
+**验收标准**:
+```yaml
+acceptance_criteria:
+  - ✅ jest.config.js包含coverageThresholds配置
+  - ✅ 所有4个指标阈值定义正确
+  - ✅ statements<80%时CI失败
+  - ✅ branches<70%时CI失败
+  - ✅ functions<80%时CI失败
+  - ✅ lines<80%时CI失败
+  - ✅ 错误消息清晰指示具体哪个指标未达标
+```
+
+---
+
+### 2.3 Observability模块 (PERF-OBS-FR-001~004)
+
+#### PERF-OBS-FR-001: 错误分布面板
+
+**用户故事**: 作为性能工程师，我想在Grafana中查看错误分布时序图（按endpoint分组）
+
+**需求描述**:
+```yaml
+functional_requirements:
+  - 创建错误率时序图面板
+  - 支持按endpoint分组显示
+  - 支持时间范围选择
+  - 显示错误率的绝对值和趋势
+
+technical_requirements:
+  grafana_panel:
+    type: "Time Series"
+    title: "Error Rate by Endpoint"
+
+  influxdb_query:
+    query_template: |
+      from(bucket: "k6_metrics")
+        |> range(start: -24h)
+        |> filter(fn: (r) => r.http_req_failed == true)
+        |> group(columns: ["endpoint"])
+        |> aggregateWindow(every: 1m, fn: mean, createColumn: "error_rate", as: "rate() * 100")
+
+  visual_config:
+    y-axis: "Error Rate (%)"
+    x-axis: "Time"
+    legend: "按endpoint分组"
+    color_scheme: "基于endpoint的自动着色"
+
+  alerts:
+    threshold: "error_rate > 1%"
+    condition: "5m内持续超过1%"
+    notification: "POST到webhook"
+```
+
+**验收标准**:
+```yaml
+acceptance_criteria:
+  - ✅ Grafana中存在错误分布面板
+  - ✅ 支持endpoint分组筛选
+  - ✅ 显示错误率时序图
+  - ✅ 包含阈值线（1%）
+  - ✅ 面板可以交互调整时间范围
+```
+
+#### PERF-OBS-FR-002: 延迟热力图
+
+**用户故事**: 作为性能工程师，我想在Grafana中查看请求延迟分布的heatmap可视化
+
+**需求描述**:
+```yaml
+functional_requirements:
+  - 创建延迟分布heatmap面板
+  - X轴为时间，Y轴为endpoint
+  - 颜色梯度表示延迟大小
+  - 支持时间范围和聚合窗口选择
+
+technical_requirements:
+  grafana_panel:
+    type: "Heatmap"
+    title: "Latency Heatmap"
+
+  influxdb_query:
+    query_template: |
+      from(bucket: "k6_metrics")
+        |> range(start: -1h)
+        |> filter(fn: (r) => r.http_req_duration <= 5000)
+        |> aggregateWindow(every: 1m, fn: mean, columns: ["endpoint", "value"])
+
+  heatmap_config:
+    x_axis: "Time (1分钟聚合点)"
+    y_axis: "Endpoint"
+    color_scheme: "绿(快)→黄(中)→红(慢)"
+    color_scale:
+      min: 0ms, max: 5000ms
+
+  data_exclusion:
+    - 过滤异常高延迟值（>5秒）
+    - 过滤无效endpoint名称
+```
+
+**验收标准**:
+```yaml
+acceptance_criteria:
+  - ✅ Grafana中存在延迟热力图
+  - ✅ 正确显示时间序列的延迟分布
+  - ✅ Y轴显示endpoint列表
+  - ✅ 颜色梯度正确反映延迟大小
+  - ✅ 支持时间范围调整
+```
+
+#### PERF-OBS-FR-003: 自定义指标聚合
+
+**用户故事**: 作为性能工程师，我想在Grafana中查看自定义指标面板（soak_heap_used_mb、soak_event_loop_lag、soak_order_success）
+
+**需求描述**:
+```yaml
+functional_requirements:
+  - 创建自定义指标聚合面板
+  - 支持多个时序图在一个面板中
+  - 每个指标独立的Y轴和图例
+  - 显示最近数据点的趋势
+
+technical_requirements:
+  grafana_panel:
+    type: "Time Series (Multi)"
+    title: "Custom Metrics"
+
+  influxdb_queries:
+    metrics:
+      - query_heap: |
+          from(bucket: "k6_metrics")
+          |> range(start: -24h)
+          |> filter(fn: (r) => r.metric_name == "soak_heap_used_mb")
+          |> aggregateWindow(every: 30s, fn: mean)
+
+      - query_event_loop: |
+          from(bucket: "k6_metrics")
+          |> range(start: -24h)
+          |> filter(fn: (r) => r.metric_name == "soak_event_loop_lag")
+          |> aggregateWindow(every: 30s, fn: max)
+
+      - query_order_success: |
+          from(bucket: "k6_metrics")
+          |> range(start: -24h)
+          |> filter(fn: (r) => r.metric_name == "soak_order_success_rate")
+          |> aggregateWindow(every: 30s, fn: mean)
+
+  visual_config:
+    - 每个指标独立的时间序列图
+    - Y轴范围自适应
+    - 图例显示指标名称和当前值
+    - 显示阈值线（如heap > 100MB）
+```
+
+**验收标准**:
+```yaml
+acceptance_criteria:
+  - ✅ Grafana中存在自定义指标面板
+  - ✅ 显示3个独立的时间序列图
+  - ✅ 每个指标有独立的Y轴和图例
+  - ✅ 数据正确从InfluxDB查询
+  - ✅ 支持时间范围调整
+```
+
+#### PERF-OBS-FR-004: Grafana webhook告警
+
+**用户故事**: 作为性能工程师，我想在Grafana中配置webhook，告警触发时POST到指定URL
+
+**需求描述**:
+```yaml
+functional_requirements:
+  - 在Grafana中配置alert webhook
+  - 告警触发时POST JSON到指定URL
+  - 支持多个alert类型（阈值触发、异常检测）
+  - 告警payload包含详细的信息
+
+technical_requirements:
+  grafana_config:
+    alert_notification:
+      type: "webhook"
+      url: "${ALERT_WEBHOOK_URL}" (从环境变量)
+      method: "POST"
+      content_type: "application/json"
+
+  webhook_payload:
+    alert_name: "Grafana alert名称"
+    state: "firing / resolved"
+    condition: "告警触发条件"
+    values: "当前指标值"
+    message: "告警描述"
+    timestamp: "告警时间"
+    labels:
+      - "alert_type: threshold / anomaly"
+      - "endpoint: affected endpoint"
+      - "severity: warning / critical"
+
+  security_considerations:
+    - Webhook URL需要验证合法性
+    - 使用HTTPS端点
+    - 实现请求签名验证（可选）
+```
+
+**验收标准**:
+```yaml
+acceptance_criteria:
+  - ✅ Grafana中配置webhook通知
+  - ✅ 告警触发时成功POST到指定URL
+  - ✅ payload包含所有必需字段
+  - ✅ 支持firing和resolved状态
+  - ✅ 告警信息格式符合要求
+  - ✅ 包含labels用于分类和路由
+```
+
+---
+
+### 2.4 Schedule模块 (PERF-SCHED-FR-001~002)
+
+#### PERF-SCHED-FR-001: GitHub Actions cron workflow
+
+**用户故事**: 作为性能工程师，我想设置定时调度自动运行nightly soak和weekly capacity test，以便持续监控系统稳定性
+
+**需求描述**:
+```yaml
+functional_requirements:
+  - 在GitHub Actions中创建cron workflow
+  - nightly运行10分钟soak test
+  - weekly运行capacity test
+  - 自动归档测试结果为artifact
+  - 设置90天artifact retention
+
+technical_requirements:
+  github_actions_schedule:
+    cron_expression:
+      nightly_soak: "0 2 * * *" (每天UTC 2:00)
+      weekly_capacity: "0 3 * * 0" (每周日UTC 3:00)
+      timezone: "UTC"
+
+  workflow_trigger:
+    - schedule: "cron定时触发"
+    - manual: "workflow_dispatch (手动触发)"
+    - pr触发: "pull_request时运行quick smoke test"
+
+  job_config:
+    name: "scheduled-performance-tests"
+    runs_on: "ubuntu-latest"
+    timeout: "60 minutes"
+    concurrency: "避免同时运行多个scheduled job"
+
+  execution_steps:
+    - 环境准备：npm install
+    - 服务启动：npm start (if needed)
+    - 健康检查：wait for /health
+    - 测试执行：运行k6脚本
+    - 结果收集：capture JSON output
+    - artifact上传：upload test results
+    - 服务清理：npm stop
+
+  artifact_config:
+    name_pattern: "scheduled-{timestamp}"
+    retention: "90 days"
+    includes:
+      - k6 JSON output
+      - HTML summary report
+      - execution logs
+```
+
+**验收标准**:
+```yaml
+acceptance_criteria:
+  - ✅ GitHub Actions中存在cron workflow
+  - ✅ nightly soak每天2:00 UTC触发
+  - ✅ weekly capacity每周日3:00 UTC触发
+  - ✅ 测试结果自动上传为artifact
+  - ✅ artifact retention设置为90天
+  - ✅ 支持手动触发
+  - ✅ 并发控制防止重复执行
+```
+
+**可行性风险缓解**:
+```yaml
+risk_mitigation:
+  risk: "Portfolio无持久服务器，cron在GitHub Actions runner执行"
+  probability: "medium"
+  impact: "medium"
+  mitigation:
+    - "降级为示范性workflow"
+    - "文档说明这是示范性实现"
+    - "提供手动验证方法"
+    - "监控workflow执行状态"
+```
+
+#### PERF-SCHED-FR-002: 测试结果自动归档
+
+**用户故事**: 作为性能工程师，我想每次调度运行的k6 JSON output存为CI artifact，保留30天
+
+**需求描述**:
+```yaml
+functional_requirements:
+  - 每次scheduled test后自动上传artifact
+  - artifact包含k6 JSON output
+  - 设置30天retention（短于其他artifact）
+  - 提供artifact下载链接在workflow run summary
+
+technical_requirements:
+  artifact_management:
+    tool: "GitHub Actions actions/upload-artifact@v7"
+
+  artifact_structure:
+    name: "scheduled-{YYYYMMDD-HHMMSS}"
+    contents:
+      - k6_results: "所有k6脚本的JSON output"
+      - summary: "执行摘要"
+      - metadata: "执行时间、配置等"
+
+  retention_policy:
+    scheduled_tests: "30 days (短于baseline/coverage的90天)"
+    reason: "scheduled tests数量多，节省存储空间"
+    cleanup: "30天后自动删除"
+
+  download_integration:
+    - 在workflow summary中提供artifact链接
+    - GitHub Actions UI中可查看和下载
+    - 支持按日期筛选artifact
+```
+
+**验收标准**:
+```yaml
+acceptance_criteria:
+  - ✅ scheduled test结果自动上传为artifact
+  - ✅ artifact命名包含timestamp
+  - ✅ retention设置为30天
+  - ✅ artifact包含k6 JSON output
+  - ✅ workflow summary提供下载链接
+  - ✅ 30天后自动清理
+```
+
+---
+
+### 2.5 k6 Scripts模块 (PERF-K6-FR-001~007)
+
+#### PERF-K6-FR-001~003: Helpers迁移 (来自Phase 6)
+
+这些需求已在Phase 6中实现，这里仅作为引用：
+
+**状态**: ✅ 已完成（Phase 6交付）
+**详细文档**: 详见 `phase6-testing.md` 第6.3节
+
+#### PERF-K6-FR-004: 崩溃分类
+
+**用户故事**: 作为性能工程师，我想在breakpoint报告中看到graceful/catastrophic崩溃分类，以便区分系统降级方式
+
+**需求描述**:
+```yaml
+functional_requirements:
+  - 在breakpoint.k6.js的handleSummary中增强崩溃分类
+  - 输出崩溃类型：graceful或catastrophic
+  - 基于崩溃表现自动判断分类
+
+technical_requirements:
+  classification_logic:
+    graceful_criteria:
+      - p95渐进增长（线性或缓慢指数）
+      - error rate缓慢上升（<10%/分钟）
+      - 系统响应能力保持（部分请求成功）
+
+    catastrophic_criteria:
+      - error rate突跳（<1% → >50% within 30秒）
+      - p95突增（<500ms → >3000ms）
+      - 系统完全无响应（100% error或超时）
+
+    classification_output:
+      summary_json_field: "crash_type"
+      values: "graceful / catastrophic"
+      description: "基于criteria的简要说明"
+```
+
+**验收标准**:
+```yaml
+acceptance_criteria:
+  - ✅ breakpoint测试输出包含crash_type字段
+  - ✅ 自动分类逻辑基于客观指标
+  - ✅ graceful和catastrophic定义明确
+  - ✅ 分类结果在summary报告中显示
+  - ✅ classification criteria可配置化
+```
+
+#### PERF-K6-FR-005: 熔断恢复测试
+
+**用户故事**: 作为性能工程师，我想验证系统在持续超载后的熔断恢复行为，以便评估弹性工程能力
+
+**需求描述**:
+```yaml
+functional_requirements:
+  - 创建k6脚本来测试熔断恢复行为
+  - 模拟持续超载触发rate limiter
+  - 监控熔断触发和恢复时间
+  - 验证恢复后的性能是否正常
+
+technical_requirements:
+  test_script:
+    file: "resilience-recovery-test.k6.js"
+
+  test_phases:
+    phase1_normal:
+      - 正常负载（<limit）
+      - 验证系统响应正常
+
+    phase2_overload:
+      - 持续超载（2x limit）
+      - 触发rate limiter
+      - 验证429响应
+
+    phase3_recovery:
+      - 恢复到正常负载
+      - 验证恢复时间
+      - 验证性能恢复正常
+      - 验证错误率下降
+
+  metrics_collected:
+    - trigger_time: rate limiter触发时间
+    - recovery_time: 性能恢复正常时间
+    - recovery_duration: 恢复持续时间
+    - p95_during_overload: 过载期间的p95
+    - p95_after_recovery: 恢复后的p95
+```
+
+**验收标准**:
+```yaml
+acceptance_criteria:
+  - ✅ resilience恢复测试脚本实现
+  - ✅ 测试覆盖3个阶段（正常/超载/恢复）
+  - ✅ 熔断触发和恢复时间被记录
+  - ✅ 恢复后的性能恢复正常
+  - ✅ metrics包含所有关键指标
+```
+
+#### PERF-K6-FR-006~007: 集成验证 (来自Phase 6)
+
+这些需求已在Phase 6中实现，这里仅作为引用：
+
+**状态**: ✅ 已完成（Phase 6交付）
+**详细文档**: 详见 `phase6-testing.md` 第6.8节
+
+---
+
+## 3. 实施优先级和时间估算
+
+### 3.1 依赖关系
+
+```yaml
+dependency_graph:
+  phase7_dependencies:
+    - name: "Phase 7 (CI/CD)"
+      depends_on:
+        - phase6: "测试产出和k6能力"
+      - external:
+        - github_actions: "GitHub Actions平台"
+        - grafana: "可观测性平台"
+
+  module_dependencies:
+    baseline_management:
+      depends_on:
+        - k6_json_output: "测试数据源"
+        - github_api: "artifact管理"
+
+    coverage_enforcement:
+      depends_on:
+        - jest_coverage: "覆盖率工具"
+        - ci_workflow: "CI执行"
+
+    scheduled_testing:
+      depends_on:
+        - github_actions_cron: "定时调度"
+        - k6_scripts: "测试执行"
+        - artifact_storage: "结果存储"
+
+    notification_system:
+      depends_on:
+        - smtp_server: "邮件发送"
+        - slack_webhook: "通知渠道"
+```
+
+### 3.2 实施计划
+
+| Sprint | 优先级 | 模块 | 任务 | 预估时间 | 依赖 |
+|--------|----------|------|------|----------|--------|
+| Sprint 1 | P0 | 核心脚本 | PR评论集成脚本开发 | 8-12小时 | - |
+| Sprint 1 | P0 | 核心脚本 | 定时测试框架开发 | 6-8小时 | - |
+| Sprint 2 | P1 | CI工作流 | 覆盖率趋势和回归检测 | 2-3小时 | Sprint 1完成 |
+| Sprint 2 | P1 | CI工作流 | 基线管理完整实现 | 1-2小时 | Sprint 1完成 |
+| Sprint 3 | P2 | 通知系统 | 邮件和Slack通知实现 | 2-3小时 | Sprint 1完成 |
+| Sprint 3 | P2 | 优化 | 性能优化和并发控制 | 1-2小时 | Sprint 2完成 |
+| Sprint 4 | - | 验收和部署 | 全面测试和文档完善 | 2-3小时 | 所有Sprint完成 |
+
+**总预估**: 22-33个工作日
+
+---
+
+## 4. 技术依赖和资源
+
+### 4.1 硬依赖
+
+| 组件 | 版本要求 | 说明 |
+|------|----------|------|
+| Node.js | ≥18.0 | CI脚本执行环境 |
+| GitHub Actions | v8 | cron和artifact管理 |
+| Grafana | ≥10.0 | 可观测性面板 |
+| InfluxDB | ≥2.0 | 时序数据存储（可选） |
+| k6 | ≥1.7.0 | 性能测试工具 |
+
+### 4.2 软依赖
+
+| 依赖 | 用途 | 版本建议 |
+|------|------|----------|
+| jest | 测试框架 | latest |
+| node-fetch | GitHub API调用 | latest |
+| nodemailer | 邮件发送 | latest |
+| @slack/web-api | Slack通知 | latest |
+| jq | JSON处理 | ≥1.6 |
+
+---
+
+## 5. 风险管理
+
+### 5.1 已识别风险
+
+| 风险ID | 描述 | 概率 | 影响 | 缓解措施 |
+|--------|------|------|----------|--------|
+| DEV-R-01 | GitHub Actions cron执行不稳定 | 中 | 中 | 监控+重试机制+手动验证 |
+| DEV-R-02 | Artifact存储空间耗尽 | 低 | 中 | 90天清理+压缩 |
+| DEV-R-03 | SMTP服务可靠性问题 | 低 | 低 | Slack fallback+队列 |
+| DEV-R-04 | Slack webhook限流 | 低 | 低 | 队列+退避 |
+| DEV-R-05 | Grafana面板查询性能 | 低 | 低 | 缓存+聚合 |
+| DEV-R-06 | 并发scheduled job冲突 | 中 | 中 | lock机制+并发控制 |
+| DEV-R-07 | 覆盖率阈值设置不合理 | 中 | 高 | 基于历史数据+可配置 |
+| DEV-R-08 | 基线对比算法复杂度高 | 中 | 高 | 单元测试覆盖+分步实施 |
+
+---
+
+## 6. 成功标准和验收
+
+### 6.1 功能验收标准
+
+| 模块 | 验收项 | 标准 |
+|------|----------|------|
+| Baseline | 所有6个需求满足 | ✅ 见各需求验收标准 |
+| Coverage | 所有3个需求满足 | ✅ 见各需求验收标准 |
+| Observability | 所有4个需求满足 | ✅ 见各需求验收标准 |
+| Schedule | 2个需求满足 | ✅ 见各需求验收标准（示范性） |
+| k6 Scripts | 引用Phase 6实现 | ✅ Phase 6已交付 |
+
+### 6.2 质量标准
+
+| 指标 | 标准 | 测量方法 |
+|------|------|----------|
+| CI成功率 | ≥95% | 统计最近100次CI运行 |
+| 平均执行时间 | ≤15分钟 | 从workflow log统计 |
+| 测试覆盖率 | 100% | 所有Phase 7需求有对应测试用例 |
+| 文档完整性 | 100% | 所有需求有详细描述+验收标准 |
+| 风险缓解率 | ≥80% | 已识别风险都有缓解措施 |
+
+---
+
+## 7. 附录
+
+### 7.1 术语表
+
+| 术语 | 定义 |
+|------|------|
+| p95 | 第95百分位延迟 |
+| p99 | 第99百分位延迟 |
+| error_rate | 错误率（错误请求/总请求*100） |
+| throughput | 吞吐量（每秒请求数） |
+| baseline | 性能基线参考值 |
+| regression | 性能退化 |
+| graceful degradation | 优雅降级 |
+| catastrophic failure | 灾难性故障 |
+| artifact | CI/CD构建产出物 |
+| cron | 定时任务调度表达式 |
+
+### 7.2 参考文档
+
+- GitHub Actions文档: https://docs.github.com/en/actions
+- Grafana文档: https://grafana.com/docs/
+- k6文档: https://k6.io/docs/
+- Jest文档: https://jestjs.io/docs/
+- InfluxDB文档: https://docs.influxdata.com/
+
+---
+
+**文档版本**: v1.0
+**最后更新**: 2026-04-18
+**维护者**: DevOps Team

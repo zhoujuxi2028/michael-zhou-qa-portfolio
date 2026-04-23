@@ -1,0 +1,17 @@
+{
+  "stages": [
+    { "duration": "2m", "target": 200 },
+    { "duration": "1h", "target": 200 },
+    { "duration": "1m", "target": 0 }
+  ],
+  "setupTimeout": "30s",
+  "observer": {
+    "enabled": true,
+    "exec": "observeMetrics",
+    "vus": 1
+  },
+  "thresholds": {
+    "http_req_duration{scenario:load}": ["p(95)<500"],
+    "http_req_failed{scenario:load}": ["rate<0.01"]
+  }
+}

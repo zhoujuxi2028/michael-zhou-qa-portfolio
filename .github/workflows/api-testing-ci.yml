@@ -13,6 +13,13 @@ on:
       - '.github/workflows/api-testing-ci.yml'
   workflow_dispatch:
 
+concurrency:
+  group: api-testing-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 defaults:
   run:
     working-directory: api-testing-demo
@@ -23,12 +30,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup-node-project
         with:
-          node-version: 18
-          cache: npm
+          node-version: '18'
+          working-directory: api-testing-demo
           cache-dependency-path: api-testing-demo/package-lock.json
-      - run: npm ci
       - run: npm run validate
 
   api-tests:
@@ -37,12 +43,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup-node-project
         with:
-          node-version: 18
-          cache: npm
+          node-version: '18'
+          working-directory: api-testing-demo
           cache-dependency-path: api-testing-demo/package-lock.json
-      - run: npm ci
 
       - name: Reset database
         run: git checkout db.json
