@@ -161,12 +161,12 @@ RCA（2026-04-21）发现：`reports/` 目录被意外提交 git 后，CI checko
 
 ### 覆盖范围
 
-| 写入模式                  | 示例                      | 要求               |
-| ------------------------- | ------------------------- | ------------------ |
-| `k6 --out json=dir/file`  | `reports/k6-summary.json` | `mkdir -p reports` |
-| `jmeter -l dir/file`      | `results/smoke.jtl`       | `mkdir -p results` |
-| `gh run download -D dir/` | `reports/`                | `mkdir -p reports` |
-| shell 重定向 `> dir/file` | `reports/scan.json`       | `mkdir -p reports` |
+| 写入模式 | 示例 | 要求 |
+|---------|------|------|
+| `k6 --out json=dir/file` | `reports/k6-summary.json` | `mkdir -p reports` |
+| `jmeter -l dir/file` | `results/smoke.jtl` | `mkdir -p results` |
+| `gh run download -D dir/` | `reports/` | `mkdir -p reports` |
+| shell 重定向 `> dir/file` | `reports/scan.json` | `mkdir -p reports` |
 
 ### 自动检查工具
 
