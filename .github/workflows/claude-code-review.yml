@@ -19,10 +19,13 @@ concurrency:
 
 jobs:
   claude-review:
-    # 跳过：Draft PR 和 dependabot[bot] 的自动安全更新
+    # 跳过：Draft PR、dependabot[bot] 自动安全更新、以及 Copilot bot 自己触发的同步事件
+    # 原因：Copilot actor 触发 anthropics/claude-code-action 的 OIDC app token exchange
+    # 会返回 401 "User does not have write access on this repository"
     if: |
       github.event.pull_request.draft == false &&
-      github.event.pull_request.user.login != 'dependabot[bot]'
+      github.event.pull_request.user.login != 'dependabot[bot]' &&
+      github.actor != 'Copilot'
 
     runs-on: ubuntu-latest
     permissions:
@@ -47,4 +50,3 @@ jobs:
           prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
-
