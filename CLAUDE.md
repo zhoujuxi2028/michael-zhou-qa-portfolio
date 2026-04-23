@@ -128,6 +128,7 @@ pytest tests/ -v
 ## 文档与约定
 - 项目说明看各子项目 `README.md` / `CLAUDE.md`
 - 文档索引见 `docs/README.md`
+- 标签策略见 `docs/guides/label-strategy.md`
 - 详细复盘见 `docs/project-management/postmortems/`
 - workaround 规则见 `docs/guides/workaround-tracking.md`
 - 常见坑：新增依赖要同步依赖文件；新增 marker 要更新 `pytest.ini`；CI 写文件前先 `mkdir -p`
