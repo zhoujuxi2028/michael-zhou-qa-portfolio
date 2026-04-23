@@ -23,11 +23,11 @@
 
 | 检查项 | 验证命令 | 状态 |
 |--------|---------|------|
-| 单元测试全部通过 (≥217) | `npm test` | ⬜ |
-| 代码覆盖率达标 (stmt≥80 / branch≥70 / func≥80 / line≥80) | `npm test -- --coverage` | ⬜ |
+| 单元测试全部通过 (以当前 Jest 单元套件为准) | `npm run test:unit` | ⬜ |
+| 代码覆盖率达标 (stmt≥80 / branch≥70 / func≥80 / line≥80) | `npm run test:coverage` | ⬜ |
+| 代码质量门禁通过 | `npm run lint` + `npm run format:check` | ⬜ |
+| JMeter dry-run 无错误 | `npm run jmeter:dryrun` | ⬜ |
 | k6 smoke 无报错 | `npm run k6:smoke` | ⬜ |
-| ESLint 0 errors | `npx eslint .` | ⬜ |
-| Prettier 格式一致 | `npm run format:check` | ⬜ |
 | 环境检测通过（Docker daemon 运行中） | `bash scripts/preflight-check.sh --stage4` | ⬜ |
 
 ---
@@ -63,8 +63,8 @@
 
 | 用例 ID | 验证项 | 执行命令 | 预期 | 状态 |
 |---------|-------|---------|------|------|
-| CI-COV-01 | 覆盖率报告生成 | `npm test -- --coverage` | `coverage/` 目录生成 | ⬜ |
-| CI-COV-02 | statements ≥ 80% | `npm test -- --coverage` | CI PASS | ⬜ |
+| CI-COV-01 | 覆盖率报告生成 | `npm run test:coverage` | `coverage/` 目录生成 | ⬜ |
+| CI-COV-02 | statements ≥ 80% | `npm run test:coverage` | CI PASS | ⬜ |
 | CI-COV-03 | statements < 80% 时 CI FAIL | (故意删减测试验证) | CI FAIL | ⬜ |
 | CI-COV-04 | coverage artifact 可下载 | GitHub Actions 检查 | Artifacts 存在 | ⬜ |
 
@@ -189,7 +189,7 @@ bash scripts/integration-test-phase7-soak.sh
 
 | 检查项 | 验证方式 | 预期 | 状态 |
 |-------|---------|------|------|
-| CI 全部 job 绿灯 | push → GitHub Actions | 6 个 `Performance Testing / <Stage>` checks 全绿（Code Quality、Unit Tests、k6 Smoke Tests、JMeter Smoke Tests、Baseline Compare、Trend Collect） | ⬜ |
+| CI 全部 job 绿灯 | push → GitHub Actions | 7 个 `Performance Testing / <Stage>` checks 全绿（Code Quality、Unit Tests、JMeter Dry Run、k6 Smoke Tests、JMeter Smoke Tests、Baseline Compare、Trend Collect） | ⬜ |
 | 故意失败验证（CI 报红验证） | 临时删一行断言，push | CI 正确报红 | ⬜ |
 | 无 `continue-on-error` workaround | `grep -r "continue-on-error" .github/workflows/` | 0 matches | ⬜ |
 
@@ -208,14 +208,14 @@ bash scripts/integration-test-phase7-soak.sh
 
 | 项目 | 通过标准 | 状态 |
 |------|---------|------|
-| 第1轮（单元 + 覆盖率）全部 PASS | `npm test` 输出 ≥217/217 PASS，coverage ≥80% | ⬜ |
+| 第1轮（单元 + 覆盖率）全部 PASS | `npm run test:coverage` 输出通过，coverage ≥80% | ⬜ |
 | k6 smoke / load / stress / spike 通过 SLA | p95 < 500ms，error < 1% | ⬜ |
 | JMeter smoke + dry-run 通过 | 0 errors | ⬜ |
 | Breakpoint 输出崩溃点 + 分类 | ENT-BREAKPOINT-01/02 验证通过 | ⬜ |
 | Grafana Soak 集成测试 2/2 PASS | K6-SOAK-INT-01/02 通过 | ⬜ |
 | baseline.json 生成并上传 CI | CI artifact 可下载 | ⬜ |
 | trend.json 追加机制正常 | TREND-01~03 通过 | ⬜ |
-| CI 全部 job 绿灯 | GitHub Actions 6 jobs 全绿 | ⬜ |
+| CI 全部 job 绿灯 | GitHub Actions 7 jobs 全绿 | ⬜ |
 | 无 P0/P1 级别未修复 Bug | Bug 列表清零或降级为 P2 | ⬜ |
 | 测试报告已归档 | `reports/` + `coverage/` 目录完整 | ⬜ |
 
