@@ -92,13 +92,16 @@ cat reports/baseline.json
 
 ## 第3轮：趋势报告（~1 min）
 
-### 趋势数据收集 (`TREND-01~03`)
+### 趋势数据收集 (`TREND-01~06`)
 
 | 用例 ID | 验证项 | 执行命令 | 预期 | 状态 |
 |---------|-------|---------|------|------|
 | TREND-01 | 生成趋势报告 | `node scripts/trend-collect.js` | `reports/trend.json` 包含最近 N 次指标 | ⬜ |
 | TREND-02 | 趋势数据累积 | 连续运行 2 次 | JSON 数组长度递增 | ⬜ |
 | TREND-03 | 空 trend.json 不 crash | 首次运行 | 输出 "No trend data" | ⬜ |
+| TREND-04 | trend.json 缺失时不 crash | 删除输入文件后运行 | 输出 "No trend data" | ⬜ |
+| TREND-05 | 非数组 JSON 自动降级 | 写入对象 JSON 后运行 | 输出 "No trend data" | ⬜ |
+| TREND-06 | 无效 JSON + 缺失输出目录 | 写入坏 JSON 且使用新目录 | 自动创建目录并输出空报告 | ⬜ |
 
 ---
 
