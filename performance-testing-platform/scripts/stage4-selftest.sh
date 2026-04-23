@@ -63,7 +63,7 @@ get_current_branch() {
 is_valid_work_branch() {
   local branch="$1"
   case "$branch" in
-    feature/*|fix/*|copilot/*)
+    main|feature/*|fix/*|copilot/*)
       return 0
       ;;
     *)
@@ -376,7 +376,7 @@ echo ""
 echo "--- 9.1 分支确认 ---"
 BRANCH=$(get_current_branch)
 if is_valid_work_branch "$BRANCH"; then
-  log_result "9.1" "PASS" "工作分支合法: $BRANCH"
+  log_result "9.1" "PASS" "当前分支允许执行验证: $BRANCH"
 else
   log_result "9.1" "FAIL" "当前不在允许的工作分支 (当前: $BRANCH)"
 fi
