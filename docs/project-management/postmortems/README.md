@@ -9,6 +9,7 @@
 | [postmortem-2026-Q1.md](postmortem-2026-Q1.md) | 季度复盘 | 2026 Q1 closed defects 汇总分析 |
 | [postmortem-2026-Q2.md](postmortem-2026-Q2.md) | 季度复盘 | 2026 Q2 open issues 专项 RCA |
 | [postmortem-2026-Q2-issue-164.md](postmortem-2026-Q2-issue-164.md) | 专项 RCA | Claude Code Review 401 权限问题 |
+| [postmortem-2026-Q2-issue-187-repo-meta-broken-markdown-link.md](postmortem-2026-Q2-issue-187-repo-meta-broken-markdown-link.md) | 问题闭环 | Repository Meta CI Markdown 断链 |
 | [postmortem-issue-68.md](postmortem-issue-68.md) | 问题闭环 | workaround 到期追踪机制缺失 |
 
 ## 使用规则
