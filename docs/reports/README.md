@@ -7,6 +7,7 @@
 | 文档 | 类型 | 说明 |
 |------|------|------|
 | [IMPLEMENTATION-SUMMARY.md](IMPLEMENTATION-SUMMARY.md) | 实施总结 | 文档治理方案落地总结 |
+| [RCA-copilot-cloud-agent-runtime.md](RCA-copilot-cloud-agent-runtime.md) | RCA | Copilot cloud agent 耗时过长分析 |
 | [RCA-168-claude-code-review-oidc-failure.md](RCA-168-claude-code-review-oidc-failure.md) | RCA | OIDC / 权限故障分析 |
 | [RCA-187-repo-meta-broken-markdown-link.md](RCA-187-repo-meta-broken-markdown-link.md) | RCA | Repository Meta CI Markdown 断链分析 |
 | [VERIFY_KERNEL_VERSION_OPTIMIZATION.md](VERIFY_KERNEL_VERSION_OPTIMIZATION.md) | 验证记录 | 内核版本优化验证输出 |
