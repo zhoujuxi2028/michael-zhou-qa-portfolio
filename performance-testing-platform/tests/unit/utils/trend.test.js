@@ -10,6 +10,7 @@ describe('trend reporting', () => {
   const testDir = path.join(__dirname, '../../fixtures/trend');
   const trendFile = path.join(testDir, 'trend.json');
   const reportFile = path.join(testDir, 'trend.md');
+  const nestedRootDir = path.join(testDir, 'nested');
   const nestedReportDir = path.join(testDir, 'nested', 'reports');
   const nestedReportFile = path.join(nestedReportDir, 'trend.md');
 
@@ -20,7 +21,7 @@ describe('trend reporting', () => {
   afterEach(() => {
     if (fs.existsSync(trendFile)) fs.unlinkSync(trendFile);
     if (fs.existsSync(reportFile)) fs.unlinkSync(reportFile);
-    if (fs.existsSync(nestedReportDir)) fs.rmSync(path.join(testDir, 'nested'), { recursive: true, force: true });
+    if (fs.existsSync(nestedRootDir)) fs.rmSync(nestedRootDir, { recursive: true, force: true });
   });
 
   // TREND-01: 生成 reports/trend.md 趋势表
