@@ -191,6 +191,6 @@ Root Cause:        Test design gap
 
 ## 6. 相关文档
 
-- [CLAUDE.md](CLAUDE.md) — 项目规范
+- [CLAUDE.md](../../CLAUDE.md) — 项目规范
 - [Issue #111](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/111) — Helmet v8 缺陷
-- [Phase 6 Test Gap](docs/qa/reports/phase6-stage4-verification-report.md) — 测试缺口分析
+- [Phase 6 Test Gap](../reports/phase6-stage4-verification-report.md) — 测试缺口分析

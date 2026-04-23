@@ -43,7 +43,7 @@ pytest tests/ -v
 |---|---|
 | `package.json` / `package-lock.json` | 根目录 Husky 与少量跨项目脚本 |
 | `.gitignore` | 忽略虚拟环境、coverage、worktree、临时产物 |
-| `LABEL_STRATEGY.md` | GitHub Issue Label 使用规范 |
+| `docs/guides/label-strategy.md` | GitHub Issue Label 使用规范 |
 | `CLAUDE.md` | 仓库级简明协作规则 |
 
 ## GitHub Actions

@@ -287,7 +287,7 @@
 
 | Issue | 改进项 | 优先级 | 状态 |
 |-------|--------|--------|------|
-| [#68](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/68) | workaround 到期机制 | P1 | ✅ Done (2026-04-21, `docs/guides/workaround-tracking.md`, CLAUDE.md 规则更新, LABEL_STRATEGY.md `workaround` label) |
+| [#68](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/68) | workaround 到期机制 | P1 | ✅ Done (2026-04-21, `docs/guides/workaround-tracking.md`, CLAUDE.md 规则更新, `docs/guides/label-strategy.md` `workaround` label) |
 | [#69](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/69) | k6 setup tag 隔离 + 模板 | P2 | Open |
 | [#70](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/70) | JMeter dry-run 验证 | P2 | Open |
 | [#71](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/71) | 第三方 action 季度巡检 | P3 | ✅ Done (2026-04-21, `docs/guides/third-party-action-audit.md`) |

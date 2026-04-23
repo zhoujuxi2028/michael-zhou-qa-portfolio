@@ -29,6 +29,7 @@ docs/
 | 查看提交规范 | [GIT-COMMIT-CONVENTION.md](GIT-COMMIT-CONVENTION.md) |
 | 查看计划模板 | [plan-template.md](plan-template.md) |
 | 查看环境/操作指南 | [guides/](guides/) |
+| 查看 GitHub Labels 策略 | [guides/label-strategy.md](guides/label-strategy.md) |
 | 查看 Portfolio 级 postmortem | [project-management/postmortems/](project-management/postmortems/) |
 | 查看专项报告与实施总结 | [reports/](reports/) |
 | 查看学习资料 | [learning/](learning/) |
