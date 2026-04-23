@@ -19,7 +19,6 @@ bash scripts/preflight-check.sh
 ```
 
 **输出示例**:
-
 ```
 ==================================================
   Performance Test Pre-flight Check
@@ -52,7 +51,6 @@ bash scripts/preflight-check.sh --stage4
 ```
 
 **行为**:
-
 - ✅ 如果 Docker 已运行 → 继续
 - 🔧 如果 Docker 未运行 → **自动尝试启动** (OrbStack → Docker → Colima)
 - ❌ 如果启动失败 → 报错并退出
@@ -70,7 +68,6 @@ bash scripts/preflight-check.sh --stage4
 ```
 
 **异常排查**:
-
 ```bash
 # 如果提示 "Found orphaned processes"：
 ps aux | grep node  # 查看所有 Node 进程
@@ -88,7 +85,6 @@ npm stop             # 或手工清理
 ```
 
 **异常排查**:
-
 ```bash
 # 查看当前负载
 uptime
@@ -112,7 +108,6 @@ killall npm   # 关闭 npm
 ```
 
 **异常排查**:
-
 ```bash
 # 查看内存使用
 top -l 1 | head -20
@@ -138,7 +133,6 @@ killall "Visual Studio Code"
 ```
 
 **异常排查**:
-
 ```bash
 # 查看 CPU 占用
 top -l 1 | grep "CPU usage"
@@ -159,14 +153,13 @@ top -l 1 | grep "CPU usage"
 
 **启动优先级**:
 
-| 优先级 | 容器           | 启动时间 | 平台          | 推荐度     |
-| ------ | -------------- | -------- | ------------- | ---------- |
-| 1      | OrbStack       | 3-5s     | macOS         | ⭐⭐⭐⭐⭐ |
-| 2      | Docker Desktop | 8-15s    | macOS/Windows | ⭐⭐⭐     |
-| 3      | Colima         | 5-8s     | macOS/Linux   | ⭐⭐⭐⭐   |
+| 优先级 | 容器 | 启动时间 | 平台 | 推荐度 |
+|--------|------|---------|------|--------|
+| 1 | OrbStack | 3-5s | macOS | ⭐⭐⭐⭐⭐ |
+| 2 | Docker Desktop | 8-15s | macOS/Windows | ⭐⭐⭐ |
+| 3 | Colima | 5-8s | macOS/Linux | ⭐⭐⭐⭐ |
 
 **安装 OrbStack** (推荐):
-
 ```bash
 # 官网下载: https://orbstack.dev
 # 或 Homebrew
@@ -227,7 +220,6 @@ bash scripts/preflight-check.sh --stage4
 ### Q2: "❌ Load Average 超过阈值"
 
 **解决方案**:
-
 ```bash
 # 1. 查看占用资源的进程
 top
@@ -246,7 +238,6 @@ bash scripts/preflight-check.sh
 ### Q3: "❌ Available Memory 不足"
 
 **解决方案**:
-
 ```bash
 # 1. 清理 npm 缓存
 npm cache clean --force
@@ -264,7 +255,6 @@ reboot
 ### Q4: 脚本卡住/无法启动 Docker
 
 **排查**:
-
 ```bash
 # 1. 查看 Docker 日志
 log stream --predicate 'process == "Docker"'
@@ -317,7 +307,6 @@ npm stop
 [ X/X ] Checking ...
   ✅ <Check Name> OK
 ```
-
 → 此检查通过，无需操作
 
 ### ⚠️ 警告 (自动修复中)
@@ -328,7 +317,6 @@ npm stop
   → Starting OrbStack...
   ✅ Docker daemon started successfully
 ```
-
 → 自动启动成功，继续流程
 
 ### ❌ 失败
@@ -338,7 +326,6 @@ npm stop
   ❌ <Check Name> FAILED
   → Action required: <解决方案>
 ```
-
 → 需要手工干预，参考上文"常见问题"
 
 ---
@@ -384,7 +371,7 @@ on: [push, pull_request]
 
 jobs:
   preflight:
-    runs-on: macos-latest # 需要 macOS 以支持 OrbStack
+    runs-on: macos-latest  # 需要 macOS 以支持 OrbStack
     steps:
       - uses: actions/checkout@v4
       - name: Run preflight check
@@ -398,13 +385,13 @@ jobs:
 
 ## 🚀 最佳实践
 
-| 操作           | 推荐                | 原因               |
-| -------------- | ------------------- | ------------------ | -------- |
-| **何时运行**   | 每次 Stage 4 测试前 | 确保环境干净       |
-| **频率**       | 每天至少一次        | 防止资源积累       |
-| **并行执行**   | ❌ 不要并行         | 可能导致端口冲突   |
-| **自定义阈值** | 根据硬件调整        | 低端机器降低阈值   |
-| **保存日志**   | `...                | tee preflight.log` | 事后分析 |
+| 操作 | 推荐 | 原因 |
+|------|------|------|
+| **何时运行** | 每次 Stage 4 测试前 | 确保环境干净 |
+| **频率** | 每天至少一次 | 防止资源积累 |
+| **并行执行** | ❌ 不要并行 | 可能导致端口冲突 |
+| **自定义阈值** | 根据硬件调整 | 低端机器降低阈值 |
+| **保存日志** | `... | tee preflight.log` | 事后分析 |
 
 ---
 
