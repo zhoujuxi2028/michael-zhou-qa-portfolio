@@ -10,6 +10,8 @@ describe('trend reporting', () => {
   const testDir = path.join(__dirname, '../../fixtures/trend');
   const trendFile = path.join(testDir, 'trend.json');
   const reportFile = path.join(testDir, 'trend.md');
+  const nestedReportDir = path.join(testDir, 'nested', 'reports');
+  const nestedReportFile = path.join(nestedReportDir, 'trend.md');
 
   beforeAll(() => {
     if (!fs.existsSync(testDir)) fs.mkdirSync(testDir, { recursive: true });
@@ -18,6 +20,7 @@ describe('trend reporting', () => {
   afterEach(() => {
     if (fs.existsSync(trendFile)) fs.unlinkSync(trendFile);
     if (fs.existsSync(reportFile)) fs.unlinkSync(reportFile);
+    if (fs.existsSync(nestedReportDir)) fs.rmSync(path.join(testDir, 'nested'), { recursive: true, force: true });
   });
 
   // TREND-01: 生成 reports/trend.md 趋势表
@@ -62,6 +65,38 @@ describe('trend reporting', () => {
 
     expect(fs.existsSync(reportFile)).toBe(true);
     const content = fs.readFileSync(reportFile, 'utf-8');
+    expect(content).toContain('No trend data');
+  });
+
+  // TREND-04: trend.json 缺失时优雅降级
+  test('TREND-04: should handle missing trend.json gracefully', () => {
+    generateTrendMarkdown(trendFile, reportFile);
+
+    expect(fs.existsSync(reportFile)).toBe(true);
+    const content = fs.readFileSync(reportFile, 'utf-8');
+    expect(content).toContain('No trend data');
+  });
+
+  // TREND-05: 非数组 JSON 自动降级为空数据
+  test('TREND-05: should fallback when trend.json is not an array', () => {
+    fs.writeFileSync(trendFile, JSON.stringify({ run: 1, date: '2026-04-17T12:00Z' }, null, 2));
+
+    generateTrendMarkdown(trendFile, reportFile);
+
+    expect(fs.existsSync(reportFile)).toBe(true);
+    const content = fs.readFileSync(reportFile, 'utf-8');
+    expect(content).toContain('No trend data');
+  });
+
+  // TREND-06: 无效 JSON 不应抛错，且自动创建输出目录
+  test('TREND-06: should recover from invalid JSON and create nested report directory', () => {
+    fs.writeFileSync(trendFile, '{invalid json');
+
+    generateTrendMarkdown(trendFile, nestedReportFile);
+
+    expect(fs.existsSync(nestedReportDir)).toBe(true);
+    expect(fs.existsSync(nestedReportFile)).toBe(true);
+    const content = fs.readFileSync(nestedReportFile, 'utf-8');
     expect(content).toContain('No trend data');
   });
 });
