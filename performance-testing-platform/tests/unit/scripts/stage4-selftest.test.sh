@@ -51,7 +51,7 @@ cleanup() {
 is_valid_work_branch() {
   local branch="$1"
   case "$branch" in
-    feature/*|fix/*|copilot/*)
+    main|feature/*|fix/*|copilot/*)
       return 0
       ;;
     *)
