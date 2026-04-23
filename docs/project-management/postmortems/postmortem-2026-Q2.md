@@ -211,4 +211,4 @@ Q1 期间三次 CI 故障（#35 trivy Node 20 / #37 ZAP 权限变更 / #39 k6 ac
 | 风险 | 描述 | 缓解措施 |
 |------|------|---------|
 | trivy-action 内部 Node 20 警告 | `aquasecurity/trivy-action@v0.35.0` 内部依赖 `actions/cache@v4.2.4`（Node 20），GitHub 最终会强制停用 | 每季度巡检时复查上游 trivy-action 是否发布修复版本（见 `docs/guides/third-party-action-audit.md` #35 章节） |
-| 改进计划 issue 积压 | #69 #70 #72 #73 #74 #76 #78 仍为 open | 建议按优先级分批处理，P1 优先（#72 #74 #76） |
+| 本专题改进项需持续防回归 | #71 #75 #77 对应修复已落地，但后续新增 workflow / 文档若不复用规范，仍可能回退 | 在季度 action 审计、workflow 评审、设计文档 review 中持续复核 |
