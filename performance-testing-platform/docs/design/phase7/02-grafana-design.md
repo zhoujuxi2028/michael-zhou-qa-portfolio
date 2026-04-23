@@ -2,10 +2,10 @@
 
 ## 环境要求
 
-| 组件 | 版本 | 查询语言 | 备注 |
-|------|------|---------|------|
-| InfluxDB | 1.8 | InfluxQL | 当前生产版本 |
-| Grafana | 10.2.0 | - | 支持 InfluxQL 1.8 |
+| 组件     | 版本   | 查询语言 | 备注              |
+| -------- | ------ | -------- | ----------------- |
+| InfluxDB | 1.8    | InfluxQL | 当前生产版本      |
+| Grafana  | 10.2.0 | -        | 支持 InfluxQL 1.8 |
 
 **注:** 本设计使用 **InfluxQL** 查询语言，完全兼容 InfluxDB 1.8。若升级至 2.x，需使用 Flux 语言重写查询。
 
@@ -16,6 +16,7 @@
 ### 1. 错误分布面板 (PERF-OBS-DASH-FR-001)
 
 **Query (InfluxQL):**
+
 ```sql
 SELECT sum("value") FROM "http_req_failed"
 WHERE $timeFilter
@@ -29,6 +30,7 @@ GROUP BY time($__interval), "endpoint"
 ### 2. 延迟热力图 (PERF-OBS-DASH-FR-002)
 
 **Query (InfluxQL):**
+
 ```sql
 SELECT mean("value") FROM "http_req_duration"
 WHERE $timeFilter
@@ -42,6 +44,7 @@ GROUP BY time($__interval), "endpoint"
 ### 3. 自定义指标聚合 (PERF-OBS-DASH-FR-003)
 
 **Metrics:**
+
 - `soak_heap_used_mb` (Trend from k6)
 - `soak_event_loop_lag` (Trend)
 - `soak_order_success_rate` (Counter)
@@ -54,22 +57,22 @@ GROUP BY time($__interval), "endpoint"
 
 ### SLA 与告警阈值对应表
 
-| 指标 | SLA | Warning 级别 | Critical 级别 | 告警延迟 |
-|------|------|-------------|---------------|---------|
-| p95 延迟 | 500ms | 400ms (≤5m) | 1000ms (≤2m) | 300s/120s |
-| 错误率 | 1% | 0.5% (≤5m) | 5% (≤2m) | 300s/120s |
-| 内存增长 | 无限制 | 200MB/h | 500MB/h | 1h/30m |
+| 指标     | SLA    | Warning 级别 | Critical 级别 | 告警延迟  |
+| -------- | ------ | ------------ | ------------- | --------- |
+| p95 延迟 | 500ms  | 400ms (≤5m)  | 1000ms (≤2m)  | 300s/120s |
+| 错误率   | 1%     | 0.5% (≤5m)   | 5% (≤2m)      | 300s/120s |
+| 内存增长 | 无限制 | 200MB/h      | 500MB/h       | 1h/30m    |
 
 ### 告警规则详细定义
 
-| 规则 | 条件 | 级别 | 触发动作 | 目的 |
-|------|------|------|---------|------|
-| High p95 Warning | p95 > 400ms for 5m | ⚠️ Warning | Webhook (info) | 提前告警，SLA 前 100ms 预警 |
-| High p95 Critical | p95 > 1000ms for 2m | 🔴 Critical | Webhook (critical) + Page | SLA 突破，2 倍之上，立即告警 |
-| Error Spike Warning | error_rate > 0.5% for 5m | ⚠️ Warning | Webhook (info) | 提前告警，SLA 前 0.5% 预警 |
-| Error Spike Critical | error_rate > 5% for 2m | 🔴 Critical | Webhook (critical) + Page | SLA 突破 5 倍，立即告警 |
-| Memory Growth | heap 增长 > 200MB/h for 1h | ⚠️ Warning | Webhook (info) | 检测内存泄漏趋势 |
-| Memory Overflow | heap 增长 > 500MB/h for 30m | 🔴 Critical | Webhook (critical) + Page | 内存溢出风险 |
+| 规则                 | 条件                        | 级别        | 触发动作                  | 目的                         |
+| -------------------- | --------------------------- | ----------- | ------------------------- | ---------------------------- |
+| High p95 Warning     | p95 > 400ms for 5m          | ⚠️ Warning  | Webhook (info)            | 提前告警，SLA 前 100ms 预警  |
+| High p95 Critical    | p95 > 1000ms for 2m         | 🔴 Critical | Webhook (critical) + Page | SLA 突破，2 倍之上，立即告警 |
+| Error Spike Warning  | error_rate > 0.5% for 5m    | ⚠️ Warning  | Webhook (info)            | 提前告警，SLA 前 0.5% 预警   |
+| Error Spike Critical | error_rate > 5% for 2m      | 🔴 Critical | Webhook (critical) + Page | SLA 突破 5 倍，立即告警      |
+| Memory Growth        | heap 增长 > 200MB/h for 1h  | ⚠️ Warning  | Webhook (info)            | 检测内存泄漏趋势             |
+| Memory Overflow      | heap 增长 > 500MB/h for 30m | 🔴 Critical | Webhook (critical) + Page | 内存溢出风险                 |
 
 **Webhook 配置：** Contact Points → Webhook (目标 URL 由用户配置)
 

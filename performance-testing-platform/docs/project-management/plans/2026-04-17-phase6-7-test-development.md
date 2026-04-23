@@ -4,7 +4,8 @@
 
 **Goal:** 开发 Phase 6/7 的 33 个测试用例（6 个集成测试 + 17 个单元测试 + 2 个集成测试 + 8 个 k6 脚本迁移），遵循 TDD 流程，所有测试 PASS 且覆盖率达标。
 
-**Architecture:** 
+**Architecture:**
+
 - **Phase 6 集成测试**：扩展 `scripts/integration-test.sh`，添加限流中间件（RL-INT）和摘要报告（GEN-INT）的端到端验证
 - **Phase 7 单元测试**：在 `tests/unit/utils/` 创建 4 个测试文件（baseline / coverage / trend / schedule）
 - **Phase 7 集成测试**：新增 Grafana 实时监控验证脚本（K6-SOAK-INT）
@@ -17,6 +18,7 @@
 ## 📁 文件结构映射
 
 ### 创建的文件
+
 ```
 tests/unit/utils/
   ├── baseline.test.js          [UT-BL-01~06] Baseline regression (6 cases)
@@ -30,6 +32,7 @@ scripts/
 ```
 
 ### 修改的文件
+
 ```
 tests/performance/
   ├── stress.k6.js               [K6-FUNNEL-01] Funnel migration
@@ -45,6 +48,7 @@ tests/performance/
 ### Task 1: Rate Limiter 集成测试框架 (RL-INT-01~03)
 
 **Files:**
+
 - Create: `scripts/integration-test-phase6.sh`
 - Test: `docs/qa/test-cases/phase6-testing.md` RL-INT-01~03
 
@@ -55,6 +59,7 @@ tests/performance/
 - [ ] **Step 1: 写集成测试脚本框架**
 
 创建 `scripts/integration-test-phase6.sh`，包含：
+
 - 启动 API，设置 RATE_LIMIT_ENABLED=true RATE_LIMIT_MAX=3 RATE_LIMIT_WINDOW_MS=5000
 - 发 4 次并发请求到 /products，检查前 3 个返回 200，第 4 个返回 429
 - 检查响应头 ratelimit-remaining 递减（2 → 1 → 0）
@@ -114,6 +119,7 @@ bash scripts/integration-test-phase6.sh
 ```
 
 预期：
+
 - RL-INT-01~03 全部 PASS（如果中间件已实现）
 - 或显示失败信息，指导后续实现
 
@@ -129,6 +135,7 @@ git commit -m "test(phase6): add rate limiter integration tests (RL-INT-01~03)"
 ### Task 2: generate-summary.sh 集成测试 (GEN-INT-01~03)
 
 **Files:**
+
 - Modify: `scripts/integration-test-phase6.sh` (append section)
 - Test: `docs/qa/test-cases/phase6-testing.md` GEN-INT-01~03
 
@@ -213,6 +220,7 @@ git commit -m "test(phase6): add generate-summary integration tests (GEN-INT-01~
 ### Task 3: Baseline 回归测试 (UT-BL-01~06)
 
 **Files:**
+
 - Create: `tests/unit/utils/baseline.test.js`
 - Modify: `src/utils/baseline.js` (实现)
 
@@ -281,7 +289,7 @@ describe('Baseline Regression (UT-BL)', () => {
   test('UT-BL-06: Trend JSON appends new run data', () => {
     recordTrend({ timestamp: '2026-04-17T10:00:00Z', p95: 500, error_rate: 0.5 });
     recordTrend({ timestamp: '2026-04-17T11:00:00Z', p95: 520, error_rate: 0.6 });
-    
+
     const trend = JSON.parse(fs.readFileSync(TREND_FILE, 'utf8'));
     expect(trend.length).toBe(2);
     expect(trend[0].p95).toBe(500);
@@ -376,6 +384,7 @@ git commit -m "feat(phase7): add baseline regression tests (UT-BL-01~06)"
 ### Task 4: 覆盖率门禁测试 (CI-COV-01~04)
 
 **Files:**
+
 - Create: `tests/unit/utils/coverage.test.js`
 - Reference: `jest.config.js`
 
@@ -401,8 +410,8 @@ describe('Coverage Gate (CI-COV)', () => {
     // (Actually run by CI pipeline, mocked here for compilation)
     const lcov = path.join(COVERAGE_DIR, 'lcov.info');
     const html = path.join(COVERAGE_DIR, 'index.html');
-    
-    expect([lcov, html].some(f => !fs.existsSync(f))).toBe(false);
+
+    expect([lcov, html].some((f) => !fs.existsSync(f))).toBe(false);
   });
 
   // CI-COV-02: Statements >= 80%
@@ -459,6 +468,7 @@ git commit -m "test(phase7): add coverage gate tests (CI-COV-01~04)"
 ### Task 5: 趋势报告测试 (TREND-01~03)
 
 **Files:**
+
 - Create: `tests/unit/utils/trend.test.js`
 - Reference: `scripts/generate-trend.sh` (实现脚本)
 
@@ -488,9 +498,9 @@ describe('Trend Reporting (TREND)', () => {
   test('TREND-01: generateTrendReport creates reports/trend.md', () => {
     recordTrend({ date: '2026-04-17', p95: 500, error_rate: 0.5 });
     recordTrend({ date: '2026-04-18', p95: 510, error_rate: 0.6 });
-    
+
     generateTrendReport();
-    
+
     expect(fs.existsSync(TREND_MD)).toBe(true);
     const content = fs.readFileSync(TREND_MD, 'utf8');
     expect(content).toMatch(/Date|p95|error_rate/);
@@ -501,7 +511,7 @@ describe('Trend Reporting (TREND)', () => {
     recordTrend({ date: '2026-04-17', p95: 500 });
     recordTrend({ date: '2026-04-18', p95: 510 });
     recordTrend({ date: '2026-04-19', p95: 520 });
-    
+
     const trend = JSON.parse(fs.readFileSync(TREND_FILE, 'utf8'));
     expect(trend.length).toBe(3);
   });
@@ -564,8 +574,9 @@ function generateTrendReport() {
   const dir = path.dirname(TREND_MD);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-  let md = '# Performance Trend\n\n| Date | p95 (ms) | Error Rate |\n|------|----------|------------|\n';
-  trends.forEach(t => {
+  let md =
+    '# Performance Trend\n\n| Date | p95 (ms) | Error Rate |\n|------|----------|------------|\n';
+  trends.forEach((t) => {
     md += `| ${t.date} | ${t.p95} | ${t.error_rate} |\n`;
   });
 
@@ -595,6 +606,7 @@ git commit -m "feat(phase7): add trend reporting tests (TREND-01~03)"
 ### Task 6: 定时调度配置测试 (SCHED-01~04)
 
 **Files:**
+
 - Create: `tests/unit/utils/schedule.test.js`
 - Reference: `.github/workflows/` cron configs
 
@@ -674,6 +686,7 @@ git commit -m "test(phase7): add schedule config tests (SCHED-01~04)"
 ### Task 7: Grafana 实时监控集成测试 (K6-SOAK-INT-01~02)
 
 **Files:**
+
 - Create: `scripts/integration-test-phase7-soak.sh`
 - Reference: `docker-compose.yml`
 
@@ -788,6 +801,7 @@ git commit -m "test(phase7): add Grafana real-time monitoring integration tests 
 ### Task 8: k6 脚本 Funnel 迁移 (K6-FUNNEL-01~03)
 
 **Files:**
+
 - Modify: `tests/performance/stress.k6.js`
 - Modify: `tests/performance/capacity.k6.js`
 - Modify: `tests/performance/soak.k6.js`
@@ -803,6 +817,7 @@ head -50 tests/performance/stress.k6.js | grep -A5 "funnel\|require"
 - [ ] **Step 2: 在 stress.k6.js 中内联 funnel 实现**
 
 查找并替换：
+
 ```javascript
 // FROM:
 const { executeFunnel } = require('./helpers/funnel.js');
@@ -811,7 +826,7 @@ const { executeFunnel } = require('./helpers/funnel.js');
 function executeFunnel(steps, threshold) {
   let checksPassed = 0;
   let totalChecks = 0;
-  
+
   for (const step of steps) {
     totalChecks++;
     const response = http.get(step.url);
@@ -819,12 +834,12 @@ function executeFunnel(steps, threshold) {
       checksPassed++;
     }
   }
-  
+
   const passRate = (checksPassed / totalChecks) * 100;
   check(response, {
-    'funnel pass rate': passRate >= threshold
+    'funnel pass rate': passRate >= threshold,
   });
-  
+
   return passRate >= threshold;
 }
 ```
@@ -869,6 +884,7 @@ git commit -m "refactor(phase7): migrate k6 helpers from require to inline (K6-F
 ### Task 9: k6 崩溃分类 (K6-CLASS-01~02)
 
 **Files:**
+
 - Modify: `tests/performance/breakpoint.k6.js`
 
 **目标:** 在 handleSummary 中输出崩溃类型（graceful vs catastrophic）
@@ -884,19 +900,19 @@ grep -A20 "handleSummary\|export function handleSummary" tests/performance/break
 ```javascript
 export function handleSummary(data) {
   // ... existing code ...
-  
+
   // Classify breakpoint type
   const rpsAtBreakpoint = data.metrics.http_reqs.values['rate'] || 0;
-  const errorRate = (data.metrics.http_errors.values['count'] || 0) / 
-                    (data.metrics.http_reqs.values['count'] || 1);
-  
+  const errorRate =
+    (data.metrics.http_errors.values['count'] || 0) / (data.metrics.http_reqs.values['count'] || 1);
+
   const classificationType = errorRate > 0.5 ? 'catastrophic' : 'graceful';
-  
+
   return {
     stdout: textSummary(data, { indent: ' ', enableColors: true }),
     'summary.json': JSON.stringify({
-      breakpoint: { rps: rpsAtBreakpoint, type: classificationType }
-    })
+      breakpoint: { rps: rpsAtBreakpoint, type: classificationType },
+    }),
   };
 }
 ```
@@ -921,6 +937,7 @@ git commit -m "feat(phase7): add breakpoint crash classification (K6-CLASS-01~02
 ### Task 10: 熔断恢复测试 (K6-RECOVERY-01)
 
 **Files:**
+
 - Modify: `tests/performance/soak.k6.js`
 
 **目标:** 在 soak 脚本中注入故障，验证恢复时间 ≤ 60s
@@ -928,20 +945,20 @@ git commit -m "feat(phase7): add breakpoint crash classification (K6-CLASS-01~02
 - [ ] **Step 1: 在 soak.k6.js 中添加故障注入逻辑**
 
 ```javascript
-export default function() {
+export default function () {
   // ... existing soak logic ...
-  
+
   // K6-RECOVERY-01: Inject fault and measure recovery time
   if (__VU === 1 && __ITER === 50) {
     console.log('Injecting fault: stopping requests for 10s');
     // HTTP PATCH /debug/shutdown (graceful shutdown)
     http.patch('http://localhost:3000/debug/shutdown');
     sleep(10);
-    
+
     // Measure recovery: how long until requests succeed again
     const recoveryStart = Date.now();
     let recovered = false;
-    
+
     while (Date.now() - recoveryStart < 60000) {
       const res = http.get('http://localhost:3000/products', { timeout: '5s' });
       if (res.status === 200) {
@@ -953,7 +970,7 @@ export default function() {
       }
       sleep(1);
     }
-    
+
     if (!recovered) {
       check(false, { 'recovered within 60s': false });
     }
@@ -1035,15 +1052,16 @@ git commit -m "docs(phase7): update test case counts after development completio
 
 ## 📊 交付物总结
 
-| 阶段 | 交付物 | 数量 | 状态 |
-|------|--------|------|------|
-| **Phase 6** | 集成测试脚本 + 6 cases | 6 | TBD |
-| **Phase 7** | 单元测试 4 文件 + 17 cases | 17 | TBD |
-| **Phase 7** | 集成测试脚本 + 2 cases | 2 | TBD |
-| **Phase 7** | k6 脚本迁移 + 优化 | 8 | TBD |
-| **合计** | — | **33** | — |
+| 阶段        | 交付物                     | 数量   | 状态 |
+| ----------- | -------------------------- | ------ | ---- |
+| **Phase 6** | 集成测试脚本 + 6 cases     | 6      | TBD  |
+| **Phase 7** | 单元测试 4 文件 + 17 cases | 17     | TBD  |
+| **Phase 7** | 集成测试脚本 + 2 cases     | 2      | TBD  |
+| **Phase 7** | k6 脚本迁移 + 优化         | 8      | TBD  |
+| **合计**    | —                          | **33** | —    |
 
 **验收标准：**
+
 - ✅ npm test 全部通过 + 覆盖率 ≥ 80%
 - ✅ 集成测试脚本可执行，关键路径通过
 - ✅ k6 脚本无 require 错误，smoke test 通过
