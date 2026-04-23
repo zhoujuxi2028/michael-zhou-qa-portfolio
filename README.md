@@ -165,58 +165,36 @@ Test automation, performance testing, and DevOps demonstration projects.
 ### 一键验证
 
 ```bash
-git --version && node -v && npm -v && python3 --version && docker -v && docker compose version
+git clone https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio.git
+cd michael-zhou-qa-portfolio/<node-project>
+npm install
+npm test
 ```
 
----
-
-## Quick Start | 快速开始
-
+### Python 子项目
 ```bash
-# Clone
 git clone https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio.git
-cd michael-zhou-qa-portfolio
-
-# Create virtual environment (for all Python projects)
+cd michael-zhou-qa-portfolio/<python-project>
 python3 -m venv venv
 source venv/bin/activate
-
-# Run any project | 运行任意项目
-cd iwsva-cypress-e2e && npm install && npm test
-cd k8s-auto-testing-platform && pip install -r requirements.txt && pytest tests/ -v
-cd security-testing-demo && pip install -r requirements.txt && pytest tests/ -v
-cd cicd-demo && npm install && npm test
-cd playwright-demo && npm install && npx playwright install && npm test
-cd sid-iam-testing-platform && pip install -r requirements.txt && pytest tests/ -v
-cd microservice-testing-platform && npm install && npm run test:all
-cd performance-testing-platform && npm install && npm start & npm run k6:smoke
+pip install -r requirements.txt
+pytest tests/ -v
 ```
 
----
+## 根目录文件说明
 
-## Wiki | 文档
+| 文件 | 用途 |
+|---|---|
+| `package.json` / `package-lock.json` | 根目录 Husky 与少量跨项目脚本 |
+| `.gitignore` | 忽略虚拟环境、coverage、worktree、临时产物 |
+| `docs/guides/label-strategy.md` | GitHub Issue Label 使用规范 |
+| `CLAUDE.md` | 仓库级简明协作规则 |
 
-For detailed documentation, see the [Project Wiki](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki):
+## GitHub Actions
 
-| Page | Description |
-|------|-------------|
-| [Architecture](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki/Architecture) | System architecture & test layering |
-| [Test Strategy](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki/Test-Strategy) | Test types, coverage, selection criteria |
-| [CI/CD Pipeline](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki/CI-CD-Pipeline) | GitHub Actions workflows & triggers |
-| [Defect Management](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki/Defect-Management) | Label system, issue workflow |
-| [Lessons Learned](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki/Lessons-Learned) | Real-world debugging experiences |
-| [Tech Stack](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki/Tech-Stack) | Tool selection rationale |
+仓库 workflow 文件统一放在 `.github/workflows/`，请直接以该目录为准。
 
----
-
-## Known Issues | 已知问题
-
-| Issue | 描述 | 状态 |
-|-------|------|------|
-| [#35](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/35) | `trivy-action` 内部 `actions/cache@v4.2.4` 使用 Node.js 20（deprecation warning） | 上游问题，等待 `aquasecurity/trivy-action` 升级到 `actions/cache@v5` |
-
----
-
-## Contact | 联系方式
-
-- GitHub: [@zhoujuxi2028](https://github.com/zhoujuxi2028)
+## 参考文档
+- 根目录规范：[`CLAUDE.md`](./CLAUDE.md)
+- 架构与过程文档：[`docs/`](./docs/)
+- 各子项目说明：对应目录下 `README.md` / `CLAUDE.md`

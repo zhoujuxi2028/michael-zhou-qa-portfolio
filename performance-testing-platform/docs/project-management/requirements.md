@@ -41,18 +41,35 @@ Phase 1~4 (已完成) → Phase 5 (基础设施) → Phase 6 (测试能力) → 
 
 | 模块 | 正式编号 | 说明 |
 |------|----------|------|
-| Baseline | `PERF-BL-FR-001~006` | 基线回归、趋势数据、趋势报告、单元测试 |
-| Coverage | `PERF-COV-FR-001~003` | CI 覆盖率报告、artifact、阈值门禁 |
-| Observability | `PERF-OBS-FR-001~004` | Grafana 错误分布、热力图、自定义指标、webhook 告警 |
-| Schedule | `PERF-SCHED-FR-001~002` | nightly soak / weekly capacity 调度与归档 |
-| k6 | `PERF-K6-FR-001~007` | funnel 迁移、breakpoint 分类、恢复验证、Grafana 集成验证 |
+| Baseline | `PERF-CI-BL-FR-001~006` | 基线回归、趋势数据、趋势报告、单元测试 |
+| Coverage | `PERF-CI-COV-FR-001~003` | CI 覆盖率报告、artifact、阈值门禁 |
+| Observability | `PERF-OBS-DASH-FR-001~003` / `PERF-OBS-ALERT-FR-001` | Grafana 错误分布、热力图、自定义指标、webhook 告警 |
+| Schedule | `PERF-CI-SCHED-FR-001~002` | nightly soak / weekly capacity 调度与归档 |
+| k6 | `PERF-ENGINE-K6-FR-011~017` | funnel 迁移、breakpoint 分类、恢复验证、Grafana 集成验证 |
 
 ## SLA 定义
 
-| 指标       | 阈值    | 含义                     |
-| ---------- | ------- | ------------------------ |
-| p95        | < 500ms | 95% 请求延迟在可接受范围 |
-| error rate | < 1%    | 几乎无错误               |
+> **权威来源**：所有测试计划、RTM、设计文档的 SLA 引用应以本表为准。
+
+| 指标              | 阈值     | 适用场景                              | 来源 Phase |
+| ----------------- | -------- | ------------------------------------- | ---------- |
+| p95 latency       | < 500ms  | 所有 API 端点 (smoke/load/stress)     | Phase 1    |
+| p99 latency       | < 2000ms | 认证相关端点 (bcrypt 开销)            | Phase 3    |
+| Error rate        | < 1%     | 所有场景                              | Phase 1    |
+| Throughput        | ≥ 30 rps | smoke 场景 (5 VUs)                    | Phase 7    |
+| Heap growth       | < 50%    | Soak test (1h+)                       | Phase 4    |
+| Coverage (stmt)   | ≥ 80%    | Jest 单元测试                         | Phase 7    |
+| Coverage (branch) | ≥ 70%    | Jest 单元测试                         | Phase 7    |
+
+### 容量目标（非功能需求）
+
+> **目标环境:** MacBook Pro Intel i5-1038NG7 (4C8T, 16GB)；本项目为 Demo 演示项目，容量目标以本机硬件为基准。
+
+| 指标 | 阈值 | 说明 |
+| ---- | ---- | ---- |
+| Smoke 并发用户 | 5 VUs | 验证基本可用性 |
+| Load 并发用户 | 20 VUs | 本机正常负载上限（满足 p95 < 500ms, error < 1%） |
+| Breakpoint 最低 | ≥ 20 VUs | 系统崩溃点不得低于 Load 目标 |
 
 ## 功能边界
 
@@ -65,6 +82,6 @@ Phase 1~4 (已完成) → Phase 5 (基础设施) → Phase 6 (测试能力) → 
 | 系统指标采集 (CPU/mem/disk/net → CSV)      | Prometheus 集成            |
 | 容量测试 (二分法逼近)                      | 分布式 k6 / JMeter         |
 | JWT 认证 API + 认证压测                    | OAuth2 / SSO / 第三方登录  |
-| Soak Test (1~4h 内存泄漏检测)              | CI 中跑 soak (太耗时)      |
+| Soak Test (1~4h 内存泄漏检测)              | CI PR 门禁中跑 soak (太耗时；定时调度的 soak-short 在 Scope 内) |
 | Grafana + InfluxDB 可视化 + 告警           | PagerDuty / Slack 告警集成 |
 | GitHub Actions CI (k6 + JMeter smoke gate) | Redis session store        |

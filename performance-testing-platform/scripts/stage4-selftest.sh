@@ -56,6 +56,26 @@ cleanup_api() {
   sleep 1
 }
 
+get_current_branch() {
+  git branch --show-current
+}
+
+is_valid_work_branch() {
+  local branch="$1"
+  case "$branch" in
+    main|feature/*|fix/*|copilot/*)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+has_recent_conventional_commit() {
+  git log --format=%s -20 | grep -Eq '^(feat|fix|docs|test|refactor|perf|chore)(\([^)]+\))?: '
+}
+
 # 改进: 系统负载检测（macOS/Linux 兼容）
 check_system_load() {
   # 用 awk 取倒数第三个字段（1-min 平均负载）
@@ -103,21 +123,27 @@ echo "=================================================="
 echo ""
 echo "=== Section 1: 代码质量检查 ==="
 
+# 工具函数: 从日志文件中提取数量（格式: "LABEL: N"）
+extract_count() {
+  local pattern="$1" logfile="$2"
+  grep -oE "${pattern}: [0-9]+" "$logfile" | tail -1 | grep -oE "[0-9]+" || echo "0"
+}
+
 # 1.1 单元测试
 echo ""
 echo "--- 1.1 单元测试 ---"
-if npm test 2>&1 | tee "$LOG_DIR/unit-tests.log" | grep -q "148 passed"; then
-  log_result "1.1" "PASS" "单元测试 (148/148)"
+UNIT_LOG="$LOG_DIR/unit-tests.log"
+if npm run test:unit 2>&1 | tee "$UNIT_LOG" > /dev/null; then
+  ACTUAL_PASSED=$(grep -E "Tests:.*[0-9]+ passed" "$UNIT_LOG" | grep -oE "[0-9]+ passed" | grep -oE "[0-9]+" | tail -1 || echo "0")
+  log_result "1.1" "PASS" "单元测试 (${ACTUAL_PASSED} passed)"
 else
-  log_result "1.1" "FAIL" "单元测试未达到 148 passed"
+  log_result "1.1" "FAIL" "单元测试存在失败（详见 $UNIT_LOG）"
 fi
 
 # 1.2 ESLint
 echo ""
 echo "--- 1.2 ESLint ---"
-if npx eslint . 2>&1 | tee "$LOG_DIR/eslint.log" | grep -q "0 error"; then
-  log_result "1.2" "PASS" "ESLint (0 errors)"
-elif npx eslint . > /dev/null 2>&1; then
+if npm run lint 2>&1 | tee "$LOG_DIR/eslint.log" > /dev/null; then
   log_result "1.2" "PASS" "ESLint (0 errors)"
 else
   log_result "1.2" "FAIL" "ESLint 检查有错误"
@@ -126,20 +152,16 @@ fi
 # 1.3 Prettier
 echo ""
 echo "--- 1.3 Prettier ---"
-if npx prettier --check . 2>&1 | tee "$LOG_DIR/prettier.log" | tail -1 | grep -q "All matched files"; then
+if npm run format:check 2>&1 | tee "$LOG_DIR/prettier.log" > /dev/null; then
   log_result "1.3" "PASS" "Prettier (格式一致)"
 else
-  echo "  ℹ️ 自动修复 Prettier 格式..."
-  npx prettier --write . > /dev/null 2>&1 || true
-  log_result "1.3" "PASS" "Prettier (已自动修复)"
+  log_result "1.3" "FAIL" "Prettier 格式不一致（详见 $LOG_DIR/prettier.log）"
 fi
 
 # 1.4 覆盖率 (改进: 使用 awk 替代 bc)
 echo ""
 echo "--- 1.4 代码覆盖率 ---"
-npm test -- --coverage 2>&1 | tee "$LOG_DIR/coverage.log" > /dev/null
-
-if grep -q "All files" "$LOG_DIR/coverage.log"; then
+if npm run test:coverage 2>&1 | tee "$LOG_DIR/coverage.log" > /dev/null && grep -q "All files" "$LOG_DIR/coverage.log"; then
   # 提取 Statements 百分比
   STATEMENTS=$(grep "All files" "$LOG_DIR/coverage.log" | awk -F'|' '{print $2}' | xargs | sed 's/%//' | sed 's/ //g')
 
@@ -164,11 +186,18 @@ echo "=== Section 2: 集成测试 ==="
 echo ""
 echo "--- 2.1 集成测试通过率 ---"
 
-if check_system_load; then
-  if bash scripts/integration-test.sh 2>&1 | tee "$LOG_DIR/integration-test.log" | grep -q "Pass: 29"; then
-    log_result "2.1" "PASS" "集成测试 (29/31 通过，2 SKIP)"
+if ! command -v k6 > /dev/null 2>&1; then
+  log_result "2.1" "SKIP" "当前环境未安装 k6，跳过 Shell 集成测试"
+elif ! docker info > /dev/null 2>&1; then
+  log_result "2.1" "SKIP" "Docker daemon 未运行，跳过 Shell 集成测试"
+elif check_system_load; then
+  INT_LOG="$LOG_DIR/integration-test.log"
+  if bash scripts/integration-test.sh 2>&1 | tee "$INT_LOG" > /dev/null; then
+    log_result "2.1" "PASS" "Shell 集成测试通过"
+  elif grep -qE "Preflight FAILED|not reachable|Docker daemon not running|command not found" "$INT_LOG"; then
+    log_result "2.1" "SKIP" "Shell 集成测试依赖未满足（详见 $INT_LOG）"
   else
-    log_result "2.1" "SKIP" "集成测试输出格式异常，详见日志"
+    log_result "2.1" "FAIL" "Shell 集成测试失败（详见 $INT_LOG）"
   fi
 else
   LOAD=$(uptime | awk '{print $(NF-2)}' 2>/dev/null || echo "0")
@@ -277,11 +306,15 @@ echo "=== Section 6: CI 流水线 ==="
 echo ""
 echo "--- 6.1 CI 最新 run ---"
 if ensure_gh_cli; then
-  CI_STATUS=$(timeout 10 gh run list --branch feature/performance-testing --limit 1 2>&1 | tail -1 | awk '{print $3}' || echo "error")
-  if [ "$CI_STATUS" = "completed" ] || [ "$CI_STATUS" = "success" ]; then
-    log_result "6.1" "PASS" "CI 最新 run: $CI_STATUS"
+  CI_RAW=$(timeout 10 gh run list --branch "$(get_current_branch)" --limit 1 --json status,conclusion 2>/dev/null || true)
+  if echo "$CI_RAW" | grep -q '"status":"completed"'; then
+    CI_CONCLUSION=$(echo "$CI_RAW" | grep -oE '"conclusion":"[^"]+"' | head -1 | cut -d: -f2 | tr -d '"')
+    log_result "6.1" "PASS" "CI 最新 run 已完成 (conclusion: ${CI_CONCLUSION:-unknown})"
+  elif [ -n "$CI_RAW" ]; then
+    CI_STATUS=$(echo "$CI_RAW" | grep -oE '"status":"[^"]+"' | head -1 | cut -d: -f2 | tr -d '"')
+    log_result "6.1" "SKIP" "CI 状态: ${CI_STATUS:-unknown} (需手动检查)"
   else
-    log_result "6.1" "SKIP" "CI 状态: $CI_STATUS (需手动检查或网络不可用)"
+    log_result "6.1" "SKIP" "CI 查询失败或网络不可用"
   fi
 else
   log_result "6.1" "SKIP" "gh CLI 不可用"
@@ -316,7 +349,7 @@ fi
 # 8.2 CLAUDE.md 文档
 echo ""
 echo "--- 8.2 CLAUDE.md 文档 ---"
-if grep -q "集成测试锁机制" CLAUDE.md; then
+if grep -Eq "集成测试锁机制|集成测试有锁" CLAUDE.md; then
   log_result "8.2" "PASS" "CLAUDE.md 包含锁机制文档"
 else
   log_result "8.2" "FAIL" "CLAUDE.md 缺少锁机制文档"
@@ -341,21 +374,21 @@ echo "=== Section 9: 分支和提交 ==="
 # 9.1 分支确认
 echo ""
 echo "--- 9.1 分支确认 ---"
-BRANCH=$(git branch --show-current)
-if [ "$BRANCH" = "feature/performance-testing" ]; then
-  log_result "9.1" "PASS" "分支: $BRANCH"
+BRANCH=$(get_current_branch)
+if is_valid_work_branch "$BRANCH"; then
+  log_result "9.1" "PASS" "当前分支允许执行验证: $BRANCH"
 else
-  log_result "9.1" "FAIL" "不在目标分支 (当前: $BRANCH)"
+  log_result "9.1" "FAIL" "当前不在允许的工作分支 (当前: $BRANCH)"
 fi
 
 # 9.2 提交历史
 echo ""
 echo "--- 9.2 提交历史 ---"
-if git log --oneline -20 | grep -q "Phase 6\|phase-6\|Stage 4\|XSS\|lock"; then
-  COMMIT_COUNT=$(git log --oneline -20 | grep -c "feat\|fix\|docs" || echo "多个")
-  log_result "9.2" "PASS" "Phase 6 提交已记录 ($COMMIT_COUNT commits in 20)"
+if has_recent_conventional_commit; then
+  COMMIT_COUNT=$(git log --format=%s -20 | grep -Ec '^(feat|fix|docs|test|refactor|perf|chore)(\([^)]+\))?: ' || echo "0")
+  log_result "9.2" "PASS" "最近提交符合 conventional commits ($COMMIT_COUNT commits in 20)"
 else
-  log_result "9.2" "FAIL" "提交历史缺少 Phase 6 相关提交"
+  log_result "9.2" "FAIL" "最近提交缺少 conventional commits 记录"
 fi
 
 # ============================================================
@@ -376,7 +409,7 @@ echo "⏭️ SKIP:  $SKIP"
 echo "总计:    $TOTAL"
 
 if [ $TOTAL -gt 0 ]; then
-  SUCCESS_RATE=$(echo "scale=1; $PASS * 100 / $TOTAL" | bc)
+  SUCCESS_RATE=$(awk "BEGIN { printf \"%.1f\", ($PASS * 100) / $TOTAL }")
 else
   SUCCESS_RATE=0
 fi
@@ -390,9 +423,9 @@ cat > "$REPORT" << EOF
 # Phase 6 Stage 4 自测报告
 
 **执行时间:** $TIMESTAMP
-**分支:** $(git branch --show-current)
+**分支:** $(get_current_branch)
 **耗时:** ${DURATION}s
-**脚本:** scripts/stage4-selftest-improved.sh
+**脚本:** scripts/stage4-selftest.sh
 
 ---
 
@@ -422,10 +455,10 @@ cat >> "$REPORT" << EOF
 
 所有日志已保存到 \`docs/qa/reports/logs-stage4/\`：
 
-- \`unit-tests.log\` — npm test 完整输出
+- \`unit-tests.log\` — npm run test:unit 完整输出
 - \`coverage.log\` — 覆盖率报告
 - \`eslint.log\` — ESLint 检查结果
-- \`prettier.log\` — Prettier 格式检查
+- \`prettier.log\` — npm run format:check 输出
 - \`integration-test.log\` — 集成测试输出
 - \`api-startup.log\` — API 启动日志
 
@@ -452,7 +485,7 @@ cat >> "$REPORT" << EOF
 ## 后续步骤
 
 1. 查看详细日志：\`less docs/qa/reports/logs-stage4/*.log\`
-2. 若有失败项，修复后重新运行：\`bash scripts/stage4-selftest-improved.sh\`
+2. 若有失败项，修复后重新运行：\`bash scripts/stage4-selftest.sh\`
 3. 验收通过后，进入 Stage 5：创建 PR → 关闭 Issue → 更新根文档
 
 ---
