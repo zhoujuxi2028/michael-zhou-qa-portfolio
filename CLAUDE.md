@@ -1,31 +1,84 @@
 # CLAUDE.md - QA Portfolio
 
-## 仓库定位
-- QA / Test Automation / DevOps 作品集仓库
-- 顶层目录下各子项目基本可独立安装、运行、测试
-- 优先在对应子项目内修改，避免在根目录堆放临时产物
+Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 
-## 分支规则
-- 开发、测试、验证只在 `feature/*` 或 `fix/*` 分支进行
-- 不在 `main` 上直接改代码、跑修复、做验证
-- 需要隔离工作目录时，优先使用仓库内 `./.worktrees/feature-*`
+## Claude Code Guidelines
 
-## 顶层项目
-| 项目 | 类型 | 主要技术 |
-|---|---|---|
-| `performance-testing-platform` | 性能测试 | k6, JMeter, Express, Grafana |
-| `playwright-demo` | E2E/UI/API | Playwright, TypeScript |
-| `api-testing-demo` | API 测试 | Postman, Newman, json-server |
-| `selenium-demo` | UI 自动化 | Selenium, Pytest |
-| `iwsva-cypress-e2e` | E2E | Cypress |
-| `security-testing-demo` | 安全测试 | Pytest, OWASP ZAP, Docker |
-| `k8s-auto-testing-platform` | K8S 测试 | Pytest, Kubernetes, Chaos Mesh |
-| `sid-iam-testing-platform` | 平台测试 | Pytest, FastAPI, networkx |
-| `microservice-testing-platform` | 微服务测试 | Node.js, Jest, Redis |
-| `cicd-demo` | DevOps Demo | GitHub Actions, Docker, Terraform |
+- **Be concise**: Keep responses and file content brief and to the point
+- **No fluff**: Avoid unnecessary explanations, verbose comments, or filler text
+- **Tables over prose**: Use tables/lists instead of paragraphs when possible
 
-## 通用命令
-### Node.js 项目
+## ⚠️ Branch Discipline
+
+**CRITICAL: Never work on `main` branch for development, testing, or verification.**
+
+| Phase | 工作内容 | 分支要求 |
+|-------|---------|----------|
+| 1-5 (需求→收尾) | 代码编写、测试、验证 | ✅ 使用 `feature/*` 分支 |
+| 收尾 (PR 合并后) | 文档同步、Wiki 更新 | ✅ main 已合并，可直接更新 |
+
+**Rule**: 
+- Stage 3 (开发) → Stage 4 (测试) → Stage 5 (收尾 PR) 都必须在 feature 分支上
+- Main 分支仅用于：(1) 接收 PR merge，(2) 生产部署
+- 误操作示例：在 main 上 run tests, commit fixes, git merge —abort ❌
+
+**历史教训**: 2026-04-15 在 main 上触发 merge，导致需要回滚到 feature/performance-testing 重新开始 Stage 4 verification
+
+## Worktree Convention
+
+- 默认 worktree 位置：`~/.config/superpowers/worktrees/<repo-name>/`
+- 本仓库推荐路径：`~/.config/superpowers/worktrees/michael-zhou-qa-portfolio/`
+- 需要隔离开发、测试、设计验证时，优先使用全局 worktree，而不是在仓库内新建 `.worktrees/`
+
+## Development Process（开发流程）
+
+每个新功能/项目遵循 5 阶段流程，**每阶段结束必须暂停等待人工评审**，通过后才能进入下一阶段。
+
+| 阶段 | 活动 | 交付物 | 评审要点 |
+|------|------|--------|----------|
+| 1. 需求 | Issue 分析、scope 确认、可行性评估 | 需求描述 + 可行性评估 | scope 是否合理、本机环境是否支持 |
+| 2. 设计 | 实施计划、架构设计、Plan Review | 实施计划文档 | 架构合理、任务拆分清晰、reviewer 问题已修复 |
+| 3. 开发 | TDD 编码、逐步提交 | 代码 + 单元测试 | 代码质量、测试覆盖、commit 规范 |
+| 4. 测试 | 本地自测、lint、CI 验证 | 全部测试通过 | lint 通过、所有测试 PASS、CI 绿灯 |
+| 5. 收尾 | PR 创建、文档更新、root 注册 | PR merged + 文档同步 | README/CLAUDE.md 更新、Wiki 同步 |
+
+**规则：**
+- **每阶段开始时，先对照 checklist 列出本阶段所有交付物**，再逐项完成
+- Claude 在每个阶段完成后必须**报告状态并等待确认**，不得自行跳到下一阶段
+- 如果评审发现问题，在当前阶段修复后重新评审
+- 阶段可根据任务规模简化（小 bugfix 可合并阶段），但需用户同意
+- 详见 [Development Process Checklist](docs/dev-process-checklist.md)
+
+## Projects (by Testing Category)
+
+| Category | Project | Key Tech | CLAUDE.md |
+|----------|---------|----------|-----------|
+| 功能测试 | `iwsva-cypress-e2e/` — IWSVA E2E (77 tests) | Cypress, Page Objects | `iwsva-cypress-e2e/CLAUDE.md` |
+| DevOps | `cicd-demo/` — DevOps Infrastructure Platform | Terraform, K8S, ArgoCD, Prometheus | `cicd-demo/CLAUDE.md` |
+| 功能测试 | `api-testing-demo/` — API testing (280+ assertions) | Newman, Postman, json-server | `api-testing-demo/CLAUDE.md` |
+| 功能测试 | `playwright-demo/` — Cross-browser E2E (38 tests) | Playwright, TypeScript, axe-core | `playwright-demo/CLAUDE.md` |
+| 功能测试 | `selenium-demo/` — Browser automation | Selenium, Python, Allure | `selenium-demo/CLAUDE.md` |
+| 安全测试 | `security-testing-demo/` — Security (~182 tests, OWASP Top 10) | Pytest, OWASP ZAP, Nessus, SQLMap | `security-testing-demo/CLAUDE.md` |
+| 平台测试 | `sid-iam-testing-platform/` — IAM + Data + AI Agent (163 tests) | Python, Pytest, FastAPI, networkx | `sid-iam-testing-platform/CLAUDE.md` |
+| 平台测试 | `microservice-testing-platform/` — Microservice (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 | `microservice-testing-platform/CLAUDE.md` |
+| 性能测试 | `performance-testing-platform/` — k6 + JMeter dual-engine (148 unit + 31 integration + 33 perf) | k6, JMeter, Express, Grafana, InfluxDB | `performance-testing-platform/CLAUDE.md` |
+| 稳定性测试 | `k8s-auto-testing-platform/` — K8S HPA + Chaos (37 tests) | Python, Pytest, Chaos Mesh | `k8s-auto-testing-platform/CLAUDE.md` |
+| **AI 测试** | `ai-testing-platform/` — AI-Powered Testing Platform (43 tests) | Python, Pytest, Rule Engine | `ai-testing-platform/CLAUDE.md` |
+
+> **Quick Commands**: 各项目的安装、运行、测试命令详见对应子项目 `CLAUDE.md`。
+
+## Standard docs/ Template
+
+```
+docs/
+├── architecture/           # ARCHITECTURE.md, design decisions, API specs
+├── qa/                     # test-plan, test-cases/, rtm, reports/
+├── project-management/     # WBS.md, ISSUES.md, requirements, defects
+└── guides/                 # FAQ, troubleshooting, learning guides (optional)
+```
+
+## Virtual Environment (Python Projects)
+
 ```bash
 python3 -m venv venv && source venv/bin/activate
 ```
@@ -70,7 +123,8 @@ python3 -m venv venv && source venv/bin/activate
 | `fix/api-testing-defects` | API testing bug fixes | In development |
 | `feature/sid-iam-testing` | SID IAM + Data Platform + AI Agent testing (138 tests) | In development |
 | `feature/microservice-testing` | Microservice testing platform (101 tests, 5 layers) | In development |
-| `feature/performance-testing` | Performance testing platform (k6 + JMeter dual-engine, Phase 1-7 done) | In development |
+| `feature/performance-testing` | Performance testing platform (k6 + JMeter dual-engine, Phase 1-5 done) | In development |
+| `copilot/ai-powered-testing-platform-research` | AI Testing Platform (43 tests, 91% coverage) | In development |
 
 ## GitHub Actions
 
