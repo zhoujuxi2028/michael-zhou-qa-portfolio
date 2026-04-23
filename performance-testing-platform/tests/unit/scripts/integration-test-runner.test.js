@@ -108,9 +108,13 @@ ALL_TESTS=("\${PHASE1_TESTS[@]}")
     const lockDir = path.join(tempDir, 'integration-test.lock');
 
     fs.mkdirSync(libDir, { recursive: true });
-    fs.writeFileSync(path.join(scriptsDir, 'integration-test.sh'), fs.readFileSync(MAIN_SCRIPT, 'utf8'), {
-      mode: 0o755,
-    });
+    fs.writeFileSync(
+      path.join(scriptsDir, 'integration-test.sh'),
+      fs.readFileSync(MAIN_SCRIPT, 'utf8'),
+      {
+        mode: 0o755,
+      }
+    );
     fs.writeFileSync(
       path.join(libDir, 'common.sh'),
       `#!/bin/bash

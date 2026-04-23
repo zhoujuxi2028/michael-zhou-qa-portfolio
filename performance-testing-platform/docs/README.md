@@ -52,26 +52,26 @@ docs/
 
 ## 快速入口
 
-| 场景 | 文档 |
-|------|------|
-| 了解系统架构 | [architecture/architecture.md](architecture/architecture.md) |
-| 查看设计决策 | [architecture/design-decisions.md](architecture/design-decisions.md) |
-| 了解被测系统 | [architecture/sut/](architecture/sut/) |
-| 查看测试计划 | [qa/test-plan.md](qa/test-plan.md) |
-| 查看测试用例统计 | [qa/test-cases/index.md](qa/test-cases/index.md) |
-| 需求追溯矩阵 | [qa/rtm.md](qa/rtm.md) |
-| 查看需求文档 | [project-management/requirements.md](project-management/requirements.md) |
-| 查看风险清单 | [project-management/risks.md](project-management/risks.md) |
-| 查看实施计划 | [project-management/implementation-plans/](project-management/implementation-plans/) |
+| 场景             | 文档                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------ |
+| 了解系统架构     | [architecture/architecture.md](architecture/architecture.md)                         |
+| 查看设计决策     | [architecture/design-decisions.md](architecture/design-decisions.md)                 |
+| 了解被测系统     | [architecture/sut/](architecture/sut/)                                               |
+| 查看测试计划     | [qa/test-plan.md](qa/test-plan.md)                                                   |
+| 查看测试用例统计 | [qa/test-cases/index.md](qa/test-cases/index.md)                                     |
+| 需求追溯矩阵     | [qa/rtm.md](qa/rtm.md)                                                               |
+| 查看需求文档     | [project-management/requirements.md](project-management/requirements.md)             |
+| 查看风险清单     | [project-management/risks.md](project-management/risks.md)                           |
+| 查看实施计划     | [project-management/implementation-plans/](project-management/implementation-plans/) |
 | 性能测试参数指南 | [guides/performance-testing-parameters.md](guides/performance-testing-parameters.md) |
 
 ## 分类原则
 
-| 目录 | 定位 | 放什么 | 不放什么 |
-|------|------|--------|---------|
-| `architecture/` | 系统是什么样的 | 架构图、ADR、SUT 设计 | 实施细节、阶段计划 |
-| `design/` | 怎么实现 | 详细设计、技术方案 | 架构级决策、测试用例 |
-| `project-management/` | 项目管理 | 需求、计划、风险、问题、事后分析 | 测试结果、系统架构 |
-| `qa/` | 质量保证 | 测试计划、用例、RTM、报告 | 需求定义、架构设计 |
-| `devops/` | 持续集成 | CI/CD 配置文档、流水线设计 | 功能设计、测试用例 |
-| `guides/` | 操作指南 | How-to、参数说明、培训材料 | 项目管理文档 |
+| 目录                  | 定位           | 放什么                           | 不放什么             |
+| --------------------- | -------------- | -------------------------------- | -------------------- |
+| `architecture/`       | 系统是什么样的 | 架构图、ADR、SUT 设计            | 实施细节、阶段计划   |
+| `design/`             | 怎么实现       | 详细设计、技术方案               | 架构级决策、测试用例 |
+| `project-management/` | 项目管理       | 需求、计划、风险、问题、事后分析 | 测试结果、系统架构   |
+| `qa/`                 | 质量保证       | 测试计划、用例、RTM、报告        | 需求定义、架构设计   |
+| `devops/`             | 持续集成       | CI/CD 配置文档、流水线设计       | 功能设计、测试用例   |
+| `guides/`             | 操作指南       | How-to、参数说明、培训材料       | 项目管理文档         |

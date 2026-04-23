@@ -23,6 +23,7 @@
 | 7     | CI/CD + 可观测性        | 性能基线回归、覆盖率门禁、Grafana 面板+告警、定时调度             |
 
 ### 1.2 范围外 (Out of Scope)
+
 - 第三方服务可用性 (InfluxDB/Grafana 自身 Bug)
 - 跨项目端口冲突排查
 
@@ -30,13 +31,13 @@
 
 ## 2. 测试类型与职责
 
-| 类型     | 工具                  | 用例数  | 职责                                                                                                                   | 执行方式                           |
-| -------- | --------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| 单元测试 | Jest + Supertest      | 217     | API 功能正确性、helpers 解析逻辑、中间件行为、baseline 判定、k6 补完能力                                              | `npm test` / `npx jest tests/unit/` |
-| 集成测试 | Shell + curl + Docker | 60      | 端到端链路验证 (k6→InfluxDB→Grafana、认证流程、k6 helpers、限流中间件、摘要报告、Grafana 集成)                        | `bash scripts/integration-test.sh` |
-| 性能测试 | k6 + JMeter           | 33      | 延迟/吞吐/错误率、SLA 达标、瓶颈定位、长时间稳定性                                                                     | npm scripts 手动触发               |
-| 其他     | 手动验证              | 47      | 报告完整性、脚本行为、CI/Grafana/调度设计验证                                                                          | 人工检查                           |
-| **合计** |                       | **357** |                                                                                                                        |                                    |
+| 类型     | 工具                  | 用例数  | 职责                                                                                           | 执行方式                            |
+| -------- | --------------------- | ------- | ---------------------------------------------------------------------------------------------- | ----------------------------------- |
+| 单元测试 | Jest + Supertest      | 217     | API 功能正确性、helpers 解析逻辑、中间件行为、baseline 判定、k6 补完能力                       | `npm test` / `npx jest tests/unit/` |
+| 集成测试 | Shell + curl + Docker | 60      | 端到端链路验证 (k6→InfluxDB→Grafana、认证流程、k6 helpers、限流中间件、摘要报告、Grafana 集成) | `bash scripts/integration-test.sh`  |
+| 性能测试 | k6 + JMeter           | 33      | 延迟/吞吐/错误率、SLA 达标、瓶颈定位、长时间稳定性                                             | npm scripts 手动触发                |
+| 其他     | 手动验证              | 47      | 报告完整性、脚本行为、CI/Grafana/调度设计验证                                                  | 人工检查                            |
+| **合计** |                       | **357** |                                                                                                |                                     |
 
 ---
 
@@ -47,24 +48,25 @@
 
 ### 2.1.1 集成测试目标
 
-| 目标 | 说明 |
-|------|------|
-| **模块协同验证** | 验证 API 路由、数据库、中间件、认证模块之间的交互 |
-| **数据流完整性** | 确认请求从入口到数据库再到响应的完整链路 |
+| 目标                   | 说明                                                 |
+| ---------------------- | ---------------------------------------------------- |
+| **模块协同验证**       | 验证 API 路由、数据库、中间件、认证模块之间的交互    |
+| **数据流完整性**       | 确认请求从入口到数据库再到响应的完整链路             |
 | **业务规则跨模块执行** | 验证库存扣减、Token 黑名单、限额共享等跨模块业务逻辑 |
-| **基础设施链路验证** | 确认 k6→InfluxDB→Grafana 的数据采集和可视化链路 |
-| **安全防护集成** | 验证 Helmet + 限流器 + JWT 认证的协同安全效果 |
+| **基础设施链路验证**   | 确认 k6→InfluxDB→Grafana 的数据采集和可视化链路      |
+| **安全防护集成**       | 验证 Helmet + 限流器 + JWT 认证的协同安全效果        |
 
 ### 2.1.2 双执行引擎
 
 集成测试采用双执行引擎架构：
 
-| 引擎 | 框架 | 文件数 | 用例数 | 适用场景 | 执行命令 |
-|------|------|--------|--------|---------|---------|
-| **Jest Runner** | Jest + Supertest | 12 | 61 | 进程内 API 交互、中间件、工具函数 | `npm run test:integration` |
-| **Shell Runner** | Bash + curl + Docker | 3 | ~40 | 外部进程编排（Docker/k6/JMeter） | `bash scripts/integration-test.sh` |
+| 引擎             | 框架                 | 文件数 | 用例数 | 适用场景                          | 执行命令                           |
+| ---------------- | -------------------- | ------ | ------ | --------------------------------- | ---------------------------------- |
+| **Jest Runner**  | Jest + Supertest     | 12     | 61     | 进程内 API 交互、中间件、工具函数 | `npm run test:integration`         |
+| **Shell Runner** | Bash + curl + Docker | 3      | ~40    | 外部进程编排（Docker/k6/JMeter）  | `bash scripts/integration-test.sh` |
 
 **选型决策：**
+
 - **Jest Runner**：利用 Supertest 直接调用 Express app（无真实 HTTP），内存 SQLite 保证隔离性，适合快速反馈
 - **Shell Runner**：编排多进程工作流（API 服务 + Docker 容器 + k6/JMeter 进程），适合真实环境集成
 
@@ -89,23 +91,23 @@
 
 ### 2.1.4 隔离策略
 
-| 策略 | Jest Runner | Shell Runner |
-|------|-------------|-------------|
-| **数据库** | SQLite `:memory:`，每次 beforeEach 重建 | 文件模式 SQLite，测试前后清理 |
-| **HTTP** | Supertest 进程内调用（无真实端口） | 真实 HTTP（端口 3000） |
-| **外部服务** | 无外部依赖 | Docker Compose (InfluxDB/Grafana) |
-| **环境变量** | `jest.resetModules()` 实现模块重载 | Bash `export` / 子 shell 隔离 |
-| **并发控制** | Jest 并行 + 文件内串行 | `lock.sh` 互斥锁（全局唯一执行） |
+| 策略         | Jest Runner                             | Shell Runner                      |
+| ------------ | --------------------------------------- | --------------------------------- |
+| **数据库**   | SQLite `:memory:`，每次 beforeEach 重建 | 文件模式 SQLite，测试前后清理     |
+| **HTTP**     | Supertest 进程内调用（无真实端口）      | 真实 HTTP（端口 3000）            |
+| **外部服务** | 无外部依赖                              | Docker Compose (InfluxDB/Grafana) |
+| **环境变量** | `jest.resetModules()` 实现模块重载      | Bash `export` / 子 shell 隔离     |
+| **并发控制** | Jest 并行 + 文件内串行                  | `lock.sh` 互斥锁（全局唯一执行）  |
 
 ### 2.1.5 环境要求
 
-| 环境 | Jest Runner | Shell Runner |
-|------|-------------|-------------|
-| **Node.js** | ≥ 18 ✅ 必须 | ≥ 18 ✅ 必须 |
-| **Docker** | ❌ 不需要 | ✅ 必须（≥ 24） |
-| **k6** | ❌ 不需要 | ✅ 需要（≥ 0.50） |
-| **端口 3000** | ❌ 不占用 | ✅ 占用 |
-| **端口 3010/8086** | ❌ 不需要 | ✅ Grafana/InfluxDB |
+| 环境               | Jest Runner  | Shell Runner        |
+| ------------------ | ------------ | ------------------- |
+| **Node.js**        | ≥ 18 ✅ 必须 | ≥ 18 ✅ 必须        |
+| **Docker**         | ❌ 不需要    | ✅ 必须（≥ 24）     |
+| **k6**             | ❌ 不需要    | ✅ 需要（≥ 0.50）   |
+| **端口 3000**      | ❌ 不占用    | ✅ 占用             |
+| **端口 3010/8086** | ❌ 不需要    | ✅ Grafana/InfluxDB |
 
 ### 2.1.6 集成测试执行顺序
 
@@ -130,13 +132,13 @@ Step 2: Shell Runner（~10 min，需 Docker）
 
 ### 2.1.7 失败处理策略
 
-| 失败类型 | 影响评估 | 处理方式 |
-|---------|---------|---------|
-| **Jest 用例失败** | P1 用例阻塞发布 | 修复后重跑 `npx jest <failed-file>` |
-| **Shell 阶段失败** | 检查是否环境问题 | 查看日志 → 修复 → `bash scripts/integration-test.sh` |
-| **Docker 启动失败** | Shell Runner 不可用 | `docker ps` 排查 → 重启 Docker → 重试 |
-| **端口冲突** | Shell Runner 阻塞 | `lsof -ti:3000 \| xargs kill` → 重试 |
-| **互斥锁残留** | Shell Runner 无法获取锁 | `rm -rf /tmp/integration-test.lock` → 重试 |
+| 失败类型            | 影响评估                | 处理方式                                             |
+| ------------------- | ----------------------- | ---------------------------------------------------- |
+| **Jest 用例失败**   | P1 用例阻塞发布         | 修复后重跑 `npx jest <failed-file>`                  |
+| **Shell 阶段失败**  | 检查是否环境问题        | 查看日志 → 修复 → `bash scripts/integration-test.sh` |
+| **Docker 启动失败** | Shell Runner 不可用     | `docker ps` 排查 → 重启 Docker → 重试                |
+| **端口冲突**        | Shell Runner 阻塞       | `lsof -ti:3000 \| xargs kill` → 重试                 |
+| **互斥锁残留**      | Shell Runner 无法获取锁 | `rm -rf /tmp/integration-test.lock` → 重试           |
 
 ---
 
@@ -156,11 +158,11 @@ Step 2: Shell Runner（~10 min，需 Docker）
 
 ### P1 — 应该通过 (强烈建议)
 
-| 检查项       | 命令                               | 通过标准                                  |
-| ------------ | ---------------------------------- | ----------------------------------------- |
-| 集成测试     | `bash scripts/integration-test.sh` | Stage 3 只验证 SUT 单元测试与 SUT 集成测试范围，不包含 soak / 其他性能验收项 |
-| k6 smoke     | `npm run k6:smoke`                 | p95 < 500ms, error < 1%                   |
-| JMeter smoke | `npm run jmeter:smoke`             | error < 1%                                |
+| 检查项       | 命令                               | 通过标准                                                                                                                                                                                                                                         |
+| ------------ | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 集成测试     | `bash scripts/integration-test.sh` | Stage 3 只验证 SUT 单元测试与 SUT 集成测试范围，不包含 soak / 其他性能验收项                                                                                                                                                                     |
+| k6 smoke     | `npm run k6:smoke`                 | p95 < 500ms, error < 1%                                                                                                                                                                                                                          |
+| JMeter smoke | `npm run jmeter:smoke`             | error < 1%                                                                                                                                                                                                                                       |
 | CI 流水线    | push → GitHub Actions              | 6 jobs 全绿（Performance Testing / Code Quality、Performance Testing / Unit Tests、Performance Testing / k6 Smoke Tests、Performance Testing / JMeter Smoke Tests、Performance Testing / Baseline Compare、Performance Testing / Trend Collect） |
 
 ### P2 — 建议执行 (发布前完成)
@@ -174,10 +176,10 @@ Step 2: Shell Runner（~10 min，需 Docker）
 
 ### 阶段边界说明
 
-| 阶段 | 关注点 | 包含内容 | 不包含内容 |
-| ---- | ------ | -------- | ---------- |
-| Stage 3（开发阶段） | 开发自测 | SUT 单元测试、SUT 集成测试 | soak / load / stress / spike 等性能验收 |
-| Stage 4（验收阶段） | 验收验证 | SUT 性能测试（含 smoke / load / stress / spike / soak） | 与本项目无关的部署/回滚门禁 |
+| 阶段                | 关注点   | 包含内容                                                | 不包含内容                              |
+| ------------------- | -------- | ------------------------------------------------------- | --------------------------------------- |
+| Stage 3（开发阶段） | 开发自测 | SUT 单元测试、SUT 集成测试                              | soak / load / stress / spike 等性能验收 |
+| Stage 4（验收阶段） | 验收验证 | SUT 性能测试（含 smoke / load / stress / spike / soak） | 与本项目无关的部署/回滚门禁             |
 
 ### 执行顺序
 
@@ -203,12 +205,12 @@ P0 (本地快速反馈，~2 min)
 
 ### 4.2 退出标准 (Exit Criteria)
 
-| 条件                    | 验证方式                           |
-| ----------------------- | ---------------------------------- |
+| 条件                    | 验证方式                                       |
+| ----------------------- | ---------------------------------------------- |
 | P0 全部通过             | npm test + lint + format:check + coverage 输出 |
-| P1 全部通过             | integration-test.sh 输出 + CI 截图 |
-| 无 P0/P1 级别未修复 Bug | Bug 列表清零或降级为 P2            |
-| 测试报告已归档          | `reports/` 目录、`coverage/` 目录  |
+| P1 全部通过             | integration-test.sh 输出 + CI 截图             |
+| 无 P0/P1 级别未修复 Bug | Bug 列表清零或降级为 P2                        |
+| 测试报告已归档          | `reports/` 目录、`coverage/` 目录              |
 
 ---
 
@@ -362,10 +364,10 @@ npm run generate-summary                    # 生成执行摘要报告
 
 ### Phase 4 — Soak + 可观测性
 
-| 验证项              | 方法                                 |
-| ------------------- | ------------------------------------ |
-| 内存泄漏检测逻辑    | UT-SOAK-01~07                        |
-| Soak 短时验证       | SOAK-TC-01 (`npm run k6:soak:short`) |
+| 验证项              | 方法                                           |
+| ------------------- | ---------------------------------------------- |
+| 内存泄漏检测逻辑    | UT-SOAK-01~07                                  |
+| Soak 短时验证       | SOAK-TC-01 (`npm run k6:soak:short`)           |
 | Grafana 面板 + 告警 | `bash scripts/integration-test-phase7-soak.sh` |
 
 ### Phase 5 — 基础设施 Helper
@@ -379,31 +381,31 @@ npm run generate-summary                    # 生成执行摘要报告
 
 ### Phase 6 — 测试能力扩展
 
-| 验证项                                         | 方法                                                              |
-| ---------------------------------------------- | ----------------------------------------------------------------- |
-| Rate limiter 中间件 (正常/超限/恢复/开关/headers) | Jest: `tests/unit/middleware/rateLimiter.test.js`                 |
-| k6 helpers 统一 (funnel/thinkTime/healthCheck) | k6 smoke 迁移前后对比 (p95 偏差 < 10%)                            |
-| 现有脚本迁移回归                               | `npm run k6:smoke` + `npm test` 全部 PASS                         |
-| Breakpoint 崩溃测试                            | `npm run k6:breakpoint` 输出崩溃点 + 类型                         |
-| 限流测试 (429/恢复)                            | `npm run k6:rate-limit`（设计目标；当前 workflow 未自动接入）     |
-| 执行摘要报告                                   | `npm run generate-summary` → `reports/k6-summary.md`              |
-| CDN 依赖清除                                   | `grep -r "jslib.k6.io" tests/performance/` 返回空                 |
+| 验证项                                            | 方法                                                          |
+| ------------------------------------------------- | ------------------------------------------------------------- |
+| Rate limiter 中间件 (正常/超限/恢复/开关/headers) | Jest: `tests/unit/middleware/rateLimiter.test.js`             |
+| k6 helpers 统一 (funnel/thinkTime/healthCheck)    | k6 smoke 迁移前后对比 (p95 偏差 < 10%)                        |
+| 现有脚本迁移回归                                  | `npm run k6:smoke` + `npm test` 全部 PASS                     |
+| Breakpoint 崩溃测试                               | `npm run k6:breakpoint` 输出崩溃点 + 类型                     |
+| 限流测试 (429/恢复)                               | `npm run k6:rate-limit`（设计目标；当前 workflow 未自动接入） |
+| 执行摘要报告                                      | `npm run generate-summary` → `reports/k6-summary.md`          |
+| CDN 依赖清除                                      | `grep -r "jslib.k6.io" tests/performance/` 返回空             |
 
 ### Phase 7 — CI/CD + 可观测性（全量执行，无跳过）
 
 #### 7.1 测试覆盖与依赖
 
-| 类型 | 用例 | 依赖 | 备注 |
-|------|------|------|------|
-| **单元** | UT-BL-01~06, K6-FUNNEL-01~03, K6-CLASS-01~02 | 无 | 并行执行，最快 |
-| **覆盖率** | CI-COV-01~04 | UT-* 全部通过 | `npm test -- --coverage` |
-| **基线** | CI-BL-01~04 | smoke gate 完成 | 生成/对比 baseline.json |
-| **趋势** | TREND-01~03 | CI-BL-01 完成 | 追加 trend.json |
-| **Grafana** | GRF-ERR/HEAT/CUSTOM/ALERT | InfluxDB + Grafana 启动 | Docker 集成 |
-| **恢复** | K6-RECOVERY-01 | k6 runtime 就绪 | 长时间压测（30+ min） |
-| **集成** | K6-SOAK-INT-01~02 | Grafana dashboard 配置 | 需主动观测 |
-| **设计门禁** | K6-OBS-DESIGN-01~04 | Phase 7 observer 方案评审通过 | 设计目标，暂不计入当前 33 条已落地统计 |
-| **调度** | SCHED-01~04 | CI 环境检测通过 | 最后验证 |
+| 类型         | 用例                                         | 依赖                          | 备注                                   |
+| ------------ | -------------------------------------------- | ----------------------------- | -------------------------------------- |
+| **单元**     | UT-BL-01~06, K6-FUNNEL-01~03, K6-CLASS-01~02 | 无                            | 并行执行，最快                         |
+| **覆盖率**   | CI-COV-01~04                                 | UT-\* 全部通过                | `npm test -- --coverage`               |
+| **基线**     | CI-BL-01~04                                  | smoke gate 完成               | 生成/对比 baseline.json                |
+| **趋势**     | TREND-01~03                                  | CI-BL-01 完成                 | 追加 trend.json                        |
+| **Grafana**  | GRF-ERR/HEAT/CUSTOM/ALERT                    | InfluxDB + Grafana 启动       | Docker 集成                            |
+| **恢复**     | K6-RECOVERY-01                               | k6 runtime 就绪               | 长时间压测（30+ min）                  |
+| **集成**     | K6-SOAK-INT-01~02                            | Grafana dashboard 配置        | 需主动观测                             |
+| **设计门禁** | K6-OBS-DESIGN-01~04                          | Phase 7 observer 方案评审通过 | 设计目标，暂不计入当前 33 条已落地统计 |
+| **调度**     | SCHED-01~04                                  | CI 环境检测通过               | 最后验证                               |
 
 #### 7.2 执行顺序规划
 
@@ -438,10 +440,10 @@ npm run generate-summary                    # 生成执行摘要报告
 
 #### 7.3 进入/退出标准
 
-| 条件 | 标准 |
-|------|------|
+| 条件     | 标准                                                                                      |
+| -------- | ----------------------------------------------------------------------------------------- |
 | **进入** | `npm test` 通过 + coverage 达到 stmt 80 / branch 70 / func 80 / line 80 + k6 smoke 无报错 |
-| **退出** | 33/33 用例完成 + 所有报告（baseline/trend/coverage）生成 + Grafana dashboard 可访问 |
+| **退出** | 33/33 用例完成 + 所有报告（baseline/trend/coverage）生成 + Grafana dashboard 可访问       |
 
 > `#133` 补充说明：observer scenario + 固定间隔采样属于 **Phase 7 设计门禁**。在脚本实现与验证完成前，仅作为设计目标记录，不并入当前 33/33 已落地统计。
 
@@ -451,15 +453,15 @@ npm run generate-summary                    # 生成执行摘要报告
 
 > **权威来源:** SLA 指标定义见 [requirements.md §SLA 定义](../project-management/requirements.md#sla-定义)，本节仅做快速引用。
 
-| 指标              | 阈值     | 适用场景                              |
-| ----------------- | -------- | ------------------------------------- |
-| p95 latency       | < 500ms  | 所有 API 端点 (smoke/load/stress)     |
-| p99 latency       | < 2000ms | 认证相关端点 (bcrypt 开销)            |
-| Error rate        | < 1%     | 所有场景                              |
-| Throughput        | ≥ 30 rps | smoke 场景 (5 VUs)                    |
-| Heap growth       | < 50%    | Soak test (1h+)                       |
-| Coverage (stmt)   | ≥ 80%    | Jest 单元测试                         |
-| Coverage (branch) | ≥ 70%    | Jest 单元测试                         |
+| 指标              | 阈值     | 适用场景                          |
+| ----------------- | -------- | --------------------------------- |
+| p95 latency       | < 500ms  | 所有 API 端点 (smoke/load/stress) |
+| p99 latency       | < 2000ms | 认证相关端点 (bcrypt 开销)        |
+| Error rate        | < 1%     | 所有场景                          |
+| Throughput        | ≥ 30 rps | smoke 场景 (5 VUs)                |
+| Heap growth       | < 50%    | Soak test (1h+)                   |
+| Coverage (stmt)   | ≥ 80%    | Jest 单元测试                     |
+| Coverage (branch) | ≥ 70%    | Jest 单元测试                     |
 
 ---
 
@@ -478,11 +480,11 @@ npm run generate-summary                    # 生成执行摘要报告
 
 ## 文档关联
 
-| 文档     | 路径                                                                  | 关系                            |
-| -------- | --------------------------------------------------------------------- | ------------------------------- |
-| 用例索引 | [test-cases/index.md](test-cases/index.md)                            | 357 条用例清单 + per-phase 详情 |
-| 架构设计 | [architecture.md](../architecture/architecture.md)                    | 系统架构 + 数据流               |
-| 风险清单 | [risks.md](../project-management/risks.md)                            | 技术风险 + 缓解措施             |
-| 需求文档 | [requirements.md](../project-management/requirements.md)              | Phase 1~7 需求编号              |
-| 开发流程 | [dev-process-checklist.md](../../../docs/dev-process-checklist.md) | 5 阶段流程 + checklist          |
-| **Phase 7 Stage 4 验收清单** | [phase7-stage4-validation.md](phase7-stage4-validation.md) | Phase 7 验收阶段逐轮检查清单 |
+| 文档                         | 路径                                                               | 关系                            |
+| ---------------------------- | ------------------------------------------------------------------ | ------------------------------- |
+| 用例索引                     | [test-cases/index.md](test-cases/index.md)                         | 357 条用例清单 + per-phase 详情 |
+| 架构设计                     | [architecture.md](../architecture/architecture.md)                 | 系统架构 + 数据流               |
+| 风险清单                     | [risks.md](../project-management/risks.md)                         | 技术风险 + 缓解措施             |
+| 需求文档                     | [requirements.md](../project-management/requirements.md)           | Phase 1~7 需求编号              |
+| 开发流程                     | [dev-process-checklist.md](../../../docs/dev-process-checklist.md) | 5 阶段流程 + checklist          |
+| **Phase 7 Stage 4 验收清单** | [phase7-stage4-validation.md](phase7-stage4-validation.md)         | Phase 7 验收阶段逐轮检查清单    |
