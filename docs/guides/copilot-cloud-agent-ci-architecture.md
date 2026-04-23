@@ -68,3 +68,27 @@ GitHub 动态 workflow
 | Processing Request 方差 | 随后续 run 观察是否下降 |
 | 依赖安装重试次数 | 目标下降 |
 | 任务总耗时 | 优先压缩需要安装依赖的任务 |
+
+## 8. Pre-merge 基线与 post-merge 跟踪状态
+
+> 当前状态：`.github/workflows/copilot-setup-steps.yml` **尚未合并到 `main`**，因此 Copilot cloud agent 真实使用该 setup 的 3~5 次线上样本 **暂时不可得**。
+
+### 8.1 当前 pre-merge 基线（最近 5 次已完成 run）
+
+| Run | Branch | 总时长 |
+|-----|--------|--------|
+| `#24821524188` | `copilot/organize-postmortems-and-index` | `93s` |
+| `#24821289605` | `copilot/optimize-ci-process-time` | `478s` |
+| `#24820724910` | `copilot/organize-postmortems-and-index` | `413s` |
+| `#24819778702` | `copilot/improve-test-coverage-branch` | `585s` |
+| `#24816736415` | `copilot/design-performance-testing-architecture` | `588s` |
+
+### 8.2 跟踪说明
+
+1. 上表仅作为 **合并前基线**，不能代表 `copilot-setup-steps` 的实际收益
+2. 合并到 `main` 后，应连续观察 **3~5 次** `Running Copilot cloud agent` run
+3. 重点记录：
+   - 总时长
+   - `Processing Request` 时长
+   - 是否出现额外 setup 开销
+4. 若合并后样本仍长期 >5 分钟，则说明瓶颈主要仍在任务范围与 prompt 复杂度，而不在 bootstrap
