@@ -37,6 +37,10 @@ docs/
 
 ## 最近新增
 
+- [guides/copilot-cloud-agent-ci-architecture.md](guides/copilot-cloud-agent-ci-architecture.md) — Copilot cloud agent CI 架构说明
+- [superpowers/specs/2026-04-23-copilot-cloud-agent-ci-optimization-design.md](superpowers/specs/2026-04-23-copilot-cloud-agent-ci-optimization-design.md) — Copilot cloud agent CI 优化设计
+- [reports/RCA-copilot-cloud-agent-runtime.md](reports/RCA-copilot-cloud-agent-runtime.md) — Copilot cloud agent 耗时 RCA
+- [project-management/postmortems/postmortem-2026-Q2-copilot-cloud-agent-runtime.md](project-management/postmortems/postmortem-2026-Q2-copilot-cloud-agent-runtime.md) — Copilot cloud agent 复盘
 - [RCA-187-repo-meta-broken-markdown-link.md](reports/RCA-187-repo-meta-broken-markdown-link.md) — Repository Meta CI Markdown 断链 RCA
 - [postmortem-2026-Q2-issue-187-repo-meta-broken-markdown-link.md](project-management/postmortems/postmortem-2026-Q2-issue-187-repo-meta-broken-markdown-link.md) — 本次 CI 故障复盘
 
