@@ -180,7 +180,7 @@ All files: 92.76% Statements, 91.26% Branches, 97.95% Functions, 94.46% Lines
 - ✅ `tests/performance/rate-limit.k6.js` - k6 限流测试
 - ✅ `tests/performance/breakpoint.k6.js` - k6 崩溃测试
 - ✅ `helpers/thinkTime.js`, `funnel.js`, `healthCheck.js` - k6 共享 helpers
-- ✅ `scripts/lock.sh` - 互斥锁脚本（TDD 开发）
+- ✅ `scripts/lib/lock.sh` - 互斥锁脚本（TDD 开发，已迁至 lib/）
 
 ### 6.2 测试交付
 

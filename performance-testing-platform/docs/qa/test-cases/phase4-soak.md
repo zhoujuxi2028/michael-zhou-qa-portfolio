@@ -24,5 +24,5 @@
 
 | ID         | 验证项             | 方法                                           | 标签       |
 | ---------- | ------------------ | ---------------------------------------------- | ---------- |
-| SOAK-TC-04 | Dashboard 面板渲染 | `bash scripts/integration-test-phase7-soak.sh` | PT P3 full |
-| SOAK-TC-05 | 告警规则触发       | `bash scripts/integration-test-phase7-soak.sh` | PT P3 full |
+| SOAK-TC-04 | Dashboard 面板渲染 | `bash scripts/phases/phase7-soak.sh` | PT P3 full |
+| SOAK-TC-05 | 告警规则触发       | `bash scripts/phases/phase7-soak.sh` | PT P3 full |
