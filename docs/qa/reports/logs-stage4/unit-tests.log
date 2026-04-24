@@ -1,0 +1,8 @@
+npm error Missing script: "test:unit"
+npm error
+npm error Did you mean this?
+npm error   npm run test:api # run the "test:api" package script
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2026-04-24T06_16_53_197Z-debug-0.log

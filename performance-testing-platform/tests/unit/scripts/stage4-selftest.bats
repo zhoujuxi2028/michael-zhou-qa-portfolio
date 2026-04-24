@@ -37,7 +37,10 @@ teardown() {
 
 @test "前置: 当前在有效工作分支上" {
   cd "$PROJECT_ROOT"
-  branch=$(git branch --show-current)
+  branch=$(git branch --show-current 2>/dev/null)
+  if [ -z "$branch" ]; then
+    branch="${GITHUB_HEAD_REF:-}"
+  fi
   [ -n "$branch" ]
 }
 
@@ -179,13 +182,17 @@ teardown() {
 
 @test "9.1: 当前分支应为有效工作分支" {
   cd "$PROJECT_ROOT"
-  branch=$(git branch --show-current)
+  branch=$(git branch --show-current 2>/dev/null)
+  if [ -z "$branch" ]; then
+    branch="${GITHUB_HEAD_REF:-}"
+  fi
   echo "$branch" | grep -qE "^(main|feature/|fix/|copilot/|hotfix/)"
 }
 
 @test "9.2: 最近 20 条提交应包含 conventional commits" {
   cd "$PROJECT_ROOT"
-  git log --oneline -20 | grep -qE "(feat|fix|docs|test|refactor|perf|chore)[:(]"
+  # 过滤掉 CI checkout 产生的 Merge 提交
+  git log --oneline -20 | grep -v " Merge " | grep -qE "(feat|fix|docs|test|refactor|perf|chore)[:(]"
 }
 
 # ============================================================
@@ -233,11 +240,11 @@ teardown() {
 
 @test "集成: 脚本应成功运行（可能包含 SKIP）" {
   cd "$PROJECT_ROOT"
-  bash "$SCRIPT" > /dev/null 2>&1 || [ $? -eq 0 ]
+  bash "$SCRIPT" > /dev/null 2>&1
 }
 
 @test "集成: 脚本应输出统计信息" {
   cd "$PROJECT_ROOT"
-  output=$(bash "$SCRIPT" 2>&1)
+  run bash "$SCRIPT"
   echo "$output" | grep -q "PASS:\|FAIL:\|SKIP:"
 }

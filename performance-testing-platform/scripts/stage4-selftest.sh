@@ -56,7 +56,20 @@ cleanup_api() {
 }
 
 get_current_branch() {
-  git branch --show-current
+  local branch
+  branch=$(git branch --show-current 2>/dev/null)
+  if [ -z "$branch" ]; then
+    # CI 环境下 (detached HEAD): 优先使用 PR head 分支名
+    branch="${GITHUB_HEAD_REF:-}"
+    # GITHUB_REF_NAME 在 PR 事件下为 "N/merge"，过滤掉
+    if [ -z "$branch" ]; then
+      local ref_name="${GITHUB_REF_NAME:-}"
+      if ! echo "$ref_name" | grep -qE '^[0-9]+/merge$'; then
+        branch="$ref_name"
+      fi
+    fi
+  fi
+  echo "$branch"
 }
 
 is_valid_work_branch() {
@@ -72,7 +85,8 @@ is_valid_work_branch() {
 }
 
 has_recent_conventional_commit() {
-  git log --format=%s -20 | grep -Eq '^(feat|fix|docs|test|refactor|perf|chore)(\([^)]+\))?: '
+  # 过滤掉 Merge 提交（CI checkout 会在顶部产生 merge commit）
+  git log --format=%s -20 | grep -v "^Merge " | grep -Eq '^(feat|fix|docs|test|refactor|perf|chore)(\([^)]+\))?: '
 }
 
 # 改进: 系统负载检测（macOS/Linux 兼容）
