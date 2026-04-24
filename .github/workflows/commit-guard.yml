@@ -1,0 +1,155 @@
+name: Commit Guard
+
+# CI 兜底: 即使 hook 被绕过（--no-verify / fresh clone 未 prepare husky），
+# 此 workflow 仍会在 PR 上强制校验 Conventional Commits + 扫描 secret 泄漏。
+# 对应 Gap 分析: G-13 (commit 格式 CI 兜底), G-14 (secret scan CI 兜底)
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: commit-guard-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  conventional-commits:
+    name: Conventional Commits (subject rules)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR range
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Validate all PR commit subjects
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+          COMMITS=$(git rev-list --no-merges "$BASE..$HEAD")
+          if [ -z "$COMMITS" ]; then
+            echo "No non-merge commits in range."
+            exit 0
+          fi
+
+          PATTERN='^(feat|fix|docs|style|refactor|test|chore|ci|perf|build|revert)(\([a-z0-9._/-]+\))?!?: .+'
+          FAILED=0
+          for SHA in $COMMITS; do
+            SUBJECT=$(git log -1 --format=%s "$SHA")
+            LEN=${#SUBJECT}
+            # 规则 1: 格式
+            if ! printf '%s' "$SUBJECT" | grep -qE "$PATTERN"; then
+              echo "::error::Commit $SHA subject 不符合 Conventional Commits: $SUBJECT"
+              FAILED=1
+              continue
+            fi
+            # 规则 2: 长度 ≤ 72
+            if [ "$LEN" -gt 72 ]; then
+              echo "::error::Commit $SHA subject 长度 $LEN > 72: $SUBJECT"
+              FAILED=1
+            fi
+            # 规则 3: 末尾不带句号
+            case "$SUBJECT" in
+              *.)  echo "::error::Commit $SHA subject 末尾带英文句号: $SUBJECT"; FAILED=1 ;;
+              *。) echo "::error::Commit $SHA subject 末尾带中文句号: $SUBJECT"; FAILED=1 ;;
+            esac
+          done
+
+          if [ "$FAILED" -eq 1 ]; then
+            echo ""
+            echo "规范: <type>(<scope>)?!?: <subject>  (subject ≤ 72, 无末尾句号)"
+            echo "types: feat|fix|docs|style|refactor|test|chore|ci|perf|build|revert"
+            exit 1
+          fi
+          echo "All commit subjects pass."
+
+  secret-scan:
+    name: Secret Scan (PR diff)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR range
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Scan staged additions for secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+
+          # 采集 PR 内的新增行（与 pre-commit hook 使用同一组 pattern）
+          ADDED=$(git diff --no-color --unified=0 \
+              ':(exclude)**/package-lock.json' \
+              ':(exclude)**/*.min.js' \
+              ':(exclude)**/*.map' \
+              "$BASE" "$HEAD" \
+              | awk '/^\+\+\+ /{ next } /^\+/ { sub(/^\+/, ""); print }' || true)
+
+          if [ -z "$ADDED" ]; then
+            echo "No additions to scan."
+            exit 0
+          fi
+
+          cat > /tmp/secret-patterns.txt <<'EOF'
+          (AKIA|ASIA)[0-9A-Z]{16}
+          aws_secret_access_key[[:space:]]*=[[:space:]]*["']?[A-Za-z0-9/+=]{40}
+          gh[poursa]_[A-Za-z0-9]{30,255}
+          -----BEGIN [A-Z ]*PRIVATE KEY-----
+          xox[baprsoe]-[A-Za-z0-9-]{10,}
+          AIza[0-9A-Za-z_-]{35}
+          eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}
+          (SECRET|TOKEN|PASSWORD|API_KEY|PRIVATE_KEY)[[:space:]]*[:=][[:space:]]*["'][^"'$\{}<>]{12,}["']
+          EOF
+          # Strip the YAML indent from pattern file
+          sed -i 's/^          //' /tmp/secret-patterns.txt
+
+          HITS=$(printf '%s\n' "$ADDED" | grep -nEf /tmp/secret-patterns.txt || true)
+
+          # Allowlist
+          if [ -n "$HITS" ] && [ -f ".secretsallow" ]; then
+            TMP=$(mktemp)
+            grep -vE '^[[:space:]]*(#|$)' ".secretsallow" > "$TMP" || true
+            if [ -s "$TMP" ]; then
+              HITS=$(printf '%s\n' "$HITS" | grep -vEf "$TMP" || true)
+            fi
+            rm -f "$TMP"
+          fi
+
+          if [ -n "$HITS" ]; then
+            echo "::error::疑似密钥/凭据泄漏："
+            printf '%s\n' "$HITS" | head -20 | while IFS= read -r line; do
+              echo "::error::  $line"
+            done
+            echo ""
+            echo "处理: 从历史中移除, 轮换凭据, 或添加误报正则到 .secretsallow"
+            exit 1
+          fi
+          echo "Secret scan passed."
+
+  hook-syntax:
+    name: Husky Hooks Syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: sh -n on all hooks
+        shell: bash
+        run: |
+          set -euo pipefail
+          for HOOK in .husky/pre-commit .husky/pre-push .husky/commit-msg; do
+            if [ -f "$HOOK" ]; then
+              echo "Checking $HOOK..."
+              sh -n "$HOOK"
+            fi
+          done
+          echo "All husky hooks pass sh -n"
