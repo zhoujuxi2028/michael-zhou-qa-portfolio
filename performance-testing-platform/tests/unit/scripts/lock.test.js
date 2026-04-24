@@ -10,7 +10,7 @@ const path = require('path');
 
 describe('Lock Mechanism (scripts/lock.sh)', () => {
   const LOCK_DIR = '/tmp/integration-test.lock.test';
-  const LOCK_SCRIPT = path.join(__dirname, '../../..', 'scripts/lock.sh');
+  const LOCK_SCRIPT = path.join(__dirname, '../../..', 'scripts/lib/lock.sh');
 
   beforeEach(() => {
     // Clean up any leftover lock

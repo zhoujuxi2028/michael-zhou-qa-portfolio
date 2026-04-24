@@ -27,24 +27,24 @@ lint
 
 **设计决策：**
 
-| 项目 | 决策 |
-|------|------|
-| 主需求来源 | `docs/project-management/requirements.md` + Issue `#88` |
-| CI 失败策略 | 禁止 `|| true` / `continue-on-error`，低于阈值直接 fail |
-| 覆盖率工具 | 复用 Jest coverage / Istanbul，不另引入平行门禁 |
-| Phase 7 状态表达 | 区分“当前已落地 workflow”与“Phase 7 目标设计” |
+| 项目             | 决策                                                    |
+| ---------------- | ------------------------------------------------------- | --- | -------------------------------------------- |
+| 主需求来源       | `docs/project-management/requirements.md` + Issue `#88` |
+| CI 失败策略      | 禁止 `                                                  |     | true`/`continue-on-error`，低于阈值直接 fail |
+| 覆盖率工具       | 复用 Jest coverage / Istanbul，不另引入平行门禁         |
+| Phase 7 状态表达 | 区分“当前已落地 workflow”与“Phase 7 目标设计”           |
 
 ### 1.2 文件结构
 
-| 文件 | 类型 | 作用 |
-|------|------|------|
-| `.github/workflows/performance-ci.yml` | workflow | lint / unit / smoke / jmeter-smoke 主门禁 |
-| `docs/project-management/requirements.md` | requirements index | Phase 1~7 主需求总览 |
-| `docs/project-management/requirements/phase7-cicd.md` | detailed requirements | Phase 7 详细需求与编号解释 |
-| `docs/qa/test-plan.md` | test strategy | 测试类型、门禁、命令、Phase 7 执行口径 |
-| `docs/design/phase7/04-ci-flow-design.md` | design doc | CI / baseline / coverage / trend 设计说明 |
-| `docs/qa/rtm.md` | RTM | 需求 ↔ 实现 ↔ 测试映射 |
-| `docs/qa/test-cases/index.md` | case index | per-phase 用例总表与变更记录 |
+| 文件                                                  | 类型                  | 作用                                      |
+| ----------------------------------------------------- | --------------------- | ----------------------------------------- |
+| `.github/workflows/performance-ci.yml`                | workflow              | lint / unit / smoke / jmeter-smoke 主门禁 |
+| `docs/project-management/requirements.md`             | requirements index    | Phase 1~7 主需求总览                      |
+| `docs/project-management/requirements/phase7-cicd.md` | detailed requirements | Phase 7 详细需求与编号解释                |
+| `docs/qa/test-plan.md`                                | test strategy         | 测试类型、门禁、命令、Phase 7 执行口径    |
+| `docs/design/phase7/04-ci-flow-design.md`             | design doc            | CI / baseline / coverage / trend 设计说明 |
+| `docs/qa/rtm.md`                                      | RTM                   | 需求 ↔ 实现 ↔ 测试映射                    |
+| `docs/qa/test-cases/index.md`                         | case index            | per-phase 用例总表与变更记录              |
 
 ---
 
@@ -53,6 +53,7 @@ lint
 ### Task 1: Baseline / Trend 设计落地
 
 **Files:**
+
 - Modify: `docs/design/phase7/04-ci-flow-design.md`
 - Reference: `docs/project-management/requirements/phase7-cicd.md`
 - Reference: `.github/workflows/performance-ci.yml`
@@ -66,6 +67,7 @@ lint
 ### Task 2: Coverage gate 收敛
 
 **Files:**
+
 - Modify: `docs/design/phase7/04-ci-flow-design.md`
 - Modify: `docs/qa/test-plan.md`
 - Reference: `.github/workflows/performance-ci.yml`
@@ -79,6 +81,7 @@ lint
 ### Task 3: 正式需求编号与主文档同步
 
 **Files:**
+
 - Modify: `docs/project-management/requirements.md`
 - Reference: `docs/project-management/requirements/phase7-cicd.md`
 
@@ -91,6 +94,7 @@ lint
 ### Task 4: 测试计划与追溯矩阵同步
 
 **Files:**
+
 - Modify: `docs/qa/test-plan.md`
 - Modify: `docs/qa/rtm.md`
 - Modify: `docs/qa/test-cases/index.md`
@@ -105,13 +109,13 @@ lint
 
 ## 3. 验收标准
 
-| 项目 | 验收标准 |
-|------|----------|
-| 正式计划 | `docs/project-management/implementation-plan-phase7.md` 存在并可独立指导开发 |
-| 正式需求编号 | `requirements.md` 中可直接检出所有 `PERF-*` Phase 7 编号 |
-| 测试计划 | `test-plan.md` 不再残留 `161` / `95/95` / `26 Pass` / `23 cases` 旧口径 |
-| CI 设计 | `04-ci-flow-design.md` 不再出现 `|| true` 或覆盖率“warning 不阻塞” |
-| 追溯一致性 | `requirements.md`、`rtm.md`、`test-cases/index.md` 对 Phase 7 主来源统一为 `#88` |
+| 项目         | 验收标准                                                                         |
+| ------------ | -------------------------------------------------------------------------------- | --- | ------------------------------ |
+| 正式计划     | `docs/project-management/implementation-plan-phase7.md` 存在并可独立指导开发     |
+| 正式需求编号 | `requirements.md` 中可直接检出所有 `PERF-*` Phase 7 编号                         |
+| 测试计划     | `test-plan.md` 不再残留 `161` / `95/95` / `26 Pass` / `23 cases` 旧口径          |
+| CI 设计      | `04-ci-flow-design.md` 不再出现 `                                                |     | true` 或覆盖率“warning 不阻塞” |
+| 追溯一致性   | `requirements.md`、`rtm.md`、`test-cases/index.md` 对 Phase 7 主来源统一为 `#88` |
 
 ## 4. 验证命令
 
@@ -134,14 +138,14 @@ rg -n "#116|#88" \
 
 ## 5. Plan Review 修复记录
 
-| ID | 级别 | 问题 | 修复 |
-|----|------|------|------|
-| C-01 | CRITICAL | Phase 7 缺少正式 `implementation-plan-phase7.md` | 新增本文件，作为设计阶段正式实施计划 |
-| C-02 | CRITICAL | `requirements.md` 未正式承载 Phase 7 `PERF-*` 编号 | 在主需求文档增加 Phase 7 摘要与编号口径 |
-| C-03 | CRITICAL | `test-plan.md` 统计与 PASS 标准停留在旧阶段 | 同步到当前 Phase 1~7 索引和现有 workflow 事实 |
-| C-04 | CRITICAL | `04-ci-flow-design.md` 存在 `|| true` 与非阻塞 coverage 设计 | 改为 fail-fast 设计，与项目 CI 规则一致 |
-| W-01 | WARNING | RTM 对 Phase 7 的标题引用为 `#116`，与主需求冲突 | 统一为 `#88` 主口径；历史 issue 只作补充说明 |
-| W-02 | WARNING | `test-cases/index.md` 的 Phase 7 变更记录与当前 33 条用例不一致 | 做最小补正，不扩展为全量历史重算 |
+| ID   | 级别     | 问题                                                            | 修复                                          |
+| ---- | -------- | --------------------------------------------------------------- | --------------------------------------------- | ---------------------------- | --------------------------------------- |
+| C-01 | CRITICAL | Phase 7 缺少正式 `implementation-plan-phase7.md`                | 新增本文件，作为设计阶段正式实施计划          |
+| C-02 | CRITICAL | `requirements.md` 未正式承载 Phase 7 `PERF-*` 编号              | 在主需求文档增加 Phase 7 摘要与编号口径       |
+| C-03 | CRITICAL | `test-plan.md` 统计与 PASS 标准停留在旧阶段                     | 同步到当前 Phase 1~7 索引和现有 workflow 事实 |
+| C-04 | CRITICAL | `04-ci-flow-design.md` 存在 `                                   |                                               | true` 与非阻塞 coverage 设计 | 改为 fail-fast 设计，与项目 CI 规则一致 |
+| W-01 | WARNING  | RTM 对 Phase 7 的标题引用为 `#116`，与主需求冲突                | 统一为 `#88` 主口径；历史 issue 只作补充说明  |
+| W-02 | WARNING  | `test-cases/index.md` 的 Phase 7 变更记录与当前 33 条用例不一致 | 做最小补正，不扩展为全量历史重算              |
 
 ## 6. 备注
 

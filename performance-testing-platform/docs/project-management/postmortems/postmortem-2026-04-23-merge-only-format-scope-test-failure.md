@@ -21,24 +21,24 @@
 
 ## 2. 时间线
 
-| 时间 (UTC) | 事件 |
-|-----------|------|
+| 时间 (UTC)       | 事件                                                                        |
+| ---------------- | --------------------------------------------------------------------------- |
 | 2026-04-23 03:55 | 提交 `fix: align local prettier scope with ci`，新增 `format-scope.test.js` |
-| 2026-04-23 04:12 | PR #184 触发 `Performance Testing CI` |
-| 2026-04-23 04:13 | `Performance Testing / Code Quality` 通过 |
-| 2026-04-23 04:13 | `Performance Testing / Unit Tests` 在 `npm run test:coverage` 中失败 |
-| 2026-04-23 04:28 | 用户提供失败 job 链接并要求分析 |
-| 2026-04-23 | 定位为 merge ref workflow 与测试假设不一致，随后完成修复与回归验证 |
+| 2026-04-23 04:12 | PR #184 触发 `Performance Testing CI`                                       |
+| 2026-04-23 04:13 | `Performance Testing / Code Quality` 通过                                   |
+| 2026-04-23 04:13 | `Performance Testing / Unit Tests` 在 `npm run test:coverage` 中失败        |
+| 2026-04-23 04:28 | 用户提供失败 job 链接并要求分析                                             |
+| 2026-04-23       | 定位为 merge ref workflow 与测试假设不一致，随后完成修复与回归验证          |
 
 ---
 
 ## 3. 影响
 
-| 维度 | 影响 |
-|------|------|
-| CI | 单测 job 红灯，后续 smoke / JMeter / baseline / trend job 全部跳过 |
-| 开发效率 | 本地无法直接复现 merge ref 行为，增加排查成本 |
-| 风险类型 | 流程 / 测试契约缺陷，不是产品功能缺陷 |
+| 维度     | 影响                                                               |
+| -------- | ------------------------------------------------------------------ |
+| CI       | 单测 job 红灯，后续 smoke / JMeter / baseline / trend job 全部跳过 |
+| 开发效率 | 本地无法直接复现 merge ref 行为，增加排查成本                      |
+| 风险类型 | 流程 / 测试契约缺陷，不是产品功能缺陷                              |
 
 ---
 
@@ -60,11 +60,11 @@
 
 ## 6. 行动项
 
-| Action | 类型 | 状态 |
-|--------|------|------|
-| 将 `performance-ci.yml` 统一为 `npm run lint` / `npm run format:check` / `npm run test:coverage` | 修复 | ✅ |
-| 重写 `format-scope.test.js`，改为校验稳定的 npm script 契约 | 修复 | ✅ |
-| 补充本次 RCA / postmortem 文档 | 文档 | ✅ |
+| Action                                                                                           | 类型 | 状态 |
+| ------------------------------------------------------------------------------------------------ | ---- | ---- |
+| 将 `performance-ci.yml` 统一为 `npm run lint` / `npm run format:check` / `npm run test:coverage` | 修复 | ✅   |
+| 重写 `format-scope.test.js`，改为校验稳定的 npm script 契约                                      | 修复 | ✅   |
+| 补充本次 RCA / postmortem 文档                                                                   | 文档 | ✅   |
 
 ---
 

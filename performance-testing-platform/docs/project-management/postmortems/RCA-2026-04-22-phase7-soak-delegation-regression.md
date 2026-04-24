@@ -24,24 +24,24 @@ Expected substring: "bash scripts/integration-test-phase7-soak.sh"
 
 ## 2. 时间线
 
-| 时间 | 事件 |
-|------|------|
-| 2026-04-22 00:52 UTC | PR #171 触发 run `24754299934`，`Unit Tests` job 失败 |
-| 2026-04-22 00:52 UTC | 日志确认失败点：`integration-test-phase7-soak.test.js` 最后一个断言失败 |
-| 2026-04-22 之后 | PR #172 补充 `--phase soak` → `bash scripts/integration-test-phase7-soak.sh` 委托逻辑 |
-| 本次处理 | 本地执行 `npx eslint src/ tests/unit/ --ext .js` + `npx jest tests/unit/ --coverage --coverageReporters=text --coverageReporters=lcov`，270/270 tests 通过 |
+| 时间                 | 事件                                                                                                                                                       |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-04-22 00:52 UTC | PR #171 触发 run `24754299934`，`Unit Tests` job 失败                                                                                                      |
+| 2026-04-22 00:52 UTC | 日志确认失败点：`integration-test-phase7-soak.test.js` 最后一个断言失败                                                                                    |
+| 2026-04-22 之后      | PR #172 补充 `--phase soak` → `bash scripts/integration-test-phase7-soak.sh` 委托逻辑                                                                      |
+| 本次处理             | 本地执行 `npx eslint src/ tests/unit/ --ext .js` + `npx jest tests/unit/ --coverage --coverageReporters=text --coverageReporters=lcov`，270/270 tests 通过 |
 
 ---
 
 ## 3. 根本原因分析（5 Why）
 
-| 层级 | 问题 | 原因 |
-|------|------|------|
-| Why 1 | 为什么单测失败？ | 断言要求 `integration-test.sh` 包含 Phase 7 soak 专用脚本委托语句，但实际文件不存在 |
-| Why 2 | 为什么不存在委托语句？ | 主入口脚本仍使用旧的 `setup_phase → execute_phase → report_phase` 通用流 |
-| Why 3 | 为什么旧流程没同步更新？ | Phase 7 soak 能力拆分为独立脚本后，主入口适配遗漏 |
-| Why 4 | 为什么遗漏直到 CI 才暴露？ | 本次提交只改了格式，重新触发 CI，暴露了之前已存在的逻辑缺口 |
-| Why 5 | 为什么能被快速定位？ | 已有针对主入口委托行为的单元测试，直接把失败收敛到具体脚本和具体字符串 |
+| 层级  | 问题                       | 原因                                                                                |
+| ----- | -------------------------- | ----------------------------------------------------------------------------------- |
+| Why 1 | 为什么单测失败？           | 断言要求 `integration-test.sh` 包含 Phase 7 soak 专用脚本委托语句，但实际文件不存在 |
+| Why 2 | 为什么不存在委托语句？     | 主入口脚本仍使用旧的 `setup_phase → execute_phase → report_phase` 通用流            |
+| Why 3 | 为什么旧流程没同步更新？   | Phase 7 soak 能力拆分为独立脚本后，主入口适配遗漏                                   |
+| Why 4 | 为什么遗漏直到 CI 才暴露？ | 本次提交只改了格式，重新触发 CI，暴露了之前已存在的逻辑缺口                         |
+| Why 5 | 为什么能被快速定位？       | 已有针对主入口委托行为的单元测试，直接把失败收敛到具体脚本和具体字符串              |
 
 **根本原因**: `scripts/integration-test.sh` 未跟随 Phase 7 soak 独立脚本设计同步更新，缺少 `--phase soak` 专用委托分支。
 
@@ -86,11 +86,11 @@ npx jest tests/unit/ --coverage --coverageReporters=text --coverageReporters=lco
 
 ## 6. 影响评估
 
-| 维度 | 影响 |
-|------|------|
-| CI | `Unit Tests` job 失败，后续 smoke / baseline / trend job 全部 skipped |
-| 功能 | Phase 7 soak 专项入口不可达，集成验证路径不完整 |
-| 范围 | 仅影响 performance-testing-platform 的集成测试入口脚本 |
+| 维度 | 影响                                                                  |
+| ---- | --------------------------------------------------------------------- |
+| CI   | `Unit Tests` job 失败，后续 smoke / baseline / trend job 全部 skipped |
+| 功能 | Phase 7 soak 专项入口不可达，集成验证路径不完整                       |
+| 范围 | 仅影响 performance-testing-platform 的集成测试入口脚本                |
 
 ---
 

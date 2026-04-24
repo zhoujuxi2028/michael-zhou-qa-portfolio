@@ -4,11 +4,11 @@
 
 **触发点**: k6 smoke test gate 完成后
 
-| Job | 输入 | 输出 | 保留 |
-|-----|------|------|------|
-| `smoke-gate` (existing) | lint → unit → k6 smoke | `reports/baseline.json` + k6 summary | CI artifact (7 days) |
-| `baseline-compare` (new) | 当前 + 上次 artifact | `reports/baseline-diff.json` | 显示在 PR comment |
-| `trend-collect` (new) | baseline.json | append 到 `reports/trend.json` | 永久保留 |
+| Job                      | 输入                   | 输出                                 | 保留                 |
+| ------------------------ | ---------------------- | ------------------------------------ | -------------------- |
+| `smoke-gate` (existing)  | lint → unit → k6 smoke | `reports/baseline.json` + k6 summary | CI artifact (7 days) |
+| `baseline-compare` (new) | 当前 + 上次 artifact   | `reports/baseline-diff.json`         | 显示在 PR comment    |
+| `trend-collect` (new)    | baseline.json          | append 到 `reports/trend.json`       | 永久保留             |
 
 **baseline.json 时机**: smoke gate 后，立即导出 (已在 Phase 7 k6 改动中集成)
 
@@ -19,6 +19,7 @@
 **触发条件**: 存在上次 CI artifact 时，创建对比
 
 **退化判定**:
+
 ```
 prev_p95 = 上次 p95_ms
 curr_p95 = 当前 p95_ms
@@ -32,6 +33,7 @@ regression = (curr_p95 - prev_p95) / prev_p95
 ```
 
 **对标字段**:
+
 - `p95_ms` (主要)
 - `error_rate` (辅助，>2x warning)
 - `throughput_rps` (可选)
@@ -60,12 +62,12 @@ regression = (curr_p95 - prev_p95) / prev_p95
 
 **工具**: Jest coverage / Istanbul
 
-| 指标 | 阈值 | 不达标 |
-|------|------|--------|
+| 指标       | 阈值  | 不达标  |
+| ---------- | ----- | ------- |
 | statements | ≥ 80% | ❌ FAIL |
-| branches | ≥ 70% | ❌ FAIL |
-| functions | ≥ 80% | ❌ FAIL |
-| lines | ≥ 80% | ❌ FAIL |
+| branches   | ≥ 70% | ❌ FAIL |
+| functions  | ≥ 80% | ❌ FAIL |
+| lines      | ≥ 80% | ❌ FAIL |
 
 **触发**: 单元测试完成后（`npm test` 阶段）
 
@@ -92,11 +94,11 @@ jobs:
     - jmeter -n -t tests/jmeter/smoke.jmx ...
     - check error rate + p95 latency
 
-  baseline-compare:  # 独立 job，smoke-test 后执行
+  baseline-compare: # 独立 job，smoke-test 后执行
     - download previous baseline artifact
     - compare baseline (regression detection)
 
-  trend-collect:  # 独立 job，smoke-test 后执行
+  trend-collect: # 独立 job，smoke-test 后执行
     - append to trend.json (保留最近 90 天)
 ```
 

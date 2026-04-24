@@ -12,15 +12,15 @@
 
 ## 文件映射
 
-| 操作 | 路径 |
-|------|------|
-| 新建 | `docs/qa/stage4-gate-template.md` |
-| 新建 | `docs/qa/stage4-defect-waiver-register.md` |
-| 新建 | `docs/qa/reports/stage4-execution-2026-04-24.md` |
-| 迁移 | `docs/qa/stage4-validation.md` → `docs/qa/reports/phase6-stage4-verification-report.md` |
-| 删除 | `docs/qa/phase7-stage4-validation.md` |
-| 更新 | `docs/qa/test-plan.md` |
-| 扫描修复 | 全仓库旧路径引用 |
+| 操作     | 路径                                                                                    |
+| -------- | --------------------------------------------------------------------------------------- |
+| 新建     | `docs/qa/stage4-gate-template.md`                                                       |
+| 新建     | `docs/qa/stage4-defect-waiver-register.md`                                              |
+| 新建     | `docs/qa/reports/stage4-execution-2026-04-24.md`                                        |
+| 迁移     | `docs/qa/stage4-validation.md` → `docs/qa/reports/phase6-stage4-verification-report.md` |
+| 删除     | `docs/qa/phase7-stage4-validation.md`                                                   |
+| 更新     | `docs/qa/test-plan.md`                                                                  |
+| 扫描修复 | 全仓库旧路径引用                                                                        |
 
 ---
 
@@ -33,6 +33,7 @@
 ### Task 2: 创建 stage4-gate-template.md
 
 **Files:**
+
 - Create: `performance-testing-platform/docs/qa/stage4-gate-template.md`
 
 - [ ] 创建文件，内容见 plan 附录 A
@@ -42,6 +43,7 @@
 ### Task 3: 创建 stage4-defect-waiver-register.md
 
 **Files:**
+
 - Create: `performance-testing-platform/docs/qa/stage4-defect-waiver-register.md`
 
 - [ ] 创建文件，包含 #192~#195 当前状态
@@ -51,6 +53,7 @@
 ### Task 4: 创建 reports/stage4-execution-2026-04-24.md
 
 **Files:**
+
 - Create: `performance-testing-platform/docs/qa/reports/stage4-execution-2026-04-24.md`
 
 - [ ] 创建文件，引用 gate-template，填写 Phase 7 当前执行状态

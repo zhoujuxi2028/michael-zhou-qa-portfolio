@@ -24,12 +24,12 @@
 
 ## 4 张表简介
 
-| 表 | 用途 | 行数（初始） |
-|----|------|-----------|
-| products | 商品列表（CRUD）| 5 种，库存 100,000 |
-| orders | 订单下单（库存扣减、事务）| 动态增长 |
-| users | JWT 认证（register/login） | Phase 3 新增 |
-| token_blacklist | logout 后黑名单 | Phase 3 新增 |
+| 表              | 用途                       | 行数（初始）       |
+| --------------- | -------------------------- | ------------------ |
+| products        | 商品列表（CRUD）           | 5 种，库存 100,000 |
+| orders          | 订单下单（库存扣减、事务） | 动态增长           |
+| users           | JWT 认证（register/login） | Phase 3 新增       |
+| token_blacklist | logout 后黑名单            | Phase 3 新增       |
 
 ## 初始化
 

@@ -1,11 +1,11 @@
 /**
  * Compare current baseline with previous baseline
  * Reads reports/baseline.json and downloads previous from artifacts
- * Usage: node scripts/baseline-compare.js [--test-mode]
+ * Usage: node scripts/analysis/baseline-compare.js [--test-mode]
  *   --test-mode: use built-in fixture data for integration testing
  */
 const fs = require('fs');
-const { compareWithBaseline, loadBaseline } = require('../src/utils/baseline');
+const { compareWithBaseline, loadBaseline } = require('../../src/utils/baseline');
 
 const isTestMode = process.argv.includes('--test-mode');
 const baselineFile = 'reports/baseline.json';
