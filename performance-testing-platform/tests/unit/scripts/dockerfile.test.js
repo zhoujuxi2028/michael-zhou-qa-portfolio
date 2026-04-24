@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const DOCKERFILE = path.join(__dirname, '../../../Dockerfile');
-const PHASE7_SCRIPT = path.join(__dirname, '../../../scripts/integration-test-phase7-soak.sh');
+const PHASE7_SCRIPT = path.join(__dirname, '../../../scripts/phases/phase7-soak.sh');
 
 describe('Docker-based soak integration assets', () => {
   test('Dockerfile installs dependencies inside container instead of copying host node_modules', () => {

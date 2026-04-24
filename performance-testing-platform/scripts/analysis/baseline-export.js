@@ -1,10 +1,10 @@
 /**
  * Export k6 smoke test results to baseline.json
  * Reads k6 summary.json and extracts p95, error_rate, throughput
- * Usage: node scripts/baseline-export.js [summary.json] [output.json]
+ * Usage: node scripts/analysis/baseline-export.js [summary.json] [output.json]
  */
 const fs = require('fs');
-const { saveBaseline } = require('../src/utils/baseline');
+const { saveBaseline } = require('../../src/utils/baseline');
 
 const summaryFile = process.argv[2] || 'summary.json';
 const outputFile = process.argv[3] || 'reports/baseline.json';

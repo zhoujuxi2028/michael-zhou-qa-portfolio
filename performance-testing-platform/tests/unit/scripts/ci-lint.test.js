@@ -13,7 +13,7 @@
 
 'use strict';
 
-const { lintJobSteps } = require('../../../scripts/ci-lint');
+const { lintJobSteps } = require('../../../scripts/analysis/ci-lint');
 
 // ─── 测试辅助：构建模拟 job steps ─────────────────────────────────────────────
 

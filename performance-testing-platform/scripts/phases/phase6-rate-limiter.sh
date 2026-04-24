@@ -1,12 +1,13 @@
 #!/bin/bash
 # Phase 6: Rate Limiter Integration Tests (RL-INT-01~03)
 # Tests rate limiter middleware: normal requests, burst rejection (429), window recovery
-# Usage: bash scripts/integration-test-phase6.sh
+# Usage: bash scripts/phases/phase6-rate-limiter.sh
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+SCRIPTS_DIR="$(dirname "$SCRIPT_DIR")"
+PROJECT_DIR="$(dirname "$SCRIPTS_DIR")"
 PORT="${PORT:-3000}"
 
 # Test configuration (matching test-plan.md)
@@ -32,7 +33,7 @@ log_result() {
 cleanup() {
   echo ""
   echo "Cleaning up..."
-  bash "$SCRIPT_DIR/server.sh" stop 2>/dev/null || true
+  bash "$SCRIPTS_DIR/server.sh" stop 2>/dev/null || true
 }
 trap cleanup EXIT
 
@@ -174,7 +175,7 @@ cat > "$FIXTURE_FILE_01" << 'FIXTURE_DATA'
 FIXTURE_DATA
 
 # Run generate-summary.sh (output goes to $FIXTURE_DIR/k6-summary.md)
-bash "$SCRIPT_DIR/generate-summary.sh" "$FIXTURE_FILE_01" 2>/dev/null
+bash "$SCRIPTS_DIR/generate-summary.sh" "$FIXTURE_FILE_01" 2>/dev/null
 
 # Verify exit code is 0
 EXIT_CODE=$?
@@ -199,8 +200,8 @@ echo "Test GEN-INT-02: generate-summary.sh with invalid file path..."
 INVALID_FILE="/tmp/nonexistent-$$-file.jsonl"
 
 # Capture output and exit code properly (use subshell to avoid set -e interference)
-OUTPUT=$( (bash "$SCRIPT_DIR/generate-summary.sh" "$INVALID_FILE" 2>&1) || true )
-bash "$SCRIPT_DIR/generate-summary.sh" "$INVALID_FILE" >/dev/null 2>&1 && EXIT_CODE=0 || EXIT_CODE=$?
+OUTPUT=$( (bash "$SCRIPTS_DIR/generate-summary.sh" "$INVALID_FILE" 2>&1) || true )
+bash "$SCRIPTS_DIR/generate-summary.sh" "$INVALID_FILE" >/dev/null 2>&1 && EXIT_CODE=0 || EXIT_CODE=$?
 
 if [ "$EXIT_CODE" -eq 1 ]; then
   # Verify error output contains expected message
@@ -238,7 +239,7 @@ cat > "$FIXTURE_FILE_03" << 'FIXTURE_DATA_03'
 FIXTURE_DATA_03
 
 # Run generate-summary with error rate fixture
-bash "$SCRIPT_DIR/generate-summary.sh" "$FIXTURE_FILE_03" 2>/dev/null
+bash "$SCRIPTS_DIR/generate-summary.sh" "$FIXTURE_FILE_03" 2>/dev/null
 EXIT_CODE=$?
 
 SUMMARY_FILE_03="$FIXTURE_DIR/k6-summary.md"

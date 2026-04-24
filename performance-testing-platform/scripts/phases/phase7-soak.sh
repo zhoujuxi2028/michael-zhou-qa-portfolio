@@ -1,7 +1,7 @@
 #!/bin/bash
 # Phase 7: Grafana Real-time Monitoring Integration Tests (K6-SOAK-INT-01~02)
 # Tests k6 soak with InfluxDB/Grafana real-time data flow and alert triggers
-# Usage: bash scripts/integration-test-phase7-soak.sh
+# Usage: bash scripts/phases/phase7-soak.sh
 #
 # Requirements:
 #   - Docker & Docker Compose (or OrbStack)
@@ -15,7 +15,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+SCRIPTS_DIR="$(dirname "$SCRIPT_DIR")"
+PROJECT_DIR="$(dirname "$SCRIPTS_DIR")"
 PORT="${PORT:-3000}"
 GRAFANA_PORT="${GRAFANA_PORT:-3010}"
 INFLUXDB_PORT="${INFLUXDB_PORT:-8086}"
@@ -107,7 +108,7 @@ cleanup() {
   cd "$PROJECT_DIR"
   docker compose down 2>/dev/null || true
   # Stop API server if running standalone
-  bash "$SCRIPT_DIR/server.sh" stop 2>/dev/null || true
+  bash "$SCRIPTS_DIR/server.sh" stop 2>/dev/null || true
 }
 trap cleanup EXIT
 

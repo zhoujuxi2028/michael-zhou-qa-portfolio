@@ -11,9 +11,9 @@
  *   PR #161 修复了 k6 job，但 baseline-compare / trend-collect job 同样需要防守。
  *
  * 使用方式:
- *   node scripts/ci-lint.js                    # 检查所有 workflow
- *   node scripts/ci-lint.js path/to/wf.yml     # 检查指定文件
- *   const { lintJobSteps } = require('./ci-lint');  # 单元测试
+ *   node scripts/analysis/ci-lint.js                    # 检查所有 workflow
+ *   node scripts/analysis/ci-lint.js path/to/wf.yml     # 检查指定文件
+ *   const { lintJobSteps } = require('./ci-lint');  # unit tests
  *
  * 退出码:
  *   0 — 全部通过
@@ -266,7 +266,7 @@ function lintWorkflowFile(filePath) {
 // ─── CLI 入口 ─────────────────────────────────────────────────────────────────
 
 if (require.main === module) {
-  const workflowsDir = path.resolve(__dirname, '../.github/workflows');
+  const workflowsDir = path.resolve(__dirname, '../../.github/workflows');
   const args = process.argv.slice(2);
 
   let filesToCheck;
