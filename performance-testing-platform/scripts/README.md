@@ -57,13 +57,13 @@ scripts/
 
 ### `lib/` — Shell 工具库
 
-这些文件由 `integration-test.sh` 等入口脚本 `source` 引入，**不应直接执行**。
+这些文件由 `integration-test.sh` 等入口脚本 `source` 引入，不应直接执行，**除 `lock.sh` 外**：
 
-- **common.sh**：`log_info / log_warn / log_error / log_debug`、`retry_with_backoff`、`wait_for_endpoint`
-- **execute.sh**：`execute_test_with_retry`、`execute_phase`（从 `tests/integration/registry.sh` 加载测试注册表）
-- **lock.sh**：`acquire_lock / release_lock`（基于 `mkdir` 原子性，防止并发执行）
-- **report.sh**：`generate_markdown_report`、`generate_json_report`、`capture_grafana_snapshot`
-- **setup.sh**：`setup_phase`（预检 → 锁定 → 启动 Docker → 等待服务就绪 → 启动 API）
+- **lock.sh**：可直接调用 `bash scripts/lib/lock.sh acquire/release <dir>` 进行锁操作（见下方锁机制说明）
+- **common.sh**：`log_info / log_warn / log_error / log_debug`、`retry_with_backoff`、`wait_for_endpoint`（仅 source）
+- **execute.sh**：`execute_test_with_retry`、`execute_phase`（从 `tests/integration/registry.sh` 加载测试注册表，仅 source）
+- **report.sh**：`generate_markdown_report`、`generate_json_report`、`capture_grafana_snapshot`（仅 source）
+- **setup.sh**：`setup_phase`（预检 → 锁定 → 启动 Docker → 等待服务就绪 → 启动 API，仅 source）
 
 ### `phases/` — 阶段专用集成测试
 
