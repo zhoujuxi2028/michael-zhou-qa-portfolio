@@ -206,8 +206,8 @@
 
 - [Stage 4 TDD 测试结果 - 第 1 轮](stage4-tdd-test-results-round1.md)
 - [Stage 4 TDD 改进计划](stage4-tdd-improvements.md)
-- [Stage 4 自测脚本 - 功能规格](../specs/stage4-verify-functional-spec.md)
-- [Stage 4 自测脚本 - 架构设计](../specs/stage4-verify-architecture.md)
+- [Stage 4 自测脚本 - 功能规格](../../../specs/stage4-verify-functional-spec.md)
+- [Stage 4 自测脚本 - 架构设计](../../../specs/stage4-verify-architecture.md)
 
 ---
 
