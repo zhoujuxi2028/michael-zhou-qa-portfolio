@@ -90,7 +90,7 @@
 
 | 用例 ID        | 需求 ID               | 验证项                             | 预期                                                                                                                                         | 标签             |
 | -------------- | --------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
-| K6-SOAK-INT-01 | PERF-ENGINE-K6-FR-016 | Grafana Dashboard 实时展示（#108） | `bash scripts/integration-test-phase7-soak.sh`：✓ InfluxDB 数据增长 ✓ soak 自定义指标存在 ✓ `soak-results` dashboard 可查询                  | PT P3 acceptance |
-| K6-SOAK-INT-02 | PERF-ENGINE-K6-FR-017 | Grafana 告警规则触发（#108）       | `bash scripts/integration-test-phase7-soak.sh`：✓ 告警资产存在（embedded alert / provisioning）✓ p95 阈值数据可观测 ✓ dashboard alert 已加载 | PT P3 acceptance |
+| K6-SOAK-INT-01 | PERF-ENGINE-K6-FR-016 | Grafana Dashboard 实时展示（#108） | `bash scripts/phases/phase7-soak.sh`：✓ InfluxDB 数据增长 ✓ soak 自定义指标存在 ✓ `soak-results` dashboard 可查询                  | PT P3 acceptance |
+| K6-SOAK-INT-02 | PERF-ENGINE-K6-FR-017 | Grafana 告警规则触发（#108）       | `bash scripts/phases/phase7-soak.sh`：✓ 告警资产存在（embedded alert / provisioning）✓ p95 阈值数据可观测 ✓ dashboard alert 已加载 | PT P3 acceptance |
 
 > **说明：** `K6-SOAK-INT-01/02` 继续复用集成脚本执行，但它们服务于 **Stage 4 性能验收**，不计入 **Stage 3 集成测试范围**。

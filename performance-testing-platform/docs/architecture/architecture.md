@@ -446,22 +446,25 @@ performance-lint → unit-tests → ┬─ smoke-test         (grafana/setup-k6-
                                 └─ jmeter-smoke-test  (apt-get install + wget)
 ```
 
-两个 smoke gate 并行运行，均通过才算 CI 绿灯。lint 阶段包含 ESLint 和 Prettier 两个独立检查。
+两个 smoke gate 并行运行，均通过才算 CI 绿灯。lint 阶段包含 ESLint、Prettier 和 ShellCheck 三个独立检查。
 
 ## 8. Phase 7 — CI/CD + 可观测性
 
 ### 8.1 CI Pipeline 架构
 
 ```
-performance-lint → unit-tests (coverage ≥80%) → ┬─ smoke-test       (k6 smoke gate)
-                                                 ├─ jmeter-smoke-test
-                                                 ├─ baseline-compare (regression detection)
-                                                 └─ trend-collect    (historical analysis)
+performance-lint → ┬─ unit-tests (coverage ≥80%) → ┬─ smoke-test       (k6 smoke gate)
+                   │                                ├─ jmeter-smoke-test
+                   │                                ├─ baseline-compare (regression detection)
+                   │                                └─ trend-collect    (historical analysis)
+                   └─ shell-tests (BATS)            → ┬─ smoke-test
+                                                      └─ jmeter-smoke-test
 ```
 
 **CI 流程特点：**
 
-- **代码质量门禁**: ESLint（语法/逻辑）+ Prettier（格式）独立执行，任一失败即阻断
+- **代码质量门禁**: ESLint（语法/逻辑）+ Prettier（格式）+ ShellCheck（shell 脚本静态分析）独立执行，任一失败即阻断
+- **Shell 测试**: BATS (`stage4-selftest.bats`) 25 个 shell 自测用例与 unit-tests 并行运行
 - **覆盖率门禁**: Jest coverage threshold enforced (minimum 80%)
 - **并行执行**: k6 和 JMeter smoke test 同时运行，提高 CI 效率
 - **基线对比**: 自动对比历史性能数据，检测回归
