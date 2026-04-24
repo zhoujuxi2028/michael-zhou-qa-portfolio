@@ -19,7 +19,7 @@ while [ $# -gt 0 ]; do
       shift
       ;;
     --verbose)
-      DEBUG_MODE=1
+      export DEBUG_MODE=1
       shift
       ;;
     *)
@@ -39,7 +39,7 @@ main() {
   trap setup_cleanup EXIT
 
   if [ "$PHASE" = "soak" ]; then
-    bash scripts/integration-test-phase7-soak.sh
+    bash scripts/phases/phase7-soak.sh
     return $?
   fi
 

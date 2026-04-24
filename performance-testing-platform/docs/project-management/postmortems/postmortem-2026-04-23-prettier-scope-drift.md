@@ -28,13 +28,13 @@ Error: Process completed with exit code 1.
 
 ## 2. 时间线
 
-| 时间 (UTC) | 事件 |
-|-----------|------|
-| 2026-04-23 03:44:23 | `Performance Testing / Code Quality` 开始执行 Prettier 检查 |
-| 2026-04-23 03:44:25 | CI 报告 `tests/performance/helpers/profile.js` 格式失败并退出 |
-| 2026-04-23 03:51 | 用户上报“集成时继续出现异常” |
-| 2026-04-23 | 通过 GitHub Actions logs + 本地脚本比对定位为“检查范围漂移” |
-| 2026-04-23 | 修复 `package.json` 格式命令范围，新增回归测试与 RCA / postmortem 文档 |
+| 时间 (UTC)          | 事件                                                                   |
+| ------------------- | ---------------------------------------------------------------------- |
+| 2026-04-23 03:44:23 | `Performance Testing / Code Quality` 开始执行 Prettier 检查            |
+| 2026-04-23 03:44:25 | CI 报告 `tests/performance/helpers/profile.js` 格式失败并退出          |
+| 2026-04-23 03:51    | 用户上报“集成时继续出现异常”                                           |
+| 2026-04-23          | 通过 GitHub Actions logs + 本地脚本比对定位为“检查范围漂移”            |
+| 2026-04-23          | 修复 `package.json` 格式命令范围，新增回归测试与 RCA / postmortem 文档 |
 
 ---
 
@@ -60,11 +60,11 @@ Error: Process completed with exit code 1.
 
 ## 4. 用户影响
 
-| 维度 | 影响 |
-|------|------|
-| 开发效率 | 本地检查结论不可信，增加一次 CI 失败往返 |
-| PR 周期 | 被 `Code Quality` job 阻塞，无法进入后续 unit/smoke jobs |
-| 代码质量 | 实际代码质量无功能性损坏，但质量门禁体验恶化 |
+| 维度     | 影响                                                     |
+| -------- | -------------------------------------------------------- |
+| 开发效率 | 本地检查结论不可信，增加一次 CI 失败往返                 |
+| PR 周期  | 被 `Code Quality` job 阻塞，无法进入后续 unit/smoke jobs |
+| 代码质量 | 实际代码质量无功能性损坏，但质量门禁体验恶化             |
 
 ---
 
@@ -86,11 +86,11 @@ Error: Process completed with exit code 1.
 
 ## 7. 行动项
 
-| Action | 类型 | 状态 |
-|--------|------|------|
-| 将 `package.json` 的 `format` / `format:check` 扩展到 `tests/**/*.js` | 修复 | ✅ |
-| 增加 `format-scope.test.js` 检查本地脚本与 CI 命令一致性 | 预防 | ✅ |
-| 将本事件沉淀为 RCA + postmortem 文档 | 文档 | ✅ |
+| Action                                                                | 类型 | 状态 |
+| --------------------------------------------------------------------- | ---- | ---- |
+| 将 `package.json` 的 `format` / `format:check` 扩展到 `tests/**/*.js` | 修复 | ✅   |
+| 增加 `format-scope.test.js` 检查本地脚本与 CI 命令一致性              | 预防 | ✅   |
+| 将本事件沉淀为 RCA + postmortem 文档                                  | 文档 | ✅   |
 
 ---
 

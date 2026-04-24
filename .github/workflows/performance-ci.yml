@@ -38,6 +38,8 @@ jobs:
           cache-dependency-path: performance-testing-platform/package-lock.json
       - run: npm run lint
       - run: npm run format:check
+      - name: ShellCheck
+        run: find scripts/ -name "*.sh" -print0 | xargs -0 shellcheck --severity=warning
 
   unit-tests:
     name: Performance Testing / Unit Tests
@@ -58,10 +60,30 @@ jobs:
           name: coverage-report
           path: performance-testing-platform/coverage/
 
+  shell-tests:
+    name: Performance Testing / Shell Tests (BATS)
+    runs-on: ubuntu-latest
+    needs: performance-lint
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # BATS 测试中的 conventional commits 检查需要完整 git 历史
+          # (默认 fetch-depth=1 只含 PR 合成 merge commit，会导致 9.2 误报)
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-node-project
+        with:
+          node-version: '18'
+          working-directory: performance-testing-platform
+          cache-dependency-path: performance-testing-platform/package-lock.json
+      - name: Install bats-core
+        run: sudo apt-get install -y bats
+      - name: Run BATS shell tests
+        run: bats tests/unit/scripts/stage4-selftest.bats
+
   jmeter-dryrun:
     name: Performance Testing / JMeter Dry Run
     runs-on: ubuntu-latest
-    needs: unit-tests
+    needs: [unit-tests, shell-tests]
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-node-project
@@ -104,7 +126,7 @@ jobs:
   smoke-test:
     name: Performance Testing / k6 Smoke Tests
     runs-on: ubuntu-latest
-    needs: unit-tests
+    needs: [unit-tests, shell-tests]
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-node-project
@@ -130,7 +152,7 @@ jobs:
           mkdir -p reports
           k6 run --out json=reports/k6-smoke-summary.json tests/performance/smoke.k6.js
       - name: Extract baseline metrics
-        run: node scripts/baseline-export.js
+        run: node scripts/analysis/baseline-export.js
       - name: Stop API
         if: always()
         run: kill $(lsof -ti:3000) 2>/dev/null || true
@@ -231,7 +253,7 @@ jobs:
           mkdir -p reports
           gh run list -w performance-ci.yml --json conclusion,databaseId -q '.[] | select(.conclusion=="success") | .databaseId' | head -1 | xargs -I {} gh run download {} -n baseline-artifact -D reports/
       - name: Compare baseline (CI-BASE-02)
-        run: node scripts/baseline-compare.js
+        run: node scripts/analysis/baseline-compare.js
       - name: Upload comparison result
         if: always()
         uses: actions/upload-artifact@v7
@@ -257,7 +279,7 @@ jobs:
       - name: Collect trend data (CI-TREND-01)
         run: |
           mkdir -p reports
-          node scripts/trend-collect.js
+          node scripts/analysis/trend-collect.js
       - name: Upload trend artifact
         if: always()
         uses: actions/upload-artifact@v7

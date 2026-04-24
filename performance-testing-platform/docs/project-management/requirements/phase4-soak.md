@@ -21,18 +21,18 @@
 
 ## 4.3 需求列表
 
-| ID      | 需求                                                                                         | 优先级 |
-| ------- | -------------------------------------------------------------------------------------------- | ------ |
+| ID      | 需求                                                                                                                     | 优先级 |
+| ------- | ------------------------------------------------------------------------------------------------------------------------ | ------ |
 | SOAK-01 | 扩展已有 `GET /metrics` 端点，确保返回 soak 观测所需的 `process.memoryUsage()` 字段 (heapUsed, heapTotal, rss, external) | P0     |
-| SOAK-02 | k6 soak test 脚本: 100~500 VUs, ramp-up → steady (1~4h) → ramp-down, 定期采集 `/metrics` | P0     |
-| SOAK-03 | 内存泄漏检测逻辑: 对比 soak 开始/结束 heapUsed，增长超阈值 (>50%) 则标记 FAIL                | P0     |
-| SOAK-04 | Custom k6 metrics: 订单成功率 (Counter)、认证延迟 p99 (Trend)                                | P1     |
-| SOAK-05 | InfluxDB 输出: k6 `--out influxdb` 将 custom metrics 写入 InfluxDB                           | P1     |
-| SOAK-06 | Grafana Dashboard 扩展: heapUsed 趋势面板、业务指标面板                                      | P1     |
-| SOAK-07 | Grafana 告警规则: p95 > 500ms, error rate > 1%, heapUsed 持续增长                            | P2     |
-| SOAK-08 | npm script: `npm run k6:soak` (短时 soak) + `npm run k6:soak:full` (完整 4h)                 | P0     |
-| SOAK-09 | 单元测试: metrics 端点、泄漏检测逻辑的单元测试                                               | P0     |
-| SOAK-10 | soak test 报告: 生成 HTML/JSON 报告到 `reports/` 目录                                        | P2     |
+| SOAK-02 | k6 soak test 脚本: 100~500 VUs, ramp-up → steady (1~4h) → ramp-down, 定期采集 `/metrics`                                 | P0     |
+| SOAK-03 | 内存泄漏检测逻辑: 对比 soak 开始/结束 heapUsed，增长超阈值 (>50%) 则标记 FAIL                                            | P0     |
+| SOAK-04 | Custom k6 metrics: 订单成功率 (Counter)、认证延迟 p99 (Trend)                                                            | P1     |
+| SOAK-05 | InfluxDB 输出: k6 `--out influxdb` 将 custom metrics 写入 InfluxDB                                                       | P1     |
+| SOAK-06 | Grafana Dashboard 扩展: heapUsed 趋势面板、业务指标面板                                                                  | P1     |
+| SOAK-07 | Grafana 告警规则: p95 > 500ms, error rate > 1%, heapUsed 持续增长                                                        | P2     |
+| SOAK-08 | npm script: `npm run k6:soak` (短时 soak) + `npm run k6:soak:full` (完整 4h)                                             | P0     |
+| SOAK-09 | 单元测试: metrics 端点、泄漏检测逻辑的单元测试                                                                           | P0     |
+| SOAK-10 | soak test 报告: 生成 HTML/JSON 报告到 `reports/` 目录                                                                    | P2     |
 
 ## 4.4 Scope 确认
 
@@ -45,25 +45,25 @@
 
 ## 4.5 可行性评估
 
-| 维度          | 评估                                                   | 结论                            |
-| ------------- | ------------------------------------------------------ | ------------------------------- |
-| 本机环境      | 8 CPU, 16 GB RAM, 59 GB 磁盘                           | ✅ 满足 soak test 需求          |
-| 工具链        | Node.js v25.8.1, k6 v1.7.0, JMeter                     | ✅ 全部就绪                     |
-| InfluxDB      | Phase 1 已配置 (port 8086)                             | ✅ 可复用                       |
-| Grafana       | Phase 1 已配置 (port 3010)                             | ✅ 可复用                       |
+| 维度          | 评估                                                       | 结论                            |
+| ------------- | ---------------------------------------------------------- | ------------------------------- |
+| 本机环境      | 8 CPU, 16 GB RAM, 59 GB 磁盘                               | ✅ 满足 soak test 需求          |
+| 工具链        | Node.js v25.8.1, k6 v1.7.0, JMeter                         | ✅ 全部就绪                     |
+| InfluxDB      | Phase 1 已配置 (port 8086)                                 | ✅ 可复用                       |
+| Grafana       | Phase 1 已配置 (port 3010)                                 | ✅ 可复用                       |
 | heapUsed 采集 | 复用并扩展已有 `/metrics` 端点暴露 `process.memoryUsage()` | ✅ 简单实现                     |
-| 时间风险      | soak test 本身耗时 1~4h, CI 中不可行                   | ⚠️ CI 仅跑 smoke, soak 本地手动 |
-| DB 膨胀风险   | 长时间 orders 写入会膨胀 perf.db                       | ⚠️ 需内置清理或限速策略         |
+| 时间风险      | soak test 本身耗时 1~4h, CI 中不可行                       | ⚠️ CI 仅跑 smoke, soak 本地手动 |
+| DB 膨胀风险   | 长时间 orders 写入会膨胀 perf.db                           | ⚠️ 需内置清理或限速策略         |
 
 ## 4.6 依赖识别
 
-| 依赖                     | 说明                         | 状态        |
-| ------------------------ | ---------------------------- | ----------- |
+| 依赖                     | 说明                                 | 状态        |
+| ------------------------ | ------------------------------------ | ----------- |
 | Express API (src/app.js) | 已有 `/metrics` 端点（Phase 1 引入） | ✅ 已完成   |
-| InfluxDB                 | 写入 custom metrics          | ✅ 已有     |
-| Grafana                  | Dashboard + Alert rules      | ✅ 已扩展   |
-| k6                       | soak test 脚本               | ✅ 已完成   |
-| scripts/server.sh        | soak 模式复用现有 start/stop | ✅ 无需改动 |
+| InfluxDB                 | 写入 custom metrics                  | ✅ 已有     |
+| Grafana                  | Dashboard + Alert rules              | ✅ 已扩展   |
+| k6                       | soak test 脚本                       | ✅ 已完成   |
+| scripts/server.sh        | soak 模式复用现有 start/stop         | ✅ 无需改动 |
 
 ## 4.7 需求 Checklist
 

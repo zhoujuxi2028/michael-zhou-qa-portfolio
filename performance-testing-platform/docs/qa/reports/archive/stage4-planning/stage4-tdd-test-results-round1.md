@@ -8,11 +8,11 @@
 
 ## 📊 测试结果统计
 
-| 类别 | 数量 |
-|------|------|
-| ✅ 通过 | 14 |
-| ❌ 失败 | 13 |
-| 总计 | 27 |
+| 类别       | 数量    |
+| ---------- | ------- |
+| ✅ 通过    | 14      |
+| ❌ 失败    | 13      |
+| 总计       | 27      |
 | **通过率** | **51%** |
 
 ---
@@ -20,6 +20,7 @@
 ## ✅ 通过的测试 (14/27)
 
 ### 前置条件 (7 通过)
+
 ```
 ✓ 项目根目录存在
 ✓ 当前在 feature/performance-testing 分支
@@ -29,6 +30,7 @@
 ```
 
 ### Section 1: 代码质量 (4 通过)
+
 ```
 ✓ 1.1: 单元测试通过 (148/148)
 ✓ 1.2: ESLint 无错误
@@ -37,6 +39,7 @@
 ```
 
 ### Section 5-9 (3 通过)
+
 ```
 ✓ 5.3 API 响应头包含 X-XSS-Protection
 ✓ 6.2: CI 无 continue-on-error workaround
@@ -56,6 +59,7 @@
 ```
 
 **原因:** 测试脚本中脚本路径定义有误
+
 ```
 SCRIPT="${PROJECT_ROOT}/scripts/stage4-selftest.sh"
 # 应该是: $SCRIPT 存在且可执行
@@ -75,12 +79,14 @@ SCRIPT="${PROJECT_ROOT}/scripts/stage4-selftest.sh"
 
 **原因:** 锁机制使用目录，但测试中可能有权限或路径问题
 
-**根本原因:** 
+**根本原因:**
+
 ```bash
 bash scripts/lock.sh acquire "$TEST_LOCK_DIR" # 返回非零
 ```
 
 **修复方案:**
+
 1. 检查 lock.sh 脚本是否正常
 2. 验证权限（/tmp 是否可写）
 3. 改进错误消息
@@ -165,7 +171,7 @@ LOG_DIR="${PROJECT_ROOT}/docs/qa/reports/logs-stage4"
    - src/app.js - XSS 代码
    - docs/qa/reports/phase6-stage4-verification-report.md - 验收报告
 
-2. **确认脚本状态:** 
+2. **确认脚本状态:**
    - scripts/lock.sh 是否存在？
    - /tmp 目录是否可写？
 
@@ -182,6 +188,7 @@ LOG_DIR="${PROJECT_ROOT}/docs/qa/reports/logs-stage4"
 ## 🎯 TDD 循环下一步
 
 根据 TDD 原则：
+
 1. ✅ **写测试** - 已完成
 2. 🔴 **运行测试** - 测试失败（预期）
 3. 🟢 **修复代码** - 需要根据失败原因修复脚本和文件
