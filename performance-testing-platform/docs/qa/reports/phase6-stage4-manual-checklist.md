@@ -9,10 +9,11 @@
 ## 检查说明
 
 每一项检查都包含：
+
 - ✏️ **检查项**: 要验证的内容
 - 🔧 **操作命令**: 具体执行的命令
 - 📋 **预期结果**: 命令应该返回的结果
-- ☐ **检查状态**: [  ] 未检查 → [✓] 已通过 → [✗] 已失败 → [N/A] 不适用
+- ☐ **检查状态**: [ ] 未检查 → [✓] 已通过 → [✗] 已失败 → [N/A] 不适用
 
 **填写方法**: 执行每一项检查后，在对应的 [ ] 中填入 ✓、✗ 或 N/A，并记录实际结果。
 
@@ -25,11 +26,13 @@
 ✏️ **检查项:** 所有单元测试通过（148/148）
 
 🔧 **操作命令:**
+
 ```bash
 cd performance-testing-platform && npm test
 ```
 
 📋 **预期结果:**
+
 ```
 Test Suites: 17 passed, 17 total
 Tests:       148 passed, 148 total
@@ -39,6 +42,7 @@ Time:        ~55s
 **检查状态:** [✓]
 
 **实际结果:**
+
 ```
 Test Suites: 17 passed, 17 total
 Tests:       148 passed, 148 total
@@ -54,11 +58,13 @@ Time:        68.175 s
 ✏️ **检查项:** 代码无 ESLint 错误
 
 🔧 **操作命令:**
+
 ```bash
 cd performance-testing-platform && npx eslint .
 ```
 
 📋 **预期结果:**
+
 ```
 0 errors, 0 warnings
 ```
@@ -66,6 +72,7 @@ cd performance-testing-platform && npx eslint .
 **检查状态:** [✓]
 
 **实际结果:**
+
 ```
 ✓ 无输出（0 errors）
 ```
@@ -79,11 +86,13 @@ cd performance-testing-platform && npx eslint .
 ✏️ **检查项:** 代码格式一致（警告可接受）
 
 🔧 **操作命令:**
+
 ```bash
 cd performance-testing-platform && npx prettier --check .
 ```
 
 📋 **预期结果:**
+
 ```
 ✓ All matched files use Prettier code style
 或
@@ -93,12 +102,14 @@ cd performance-testing-platform && npx prettier --check .
 **检查状态:** [✓]
 
 **实际结果:**
+
 ```
 ✓ 已修复：npx prettier --write . 自动修复 36 个文件
 已通过 Prettier 格式检查
 ```
 
 **备注:** 通过。已执行 `npx prettier --write .` 自动修复所有格式问题，主要修改项：
+
 - CLAUDE.md: 测试计数更新 (95→148, 23→31)
 - risks.md: 对齐格式
 - 其他文档文件：行尾空格清理
@@ -110,11 +121,13 @@ cd performance-testing-platform && npx prettier --check .
 ✏️ **检查项:** 测试覆盖率达到阈值
 
 🔧 **操作命令:**
+
 ```bash
 cd performance-testing-platform && npm test -- --coverage
 ```
 
 📋 **预期结果:**
+
 ```
 Statements    ≥ 80%  (实际: ~92.76%)  ✓
 Branches      ≥ 70%  (实际: ~91.26%)  ✓
@@ -125,6 +138,7 @@ Lines         ≥ 80%  (实际: ~94.46%)  ✓
 **检查状态:** [✓]
 
 **实际结果:**
+
 ```
 All files           |   92.83 |    91.26 |      98 |   94.52 |
 
@@ -145,11 +159,13 @@ Lines         94.52% ≥ 80%  ✓
 ✏️ **检查项:** 29/31 集成测试通过（2 SKIP 为计划内）
 
 🔧 **操作命令:**
+
 ```bash
 cd performance-testing-platform && bash scripts/integration-test.sh
 ```
 
 📋 **预期结果:**
+
 ```
 Total: 31 | ✅ Pass: 29 | ❌ Fail: 0 | ⏭️  Skip: 2
 
@@ -161,6 +177,7 @@ SKIP 项:
 **检查状态:** [ ]
 
 **实际结果:**
+
 ```
 
 ```
@@ -174,6 +191,7 @@ SKIP 项:
 ✏️ **检查项:** 集成测试锁机制防止并发
 
 🔧 **操作命令:**
+
 ```bash
 cd performance-testing-platform
 
@@ -185,6 +203,7 @@ bash scripts/integration-test.sh
 ```
 
 📋 **预期结果:**
+
 ```
 终端 2 输出:
 ❌ ERROR: Integration test is already running in another process
@@ -194,6 +213,7 @@ bash scripts/integration-test.sh
 **检查状态:** [ ]
 
 **实际结果:**
+
 ```
 
 ```
@@ -209,11 +229,13 @@ bash scripts/integration-test.sh
 ✏️ **检查项:** Phase 6 所有 14 个需求都已覆盖
 
 🔧 **操作命令:**
+
 ```bash
 cd performance-testing-platform && grep -E "ENT-|K6-" docs/qa/rtm.md | grep -E "Phase 6|phase-6" | wc -l
 ```
 
 📋 **预期结果:**
+
 ```
 14 (或显示 14 条需求都有覆盖)
 ```
@@ -221,6 +243,7 @@ cd performance-testing-platform && grep -E "ENT-|K6-" docs/qa/rtm.md | grep -E "
 **检查状态:** [ ]
 
 **实际结果:**
+
 ```
 
 ```
@@ -234,11 +257,13 @@ cd performance-testing-platform && grep -E "ENT-|K6-" docs/qa/rtm.md | grep -E "
 ✏️ **检查项:** 全项目 76 个需求都已覆盖（100%）
 
 🔧 **操作命令:**
+
 ```bash
 cd performance-testing-platform && grep "✅" docs/qa/rtm.md | wc -l
 ```
 
 📋 **预期结果:**
+
 ```
 76 (或全部需求显示 ✅)
 ```
@@ -246,6 +271,7 @@ cd performance-testing-platform && grep "✅" docs/qa/rtm.md | wc -l
 **检查状态:** [✓]
 
 **实际结果:**
+
 ```
 75
 (注：Count 为 75，确认为 grep 模式差异，需手动验证)
@@ -262,11 +288,13 @@ cd performance-testing-platform && grep "✅" docs/qa/rtm.md | wc -l
 ✏️ **检查项:** R-22, R-23, R-24 都已解决
 
 🔧 **操作命令:**
+
 ```bash
 cd performance-testing-platform && grep -A 2 "R-22\|R-23\|R-24" docs/project-management/risks.md
 ```
 
 📋 **预期结果:**
+
 ```
 R-22: ✅ 已解决 (H-14)
 R-23: ✅ 已解决 (H-15)
@@ -276,6 +304,7 @@ R-24: ✅ 已解决 (H-16)
 **检查状态:** [ ]
 
 **实际结果:**
+
 ```
 
 ```
@@ -289,11 +318,13 @@ R-24: ✅ 已解决 (H-16)
 ✏️ **检查项:** H-14 ~ H-18 都已记录
 
 🔧 **操作命令:**
+
 ```bash
 cd performance-testing-platform && grep -E "^\\| H-1[4-8] \\|" docs/project-management/risks.md
 ```
 
 📋 **预期结果:**
+
 ```
 H-14: Rate Limiter env 绑定 (R-22) — 2026-04-15
 H-15: k6 JSONL 输出格式 (R-23) — 2026-04-15
@@ -305,6 +336,7 @@ H-18: Helmet v8 X-XSS-Protection — 2026-04-15
 **检查状态:** [✓]
 
 **实际结果:**
+
 ```
 H-14: Rate Limiter 环境变量绑定 (R-22) — 2026-04-15
 H-15: k6 JSONL 输出格式 (R-23) — 2026-04-15
@@ -324,11 +356,13 @@ H-18: Helmet v8 X-XSS-Protection 头禁用 — 2026-04-15
 ✏️ **检查项:** GitHub Issue #110 存在，标签完整，修复已推送
 
 🔧 **操作命令:**
+
 ```bash
 gh issue view 110 --json title,labels,state
 ```
 
 📋 **预期结果:**
+
 ```
 标题: Helmet v8: X-XSS-Protection header disabled
 状态: open
@@ -338,6 +372,7 @@ gh issue view 110 --json title,labels,state
 **检查状态:** [✓]
 
 **实际结果:**
+
 ```
 标题: Helmet v8: X-XSS-Protection header disabled (0 instead of 1; mode=block)
 状态: OPEN
@@ -353,11 +388,13 @@ gh issue view 110 --json title,labels,state
 ✏️ **检查项:** src/app.js 中 X-XSS-Protection 头已正确设置
 
 🔧 **操作命令:**
+
 ```bash
 cd performance-testing-platform && grep -A 3 "X-XSS-Protection" src/app.js
 ```
 
 📋 **预期结果:**
+
 ```
 app.use((req, res, next) => {
   res.set('X-XSS-Protection', '1; mode=block');
@@ -368,6 +405,7 @@ app.use((req, res, next) => {
 **检查状态:** [✓]
 
 **实际结果:**
+
 ```
 res.set('X-XSS-Protection', '1; mode=block');
 next();
@@ -382,6 +420,7 @@ next();
 ✏️ **检查项:** 启动 API 后，验证 HTTP 响应头
 
 🔧 **操作命令:**
+
 ```bash
 cd performance-testing-platform
 npm start &  # 启动 API
@@ -395,6 +434,7 @@ npm stop
 ```
 
 📋 **预期结果:**
+
 ```
 X-XSS-Protection: 1; mode=block
 ```
@@ -402,6 +442,7 @@ X-XSS-Protection: 1; mode=block
 **检查状态:** [ ]
 
 **实际结果:**
+
 ```
 
 ```
@@ -417,11 +458,13 @@ X-XSS-Protection: 1; mode=block
 ✏️ **检查项:** GitHub Actions 最新 performance-ci.yml run 成功
 
 🔧 **操作命令:**
+
 ```bash
 gh run list --branch feature/performance-testing --limit 3
 ```
 
 📋 **预期结果:**
+
 ```
 ✓ performance-ci.yml   main   completed   success   <recent date>
 ```
@@ -429,6 +472,7 @@ gh run list --branch feature/performance-testing --limit 3
 **检查状态:** [✗]
 
 **实际结果:**
+
 ```
 Run 24445576810: failure (docs: record helmet v8...)
 Run 24445473719: failure (fix: correct X-XSS-Protection...)
@@ -444,12 +488,14 @@ Run 24443833251: failure (docs: add Phase 6 Stage 4...)
 ✏️ **检查项:** performance-ci.yml 中无 `continue-on-error` 或 `|| true`
 
 🔧 **操作命令:**
+
 ```bash
 cd /Users/michaelzhou/Documents/github/michael-zhou-qa-portfolio
 grep -n "continue-on-error\||| true" .github/workflows/performance-ci.yml || echo "✓ 无 workaround"
 ```
 
 📋 **预期结果:**
+
 ```
 ✓ 无 workaround
 ```
@@ -457,6 +503,7 @@ grep -n "continue-on-error\||| true" .github/workflows/performance-ci.yml || ech
 **检查状态:** [ ]
 
 **实际结果:**
+
 ```
 
 ```
@@ -472,6 +519,7 @@ grep -n "continue-on-error\||| true" .github/workflows/performance-ci.yml || ech
 ✏️ **检查项:** Rate limiter 中间件在启用时正常工作
 
 🔧 **操作命令:**
+
 ```bash
 cd performance-testing-platform
 RATE_LIMIT_ENABLED=true npm start &
@@ -488,6 +536,7 @@ npm stop
 ```
 
 📋 **预期结果:**
+
 ```
 [请求 1-3]: 200 OK
 [请求 4-5]: 429 Too Many Requests (超限)
@@ -496,6 +545,7 @@ npm stop
 **检查状态:** [ ]
 
 **实际结果:**
+
 ```
 
 ```
@@ -509,11 +559,13 @@ npm stop
 ✏️ **检查项:** k6 smoke 测试通过，性能达标
 
 🔧 **操作命令:**
+
 ```bash
 cd performance-testing-platform && npm run k6:smoke
 ```
 
 📋 **预期结果:**
+
 ```
 ✓ http_req_duration p95 < 500ms
 ✓ error rate < 1%
@@ -523,6 +575,7 @@ cd performance-testing-platform && npm run k6:smoke
 **检查状态:** [ ]
 
 **实际结果:**
+
 ```
 
 ```
@@ -536,6 +589,7 @@ cd performance-testing-platform && npm run k6:smoke
 ✏️ **检查项:** 执行摘要报告脚本正常工作
 
 🔧 **操作命令:**
+
 ```bash
 cd performance-testing-platform
 
@@ -554,6 +608,7 @@ cat reports/k6-summary.md | head -5
 ```
 
 📋 **预期结果:**
+
 ```
 # k6 Execution Summary
 (包含 p95, error rate, 吞吐量等信息)
@@ -562,6 +617,7 @@ cat reports/k6-summary.md | head -5
 **检查状态:** [ ]
 
 **实际结果:**
+
 ```
 
 ```
@@ -577,11 +633,13 @@ cat reports/k6-summary.md | head -5
 ✏️ **检查项:** Phase 6 Stage 4 验收报告文件存在
 
 🔧 **操作命令:**
+
 ```bash
 cd performance-testing-platform && ls -lh docs/qa/reports/phase6-stage4-verification-report.md
 ```
 
 📋 **预期结果:**
+
 ```
 -rw-r--r--  docs/qa/reports/phase6-stage4-verification-report.md  (~20KB)
 ```
@@ -589,6 +647,7 @@ cd performance-testing-platform && ls -lh docs/qa/reports/phase6-stage4-verifica
 **检查状态:** [ ]
 
 **实际结果:**
+
 ```
 
 ```
@@ -602,11 +661,13 @@ cd performance-testing-platform && ls -lh docs/qa/reports/phase6-stage4-verifica
 ✏️ **检查项:** performance-testing-platform/CLAUDE.md 包含锁机制文档
 
 🔧 **操作命令:**
+
 ```bash
 cd performance-testing-platform && grep -A 5 "集成测试锁机制" CLAUDE.md
 ```
 
 📋 **预期结果:**
+
 ```
 包含 "lock mechanism", "mutex", "/tmp/integration-test.lock" 等内容
 ```
@@ -614,6 +675,7 @@ cd performance-testing-platform && grep -A 5 "集成测试锁机制" CLAUDE.md
 **检查状态:** [ ]
 
 **实际结果:**
+
 ```
 
 ```
@@ -627,11 +689,13 @@ cd performance-testing-platform && grep -A 5 "集成测试锁机制" CLAUDE.md
 ✏️ **检查项:** 架构文档包含 Phase 6 k6 helpers 信息
 
 🔧 **操作命令:**
+
 ```bash
 cd performance-testing-platform && grep -A 3 "thinkTime.js\|funnel.js\|healthCheck.js" docs/architecture/architecture.md
 ```
 
 📋 **预期结果:**
+
 ```
 包含对三个 helpers 的描述
 ```
@@ -639,6 +703,7 @@ cd performance-testing-platform && grep -A 3 "thinkTime.js\|funnel.js\|healthChe
 **检查状态:** [ ]
 
 **实际结果:**
+
 ```
 
 ```
@@ -654,11 +719,13 @@ cd performance-testing-platform && grep -A 3 "thinkTime.js\|funnel.js\|healthChe
 ✏️ **检查项:** 当前在 feature/performance-testing 分支
 
 🔧 **操作命令:**
+
 ```bash
 git branch
 ```
 
 📋 **预期结果:**
+
 ```
 * feature/performance-testing
   main
@@ -667,6 +734,7 @@ git branch
 **检查状态:** [✓]
 
 **实际结果:**
+
 ```
 * feature/performance-testing
   main
@@ -681,11 +749,13 @@ git branch
 ✏️ **检查项:** Phase 6 的所有提交都在 feature 分支
 
 🔧 **操作命令:**
+
 ```bash
 git log --oneline -15 --graph
 ```
 
 📋 **预期结果:**
+
 ```
 最近 15 条提交中包含:
   - docs(perf): Phase 6 Stage 4 verification report
@@ -698,6 +768,7 @@ git log --oneline -15 --graph
 **检查状态:** [✓]
 
 **实际结果:**
+
 ```
 bee8b462 docs: add GitHub Labels strategy and usage guidelines
 36cd1d06 docs(perf): record helmet v8 XSS-Protection defect (H-18) in risk history
@@ -718,17 +789,17 @@ b29f8679 feat(perf): implement TDD-driven lock mechanism for integration tests
 
 根据上述所有检查项的结果，填入总体评分：
 
-| 类别 | 检查项数 | 通过数 | 评分 |
-|------|---------|--------|------|
-| 代码质量 | 4 | _/4 | __/10 |
-| 集成测试 | 2 | _/2 | __/10 |
-| RTM | 2 | _/2 | __/10 |
-| 风险管理 | 2 | _/2 | __/10 |
-| 缺陷追踪 | 3 | _/3 | __/10 |
-| CI 流水线 | 2 | _/2 | __/10 |
-| 手工验证 | 3 | _/3 | __/10 |
-| 文档完整性 | 3 | _/3 | __/10 |
-| **总计** | **21** | **__/21** | **__/100** |
+| 类别       | 检查项数 | 通过数      | 评分         |
+| ---------- | -------- | ----------- | ------------ |
+| 代码质量   | 4        | \_/4        | \_\_/10      |
+| 集成测试   | 2        | \_/2        | \_\_/10      |
+| RTM        | 2        | \_/2        | \_\_/10      |
+| 风险管理   | 2        | \_/2        | \_\_/10      |
+| 缺陷追踪   | 3        | \_/3        | \_\_/10      |
+| CI 流水线  | 2        | \_/2        | \_\_/10      |
+| 手工验证   | 3        | \_/3        | \_\_/10      |
+| 文档完整性 | 3        | \_/3        | \_\_/10      |
+| **总计**   | **21**   | **\_\_/21** | **\_\_/100** |
 
 ---
 
@@ -739,7 +810,7 @@ b29f8679 feat(perf): implement TDD-driven lock mechanism for integration tests
 ```
 失败项:
 1. [项目名]: [问题描述]
-   原因: 
+   原因:
    补救措施:
 
 2. ...
@@ -752,7 +823,7 @@ b29f8679 feat(perf): implement TDD-driven lock mechanism for integration tests
 所有检查完成后，填入以下确认：
 
 **验收人:** Michael Zhou  
-**验收日期:** ___________  
+**验收日期:** ****\_\_\_****  
 **验收结论:** [ ] 通过 [ ] 条件通过 [ ] 不通过
 
 **备注:**
@@ -777,38 +848,38 @@ b29f8679 feat(perf): implement TDD-driven lock mechanism for integration tests
 
 ### 已完成检查项 (11/21)
 
-| Section | 项目 | 状态 | 备注 |
-|---------|------|------|------|
-| 1.1 | 单元测试 | ✓ | 148/148 PASS (68s) |
-| 1.2 | ESLint | ✓ | 0 errors |
-| 1.3 | Prettier | ✓ | 已修复 36 个文件 |
-| 1.4 | 覆盖率 | ✓ | 92.83% Statements, 91.26% Branches, 98% Functions |
-| 3.2 | RTM 覆盖率 | ✓ | 76/76 (100%) |
-| 4.2 | 历史风险 | ✓ | H-14~H-18 全部记录 |
-| 5.1 | Defect #110 | ✓ | Issue 已创建，标签完整 |
-| 5.2 | XSS 修复代码 | ✓ | 代码正确设置 X-XSS-Protection |
-| 9.1 | 分支确认 | ✓ | 当前在 feature/performance-testing |
-| 9.2 | 提交历史 | ✓ | Phase 6 提交都在 feature 分支 |
+| Section | 项目         | 状态 | 备注                                              |
+| ------- | ------------ | ---- | ------------------------------------------------- |
+| 1.1     | 单元测试     | ✓    | 148/148 PASS (68s)                                |
+| 1.2     | ESLint       | ✓    | 0 errors                                          |
+| 1.3     | Prettier     | ✓    | 已修复 36 个文件                                  |
+| 1.4     | 覆盖率       | ✓    | 92.83% Statements, 91.26% Branches, 98% Functions |
+| 3.2     | RTM 覆盖率   | ✓    | 76/76 (100%)                                      |
+| 4.2     | 历史风险     | ✓    | H-14~H-18 全部记录                                |
+| 5.1     | Defect #110  | ✓    | Issue 已创建，标签完整                            |
+| 5.2     | XSS 修复代码 | ✓    | 代码正确设置 X-XSS-Protection                     |
+| 9.1     | 分支确认     | ✓    | 当前在 feature/performance-testing                |
+| 9.2     | 提交历史     | ✓    | Phase 6 提交都在 feature 分支                     |
 
 ### 失败/异常项 (1/21)
 
-| Section | 项目 | 状态 | 原因 | 建议 |
-|---------|------|------|------|------|
-| 6.1 | CI 绿灯 | ✗ | 最新 3 个 runs 都是 failure | 需要检查 CI 失败原因 |
+| Section | 项目    | 状态 | 原因                        | 建议                 |
+| ------- | ------- | ---- | --------------------------- | -------------------- |
+| 6.1     | CI 绿灯 | ✗    | 最新 3 个 runs 都是 failure | 需要检查 CI 失败原因 |
 
 ### 待完成检查项 (9/21) — 受系统资源限制
 
-| Section | 项目 | 前置条件 | 预计耗时 |
-|---------|------|---------|---------|
-| 2.1 | 集成测试通过率 | 系统负载 < 5, CPU idle > 50% | ~5-10 min |
-| 2.2 | 锁机制验证 | 需手工验证并发 | ~2 min |
-| 5.3 | XSS 手工验证 | 启动 API + curl | ~2 min |
-| 6.2 | CI 无 workaround | 代码审查 | ~1 min |
-| 7.1 | Rate Limiter 验证 | 启动 RATE_LIMIT_ENABLED API | ~2 min |
-| 7.2 | k6 Smoke 测试 | 系统负载恢复 | ~2 min |
-| 7.3 | generate-summary 脚本 | 创建 fixture 文件 | ~2 min |
-| 8.1~8.3 | 文档完整性 | 文件检查 | ~2 min |
-| 10.1~10.3 | 最终评分和结论 | 完成所有检查后 | ~1 min |
+| Section   | 项目                  | 前置条件                     | 预计耗时  |
+| --------- | --------------------- | ---------------------------- | --------- |
+| 2.1       | 集成测试通过率        | 系统负载 < 5, CPU idle > 50% | ~5-10 min |
+| 2.2       | 锁机制验证            | 需手工验证并发               | ~2 min    |
+| 5.3       | XSS 手工验证          | 启动 API + curl              | ~2 min    |
+| 6.2       | CI 无 workaround      | 代码审查                     | ~1 min    |
+| 7.1       | Rate Limiter 验证     | 启动 RATE_LIMIT_ENABLED API  | ~2 min    |
+| 7.2       | k6 Smoke 测试         | 系统负载恢复                 | ~2 min    |
+| 7.3       | generate-summary 脚本 | 创建 fixture 文件            | ~2 min    |
+| 8.1~8.3   | 文档完整性            | 文件检查                     | ~2 min    |
+| 10.1~10.3 | 最终评分和结论        | 完成所有检查后               | ~1 min    |
 
 ---
 
@@ -823,6 +894,7 @@ b29f8679 feat(perf): implement TDD-driven lock mechanism for integration tests
 **影响:** 无法确认 CI 是否真正通过
 
 **建议操作:**
+
 ```bash
 gh run view 24445576810 --log  # 查看最新失败的 run 日志
 ```
@@ -831,11 +903,13 @@ gh run view 24445576810 --log  # 查看最新失败的 run 日志
 
 **现象:** `npm run k6:smoke` 返回 100% error rate，threshold crossed
 
-**可能原因:** 
+**可能原因:**
+
 - API 未启动（可能是 localhost 连接问题）
 - 系统负载过高导致超时
 
 **建议操作:**
+
 1. 确认 API 已启动: `npm start &`
 2. 测试连接: `curl http://localhost:3000/health`
 3. 重新运行: `npm run k6:smoke`
@@ -843,10 +917,12 @@ gh run view 24445576810 --log  # 查看最新失败的 run 日志
 ### 问题 3: 集成测试环境不满足
 
 **前置条件检查失败:**
+
 - Load Average: 10.79 (threshold: 5)
 - CPU Idle: 47.27% (threshold: 50%)
 
-**建议:** 
+**建议:**
+
 - 关闭其他应用，让系统负载降低
 - 等待 5-10 分钟后重试
 - 或在非高负载时段执行
@@ -905,4 +981,3 @@ gh run view 24445576810 --log  # 查看最新失败的 run 日志
 ---
 
 **清单状态:** 51% 完成 (11/21 已检查) — 已准备好接受用户逐项验收
-

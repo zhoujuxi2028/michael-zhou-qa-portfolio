@@ -13,6 +13,7 @@
 ## 文件结构
 
 ### 新增
+
 - `scripts/lib/common.sh`
 - `scripts/lib/setup.sh`
 - `scripts/lib/execute.sh`
@@ -29,6 +30,7 @@
 - `docs/guides/SOP-integration-test.md`
 
 ### 修改
+
 - `scripts/integration-test.sh`
 - `docs/design/integration-test-design.md`
 
@@ -39,6 +41,7 @@
 ### Task 1: 先写 common.sh 的日志测试
 
 **Files:**
+
 - Create: `tests/integration/unit/common.test.sh`
 - Create: `scripts/lib/common.sh`
 
@@ -77,6 +80,7 @@ Expected: 日志文件创建成功，4 个日志级别都可用
 ### Task 2: 实现 retry_with_backoff
 
 **Files:**
+
 - Modify: `scripts/lib/common.sh`
 - Modify: `tests/integration/unit/common.test.sh`
 
@@ -121,6 +125,7 @@ Expected: 首次成功、第二次成功、超限失败三类场景都通过
 ### Task 3: 实现 wait_for_endpoint
 
 **Files:**
+
 - Modify: `scripts/lib/common.sh`
 - Modify: `tests/integration/unit/common.test.sh`
 
@@ -171,6 +176,7 @@ Expected: endpoint ready / timeout 两个场景通过
 ### Task 4: 实现 run_critical 和 run_optional
 
 **Files:**
+
 - Modify: `scripts/lib/common.sh`
 - Modify: `tests/integration/unit/common.test.sh`
 
@@ -204,6 +210,7 @@ Expected: 关键操作失败会中止，可选操作失败只记录日志
 ### Task 5: 拆分 setup / execute / report
 
 **Files:**
+
 - Create: `scripts/lib/setup.sh`
 - Create: `scripts/lib/execute.sh`
 - Create: `scripts/lib/report.sh`
@@ -238,6 +245,7 @@ Expected: 行为与旧脚本一致
 ### Task 6: 收尾和文档同步
 
 **Files:**
+
 - Modify: `scripts/integration-test.sh`
 - Modify: `docs/design/integration-test-design.md`
 - Create: `docs/guides/SOP-integration-test.md`
