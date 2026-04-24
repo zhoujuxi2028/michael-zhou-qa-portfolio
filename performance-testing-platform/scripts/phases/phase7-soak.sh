@@ -177,12 +177,14 @@ echo "  Baseline metric count: $BASELINE_COUNT"
 
 # Run k6 soak test (3 min) with InfluxDB output
 echo "  Running k6 soak (${SOAK_VUS} VUs, ${SOAK_DURATION})..."
-# Note: Use --out influxdb=http://localhost:8086/k6 to stream metrics to InfluxDB
-# Allow k6 to run for the full duration; if it fails due to threshold violations,
-# we still verify the data flow happened
-K6_VUS=$SOAK_VUS K6_DURATION=$SOAK_DURATION k6 run \
-  --vus "$SOAK_VUS" \
-  --duration "$SOAK_DURATION" \
+# soak-short.k6.js uses buildScenarioProfile with named scenarios (exec: 'runSoakShortLoad').
+# --vus/--duration flags override options.scenarios entirely, causing k6 to look for a
+# 'default' export that doesn't exist → "function 'default' not found in exports".
+# Fix: pass duration via the env vars that soak-short.k6.js already reads.
+SOAK_SHORT_RAMP_UP_DURATION=10s \
+  SOAK_SHORT_STEADY_DURATION="$SOAK_DURATION" \
+  SOAK_SHORT_RAMP_DOWN_DURATION=10s \
+  k6 run \
   --out "influxdb=http://localhost:$INFLUXDB_PORT/$INFLUXDB_DB" \
   tests/performance/soak-short.k6.js 2>&1 | tee /tmp/k6-soak-int-01.log || true
 
@@ -199,21 +201,20 @@ echo "  Final metric count: $FINAL_COUNT"
 if [ "$FINAL_COUNT" -gt "$BASELINE_COUNT" ]; then
   METRIC_INCREASE=$((FINAL_COUNT - BASELINE_COUNT))
   log_result "K6-SOAK-INT-01" "PASS" "InfluxDB metric count increased: $BASELINE_COUNT → $FINAL_COUNT (+$METRIC_INCREASE) ✅"
+
+  # Secondary check: custom soak metrics — only meaningful if k6 actually wrote data
+  echo "  Verifying custom soak metrics in InfluxDB..."
+  CUSTOM_METRIC_QUERY='SELECT * FROM soak_heap_used_mb LIMIT 1'
+  CUSTOM_METRICS=$(curl -s "http://localhost:$INFLUXDB_PORT/query?db=$INFLUXDB_DB&q=${CUSTOM_METRIC_QUERY// /%20}" 2>/dev/null | grep -c "soak_heap_used_mb" || echo "0")
+  if [ "$CUSTOM_METRICS" -gt "0" ]; then
+    log_result "K6-SOAK-INT-01" "PASS" "Custom metrics (soak_heap_used_mb, etc.) found in InfluxDB ✅"
+  else
+    echo "⚠️  K6-SOAK-INT-01: Custom metrics not yet populated (may appear after longer soak)"
+  fi
 else
   log_result "K6-SOAK-INT-01" "FAIL" "InfluxDB metrics not written (baseline=$BASELINE_COUNT, final=$FINAL_COUNT)"
+  # Skip custom metrics check — k6 did not write new data; stale metrics would give false positives
 fi
-
-# Verify custom metrics from soak script are present (soak_heap_used_mb, soak_event_loop_lag, etc.)
-echo "  Verifying custom soak metrics in InfluxDB..."
-CUSTOM_METRIC_QUERY='SELECT * FROM soak_heap_used_mb LIMIT 1'
-CUSTOM_METRICS=$(curl -s "http://localhost:$INFLUXDB_PORT/query?db=$INFLUXDB_DB&q=${CUSTOM_METRIC_QUERY// /%20}" 2>/dev/null | grep -c "soak_heap_used_mb" || echo "0")
-if [ "$CUSTOM_METRICS" -gt "0" ]; then
-  log_result "K6-SOAK-INT-01" "PASS" "Custom metrics (soak_heap_used_mb, etc.) found in InfluxDB ✅"
-else
-  # Custom metrics may not appear if VU count is very low; log as warning
-  echo "⚠️  K6-SOAK-INT-01: Custom metrics not yet populated (may appear after longer soak)"
-fi
-echo ""
 
 # ============================================================
 # K6-SOAK-INT-02: Grafana alert rules trigger
