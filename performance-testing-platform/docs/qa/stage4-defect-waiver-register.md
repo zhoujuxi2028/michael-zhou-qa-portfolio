@@ -1,0 +1,76 @@
+# Stage 4 Defect & Waiver Register
+
+> **项目:** Performance Testing Platform  
+> **维护人:** QA Lead  
+> **更新规则:** 每次 Stage 4 Gate 执行时同步更新；issue 关闭后标记 Closed，保留历史行  
+> **相关文档:** [Gate Template](stage4-gate-template.md) | [测试计划](test-plan.md)
+
+---
+
+## 严重度定义
+
+| 级别 | 含义 | Gate 影响 |
+|------|------|----------|
+| **P0 / Critical** | 核心功能不可用，数据不可信 | 立即 BLOCKED，必须修复后重新执行 |
+| **P1 / High** | 重要功能降级，影响验收结论 | 标记 Blocking 时 BLOCKED；否则可 waiver |
+| **P2 / Medium** | 非核心功能异常，有合理 workaround | 不阻塞，可 waiver |
+| **P3 / Low** | 轻微问题，不影响功能或结论 | 不阻塞，记录即可 |
+
+---
+
+## 矛盾结果处理规则
+
+> 同一用例输出"既 FAIL 又 PASS"时，**默认 BLOCKED**，直至根因明确。  
+> 需在本表登记，说明两段输出的来源与差异。
+
+---
+
+## 活跃缺陷登记表（Active Defects）
+
+| Defect ID | GitHub Issue | 标题摘要 | 严重度 | Blocking? | 发现日期 | 状态 | 关联 Waiver | 备注 |
+|-----------|-------------|---------|--------|----------|---------|------|------------|------|
+| DEF-001 | [#192](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/192) | Grafana readiness 超时（集成测试 setup 阶段） | P1 / High | ⚠️ 条件性 Blocking（若复现） | 2026-04-23 | 🔴 Open | — | 第二次运行未复现；需在 clean 环境下重新验证 |
+| DEF-002 | [#193](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/193) | `docker-compose.yml` `version` 字段过时警告 | P3 / Low | ❌ Non-blocking | 2026-04-23 | 🔴 Open | WAV-001 | 仅 WARN 级别，不影响容器启动或测试结果 |
+| DEF-003 | [#194](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/194) | JM-GRF-01 失败（Grafana 集成阶段 k6 http_req_failed 86.66%） | P1 / High | ✅ Blocking | 2026-04-23 | 🔴 Open | — | 集成测试 Phase 1 阶段；http_req_failed 阈值被触发 |
+| DEF-004 | [#195](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/195) | K6-SOAK-INT-01 结果矛盾（metrics not written vs custom metrics found） | P1 / High | ✅ Blocking | 2026-04-23 | 🔴 Open | — | 同一用例输出矛盾，按规则默认 BLOCKED |
+
+---
+
+## Waiver 登记表
+
+> Waiver 仅用于 **P2/P3** 级别，或经过充分论证的 P1 非核心缺陷。  
+> P0 缺陷**不得** waiver。
+
+| Waiver ID | 关联 Defect | 关联 Issue | 豁免理由 | 风险评估 | 审批人 | 审批日期 | 有效期 | 状态 |
+|-----------|-----------|-----------|---------|---------|-------|---------|--------|------|
+| WAV-001 | DEF-002 | #193 | `version` 字段为废弃 warning，Docker Compose 已忽略该字段，容器行为不受影响；计划在下一个 chore sprint 中移除 | 极低：无功能影响 | _(待审批)_ | _(待填写)_ | 下一个 Phase 合并前 | 🟡 待审批 |
+
+---
+
+## 已关闭缺陷历史（Closed Defects）
+
+> 关闭后保留记录，供审计追溯。
+
+| Defect ID | GitHub Issue | 标题摘要 | 严重度 | 关闭日期 | 关闭方式 | 关联 Commit |
+|-----------|-------------|---------|--------|---------|---------|------------|
+| — | — | — | — | — | — | — |
+
+---
+
+## Phase 6 历史遗留问题（已关闭）
+
+| Issue | 问题描述 | 关闭方式 | Commit |
+|-------|---------|---------|--------|
+| #105 | Rate limiter env binding — 模块加载时读取 env var | 修复：改为 request-time check | ce5c094b |
+| #106 | k6 JSONL 格式不兼容 generate-summary.sh | 修复：添加格式检测 + graceful fallback | acf21e92 |
+| #107 | 集成测试端口冲突 | 修复：显式 stop/start + sleep 延迟 | 698d7082 |
+| #114 | Breakpoint validation 缺失 | 补充：ENT-BREAKPOINT-01/02 验收标准 | 681513bc |
+| #116 | ENT-CONSISTENCY & ENT-RESILIENCE-03 验收缺失 | 补充：CONS-01~05, RESIL-03 验收表格 | _(已归档至 reports/phase6-stage4-verification-report.md)_ |
+
+---
+
+## 变更日志
+
+| 日期 | 变更内容 | 操作人 |
+|------|---------|-------|
+| 2026-04-24 | 初始建表；登记 DEF-001~004（源自 Phase 7 集成测试运行 #192~#195）；创建 WAV-001 草稿 | QA |
