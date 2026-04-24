@@ -130,7 +130,7 @@ jobs:
           mkdir -p reports
           k6 run --out json=reports/k6-smoke-summary.json tests/performance/smoke.k6.js
       - name: Extract baseline metrics
-        run: node scripts/baseline-export.js
+        run: node scripts/analysis/baseline-export.js
       - name: Stop API
         if: always()
         run: kill $(lsof -ti:3000) 2>/dev/null || true
@@ -231,7 +231,7 @@ jobs:
           mkdir -p reports
           gh run list -w performance-ci.yml --json conclusion,databaseId -q '.[] | select(.conclusion=="success") | .databaseId' | head -1 | xargs -I {} gh run download {} -n baseline-artifact -D reports/
       - name: Compare baseline (CI-BASE-02)
-        run: node scripts/baseline-compare.js
+        run: node scripts/analysis/baseline-compare.js
       - name: Upload comparison result
         if: always()
         uses: actions/upload-artifact@v7
@@ -257,7 +257,7 @@ jobs:
       - name: Collect trend data (CI-TREND-01)
         run: |
           mkdir -p reports
-          node scripts/trend-collect.js
+          node scripts/analysis/trend-collect.js
       - name: Upload trend artifact
         if: always()
         uses: actions/upload-artifact@v7

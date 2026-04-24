@@ -1,10 +1,10 @@
 /**
  * Collect k6 baseline metrics into trend.json
  * Reads reports/baseline.json and appends to reports/trend.json
- * Usage: node scripts/trend-collect.js
+ * Usage: node scripts/analysis/trend-collect.js
  */
 const fs = require('fs');
-const { appendTrend, loadBaseline } = require('../src/utils/baseline');
+const { appendTrend, loadBaseline } = require('../../src/utils/baseline');
 
 const baselineFile = 'reports/baseline.json';
 const trendFile = 'reports/trend.json';
