@@ -22,4 +22,4 @@ index.html
 reports/baseline-*.json
 reports/trend-*.json
 reports/system-metrics-int.csv
-reports/
+/reports/
