@@ -33,25 +33,29 @@ npm install          # 触发 husky prepare 脚本（安装 .husky/_/）
 
 | Hook | 触发时机 | 职责 | Gap 覆盖 |
 |------|---------|------|---------|
-| `commit-msg` | `git commit` 完成消息编辑后 | Conventional Commits 校验（subject 格式/长度/句号、body 空行、footer 结构） | G-06, G-07 |
-| `pre-commit` | `git commit` 开始前 | Secret scan + 条件 lint（Postman / Python ruff / 多项目 JS eslint+prettier） | G-01, G-02, G-03, G-04, G-05, G-11 |
+| `commit-msg` | `git commit` 完成消息编辑后 | Conventional Commits 校验（委派给 @commitlint/cli，规则见 `commitlint.config.js`） | G-06, G-07, G-12 |
+| `pre-commit` | `git commit` 开始前 | Secret scan（内置）+ lint-staged 委派（规则见 root `package.json` + 各项目嵌套配置） | G-01, G-02, G-05, G-08, G-11 |
 | `pre-push` | `git push` 前 | 受保护分支拦截 + performance-testing-platform 质量门控 | G-09, G-10 |
 
 ---
 
 ## commit-msg
 
-**规则**：
+**执行器**: [@commitlint/cli](https://github.com/conventional-changelog/commitlint) v20，规则定义在 `commitlint.config.js`。Hook 内部调用 `npx --no-install commitlint --edit "$1"`。
 
-| 项 | 规则 | 行为 |
+**规则汇总**（`extends: @commitlint/config-conventional` + 项目自定义）：
+
+| 项 | 规则 | 级别 |
 |---|------|-----|
-| Subject 格式 | `<type>(<scope>)?!?: <desc>` | 失败阻断 |
-| type 枚举 | `feat\|fix\|docs\|style\|refactor\|test\|chore\|ci\|perf\|build\|revert`（小写） | 失败阻断 |
-| Subject 长度 | ≤ 72 字符 | 失败阻断 |
-| Subject 末尾 | 不得为 `.` / `。` | 失败阻断 |
-| Body 空行 | 有 body 时 line 2 必须为空 | 失败阻断 |
-| Body 行宽 | ≤ 100 字符 | 软限制（仅警告） |
-| Merge / fixup! / squash! | — | 自动跳过 |
+| Subject 格式 | `<type>(<scope>)?!?: <desc>` | error（2） |
+| type 枚举 | `feat\|fix\|docs\|style\|refactor\|test\|chore\|ci\|perf\|build\|revert` | error（2） |
+| type 大小写 | 必须小写（`type-case`） | error（2） |
+| Subject 长度 | ≤ 72 字符（`header-max-length`） | error（2） |
+| Subject 末尾 | 禁止 `.`（`subject-full-stop`） | error（2） |
+| Body 空行 | `body-leading-blank` | error（2） |
+| Body 行宽 | ≤ 100 字符（`body-max-line-length`） | warning（1） |
+| Footer 空行 | `footer-leading-blank` | warning（1） |
+| Merge / fixup! / squash! | 自动 ignore | — |
 
 **示例**：
 
@@ -64,11 +68,13 @@ Refs: #123
 Co-authored-by: Alice <alice@example.com>
 ```
 
+**故障降级**：若 `node_modules` 缺失（贡献者未 `npm install`），hook 自动退回内建正则，避免完全卡死工作流。
+
 ---
 
 ## pre-commit
 
-按顺序执行，全部使用**增量触发**（只检查 staged 文件）：
+架构：**Secret scan（内置）** → **lint-staged 委派**。
 
 ### 1. Secret scan (G-01)
 
@@ -84,7 +90,7 @@ Co-authored-by: Alice <alice@example.com>
 
 **排除**：`package-lock.json`、`*.min.js`、`*.map`
 
-**误报处理**：在仓库根建 `.secretsallow`，每行一个 grep -E 正则：
+**误报处理**：在仓库根建 `.secretsallow`（按需创建，当前未提交模板），每行一个 `grep -E` 正则：
 
 ```
 # .secretsallow
@@ -92,25 +98,23 @@ AKIAIOSFODNN7EXAMPLE        # 公开测试向量
 AIzaSy[A-Za-z0-9_-]{33}DEMO  # 演示项目固定值
 ```
 
-### 2. Postman 集合校验 (G-02)
+### 2. lint-staged 委派 (G-08)
 
-仅当 `api-testing-demo/**` 有 staged 文件，执行 `npm run validate`。
+执行器：[lint-staged](https://github.com/lint-staged/lint-staged) v16。Hook 内部调用 `npx --no-install lint-staged --concurrent false`。
 
-### 3. Python ruff (G-05)
+**配置层级**（按文件路径就近匹配）：
 
-扫描 staged `*.py`（排除 `venv/`），按优先级探测 ruff：
+| 配置位置 | 范围 | 规则 |
+|---------|-----|------|
+| root `package.json` | `*.py` | `ruff check && ruff format --check`（探测 venv → PATH → `python3 -m ruff`） |
+| root `package.json` | `microservice-testing-platform/**/*.js` | `eslint`（项目 `node_modules` 存在时触发） |
+| root `package.json` | `playwright-demo/**/*.{js,ts}` | `eslint`（项目 `node_modules` 存在时触发） |
+| `performance-testing-platform/package.json` | `src/**/*.js`, `tests/**/*.js`, `scripts/**/*.js` | `eslint --fix` + `prettier --write` |
+| `api-testing-demo/package.json` | 项目内 lint-staged 配置 | 见该项目 `package.json` |
 
-1. `$REPO_ROOT/venv/bin/ruff`
-2. PATH `ruff`
-3. `python3 -m ruff`
+**注**：lint-staged 对每个 staged 文件选择**最近**的配置，因此无需在 root 重复定义项目内已覆盖的规则。
 
-三者均不可用 → 报错并给出安装指引。
-
-### 4. 多项目 JS lint (G-11)
-
-支持项目：`performance-testing-platform`、`api-testing-demo`、`microservice-testing-platform`、`playwright-demo`。
-
-规则：staged JS 变更 → 若项目 `node_modules/` 已安装 → 跑 `npx --no-install eslint`；若项目存在 prettier 依赖则追加 `prettier --check`；若 `node_modules` 缺失，给出 warning 并跳过（不阻断；CI `commit-guard.yml` 兜底）。
+**故障降级**：`node_modules` 缺失时 hook 输出提示但不阻断——CI `commit-guard.yml` 兜底。
 
 ---
 
@@ -146,8 +150,7 @@ AIzaSy[A-Za-z0-9_-]{33}DEMO  # 演示项目固定值
 |------|------|------|----------|
 | `COMMIT_MSG_SKIP=1` | 跳过 commit-msg 全部校验 | commit-msg | 需在 PR review 中说明原因 |
 | `SKIP_SECRET_SCAN=1` | 跳过 secret 扫描 | pre-commit | 管理员审批 |
-| `SKIP_PY_LINT=1` | 跳过 Python ruff | pre-commit | 已在 CI 兜底时可用 |
-| `SKIP_JS_LINT=1` | 跳过 JS lint | pre-commit | 已在 CI 兜底时可用 |
+| `SKIP_LINT_STAGED=1` | 跳过 lint-staged 委派（全部 lint） | pre-commit | 管理员审批；CI 仍会校验 |
 | `ALLOW_DIRECT_PUSH=1` | 允许直推受保护分支 | pre-push | 仅限管理员紧急修复 |
 | `--no-verify` | Git 原生跳过所有 hook | 全部 | **禁止常规使用**；CI `commit-guard.yml` 仍会拦截 |
 
@@ -182,12 +185,11 @@ AIzaSy[A-Za-z0-9_-]{33}DEMO  # 演示项目固定值
 
 ## 后续演进路径
 
-以下为 **可选** 增强项，当前实现已覆盖功能等价物，迁移仅是为了生态对齐：
+以下为 **可选** 增强项：
 
-| 演进项 | 当前实现 | 建议迁移路径 | Gap 编号 |
-|-------|---------|-------------|---------|
-| lint-staged | 内联 `git diff --cached` + `xargs` | 引入 `lint-staged` + 根 `package.json` 配置 | G-08 |
-| commitlint | 内建正则（commit-msg） | 引入 `@commitlint/cli` + `@commitlint/config-conventional` | G-12 |
-| gitleaks | 内建正则（pre-commit + CI） | 引入 `gitleaks` 二进制或 `gitleaks-action` | G-01 增强 |
-
-**迁移判定原则**：以上工具需要新增 npm 依赖或外部二进制；在离线 / 低信任网络环境会增加故障面。当前内建实现在功能上已等价，只在开发者上下文（例如引入 `.commitlintrc.json` 让 IDE 插件自动提示）上略逊。如团队规模扩大或接入 monorepo 工具链，可按上表迁移。
+| 演进项 | 当前实现 | 备注 | Gap 编号 |
+|-------|---------|------|---------|
+| lint-staged | ✅ 已接入 `lint-staged@16` + root `package.json` 配置 | 完成 | G-08 |
+| commitlint | ✅ 已接入 `@commitlint/cli@20` + `@commitlint/config-conventional@20` | 完成；规则见 `commitlint.config.js` | G-12 |
+| gitleaks | 内建正则（pre-commit + CI） | 可选引入 `gitleaks` 二进制或 `gitleaks-action`，以获得 Trufflehog/Gitleaks 等更丰富的 entropy 检测；当前内建正则覆盖主流 8 类密钥 | G-01 增强 |
+| IDE 集成 | `commitlint.config.js` 已可被 VSCode `commitlint` 插件识别 | 无需额外配置 | — |
