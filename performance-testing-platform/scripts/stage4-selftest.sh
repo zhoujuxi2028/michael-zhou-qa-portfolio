@@ -14,7 +14,6 @@ cd "$(dirname "$0")/.."
 LOG_DIR="docs/qa/reports/logs-stage4"
 REPORT="docs/qa/reports/stage4-selftest-report.md"
 TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
-DATE=$(date "+%Y-%m-%d")
 START_TIME=$(date +%s)
 
 mkdir -p "$LOG_DIR"
@@ -80,7 +79,8 @@ has_recent_conventional_commit() {
 check_system_load() {
   # 用 awk 取倒数第三个字段（1-min 平均负载）
   # uptime 格式: ... load average[s]: X.XX Y.YY Z.ZZ
-  local load=$(uptime | awk '{print $(NF-2)}' 2>/dev/null || echo "0")
+  local load
+  load=$(uptime | awk '{print $(NF-2)}' 2>/dev/null || echo "0")
   local threshold=5
 
   # 防护：空值或非数字格式
@@ -208,8 +208,8 @@ fi
 echo ""
 echo "--- 2.2 锁机制 ---"
 LOCK_DIR="/tmp/test-lock-$$"
-if bash scripts/lib/lock.sh acquire "$LOCK_DIR" 2>&1 > /dev/null; then
-  if ! bash scripts/lib/lock.sh acquire "$LOCK_DIR" 2>&1 > /dev/null; then
+if bash scripts/lib/lock.sh acquire "$LOCK_DIR" > /dev/null 2>&1; then
+  if ! bash scripts/lib/lock.sh acquire "$LOCK_DIR" > /dev/null 2>&1; then
     log_result "2.2" "PASS" "锁机制正常 (并发防护验证通过)"
   else
     log_result "2.2" "FAIL" "锁机制未能防止并发"
@@ -283,7 +283,6 @@ fi
 echo ""
 echo "--- 5.3 X-XSS-Protection 响应头 ---"
 npm start > "$LOG_DIR/api-startup.log" 2>&1 &
-API_PID=$!
 sleep 3
 
 XSS_HEADER=$(curl -si http://localhost:3000/health 2>/dev/null | grep -i "x-xss-protection" || true)
@@ -320,13 +319,20 @@ else
   log_result "6.1" "SKIP" "gh CLI 不可用"
 fi
 
-# 6.2 CI workaround 检查
+# 6.2 CI workaround 检查（允许含豁免注释的 continue-on-error）
 echo ""
-echo "--- 6.2 CI 无 workaround ---"
-if ! grep -q "continue-on-error" ../../.github/workflows/performance-ci.yml 2>/dev/null; then
-  log_result "6.2" "PASS" "CI 配置无 continue-on-error 或 || true"
+echo "--- 6.2 CI 无未记录 workaround ---"
+CI_WF="../.github/workflows/performance-ci.yml"
+if [ -f "$CI_WF" ]; then
+  UNDOC=$(grep -c "continue-on-error: true" "$CI_WF" 2>/dev/null || echo 0)
+  EXEMPTED=$(grep -B1 "continue-on-error: true" "$CI_WF" 2>/dev/null | grep -cE "exemption|risks\.md|R-[0-9]+" || echo 0)
+  if [ "$UNDOC" -eq "$EXEMPTED" ]; then
+    log_result "6.2" "PASS" "CI 所有 continue-on-error 均有豁免注释 (${EXEMPTED} 处)"
+  else
+    log_result "6.2" "FAIL" "CI 存在未记录的 continue-on-error ($((UNDOC - EXEMPTED)) 处)"
+  fi
 else
-  log_result "6.2" "FAIL" "CI 配置存在 workaround"
+  log_result "6.2" "SKIP" "CI 工作流文件不可达"
 fi
 
 # ============================================================

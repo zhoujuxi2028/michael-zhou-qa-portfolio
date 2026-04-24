@@ -74,19 +74,19 @@ JMeter (多线程) ───────────→├─ Worker 3 ─┼─
 
 ### 性能测试类型覆盖
 
-| 类型           | 目的                      | 状态             |
-| -------------- | ------------------------- | ---------------- |
-| Smoke Test     | 最小负载验证系统可用      | ✅ k6 + JMeter   |
-| Load Test      | 预期负载下的性能验证      | ✅ k6 + JMeter   |
-| Stress Test    | 超载行为观察              | ✅ k6 + JMeter   |
-| Spike Test     | 突发流量应对              | ✅ k6 + JMeter   |
-| Capacity Test  | 阶梯递增找系统极限        | ✅ Phase 2       |
-| Auth Load Test | JWT 登录/刷新/鉴权高并发  | ✅ Phase 3 (#56) |
-| Soak Test      | 长时间运行找内存泄漏      | ✅ Phase 4 (#65) |
-| Infra Helpers  | env/data/profile 三层抽象 | ✅ Phase 5 (#85) |
-| Breakpoint Test| 系统绝对崩溃点测试        | ✅ Phase 6 (#86) |
-| Rate Limiter   | API 限流/熔断行为测试    | ✅ Phase 6 (#86) |
-| Summary Report | 执行摘要 Markdown 报告    | ✅ Phase 6 (#86) |
+| 类型            | 目的                      | 状态             |
+| --------------- | ------------------------- | ---------------- |
+| Smoke Test      | 最小负载验证系统可用      | ✅ k6 + JMeter   |
+| Load Test       | 预期负载下的性能验证      | ✅ k6 + JMeter   |
+| Stress Test     | 超载行为观察              | ✅ k6 + JMeter   |
+| Spike Test      | 突发流量应对              | ✅ k6 + JMeter   |
+| Capacity Test   | 阶梯递增找系统极限        | ✅ Phase 2       |
+| Auth Load Test  | JWT 登录/刷新/鉴权高并发  | ✅ Phase 3 (#56) |
+| Soak Test       | 长时间运行找内存泄漏      | ✅ Phase 4 (#65) |
+| Infra Helpers   | env/data/profile 三层抽象 | ✅ Phase 5 (#85) |
+| Breakpoint Test | 系统绝对崩溃点测试        | ✅ Phase 6 (#86) |
+| Rate Limiter    | API 限流/熔断行为测试     | ✅ Phase 6 (#86) |
+| Summary Report  | 执行摘要 Markdown 报告    | ✅ Phase 6 (#86) |
 
 ## 容量测试结论
 
@@ -198,21 +198,23 @@ JMeter (多线程) ───────────→├─ Worker 3 ─┼─
 
 **最小配置（运行 smoke/load/stress/soak 测试）**
 
-| 资源 | 最小要求 | 说明 |
-|------|---------|------|
-| CPU | ≥ 4 核 | k6/JMeter 多核支持；单核将导致吞吐量严重受限 |
-| 内存 | ≥ 8 GB | Node.js (1GB) + k6 (2GB) + JMeter (2GB) + Docker (2GB) + 系统预留 (1GB) |
-| 磁盘 | ≥ 10 GB | SQLite WAL 模式 (~100MB/h)；Grafana 容器 (~2GB)；报告文件 |
-| 磁盘类型 | SSD 推荐 | HDD 会显著延长测试执行时间 |
+| 资源     | 最小要求 | 说明                                                                    |
+| -------- | -------- | ----------------------------------------------------------------------- |
+| CPU      | ≥ 4 核   | k6/JMeter 多核支持；单核将导致吞吐量严重受限                            |
+| 内存     | ≥ 8 GB   | Node.js (1GB) + k6 (2GB) + JMeter (2GB) + Docker (2GB) + 系统预留 (1GB) |
+| 磁盘     | ≥ 10 GB  | SQLite WAL 模式 (~100MB/h)；Grafana 容器 (~2GB)；报告文件               |
+| 磁盘类型 | SSD 推荐 | HDD 会显著延长测试执行时间                                              |
 
 **容量测试与 Breakpoint 测试**
 
 ⚠️ **Breakpoint 阶梯递增测试（VU ≥ 50）需要充足硬件资源，仅在 ≥ 4核 8GB 机器上运行。** 硬件不足会导致：
+
 - 测试执行时间 > 24 小时（不可用）
 - 结果波动性大（容易误判）
 - 瓶颈分析不准确
 
 参考数据（MacBook Pro i5-1038NG7, 4C8T, 16GB）：
+
 - Smoke Test (5 VUs, 60s): ~1 min
 - Load Test (20→50 VUs, 5m): ~5 min
 - Capacity Test (阶梯递增至极限): ~4-8 hours
@@ -320,7 +322,7 @@ performance-testing-platform/
 | `npm stop`                 | 停止目标 API                                      |
 | `npm restart`              | 重启目标 API — Cluster 模式                       |
 | `npm run restart:single`   | 重启目标 API — 单进程模式                         |
-| `npm test`                 | 运行 Jest 单元测试 (148 tests)                     |
+| `npm test`                 | 运行 Jest 单元测试 (148 tests)                    |
 | `npm run setup`            | 安装 + lint + 测试 (一键初始化)                   |
 | `npm run clean`            | 清理 reports/results/coverage/db                  |
 | `npm run health`           | preflight + 测试 (健康检查)                       |
@@ -391,12 +393,12 @@ performance-testing-platform/
 
 属于 [Michael Zhou's QA Portfolio](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio)。
 
-
 ## tips
-先级 │ 提问方式                                                     │ 获取内容                    │ 时间投入   │
+
+先级 │ 提问方式 │ 获取内容 │ 时间投入 │
 ├────────┼──────────────────────────────────────────────────────────────┼─────────────────────────────┼────────────┤
-│ 🥇     │ "给我看 performance-testing 设计阶段的所有关键文档"          │ 快速浏览设计质量 + 关键路径 │ 5 分钟内   │
+│ 🥇 │ "给我看 performance-testing 设计阶段的所有关键文档" │ 快速浏览设计质量 + 关键路径 │ 5 分钟内 │
 ├────────┼──────────────────────────────────────────────────────────────┼─────────────────────────────┼────────────┤
-│ 🥈     │ "分析 Phase 2 设计输出件，指出质量问题和改进空间"            │ 深度审查 + 建议             │ 10-15 分钟 │
+│ 🥈 │ "分析 Phase 2 设计输出件，指出质量问题和改进空间" │ 深度审查 + 建议 │ 10-15 分钟 │
 ├────────┼──────────────────────────────────────────────────────────────┼─────────────────────────────┼────────────┤
-│ 🥉     │ "performance-testing 设计阶段完成了什么？是否有遗漏或缺陷？" │ 状态总结 + 风险识别         │ 详细     
+│ 🥉 │ "performance-testing 设计阶段完成了什么？是否有遗漏或缺陷？" │ 状态总结 + 风险识别 │ 详细

@@ -25,6 +25,7 @@ LIMIT_HEADER=$(curl -s -i "http://localhost:$PORT/api/products" 2>/dev/null | ..
 ```
 
 **Request flow:**
+
 1. Server starts with `RATE_LIMIT_MAX=3` (line 14)
 2. Verification request (line 63) → consumes quota 1/3
 3. RL-INT-01 test begins with only 2/3 quota remaining
@@ -37,16 +38,19 @@ LIMIT_HEADER=$(curl -s -i "http://localhost:$PORT/api/products" 2>/dev/null | ..
 **Increase `RATE_LIMIT_MAX` to account for verification request:**
 
 Change line 14 from:
+
 ```bash
 RATE_LIMIT_MAX=3  # Only test requests
 ```
 
 To:
+
 ```bash
 RATE_LIMIT_MAX=4  # 1 verification + 3 test requests
 ```
 
 This allows:
+
 - 1 quota for verification request (line 63)
 - 3 quota for RL-INT-01 test (requests 1-3 return 200, request 4 returns 429)
 

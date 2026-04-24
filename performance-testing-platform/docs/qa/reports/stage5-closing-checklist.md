@@ -11,10 +11,12 @@
 ### 步骤 1: PR 创建
 
 **检查项：**
+
 - [ ] Stage 4 自测报告已审查，验收通过
 - [ ] 分支 `feature/performance-testing` 已推送到远程
 
 **操作：**
+
 ```bash
 gh pr create \
   --title "feat(perf): Phase 6 testing capability enhancement" \
@@ -24,6 +26,7 @@ gh pr create \
 ```
 
 **PR body 要点:**
+
 - Summary: Phase 6 的 7 个 Task 完成内容
 - Test Plan: 单元测试 148/148、集成测试 29/31、覆盖率 92.83%
 - Closes Issue #88
@@ -35,12 +38,14 @@ gh pr create \
 ### 步骤 2: 根目录文档更新
 
 **检查项：**
+
 - [ ] 根 CLAUDE.md Projects 表已更新
 - [ ] 根 README.md 项目列表已同步（如有）
 
 **更新内容:**
 
 **文件:** `/CLAUDE.md`
+
 ```
 | 性能测试 | `performance-testing-platform/` — k6 + JMeter 双引擎 (148 unit + 29 integration + 26 perf) | `performance-testing-platform/CLAUDE.md` |
 ```
@@ -54,10 +59,12 @@ gh pr create \
 ### 步骤 3: 最终风险确认
 
 **检查项：**
+
 - [ ] `performance-testing-platform/docs/project-management/risks.md` 已审查
 - [ ] 遗留活跃风险已确认可接受或已创建 Issue 追踪
 
 **活跃风险清单:**
+
 - R-01: macOS 代理拦截 → ✅ 缓解方案就位 (JVM_ARGS)
 - R-02: OrbStack 资源不足 → ✅ preflight check 已配置
 - R-04: CI baseline 过期 → ✅ trend.json 追加式存储
@@ -79,10 +86,12 @@ gh pr create \
 ### 步骤 4: 问题关闭
 
 **检查项：**
+
 - [ ] PR 已被审批并 merged 到 main
 - [ ] Issue #88 (Phase 6) 准备关闭
 
 **操作：**
+
 ```bash
 gh issue close 88 --comment "Phase 6 完成，详见 PR #XXX
 
@@ -107,11 +116,13 @@ Phase 7: Grafana dashboard + CI 报告集成
 ### 步骤 5: 文档归档
 
 **检查项：**
+
 - [ ] Phase 6 所有文档已最终审查
 - [ ] 验收报告已保存到版本控制（可选，reports/ 通常被 gitignore）
 - [ ] MEMORY.md 已更新（如有关键决策需保留）
 
 **文档清单:**
+
 - ✅ `CLAUDE.md` (project CLAUDE.md) — 锁机制文档已完整
 - ✅ `docs/architecture/architecture.md` — k6 helpers + phase 6 设计已更新
 - ✅ `docs/qa/test-plan.md` — Phase 6 集成测试用例已列表
@@ -127,14 +138,14 @@ Phase 7: Grafana dashboard + CI 报告集成
 
 ## 📊 检查清单总结
 
-| 步骤 | 内容 | 状态 | 估计时间 |
-|------|------|------|---------|
-| 1 | PR 创建 | ⏳ | 5 min |
-| 2 | 根文档更新 | ⏳ | 10 min |
-| 3 | 风险确认 | ⏳ | 5 min |
-| 4 | Issue 关闭 | ⏳ | 5 min |
-| 5 | 文档归档 | ✅ | 0 min |
-| **总计** | | **20-30 min** | |
+| 步骤     | 内容       | 状态          | 估计时间 |
+| -------- | ---------- | ------------- | -------- |
+| 1        | PR 创建    | ⏳            | 5 min    |
+| 2        | 根文档更新 | ⏳            | 10 min   |
+| 3        | 风险确认   | ⏳            | 5 min    |
+| 4        | Issue 关闭 | ⏳            | 5 min    |
+| 5        | 文档归档   | ✅            | 0 min    |
+| **总计** |            | **20-30 min** |          |
 
 ---
 
@@ -149,13 +160,12 @@ Phase 7: Grafana dashboard + CI 报告集成
 
 ## ⚠️ Stage 5 失败处理
 
-| 场景 | 处理方案 |
-|------|---------|
-| PR review 要求修改 | 回到 feature 分支修改 → push → re-review |
-| 冲突检测 (conflicts) | 本地 merge main，解决冲突，push |
-| CI 在 main 报红 | 调查失败原因，回到 feature 分支修复 → push |
+| 场景                 | 处理方案                                   |
+| -------------------- | ------------------------------------------ |
+| PR review 要求修改   | 回到 feature 分支修改 → push → re-review   |
+| 冲突检测 (conflicts) | 本地 merge main，解决冲突，push            |
+| CI 在 main 报红      | 调查失败原因，回到 feature 分支修复 → push |
 
 ---
 
 **下一步:** 等待 Stage 4 验收完成，然后按此清单执行 Stage 5。
-
