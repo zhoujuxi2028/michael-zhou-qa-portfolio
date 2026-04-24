@@ -19,7 +19,7 @@ while [ $# -gt 0 ]; do
       shift
       ;;
     --verbose)
-      DEBUG_MODE=1
+      export DEBUG_MODE=1
       shift
       ;;
     *)

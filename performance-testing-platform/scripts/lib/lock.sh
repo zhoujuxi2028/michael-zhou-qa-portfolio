@@ -49,7 +49,7 @@ case "$COMMAND" in
   guard)
     # Acquire lock, run command with auto-release
     acquire_lock "$LOCK_DIR"
-    trap "release_lock '$LOCK_DIR'" EXIT
+    trap 'release_lock "$LOCK_DIR"' EXIT
     eval "$CMD"
     ;;
   *)

@@ -28,10 +28,10 @@ tests/performance/helpers/profile.js
 
 本地与 CI 的 Prettier 检查范围不一致：
 
-| 位置 | 命令 |
-|------|------|
-| CI (`performance-ci.yml`) | `npx prettier --check 'src/**/*.js' 'tests/**/*.js' 'scripts/**/*.js'` |
-| 本地 (`package.json`) | `prettier --check 'src/**/*.js' 'tests/unit/**/*.js' 'tests/integration/**/*.js' 'scripts/**/*.js'` |
+| 位置                      | 命令                                                                                                |
+| ------------------------- | --------------------------------------------------------------------------------------------------- |
+| CI (`performance-ci.yml`) | `npx prettier --check 'src/**/*.js' 'tests/**/*.js' 'scripts/**/*.js'`                              |
+| 本地 (`package.json`)     | `prettier --check 'src/**/*.js' 'tests/unit/**/*.js' 'tests/integration/**/*.js' 'scripts/**/*.js'` |
 
 `tests/performance/**/*.js` 被 CI 检查，但未被本地 `format:check` 覆盖，因此形成范围漂移。
 
@@ -39,13 +39,13 @@ tests/performance/helpers/profile.js
 
 ## 3. 根本原因（5 Why）
 
-| 层级 | 问题 | 原因 |
-|------|------|------|
-| Why 1 | 为什么 CI 报 Prettier 失败？ | `tests/performance/helpers/profile.js` 不符合格式要求 |
-| Why 2 | 为什么本地没发现？ | `npm run format:check` 没有扫描 `tests/performance/**/*.js` |
-| Why 3 | 为什么范围不一致？ | `package.json` 仍保留早期只覆盖 `tests/unit` + `tests/integration` 的旧命令 |
-| Why 4 | 为什么改动后没有同步？ | 新增 `tests/performance` 资产时，只更新了 workflow，没有同步本地脚本契约 |
-| Why 5 | 为什么 code review / 测试没拦住？ | 缺少“本地脚本与 CI 命令一致性”自动化回归测试 |
+| 层级  | 问题                              | 原因                                                                        |
+| ----- | --------------------------------- | --------------------------------------------------------------------------- |
+| Why 1 | 为什么 CI 报 Prettier 失败？      | `tests/performance/helpers/profile.js` 不符合格式要求                       |
+| Why 2 | 为什么本地没发现？                | `npm run format:check` 没有扫描 `tests/performance/**/*.js`                 |
+| Why 3 | 为什么范围不一致？                | `package.json` 仍保留早期只覆盖 `tests/unit` + `tests/integration` 的旧命令 |
+| Why 4 | 为什么改动后没有同步？            | 新增 `tests/performance` 资产时，只更新了 workflow，没有同步本地脚本契约    |
+| Why 5 | 为什么 code review / 测试没拦住？ | 缺少“本地脚本与 CI 命令一致性”自动化回归测试                                |
 
 **根本原因**: 本地开发脚本与 CI 工作流之间缺少单一真源和一致性校验，导致格式检查范围发生漂移。
 
@@ -53,10 +53,10 @@ tests/performance/helpers/profile.js
 
 ## 4. 影响评估
 
-| 项目 | 影响 |
-|------|------|
-| 直接影响 | PR 无法通过 `Performance Testing / Code Quality` |
-| 间接影响 | 开发者本地验证结果失真，增加返工与等待 CI 时间 |
+| 项目     | 影响                                                                             |
+| -------- | -------------------------------------------------------------------------------- |
+| 直接影响 | PR 无法通过 `Performance Testing / Code Quality`                                 |
+| 间接影响 | 开发者本地验证结果失真，增加返工与等待 CI 时间                                   |
 | 影响范围 | `performance-testing-platform` 中所有位于 `tests/performance/**/*.js` 的 JS 文件 |
 
 ---

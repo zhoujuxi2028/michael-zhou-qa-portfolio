@@ -1,6 +1,7 @@
 # [INC-2026-04-21] Preflight Check Script Manual Intervention Issue
 
 ## 基本信息
+
 - **日期**: 2026-04-21 10:18 UTC
 - **问题类型**: 运维效率 (P2)
 - **影响**: Stage 4 集成测试每次需要手工启动 Docker/OrbStack
@@ -13,7 +14,8 @@
 
 **症状**: 运行 `bash scripts/preflight-check.sh --stage4` 时，如果 Docker 未启动，脚本仅报错并要求用户手工执行 `open -a OrbStack`。
 
-**影响**: 
+**影响**:
+
 - 每次运行集成测试前需要 2-3 分钟的人工干预
 - 降低开发效率，特别是在 CI/CD 中增加不必要的等待时间
 - 容易遗漏或忘记启动
@@ -24,13 +26,13 @@
 
 ## 2. 根本原因分析 (5 Why)
 
-| 层级 | 问题 | 原因 |
-|------|------|------|
-| **Why 1** | 脚本只检查，不启动 Docker | 脚本设计为仅验证，未考虑自动修复 |
-| **Why 2** | 脚本设计不完整 | 架构缺陷：Detect 无 Recovery 路径 |
-| **Why 3** | 缺少失败恢复逻辑 | Code review 时未要求"auto-remediation" |
-| **Why 4** | 无 DevOps 最佳实践 | 早期设计未遵循 Infrastructure-as-Code 原则 |
-| **Why 5** | 团队流程问题 | 缺少针对"前置条件检查脚本"的设计规范 |
+| 层级      | 问题                      | 原因                                       |
+| --------- | ------------------------- | ------------------------------------------ |
+| **Why 1** | 脚本只检查，不启动 Docker | 脚本设计为仅验证，未考虑自动修复           |
+| **Why 2** | 脚本设计不完整            | 架构缺陷：Detect 无 Recovery 路径          |
+| **Why 3** | 缺少失败恢复逻辑          | Code review 时未要求"auto-remediation"     |
+| **Why 4** | 无 DevOps 最佳实践        | 早期设计未遵循 Infrastructure-as-Code 原则 |
+| **Why 5** | 团队流程问题              | 缺少针对"前置条件检查脚本"的设计规范       |
 
 **根本原因**: 脚本是 Validation Only (检查型)，缺乏 Auto-Remediation (自愈型) 能力
 
@@ -55,11 +57,11 @@ preflight-check.sh
 
 ### 为什么这样设计（为什么设计缺陷）
 
-| 设计决策 | 理由 | 缺陷 |
-|---------|------|------|
-| 只做验证 | "检查脚本应该是只读的，不应修改系统" | 过度保守，忽略了便利性 |
-| 不启动容器 | "用户应该主动启动容器，这是意图清晰的" | 理想化，实际用户忘记启动 |
-| 简单错误报告 | "脚本应该保持简单" | 简单来看是对的，但违反了 SRE 原则 |
+| 设计决策     | 理由                                   | 缺陷                              |
+| ------------ | -------------------------------------- | --------------------------------- |
+| 只做验证     | "检查脚本应该是只读的，不应修改系统"   | 过度保守，忽略了便利性            |
+| 不启动容器   | "用户应该主动启动容器，这是意图清晰的" | 理想化，实际用户忘记启动          |
+| 简单错误报告 | "脚本应该保持简单"                     | 简单来看是对的，但违反了 SRE 原则 |
 
 ---
 
@@ -67,13 +69,13 @@ preflight-check.sh
 
 ### SRE 五步框架（失败恢复）
 
-| 步骤 | 当前实现 | SRE 最佳实践 | 改进后 |
-|------|---------|-----------|--------|
-| 1. **Detect** | ✅ 检查 docker info | 检查失败状态 | ✅ 检查 docker info |
-| 2. **Diagnose** | ❌ 无诊断 | 分析根本原因 | ⚠️ 假设 Docker 未启动 |
-| 3. **Alert** | ✅ 报错信息 | 清晰的错误信息 | ✅ 同左 |
-| 4. **Mitigate** | ❌ 无 | 自动或半自动修复 | ✅ 自动启动 OrbStack/Docker |
-| 5. **Verify** | ❌ 无 | 验证修复成功 | ✅ 重新检查 docker info |
+| 步骤            | 当前实现            | SRE 最佳实践     | 改进后                      |
+| --------------- | ------------------- | ---------------- | --------------------------- |
+| 1. **Detect**   | ✅ 检查 docker info | 检查失败状态     | ✅ 检查 docker info         |
+| 2. **Diagnose** | ❌ 无诊断           | 分析根本原因     | ⚠️ 假设 Docker 未启动       |
+| 3. **Alert**    | ✅ 报错信息         | 清晰的错误信息   | ✅ 同左                     |
+| 4. **Mitigate** | ❌ 无               | 自动或半自动修复 | ✅ 自动启动 OrbStack/Docker |
+| 5. **Verify**   | ❌ 无               | 验证修复成功     | ✅ 重新检查 docker info     |
 
 **改进**: 从 Detect-Alert 流程升级到 Detect-Mitigate-Verify 流程
 
@@ -95,6 +97,7 @@ fi
 ```
 
 **启动优先级**（基于性能）:
+
 1. **OrbStack** - 启动时间: ~3-5s (推荐用于 macOS)
 2. **Docker Desktop** - 启动时间: ~8-15s
 3. **Colima** - 启动时间: ~5-8s (开源)
@@ -118,7 +121,7 @@ fi
 # After (自动修复)
 if ! docker info > /dev/null 2>&1; then
   echo "⏳ Docker daemon not running — attempting auto-start..."
-  
+
   # 1. Platform detection
   if command -v open &> /dev/null; then  # macOS
     # 2. Try OrbStack first (最快)
@@ -133,7 +136,7 @@ if ! docker info > /dev/null 2>&1; then
   else  # Linux
     sudo systemctl start docker
   fi
-  
+
   # 4. Verify fix worked
   if docker info > /dev/null 2>&1; then
     echo "✅ Docker daemon started successfully"
@@ -148,12 +151,12 @@ fi
 
 ## 7. 后续改进 (Follow-up Actions)
 
-| 改进项 | 优先级 | 负责人 | 截止日期 |
-|--------|--------|--------|---------|
-| 对其他前置条件检查应用自动修复模式 | P1 | Michael | 2026-04-25 |
-| 为所有检查脚本创建统一的 Detect-Mitigate-Verify 框架 | P1 | Michael | 2026-04-28 |
-| 编写脚本测试用例（Docker 未启动的场景） | P2 | Michael | 2026-04-26 |
-| 添加超时保护（防止无限等待） | P2 | Michael | 2026-04-27 |
+| 改进项                                               | 优先级 | 负责人  | 截止日期   |
+| ---------------------------------------------------- | ------ | ------- | ---------- |
+| 对其他前置条件检查应用自动修复模式                   | P1     | Michael | 2026-04-25 |
+| 为所有检查脚本创建统一的 Detect-Mitigate-Verify 框架 | P1     | Michael | 2026-04-28 |
+| 编写脚本测试用例（Docker 未启动的场景）              | P2     | Michael | 2026-04-26 |
+| 添加超时保护（防止无限等待）                         | P2     | Michael | 2026-04-27 |
 
 ---
 
@@ -164,6 +167,7 @@ fi
 所有 `*-check.sh` 脚本必须遵循以下架构：
 
 **Tier 1: Auto-Remediation (自动修复)**
+
 ```
 Check → Fail → Auto-Fix → Verify Success?
                               ├─ Yes → Continue
@@ -171,12 +175,14 @@ Check → Fail → Auto-Fix → Verify Success?
 ```
 
 **Tier 2: Semi-Automated (半自动)**
+
 ```
 Check → Fail → Provide Fix Command → Alert User
 (用户选择是否执行)
 ```
 
 **Tier 3: Manual (纯通知)**
+
 ```
 Check → Fail → Alert User (仅在无法自动修复时)
 ```
@@ -184,8 +190,8 @@ Check → Fail → Alert User (仅在无法自动修复时)
 ### 决策树
 
 ```
-Can this be auto-fixed? 
-├─ Yes (环境变量、启动进程) 
+Can this be auto-fixed?
+├─ Yes (环境变量、启动进程)
 │   └─ Implement Tier 1 (Auto-Remediation)
 ├─ Semi-fixable (需要权限)
 │   └─ Implement Tier 2 (Semi-Auto + Sudo Prompt)
@@ -209,7 +215,8 @@ Can this be auto-fixed?
 **参与者**: Michael Zhou
 
 **讨论要点**:
-1. **为什么原设计只做检查？** 
+
+1. **为什么原设计只做检查？**
    - 理由：简单、保守，遵循"最小权限"
    - 反思：过度遵循了原则，忽视了实用性
 
@@ -233,11 +240,11 @@ Can this be auto-fixed?
 
 **效率提升**:
 
-| 指标 | 修复前 | 修复后 | 改进 |
-|------|--------|--------|------|
-| preflight-check 总耗时 | 30s (检查 + 手工启动) | 15-20s (自动启动) | ✅ 50% 下降 |
-| 人工干预次数 | 每次 Stage 4 测试都需要 | 0 (假设 OrbStack 已安装) | ✅ 100% 消除 |
-| Stage 4 全流程时间 | 5-10 分钟 (包括人工干预) | 4-5 分钟 | ✅ 40-50% 下降 |
+| 指标                   | 修复前                   | 修复后                   | 改进           |
+| ---------------------- | ------------------------ | ------------------------ | -------------- |
+| preflight-check 总耗时 | 30s (检查 + 手工启动)    | 15-20s (自动启动)        | ✅ 50% 下降    |
+| 人工干预次数           | 每次 Stage 4 测试都需要  | 0 (假设 OrbStack 已安装) | ✅ 100% 消除   |
+| Stage 4 全流程时间     | 5-10 分钟 (包括人工干预) | 4-5 分钟                 | ✅ 40-50% 下降 |
 
 ---
 

@@ -45,13 +45,13 @@ Received: null
 
 ## 3. 根本原因（5 Why）
 
-| 层级 | 问题 | 原因 |
-|------|------|------|
-| Why 1 | 为什么单元测试失败？ | 测试从 workflow 中提取 Prettier 命令时得到 `null` |
-| Why 2 | 为什么得到 `null`？ | 正则只支持 `npx prettier --check ...` 直写形式 |
-| Why 3 | 为什么 merge 时才暴露？ | PR merge ref 使用了 base branch 上更新后的 workflow：`npm run format:check` |
-| Why 4 | 为什么本地没暴露？ | 当前工作分支里的 workflow 仍是旧写法，本地测试只看到了分支文件 |
-| Why 5 | 为什么会形成 merge-only failure？ | 回归测试与 workflow 实现细节耦合过深，且分支没有及时同步主线 workflow 改动 |
+| 层级  | 问题                              | 原因                                                                        |
+| ----- | --------------------------------- | --------------------------------------------------------------------------- |
+| Why 1 | 为什么单元测试失败？              | 测试从 workflow 中提取 Prettier 命令时得到 `null`                           |
+| Why 2 | 为什么得到 `null`？               | 正则只支持 `npx prettier --check ...` 直写形式                              |
+| Why 3 | 为什么 merge 时才暴露？           | PR merge ref 使用了 base branch 上更新后的 workflow：`npm run format:check` |
+| Why 4 | 为什么本地没暴露？                | 当前工作分支里的 workflow 仍是旧写法，本地测试只看到了分支文件              |
+| Why 5 | 为什么会形成 merge-only failure？ | 回归测试与 workflow 实现细节耦合过深，且分支没有及时同步主线 workflow 改动  |
 
 **根本原因**: 回归测试依赖了 workflow 的具体命令文本，而不是依赖稳定契约（`npm script` 入口），叠加分支与主线 workflow 漂移，导致只在 merge ref 下失败。
 

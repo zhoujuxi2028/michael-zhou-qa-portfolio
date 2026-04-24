@@ -3,7 +3,7 @@
 **项目:** Performance Testing Platform  
 **版本:** Phase 7 - Architecture Redesign  
 **日期:** 2026-04-21  
-**状态:** Design Review  
+**状态:** Design Review
 
 ---
 
@@ -24,11 +24,11 @@
 
 当前 `scripts/integration-test.sh` (500 行) 存在**三大可靠性问题**：
 
-| 问题 | 表现 | 危害 |
-|------|------|------|
-| **不支持重试** | 网络抖动/临时故障 → 直接 FAIL | Flaky tests 导致人工重跑，浪费 CI 配额 |
-| **硬延迟不精确** | `sleep 2/3/5` 盲目等待 | 竞态条件：Grafana 未就绪就测试 → 虚假通过 |
-| **错误泄漏** | 180+ 处 `\|\| true` 隐藏失败 | 测试失败被隐藏，CI 绿灯虚假，bug 流入生产 |
+| 问题             | 表现                          | 危害                                      |
+| ---------------- | ----------------------------- | ----------------------------------------- |
+| **不支持重试**   | 网络抖动/临时故障 → 直接 FAIL | Flaky tests 导致人工重跑，浪费 CI 配额    |
+| **硬延迟不精确** | `sleep 2/3/5` 盲目等待        | 竞态条件：Grafana 未就绪就测试 → 虚假通过 |
+| **错误泄漏**     | 180+ 处 `\|\| true` 隐藏失败  | 测试失败被隐藏，CI 绿灯虚假，bug 流入生产 |
 
 ### 1.2 优化目标
 
@@ -39,6 +39,7 @@
 3. **P0 (TOP3):** 禁止错误泄漏 - 错误 100% 可见
 
 **次要目标：**
+
 - 可维护性：模块化 → 易于扩展
 - 可观测性：统一日志 + 可视化报告
 - 可测试性：能为 integration-test.sh 本身编写单元测试
@@ -153,7 +154,7 @@
 ```bash
 # 函数签名：
 # retry_with_backoff <max_attempts> <initial_delay> <command>
-# 
+#
 # 返回值：命令最终的 exit code
 # 日志记录：每次尝试的 timestamp, attempt#, exit code
 
@@ -176,13 +177,13 @@ retry_with_backoff 3 2 "docker compose up -d grafana"
 
 **设计决策：**
 
-| 决策项 | 值 | 理由 |
-|--------|------|------|
-| 重试次数 | 3 | P(>=1 success) ≈ 99.9% for 95% endpoint success |
-| 初始延迟 | 2 秒 | 给容器启动足够时间 |
-| 延迟增长 | 指数 (2s → 4s → 8s) | 避免频繁重试耗尽资源 |
-| 单次超时 | 30 秒 | 防止脚本无限挂起 |
-| 可重试判定 | exit code != 0 | 简单规则，不区分"永久"vs"临时"失败 |
+| 决策项     | 值                  | 理由                                            |
+| ---------- | ------------------- | ----------------------------------------------- |
+| 重试次数   | 3                   | P(>=1 success) ≈ 99.9% for 95% endpoint success |
+| 初始延迟   | 2 秒                | 给容器启动足够时间                              |
+| 延迟增长   | 指数 (2s → 4s → 8s) | 避免频繁重试耗尽资源                            |
+| 单次超时   | 30 秒               | 防止脚本无限挂起                                |
+| 可重试判定 | exit code != 0      | 简单规则，不区分"永久"vs"临时"失败              |
 
 ---
 
@@ -218,13 +219,13 @@ wait_for_endpoint "http://localhost:3000/health" "contains" 30 '"status":"ok"'
 
 **设计决策：**
 
-| 决策项 | 值 | 理由 |
-|--------|------|------|
-| 轮询间隔 | 0.5 秒 | 平衡：快速检测 vs CPU 消耗 |
-| 验证方式 | 支持多种 | JSON parse > HTTP code > regex |
-| Grafana 超时 | 60 秒 | 最坏情况 (15-30s 正常，留余量) |
-| API 超时 | 10 秒 | 通常立即就绪 |
-| 失败诊断 | 记录 curl 错误 | 便于 RCA |
+| 决策项       | 值             | 理由                           |
+| ------------ | -------------- | ------------------------------ |
+| 轮询间隔     | 0.5 秒         | 平衡：快速检测 vs CPU 消耗     |
+| 验证方式     | 支持多种       | JSON parse > HTTP code > regex |
+| Grafana 超时 | 60 秒          | 最坏情况 (15-30s 正常，留余量) |
+| API 超时     | 10 秒          | 通常立即就绪                   |
+| 失败诊断     | 记录 curl 错误 | 便于 RCA                       |
 
 ---
 
@@ -272,11 +273,11 @@ run_optional "pkill -9 orphan-process" "清理孤进程（可选）"
 
 **迁移规则：**
 
-| 旧模式 | 新模式 | 理由 |
-|--------|--------|------|
-| `cmd \|\| true` (Docker/API) | `run_critical` | 这些是必需的，失败需停止 |
-| `cmd \|\| true` (清理) | `run_optional` | 这些是清理操作，失败无关紧要 |
-| `cmd 2>/dev/null` | `cmd 2>&1 \| log_debug` | 错误应该被记录，不是隐藏 |
+| 旧模式                       | 新模式                  | 理由                         |
+| ---------------------------- | ----------------------- | ---------------------------- |
+| `cmd \|\| true` (Docker/API) | `run_critical`          | 这些是必需的，失败需停止     |
+| `cmd \|\| true` (清理)       | `run_optional`          | 这些是清理操作，失败无关紧要 |
+| `cmd 2>/dev/null`            | `cmd 2>&1 \| log_debug` | 错误应该被记录，不是隐藏     |
 
 ---
 
@@ -313,6 +314,7 @@ ensure_command <cmd>               # 确保命令可用
 ```
 
 **约束：**
+
 - 不涉及业务逻辑，只提供通用函数
 - 所有函数都应该有日志记录
 - 从不直接 `exit 1`（由调用者决定）
@@ -329,30 +331,30 @@ ensure_command <cmd>               # 确保命令可用
 setup_phase() {
   # 1. 获取互斥锁
   lock_acquire "$LOCK_DIR" || return 1
-  
+
   # 2. 初始化日志
   init_logging
-  
+
   # 3. 运行环境检查
   run_critical \
     "bash scripts/preflight-check.sh --stage4" \
     "环境检查"
-  
+
   # 4. 启动基础设施 (Docker)
   run_critical \
     "retry_with_backoff 3 2 'docker compose up -d influxdb grafana'" \
     "启动 InfluxDB + Grafana"
-  
+
   # 5. 等待 Grafana 就绪
   run_critical \
     "wait_for_endpoint 'http://localhost:3010/api/health' 'json_parse' 60" \
     "等待 Grafana 就绪"
-  
+
   # 6. 启动 API 服务
   run_critical \
     "bash scripts/server.sh start single" \
     "启动 API (single mode)"
-  
+
   # 7. 初始化测试数据
   run_critical \
     "rm -f data/perf.db* && npm run seed-db" \
@@ -361,6 +363,7 @@ setup_phase() {
 ```
 
 **特点：**
+
 - 所有启动操作都使用 `retry_with_backoff`
 - 所有等待操作都使用 `wait_for_endpoint`
 - 错误导致立即返回（由 `run_critical` 处理）
@@ -376,7 +379,7 @@ setup_phase() {
 ```bash
 execute_phase() {
   local phase="$1"  # e.g. "phase1" / "phase2" / "all"
-  
+
   # 1. 从 registry 加载测试列表
   source tests/integration/registry.sh
   local tests_array=()
@@ -385,12 +388,12 @@ execute_phase() {
     phase2) tests_array=("${PHASE2_TESTS[@]}") ;;
     *) tests_array=("${ALL_TESTS[@]}") ;;
   esac
-  
+
   # 2. 执行每个测试
   for test_spec in "${tests_array[@]}"; do
     # test_spec format: "test_id|test_function|retry_enabled"
     IFS='|' read -r test_id test_func retry_enabled <<< "$test_spec"
-    
+
     execute_test_with_retry "$test_id" "$test_func" "$retry_enabled"
   done
 }
@@ -399,10 +402,10 @@ execute_test_with_retry() {
   local test_id="$1" test_func="$2" retry_enabled="$3"
   local attempt=1
   local max_attempts="${retry_enabled:-1}"  # 默认不重试
-  
+
   while [ $attempt -le $max_attempts ]; do
     local start_time=$(date +%s%N)
-    
+
     # 执行测试函数，捕获 exit code
     if "$test_func" >> "$LOG_FILE" 2>&1; then
       local duration=$(($(date +%s%N) - start_time))
@@ -411,7 +414,7 @@ execute_test_with_retry() {
     else
       local exit_code=$?
       local duration=$(($(date +%s%N) - start_time))
-      
+
       if [ $attempt -lt $max_attempts ]; then
         local delay=$((2 ** (attempt - 1)))  # 1s, 2s, 4s...
         log_warn "Test $test_id attempt $attempt/$max_attempts failed, retrying in ${delay}s..."
@@ -421,13 +424,14 @@ execute_test_with_retry() {
         return 1
       fi
     fi
-    
+
     attempt=$((attempt + 1))
   done
 }
 ```
 
 **特点：**
+
 - 支持按 phase 执行或全部执行
 - 每个测试可配置重试次数
 - 记录执行时间、重试次数、错误信息
@@ -444,18 +448,18 @@ execute_test_with_retry() {
 report_phase() {
   # 1. 聚合统计信息
   aggregate_stats
-  
+
   # 2. 生成报告
   generate_html_report "$RUN_ID"
   generate_md_report "$RUN_ID"
   generate_json_report "$RUN_ID"
-  
+
   # 3. 捕获 Grafana 截图 (可选)
   capture_grafana_snapshot "$RUN_ID" || true
-  
+
   # 4. 输出结果
   emit_test_summary
-  
+
   # 5. 返回 exit code
   [ "$TOTAL_FAIL" -eq 0 ] && return 0 || return 1
 }
@@ -463,7 +467,7 @@ report_phase() {
 generate_html_report() {
   local run_id="$1"
   local output_file="logs/integration-test-${run_id}.html"
-  
+
   # 生成 HTML 报告（包含）：
   # - 总览 (PASS/FAIL/SKIP 饼图)
   # - 分阶段统计表
@@ -471,7 +475,7 @@ generate_html_report() {
   # - 性能统计 (P50/P95)
   # - Grafana 截图 (if available)
   # - 日志链接
-  
+
   cat > "$output_file" <<EOF
 <!DOCTYPE html>
 <html>
@@ -490,11 +494,11 @@ EOF
 
 capture_grafana_snapshot() {
   local run_id="$1"
-  
+
   # 调用 Grafana API 获取 dashboard JSON
   # 使用 screenshot API 或 data export
   # 保存到 logs/snapshots/${run_id}/
-  
+
   # 若 Grafana 不可用 → skip (non-blocking)
   curl -sf "http://localhost:3010/api/dashboards/uid/k6-results" \
     | jq '.dashboard' \
@@ -503,6 +507,7 @@ capture_grafana_snapshot() {
 ```
 
 **特点：**
+
 - 支持多种输出格式 (HTML/MD/JSON)
 - HTML 包含可视化图表
 - Markdown 可直接粘贴到 PR
@@ -540,13 +545,14 @@ ALL_TESTS=("${PHASE1_TESTS[@]}" "${PHASE2_TESTS[@]}" ...)
 ```
 
 **优势：**
+
 - 测试定义与实现分离
 - 易于按 phase 组织
 - 支持动态过滤（如 `--test-id JM-GRF-01`）
 
 ---
 
-### 4.6 tests/integration/phases/*.sh - 测试实现
+### 4.6 tests/integration/phases/\*.sh - 测试实现
 
 **职责：** 各 phase 的测试函数实现。
 
@@ -559,29 +565,29 @@ ALL_TESTS=("${PHASE1_TESTS[@]}" "${PHASE2_TESTS[@]}" ...)
 
 test_jmgrf01_influxdb_write() {
   log_info "Test JM-GRF-01: k6 → InfluxDB write"
-  
+
   # Arrange
   local k6_script="tests/performance/smoke.k6.js"
-  
+
   # Act
   k6 run --out influxdb=http://localhost:8086/k6 \
     --duration 10s --vus 2 "$k6_script" || return 1
-  
+
   # Assert
   local measurements=$(curl -sf "http://localhost:8086/query?db=k6&q=SHOW+MEASUREMENTS" \
     | python3 -c "import sys,json; r=json.load(sys.stdin); print(len(r['results'][0].get('series', [])))" \
     2>/dev/null)
-  
+
   [ "$measurements" -gt 0 ] && return 0 || return 1
 }
 
 test_jmgrf02_grafana_dashboard() {
   log_info "Test JM-GRF-02: Grafana dashboard loads"
-  
+
   local panels=$(curl -sf "http://localhost:3010/api/dashboards/uid/k6-results" \
     | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d['dashboard']['panels']))" \
     2>/dev/null || echo "0")
-  
+
   [ "$panels" -gt 0 ] && return 0 || return 1
 }
 
@@ -589,6 +595,7 @@ test_jmgrf02_grafana_dashboard() {
 ```
 
 **特点：**
+
 - 每个文件对应一个 phase
 - 函数遵循 AAA 模式（Arrange-Act-Assert）
 - 返回 0 (成功) 或 1 (失败)
@@ -683,23 +690,23 @@ bash scripts/integration-test.sh --verbose
 
 **预期改进：**
 
-| 指标 | 当前 | 目标 | 改进% |
-|------|------|------|-------|
-| Flaky tests (随机失败) | ~15% | ~2% | 87% |
-| 平均执行时间 | ~5 分钟 | ~5.2 分钟 | -4% (可接受，增加了重试逻辑) |
-| 故障诊断时间 | ~20 分钟 | ~5 分钟 | 75% (详细日志) |
-| 新增测试的实施时间 | ~1 小时 | ~10 分钟 | 83% (只需添加注册) |
+| 指标                   | 当前     | 目标      | 改进%                        |
+| ---------------------- | -------- | --------- | ---------------------------- |
+| Flaky tests (随机失败) | ~15%     | ~2%       | 87%                          |
+| 平均执行时间           | ~5 分钟  | ~5.2 分钟 | -4% (可接受，增加了重试逻辑) |
+| 故障诊断时间           | ~20 分钟 | ~5 分钟   | 75% (详细日志)               |
+| 新增测试的实施时间     | ~1 小时  | ~10 分钟  | 83% (只需添加注册)           |
 
 ---
 
 ## 8. 风险评估
 
-| 风险 | 可能性 | 影响 | 缓解措施 |
-|------|--------|------|---------|
-| 旧脚本和新脚本结果不一致 | 中 | 中 | 并行运行两个脚本，逐个对比测试 |
-| 新增日志功能 bug | 低 | 中 | 单元测试覆盖日志函数 |
-| Grafana 截图 API 不可用 | 低 | 低 | 截图失败非阻塞（optional） |
-| 旧 CI 工作流依赖现有格式 | 低 | 高 | 保持 exit code 语义不变（0=pass, 1=fail） |
+| 风险                     | 可能性 | 影响 | 缓解措施                                  |
+| ------------------------ | ------ | ---- | ----------------------------------------- |
+| 旧脚本和新脚本结果不一致 | 中     | 中   | 并行运行两个脚本，逐个对比测试            |
+| 新增日志功能 bug         | 低     | 中   | 单元测试覆盖日志函数                      |
+| Grafana 截图 API 不可用  | 低     | 低   | 截图失败非阻塞（optional）                |
+| 旧 CI 工作流依赖现有格式 | 低     | 高   | 保持 exit code 语义不变（0=pass, 1=fail） |
 
 ---
 

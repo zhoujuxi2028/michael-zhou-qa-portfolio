@@ -9,8 +9,8 @@ Phase 5 新增 3 个 helper 模块（env loader、CSV loader、profile parser）
 
 ## Env Loader (`tests/unit/helpers/env.test.js`)
 
-| ID        | 测试用例                                         | 预期结果                              | 标签 |
-| --------- | ------------------------------------------------ | ------------------------------------- | ---- |
+| ID        | 测试用例                                         | 预期结果                              | 标签             |
+| --------- | ------------------------------------------------ | ------------------------------------- | ---------------- |
 | UT-ENV-01 | 解析含 BASE_URL, AUTH_ENABLED, PORT 的 env 文件  | 返回 3 个 key-value 对                | UT P1 regression |
 | UT-ENV-02 | 跳过 `#` 开头的注释行                            | 注释不出现在结果中                    | UT P1 regression |
 | UT-ENV-03 | 跳过空行和纯空白行                               | 空行不产生 key                        | UT P1 regression |
@@ -21,8 +21,8 @@ Phase 5 新增 3 个 helper 模块（env loader、CSV loader、profile parser）
 
 ## CSV Loader (`tests/unit/helpers/data.test.js`)
 
-| ID         | 测试用例                                           | 预期结果                          | 标签 |
-| ---------- | -------------------------------------------------- | --------------------------------- | ---- |
+| ID         | 测试用例                                           | 预期结果                          | 标签             |
+| ---------- | -------------------------------------------------- | --------------------------------- | ---------------- |
 | UT-DATA-01 | 解析含 header 行的 CSV 为对象数组                  | `[{col1: val1, col2: val2}, ...]` | UT P1 regression |
 | UT-DATA-02 | 空字符串输入                                       | 返回 `[]`                         | UT P1 regression |
 | UT-DATA-03 | null/undefined 输入                                | 抛出描述性错误                    | UT P1 regression |
@@ -34,8 +34,8 @@ Phase 5 新增 3 个 helper 模块（env loader、CSV loader、profile parser）
 
 ## Profile Parser (`tests/unit/helpers/profile.test.js`)
 
-| ID         | 测试用例                                    | 预期结果                                   | 标签 |
-| ---------- | ------------------------------------------- | ------------------------------------------ | ---- |
+| ID         | 测试用例                                    | 预期结果                                   | 标签             |
+| ---------- | ------------------------------------------- | ------------------------------------------ | ---------------- |
 | UT-PROF-01 | 解析含 stages + thresholds 的有效 profile   | 返回完整 profile 对象                      | UT P1 regression |
 | UT-PROF-02 | 无效 JSON 字符串                            | 抛出 "Invalid profile JSON" 错误           | UT P1 regression |
 | UT-PROF-03 | 缺少 stages 且缺少 vus                      | 抛出错误                                   | UT P1 regression |
@@ -48,8 +48,8 @@ Phase 5 新增 3 个 helper 模块（env loader、CSV loader、profile parser）
 
 ## k6 集成验证 (手动)
 
-| ID        | 验证项             | 命令                                                     | 预期                              | 标签 |
-| --------- | ------------------ | -------------------------------------------------------- | --------------------------------- | ---- |
+| ID        | 验证项             | 命令                                                     | 预期                              | 标签             |
+| --------- | ------------------ | -------------------------------------------------------- | --------------------------------- | ---------------- |
 | K6-INT-01 | env loader 默认    | `k6 run tests/performance/smoke.k6.js`                   | localhost 正常运行                | IT P2 regression |
 | K6-INT-02 | env loader staging | `k6 run --env ENV=staging tests/performance/smoke.k6.js` | 加载 staging.env 的 BASE_URL      | IT P2 regression |
 | K6-INT-03 | CSV 数据加载       | `k6 run tests/performance/load.k6.js`                    | 商品 ID 从 CSV 随机选取           | IT P2 regression |

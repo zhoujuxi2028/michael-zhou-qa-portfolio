@@ -381,11 +381,11 @@ export const options = {
 
 新增测试用例:
 
-| 用例                           | 验收标准                                                          |
-| ------------------------------ | ----------------------------------------------------------------- |
+| 用例                           | 验收标准                                                                        |
+| ------------------------------ | ------------------------------------------------------------------------------- |
 | `/metrics` 返回 cpu 对象       | `cpu.userPercent >= 0`, `cpu.systemPercent >= 0`, `cpu.loadavg` 是长度 3 的数组 |
-| `/metrics` 返回 memory 对象    | `memory.rss > 0`, `memory.heapUsed > 0`, `memory.freeMem > 0`     |
-| `/metrics` 返回 eventLoop 对象 | `eventLoop.lag >= 0`                                              |
+| `/metrics` 返回 memory 对象    | `memory.rss > 0`, `memory.heapUsed > 0`, `memory.freeMem > 0`                   |
+| `/metrics` 返回 eventLoop 对象 | `eventLoop.lag >= 0`                                                            |
 
 ---
 
