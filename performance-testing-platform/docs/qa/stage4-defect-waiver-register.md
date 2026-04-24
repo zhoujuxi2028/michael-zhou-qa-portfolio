@@ -29,8 +29,8 @@
 
 | Defect ID | GitHub Issue                                                                 | 标题摘要                                                               | 严重度    | Blocking?                    | 发现日期   | 状态     | 关联 Waiver | 备注                                                                                                                                             |
 | --------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------- | --------- | ---------------------------- | ---------- | -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| DEF-001   | [#192](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/192) | Grafana readiness 超时（集成测试 setup 阶段）                          | P1 / High | ⚠️ 条件性 Blocking（若复现） | 2026-04-23 | 🔴 Open  | —           | 第二次运行未复现；需在 clean 环境下重新验证                                                                                                      |
-| DEF-002   | [#193](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/193) | `docker-compose.yml` `version` 字段过时警告                            | P3 / Low  | ❌ Non-blocking              | 2026-04-23 | 🔴 Open  | WAV-001     | 仅 WARN 级别，不影响容器启动或测试结果                                                                                                           |
+| DEF-001   | [#192](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/192) | Grafana readiness 超时（集成测试 setup 阶段）                          | P1 / High | ⚠️ 条件性 Blocking（若复现） | 2026-04-23 | ✅ Closed | —           | 修复：grafana 添加 healthcheck；timeout 60→120s                                                                                                  |
+| DEF-002   | [#193](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/193) | `docker-compose.yml` `version` 字段过时警告                            | P3 / Low  | ❌ Non-blocking              | 2026-04-23 | ✅ Closed | WAV-001     | 修复：删除顶层 `version: '3.8'` 字段                                                                                                             |
 | DEF-003   | [#194](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/194) | JM-GRF-01 失败（Grafana 集成阶段 k6 http_req_failed 86.66%）           | P1 / High | ✅ Blocking                  | 2026-04-23 | 🟢 Fixed | —           | 根因：k6 smoke 阈值与 Grafana 集成断言耦合。修复：加 `--no-thresholds` + InfluxDB 指标计数断言。Commit: _(本次)_                                 |
 | DEF-004   | [#195](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/195) | K6-SOAK-INT-01 结果矛盾（metrics not written vs custom metrics found） | P1 / High | ✅ Blocking                  | 2026-04-23 | 🟢 Fixed | —           | 根因：`--vus`/`--duration` 覆盖 named scenario，找不到 `default` 导出。修复：改用 env vars 配置时长；第二段 check 改为条件执行。Commit: _(本次)_ |
 
@@ -43,7 +43,7 @@
 
 | Waiver ID | 关联 Defect | 关联 Issue | 豁免理由                                                                                                      | 风险评估         | 审批人     | 审批日期   | 有效期              | 状态      |
 | --------- | ----------- | ---------- | ------------------------------------------------------------------------------------------------------------- | ---------------- | ---------- | ---------- | ------------------- | --------- |
-| WAV-001   | DEF-002     | #193       | `version` 字段为废弃 warning，Docker Compose 已忽略该字段，容器行为不受影响；计划在下一个 chore sprint 中移除 | 极低：无功能影响 | _(待审批)_ | _(待填写)_ | 下一个 Phase 合并前 | 🟡 待审批 |
+| WAV-001   | DEF-002     | #193       | `version` 字段为废弃 warning，Docker Compose 已忽略该字段，容器行为不受影响；已随 #193 修复直接删除         | 极低：无功能影响 | QA         | 2026-04-24 | —                   | ✅ 已关闭 |
 
 ---
 
@@ -53,6 +53,8 @@
 
 | Defect ID | GitHub Issue                                                                 | 标题摘要                                                 | 严重度 | 关闭日期   | 关闭方式                                                     | 关联 Commit                        |
 | --------- | ---------------------------------------------------------------------------- | -------------------------------------------------------- | ------ | ---------- | ------------------------------------------------------------ | ---------------------------------- |
+| DEF-001   | [#192](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/192) | Grafana readiness 超时                                   | P1     | 2026-04-24 | 代码修复（healthcheck + timeout 120s）                       | fix/issue-192-193                  |
+| DEF-002   | [#193](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/193) | docker-compose.yml version 字段过时                      | P3     | 2026-04-24 | 代码修复（删除 version 字段）                                | fix/issue-192-193                  |
 | DEF-003   | [#194](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/194) | JM-GRF-01 k6 阈值与 InfluxDB 断言耦合                    | P1     | 2026-04-24 | 修复：`--no-thresholds` + metric count 断言                  | _(见 feature/performance-testing)_ |
 | DEF-004   | [#195](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/195) | K6-SOAK-INT-01 named scenario exec 函数找不到 + 矛盾输出 | P1     | 2026-04-24 | 修复：env vars 替代 `--vus`/`--duration`；条件化第二段 check | _(见 feature/performance-testing)_ |
 
@@ -75,4 +77,5 @@
 | 日期       | 变更内容                                                                             | 操作人 |
 | ---------- | ------------------------------------------------------------------------------------ | ------ |
 | 2026-04-24 | 初始建表；登记 DEF-001~004（源自 Phase 7 集成测试运行 #192~#195）；创建 WAV-001 草稿 | QA     |
+| 2026-04-24 | DEF-001/DEF-002 标为 Closed（代码已修复）；WAV-001 关闭；更新 Closed 历史表          | QA     |
 | 2026-04-24 | 修复 DEF-003/DEF-004，状态改为 Fixed；同步至 Closed Defects 历史                     | QA     |
