@@ -120,4 +120,62 @@ output=$(bash "$SCRIPT" 2>&1)
 | 2026-04-24 ~05:51 | 第 2 次 CI 失败：BATS tests 24/25 失败（exit 2） |
 | 2026-04-24 ~06:11 | 问题上报，开始 RCA |
 | 2026-04-24 ~06:20 | 根因确认（detached HEAD + merge commit + 死代码） |
-| 2026-04-24 ~06:25 | 修复 5 个文件 7 处，本地验证 tests 3/18/19/25 通过 |
+## 7. 第 3 次 CI 失败（commit 149b830 后）
+
+### 新现象
+
+```
+not ok 19 9.2: 最近 20 条提交应包含 conventional commits
+not ok 24 集成: 脚本应成功运行（可能包含 SKIP）
+```
+
+### 新根因：CI 浅克隆 — `actions/checkout@v6` 默认 `fetch-depth: 1`
+
+在 PR 事件下，`checkout@v6` 默认仅获取 1 个 commit (`refs/pull/N/merge`)。此时 `git log -20` 只返回**一个**合成 merge 提交（`"Merge <sha> into <sha>"`）。`grep -v " Merge "` 后空行，`grep -qE` 必失败 → 9.2 失败 → 脚本 `exit $FAIL` 非零 → test 24 失败。
+
+### 本地复现
+
+```bash
+mkdir /tmp/x && cd /tmp/x && git init
+git fetch --depth=1 origin refs/pull/197/merge
+git checkout FETCH_HEAD
+git log --oneline -20
+# 输出: "7ef4c1e (grafted, HEAD) Merge 149b830... into 459b1b3..."
+```
+
+### 为什么第 2 次 RCA 没发现？
+
+**本地环境永远不是浅克隆**。我在本地验证 `grep -v "^Merge "` 可以过滤掉 `"Merge pull request..."` 格式的提交，但忽略了：
+
+1. `actions/checkout@v6` 默认 `fetch-depth: 1`，而不是完整历史
+2. PR 合并 ref 的 merge commit 格式是 `"Merge <sha> into <sha>"`，而不是我本地模拟的 `"Merge pull request #197 ..."`
+3. **浅克隆后 `git log -20` 只有 1 个 commit，不是 20 个** — 这是关键盲点
+
+### 本次修复
+
+| 文件 | 修改 | 作用 |
+|------|------|------|
+| `.github/workflows/performance-ci.yml` | `shell-tests.checkout` 添加 `fetch-depth: 0` | 根因修复：获取完整 git 历史 |
+| `scripts/stage4-selftest.sh` | 9.2 前检测浅克隆 → SKIP | 防御：脚本在浅克隆环境优雅降级 |
+| `tests/unit/scripts/stage4-selftest.bats` | test 19 前检测浅克隆 → `skip` | 防御：BATS 测试在浅克隆环境跳过 |
+
+### 为什么我一开始没有发现？(元 RCA)
+
+**核心缺陷**: 我修改 CI 依赖 git history 的逻辑，却从未在"真实 CI 环境形状"（浅克隆 + PR merge ref）下验证。
+
+| 缺陷 | 应该怎么做 |
+|------|-----------|
+| 只在完整本地仓库运行 BATS | 每次修改涉及 git 的逻辑，**必须**用 `git fetch --depth=1 refs/pull/N/merge` 在 `/tmp` 模拟 CI 环境 |
+| 假设 merge commit 只有一种格式 | 看 `actions/checkout` 文档的默认行为，而不是猜 |
+| 修复一个 CI 失败后就推送，未做"CI 环境验证"闭环 | 引入硬规则：修改 `.bats` 或 CI 相关脚本 → **本地必须模拟 CI 环境**（浅克隆 + detached HEAD + `GITHUB_HEAD_REF`）通过后才推送 |
+
+---
+
+## 8. 预防措施（强化版）
+
+新增到 `CLAUDE.md` 或项目自检流程：
+
+1. **修改 git 相关 CI 逻辑前，必须在 `/tmp` 模拟 `fetch --depth=1 refs/pull/N/merge` 环境运行 BATS**
+2. 任何 CI job 若其逻辑依赖 git 历史，`checkout` 须显式指定 `fetch-depth`（0 或明确数值），**不依赖默认值**
+3. 脚本内所有依赖 git 历史的检查，须检测 `.git/shallow` 并提供 SKIP 降级
+

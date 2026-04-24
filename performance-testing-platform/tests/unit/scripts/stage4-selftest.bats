@@ -191,6 +191,10 @@ teardown() {
 
 @test "9.2: 最近 20 条提交应包含 conventional commits" {
   cd "$PROJECT_ROOT"
+  # 浅克隆环境跳过检查（例如 checkout@v6 默认 fetch-depth=1）
+  if [ -f ".git/shallow" ] || [ "$(git rev-list --count HEAD 2>/dev/null || echo 1)" -le 1 ]; then
+    skip "浅克隆环境无法验证 conventional commits（CI 需设 fetch-depth: 0）"
+  fi
   # 过滤掉 CI checkout 产生的 Merge 提交
   git log --oneline -20 | grep -v " Merge " | grep -qE "(feat|fix|docs|test|refactor|perf|chore)[:(]"
 }
