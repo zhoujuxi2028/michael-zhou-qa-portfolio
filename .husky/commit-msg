@@ -1,16 +1,102 @@
 #!/bin/sh
-# Validate commit message format (conventional commits)
-# Requires: feat|fix|docs|style|refactor|test|chore|ci|perf
+# commit-msg: Conventional Commits 强化校验（企业级）
+#
+# 规则：
+#   Subject (第一行):
+#     - 格式: <type>(<scope>)?!?: <subject>
+#     - type ∈ {feat,fix,docs,style,refactor,test,chore,ci,perf,build,revert}（小写）
+#     - subject 长度 ≤ 72 字符
+#     - subject 首字母不要求大小写（中英混写兼容），但不得以句号 / 中文句号结尾
+#   Body (可选):
+#     - 若存在 body，subject 与 body 之间必须有空行分隔
+#     - body 每行 ≤ 100 字符（软限制，超过仅警告）
+#   Footer (可选):
+#     - 允许 trailers 形如 `Key: value` 或 `Refs: #n` 或 `Co-authored-by: Name <email>`
+#     - BREAKING CHANGE: 开头作为 footer 关键字
+#
+# 绕过（应急）：COMMIT_MSG_SKIP=1 git commit -m "..."
 
-MSG=$(cat "$1")
-PATTERN="^(feat|fix|docs|style|refactor|test|chore|ci|perf)(\(.+\))?!?: .+"
+set -e
 
-if ! echo "$MSG" | grep -qE "$PATTERN"; then
-  echo "❌ Invalid commit message format."
-  echo "   Expected: <type>(<scope>): <subject>"
-  echo "   Types: feat|fix|docs|style|refactor|test|chore|ci|perf"
-  echo "   Example: feat(perf): add soak test scripts"
-  echo ""
-  echo "   Got: $MSG"
-  exit 1
+MSG_FILE="$1"
+[ -f "$MSG_FILE" ] || { echo "✖ commit-msg: 无法读取 $MSG_FILE"; exit 1; }
+
+if [ "${COMMIT_MSG_SKIP:-0}" = "1" ]; then
+    echo "⚠  COMMIT_MSG_SKIP=1 已启用，跳过 commit-msg 校验"
+    exit 0
 fi
+
+# 忽略 merge / fixup / revert-auto / squash 等 git 自动生成的消息
+FIRST_LINE=$(sed -n '1p' "$MSG_FILE")
+case "$FIRST_LINE" in
+    "Merge "*|"Revert \""*|"fixup! "*|"squash! "*|"amend! "*)
+        exit 0
+        ;;
+esac
+
+# 去除注释行（git commit 模板的 '#' 开头行）
+CLEAN_MSG=$(grep -v '^#' "$MSG_FILE")
+SUBJECT=$(printf '%s\n' "$CLEAN_MSG" | sed -n '1p')
+LINE2=$(printf '%s\n' "$CLEAN_MSG" | sed -n '2p')
+REST=$(printf '%s\n' "$CLEAN_MSG" | sed -n '3,$p')
+TOTAL_LINES=$(printf '%s\n' "$CLEAN_MSG" | awk 'NF || prev { prev=1 } END { print NR }')
+
+fail() {
+    echo ""
+    echo "✖ commit-msg 校验失败: $1"
+    echo ""
+    echo "  规范示例:"
+    echo "    feat(perf): add soak test profile"
+    echo ""
+    echo "    支持 10h 长跑场景, RPS=500。"
+    echo ""
+    echo "    Refs: #123"
+    echo ""
+    echo "  当前消息:"
+    echo "    $SUBJECT"
+    echo ""
+    echo "  应急绕过: COMMIT_MSG_SKIP=1 git commit ..."
+    exit 1
+}
+
+# --- Subject 校验 ---
+
+# 1. 格式
+SUBJECT_PATTERN='^(feat|fix|docs|style|refactor|test|chore|ci|perf|build|revert)(\([a-z0-9._/-]+\))?!?: .+'
+if ! printf '%s' "$SUBJECT" | grep -qE "$SUBJECT_PATTERN"; then
+    fail "Subject 格式不符合 Conventional Commits。期望 <type>(<scope>)?!?: <描述>；type 必须小写且 ∈ {feat,fix,docs,style,refactor,test,chore,ci,perf,build,revert}"
+fi
+
+# 2. 长度 ≤ 72
+SUBJECT_LEN=$(printf '%s' "$SUBJECT" | wc -c)
+if [ "$SUBJECT_LEN" -gt 72 ]; then
+    fail "Subject 长度 $SUBJECT_LEN 超过 72 字符"
+fi
+
+# 3. 末尾不得是句号 / 中文句号 / 感叹号
+LAST_CHAR=$(printf '%s' "$SUBJECT" | tail -c 3)  # 取 3 字节兼容中文句号 UTF-8
+case "$LAST_CHAR" in
+    *.)       fail "Subject 末尾不应带英文句号" ;;
+    *。)      fail "Subject 末尾不应带中文句号" ;;
+esac
+
+# --- Body 校验 ---
+
+# 只有多行消息才校验 body 结构
+if [ "$TOTAL_LINES" -gt 1 ]; then
+    # subject 与 body 之间必须有空行（line 2 必须为空）
+    if [ -n "$LINE2" ]; then
+        fail "Subject 与 body 之间必须有空行分隔（第 2 行应为空，当前第 2 行: '$LINE2'）"
+    fi
+
+    # body 行宽软限制（仅警告，不阻断）
+    if [ -n "$REST" ]; then
+        LONG_BODY_LINES=$(printf '%s\n' "$REST" | awk 'length > 100 { print NR, length }' | head -3)
+        if [ -n "$LONG_BODY_LINES" ]; then
+            echo "⚠  commit-msg: body 存在超过 100 字符的行（软限制）："
+            echo "$LONG_BODY_LINES" | sed 's/^/     行 /'
+        fi
+    fi
+fi
+
+exit 0
