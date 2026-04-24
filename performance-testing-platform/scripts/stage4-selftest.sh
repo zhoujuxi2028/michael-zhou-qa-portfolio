@@ -208,13 +208,13 @@ fi
 echo ""
 echo "--- 2.2 锁机制 ---"
 LOCK_DIR="/tmp/test-lock-$$"
-if bash scripts/lock.sh acquire "$LOCK_DIR" 2>&1 > /dev/null; then
-  if ! bash scripts/lock.sh acquire "$LOCK_DIR" 2>&1 > /dev/null; then
+if bash scripts/lib/lock.sh acquire "$LOCK_DIR" 2>&1 > /dev/null; then
+  if ! bash scripts/lib/lock.sh acquire "$LOCK_DIR" 2>&1 > /dev/null; then
     log_result "2.2" "PASS" "锁机制正常 (并发防护验证通过)"
   else
     log_result "2.2" "FAIL" "锁机制未能防止并发"
   fi
-  bash scripts/lock.sh release "$LOCK_DIR" 2>/dev/null || true
+  bash scripts/lib/lock.sh release "$LOCK_DIR" 2>/dev/null || true
 else
   log_result "2.2" "FAIL" "锁机制获取失败"
 fi

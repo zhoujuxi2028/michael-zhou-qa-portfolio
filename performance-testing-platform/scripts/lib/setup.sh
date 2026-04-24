@@ -5,11 +5,11 @@ set -euo pipefail
 LOCK_DIR="${LOCK_DIR:-/tmp/integration-test.lock}"
 
 lock_acquire() {
-  bash scripts/lock.sh acquire "$1"
+  bash scripts/lib/lock.sh acquire "$1"
 }
 
 lock_release() {
-  bash scripts/lock.sh release "$1"
+  bash scripts/lib/lock.sh release "$1"
 }
 
 setup_phase() {

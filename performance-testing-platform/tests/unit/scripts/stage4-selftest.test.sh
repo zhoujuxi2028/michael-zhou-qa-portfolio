@@ -110,18 +110,18 @@ test_case "1.4: 代码覆盖率 >= 80%" \
 echo ""
 echo "## Section 2: 集成测试检查"
 
-test_case "2.2: 锁机制存在" "[ -f 'scripts/lock.sh' ]"
+test_case "2.2: 锁机制存在" "[ -f 'scripts/lib/lock.sh' ]"
 
 # 直接测试锁机制
 echo "--- 2.2: 锁机制防止并发 ---"
 
 # 第一次获取
-if bash scripts/lock.sh acquire "$TEST_LOCK_DIR" > /dev/null 2>&1; then
+if bash scripts/lib/lock.sh acquire "$TEST_LOCK_DIR" > /dev/null 2>&1; then
   echo -e "${GREEN}✓ PASS${NC}: 锁机制 acquire 成功"
   TESTS_PASSED=$((TESTS_PASSED + 1))
 
   # 第二次获取应失败
-  if ! bash scripts/lock.sh acquire "$TEST_LOCK_DIR" > /dev/null 2>&1; then
+  if ! bash scripts/lib/lock.sh acquire "$TEST_LOCK_DIR" > /dev/null 2>&1; then
     echo -e "${GREEN}✓ PASS${NC}: 锁机制防止并发"
     TESTS_PASSED=$((TESTS_PASSED + 1))
   else
@@ -130,7 +130,7 @@ if bash scripts/lock.sh acquire "$TEST_LOCK_DIR" > /dev/null 2>&1; then
   fi
 
   # 释放
-  bash scripts/lock.sh release "$TEST_LOCK_DIR" > /dev/null 2>&1
+  bash scripts/lib/lock.sh release "$TEST_LOCK_DIR" > /dev/null 2>&1
   if [ ! -d "$TEST_LOCK_DIR" ]; then
     echo -e "${GREEN}✓ PASS${NC}: 锁机制 release 成功"
     TESTS_PASSED=$((TESTS_PASSED + 1))
