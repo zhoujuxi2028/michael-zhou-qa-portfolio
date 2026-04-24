@@ -31,8 +31,8 @@
 |-----------|-------------|---------|--------|----------|---------|------|------------|------|
 | DEF-001 | [#192](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/192) | Grafana readiness 超时（集成测试 setup 阶段） | P1 / High | ⚠️ 条件性 Blocking（若复现） | 2026-04-23 | ✅ Closed | — | 修复：grafana 添加 healthcheck；timeout 60→120s |
 | DEF-002 | [#193](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/193) | `docker-compose.yml` `version` 字段过时警告 | P3 / Low | ❌ Non-blocking | 2026-04-23 | ✅ Closed | WAV-001 | 修复：删除顶层 `version: '3.8'` 字段 |
-| DEF-003 | [#194](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/194) | JM-GRF-01 失败（Grafana 集成阶段 k6 http_req_failed 86.66%） | P1 / High | ✅ Blocking | 2026-04-23 | 🔴 Open | — | 集成测试 Phase 1 阶段；http_req_failed 阈值被触发 |
-| DEF-004 | [#195](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/195) | K6-SOAK-INT-01 结果矛盾（metrics not written vs custom metrics found） | P1 / High | ✅ Blocking | 2026-04-23 | 🔴 Open | — | 同一用例输出矛盾，按规则默认 BLOCKED |
+| DEF-003 | [#194](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/194) | JM-GRF-01 失败（Grafana 集成阶段 k6 http_req_failed 86.66%） | P1 / High | ✅ Blocking | 2026-04-23 | 🟢 Fixed | — | 根因：k6 smoke 阈值与 Grafana 集成断言耦合。修复：加 `--no-thresholds` + InfluxDB 指标计数断言。Commit: _(本次)_ |
+| DEF-004 | [#195](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/195) | K6-SOAK-INT-01 结果矛盾（metrics not written vs custom metrics found） | P1 / High | ✅ Blocking | 2026-04-23 | 🟢 Fixed | — | 根因：`--vus`/`--duration` 覆盖 named scenario，找不到 `default` 导出。修复：改用 env vars 配置时长；第二段 check 改为条件执行。Commit: _(本次)_ |
 
 ---
 
@@ -55,6 +55,8 @@
 |-----------|-------------|---------|--------|---------|---------|------------|
 | DEF-001 | [#192](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/192) | Grafana readiness 超时 | P1 / High | 2026-04-24 | 代码修复（healthcheck + timeout 120s） | fix/issue-192-193 |
 | DEF-002 | [#193](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/193) | docker-compose.yml version 字段过时 | P3 / Low | 2026-04-24 | 代码修复（删除 version 字段） | fix/issue-192-193 |
+| DEF-003 | [#194](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/194) | JM-GRF-01 k6 阈值与 InfluxDB 断言耦合 | P1 | 2026-04-24 | 修复：`--no-thresholds` + metric count 断言 | _(见 feature/performance-testing)_ |
+| DEF-004 | [#195](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/195) | K6-SOAK-INT-01 named scenario exec 函数找不到 + 矛盾输出 | P1 | 2026-04-24 | 修复：env vars 替代 `--vus`/`--duration`；条件化第二段 check | _(见 feature/performance-testing)_ |
 
 ---
 
@@ -76,3 +78,4 @@
 |------|---------|-------|
 | 2026-04-24 | 初始建表；登记 DEF-001~004（源自 Phase 7 集成测试运行 #192~#195）；创建 WAV-001 草稿 | QA |
 | 2026-04-24 | DEF-001/DEF-002 标为 Closed（代码已修复）；WAV-001 关闭；更新 Closed 历史表 | QA |
+| 2026-04-24 | 修复 DEF-003/DEF-004，状态改为 Fixed；同步至 Closed Defects 历史 | QA |
