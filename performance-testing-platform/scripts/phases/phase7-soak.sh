@@ -15,6 +15,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# Path resolution: SCRIPT_DIR=scripts/phases/ → SCRIPTS_DIR=scripts/ → PROJECT_DIR=performance-testing-platform/
 SCRIPTS_DIR="$(dirname "$SCRIPT_DIR")"
 PROJECT_DIR="$(dirname "$SCRIPTS_DIR")"
 PORT="${PORT:-3000}"

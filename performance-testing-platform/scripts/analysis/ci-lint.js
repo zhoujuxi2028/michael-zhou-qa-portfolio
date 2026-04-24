@@ -13,7 +13,7 @@
  * 使用方式:
  *   node scripts/analysis/ci-lint.js                    # 检查所有 workflow
  *   node scripts/analysis/ci-lint.js path/to/wf.yml     # 检查指定文件
- *   const { lintJobSteps } = require('./ci-lint');  # unit tests
+ *   const { lintJobSteps } = require('./ci-lint');  // unit tests
  *
  * 退出码:
  *   0 — 全部通过
