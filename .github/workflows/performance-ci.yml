@@ -66,6 +66,10 @@ jobs:
     needs: performance-lint
     steps:
       - uses: actions/checkout@v6
+        with:
+          # BATS 测试中的 conventional commits 检查需要完整 git 历史
+          # (默认 fetch-depth=1 只含 PR 合成 merge commit，会导致 9.2 误报)
+          fetch-depth: 0
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'

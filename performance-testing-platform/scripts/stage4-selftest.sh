@@ -86,7 +86,11 @@ is_valid_work_branch() {
 
 has_recent_conventional_commit() {
   # 过滤掉 Merge 提交（CI checkout 会在顶部产生 merge commit）
-  git log --format=%s -20 | grep -v "^Merge " | grep -Eq '^(feat|fix|docs|test|refactor|perf|chore)(\([^)]+\))?: '
+  local commits
+  commits=$(git log --format=%s -20 2>/dev/null | grep -v "^Merge ")
+  # 若过滤后无提交（例如 CI 浅克隆只含 merge commit），返回失败让调用方处理
+  [ -n "$commits" ] || return 1
+  echo "$commits" | grep -Eq '^(feat|fix|docs|test|refactor|perf|chore)(\([^)]+\))?: '
 }
 
 # 改进: 系统负载检测（macOS/Linux 兼容）
@@ -404,7 +408,10 @@ fi
 # 9.2 提交历史
 echo ""
 echo "--- 9.2 提交历史 ---"
-if has_recent_conventional_commit; then
+# 检测是否浅克隆 (CI checkout@v6 默认 fetch-depth=1)
+if [ -f ".git/shallow" ] || [ "$(git rev-list --count HEAD 2>/dev/null || echo 1)" -le 1 ]; then
+  log_result "9.2" "SKIP" "浅克隆环境无法验证 conventional commits（CI 应设 fetch-depth: 0）"
+elif has_recent_conventional_commit; then
   COMMIT_COUNT=$(git log --format=%s -20 | grep -Ec '^(feat|fix|docs|test|refactor|perf|chore)(\([^)]+\))?: ' || echo "0")
   log_result "9.2" "PASS" "最近提交符合 conventional commits ($COMMIT_COUNT commits in 20)"
 else
