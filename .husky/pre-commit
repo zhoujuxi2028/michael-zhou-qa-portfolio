@@ -1,17 +1,57 @@
 #!/bin/sh
-# Validate Postman files on commit
-cd api-testing-demo && npm run validate
-cd ..
+# pre-commit: 增量 lint 门控（企业级）
+#
+# 检查项（按 staged 文件类型按需触发）：
+#   1. Postman 集合校验 —— 仅当 api-testing-demo/** 有 staged 变更
+#   2. Python ruff (check + format) —— 仅当有 *.py staged（排除 venv/）
+#   3. performance-testing-platform JS eslint + prettier --check —— 仅当相关目录有 staged JS
+#
+# 失败策略：set -e + 显式 exit 1；任一检查失败即阻断 commit。
+# 路径策略：统一使用 REPO_ROOT + 子 shell 隔离，避免 cd 副作用。
 
-# Lint Python files with ruff
-CHANGED_PY=$(git diff --cached --name-only --diff-filter=ACM -- '*.py' | grep -v 'venv/')
-if [ -n "$CHANGED_PY" ]; then
-    echo "Running ruff on staged Python files..."
-    ./venv/bin/ruff check $CHANGED_PY
-    ./venv/bin/ruff format --check $CHANGED_PY
+set -e
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+cd "$REPO_ROOT"
+
+# --- G-02: Postman 集合校验（条件触发） ---
+CHANGED_API=$(git diff --cached --name-only --diff-filter=ACM -- 'api-testing-demo/')
+if [ -n "$CHANGED_API" ]; then
+    echo "▶ Postman 集合校验 (api-testing-demo/**)..."
+    (
+        cd "$REPO_ROOT/api-testing-demo" && npm run validate
+    ) || {
+        echo "✖ Postman 集合校验失败 — 请修复 api-testing-demo/ 后重新 commit"
+        exit 1
+    }
+    echo "✔ Postman 集合校验通过"
 fi
 
-# Lint + format check JS files in performance-testing-platform
+# --- G-04 + G-05: Python ruff 增量检查 ---
+CHANGED_PY=$(git diff --cached --name-only --diff-filter=ACM -- '*.py' | grep -v '/venv/' | grep -v '^venv/' || true)
+if [ -n "$CHANGED_PY" ]; then
+    echo "▶ Python ruff (check + format --check) on staged files..."
+    # 优先使用根 venv，其次使用 PATH 上的 ruff / python -m ruff
+    if [ -x "$REPO_ROOT/venv/bin/ruff" ]; then
+        RUFF="$REPO_ROOT/venv/bin/ruff"
+    elif command -v ruff >/dev/null 2>&1; then
+        RUFF="ruff"
+    elif command -v python3 >/dev/null 2>&1 && python3 -m ruff --version >/dev/null 2>&1; then
+        RUFF="python3 -m ruff"
+    else
+        echo "✖ 未找到 ruff —— 请执行以下任一步骤后重新 commit："
+        echo "    1) 在仓库根创建 venv 并安装 ruff:  python3 -m venv venv && ./venv/bin/pip install ruff"
+        echo "    2) 全局安装 ruff:                  pip install ruff"
+        exit 1
+    fi
+    # shellcheck disable=SC2086
+    echo "$CHANGED_PY" | xargs $RUFF check
+    # shellcheck disable=SC2086
+    echo "$CHANGED_PY" | xargs $RUFF format --check
+    echo "✔ Python ruff 通过"
+fi
+
+# --- G-03 + G-04: performance-testing-platform JS lint + format ---
 # 使用递归 pathspec（**/*.js）覆盖任意层级，避免单层 glob 漏检
 # （历史问题：PR #218 中 tests/unit/scripts/*.js 因单层 glob 未被拦截 → CI prettier 红灯）
 CHANGED_JS=$(git diff --cached --name-only --diff-filter=ACM -- \
@@ -19,15 +59,23 @@ CHANGED_JS=$(git diff --cached --name-only --diff-filter=ACM -- \
     'performance-testing-platform/tests/**/*.js' \
     'performance-testing-platform/scripts/**/*.js')
 if [ -n "$CHANGED_JS" ]; then
-    # 钩子在仓库根触发，但 eslint/prettier 配置在子目录；将路径改为相对子目录
-    REL_JS=$(echo "$CHANGED_JS" | sed 's|^performance-testing-platform/||')
+    echo "▶ ESLint on staged JS (performance-testing-platform)..."
     (
-        cd performance-testing-platform || exit 1
-        echo "Running eslint on staged JS files (performance-testing-platform)..."
-        # shellcheck disable=SC2086
-        npx --no-install eslint $REL_JS || exit 1
-        echo "Running prettier --check on staged JS files (performance-testing-platform)..."
-        # shellcheck disable=SC2086
-        npx --no-install prettier --check $REL_JS || exit 1
-    ) || exit 1
+        cd "$REPO_ROOT/performance-testing-platform" && \
+        echo "$CHANGED_JS" | sed "s|^performance-testing-platform/||" | xargs npx eslint --no-warn-ignored
+    ) || {
+        echo "✖ ESLint 失败 — 请修复后重新 commit"
+        exit 1
+    }
+    echo "▶ Prettier --check on staged JS (performance-testing-platform)..."
+    (
+        cd "$REPO_ROOT/performance-testing-platform" && \
+        echo "$CHANGED_JS" | sed "s|^performance-testing-platform/||" | xargs npx prettier --check
+    ) || {
+        echo "✖ Prettier 检查失败 — 请运行 npm run format 后重新 commit"
+        exit 1
+    }
+    echo "✔ performance-testing-platform JS 检查通过"
 fi
+
+exit 0
