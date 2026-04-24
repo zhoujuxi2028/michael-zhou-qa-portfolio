@@ -1,20 +1,80 @@
 #!/bin/sh
-# pre-commit: 增量 lint 门控（企业级）
+# pre-commit: 增量 lint 门控 + 密钥扫描（企业级）
 #
 # 检查项（按 staged 文件类型按需触发）：
-#   1. Postman 集合校验 —— 仅当 api-testing-demo/** 有 staged 变更
-#   2. Python ruff (check + format) —— 仅当有 *.py staged（排除 venv/）
-#   3. performance-testing-platform JS eslint + prettier --check —— 仅当相关目录有 staged JS
+#   0. [G-01] Secret scan —— 扫描 staged diff 中的 AWS key / GitHub token / 私钥 / 通用高熵串
+#   1. [G-02] Postman 集合校验 —— 仅当 api-testing-demo/** 有 staged 变更
+#   2. [G-05] Python ruff (check + format) —— 仅当有 *.py staged（排除 venv/）
+#   3. [G-11] JS eslint + prettier --check —— 按子项目条件触发（当项目本地 node_modules 就绪）
+#          支持项目：performance-testing-platform, api-testing-demo,
+#                   microservice-testing-platform, playwright-demo
 #
 # 失败策略：set -e + 显式 exit 1；任一检查失败即阻断 commit。
 # 路径策略：统一使用 REPO_ROOT + 子 shell 隔离，避免 cd 副作用。
+# 应急绕过：SKIP_SECRET_SCAN=1 / SKIP_JS_LINT=1 / SKIP_PY_LINT=1 （仅限紧急情况）
 
 set -e
 
 REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
 
-# --- G-02: Postman 集合校验（条件触发） ---
+# === [G-01] Secret scan on staged diff ===
+if [ "${SKIP_SECRET_SCAN:-0}" != "1" ]; then
+    # 允许通过 .secretsallow 声明豁免（每行一个 grep -E 正则；# 开头为注释）
+    ALLOW_FILE="$REPO_ROOT/.secretsallow"
+
+    # 仅扫描新增行（+ 开头且非 +++ 头），避免误报已有内容或行号
+    STAGED_DIFF=$(git diff --cached --no-color --unified=0 --diff-filter=ACM \
+        -- ':(exclude)**/package-lock.json' ':(exclude)**/*.min.js' ':(exclude)**/*.map' \
+        | awk '/^\+\+\+ /{ next } /^\+/ { sub(/^\+/, ""); print }' || true)
+
+    if [ -n "$STAGED_DIFF" ]; then
+        # 高置信 pattern 列表
+        #   AWS Access Key / Secret Access Key
+        #   GitHub PAT (ghp_, gho_, ghu_, ghs_, ghr_)
+        #   PEM 私钥头
+        #   Slack token (xox[baprs]-)
+        #   Google API key (AIza...)
+        #   JWT (eyJ... 三段式，长度阈值)
+        #   通用 SECRET/TOKEN/PASSWORD = "..." 赋值（非空非占位符）
+        PATTERNS='(AKIA|ASIA)[0-9A-Z]{16}
+aws_secret_access_key[[:space:]]*=[[:space:]]*["'"'"']?[A-Za-z0-9/+=]{40}
+gh[poursa]_[A-Za-z0-9]{30,255}
+-----BEGIN [A-Z ]*PRIVATE KEY-----
+xox[baprsoe]-[A-Za-z0-9-]{10,}
+AIza[0-9A-Za-z_-]{35}
+eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}
+(SECRET|TOKEN|PASSWORD|API_KEY|PRIVATE_KEY)[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"'\$\{}<>]{12,}["'"'"']'
+
+        HITS=$(printf '%s\n' "$STAGED_DIFF" | grep -nE "$PATTERNS" || true)
+
+        # 过滤 allowlist
+        if [ -n "$HITS" ] && [ -f "$ALLOW_FILE" ]; then
+            # 去除 # 注释和空行，构造一个 grep -vEf 用的临时文件
+            TMP_ALLOW=$(mktemp)
+            grep -vE '^[[:space:]]*(#|$)' "$ALLOW_FILE" > "$TMP_ALLOW" || true
+            if [ -s "$TMP_ALLOW" ]; then
+                HITS=$(printf '%s\n' "$HITS" | grep -vEf "$TMP_ALLOW" || true)
+            fi
+            rm -f "$TMP_ALLOW"
+        fi
+
+        if [ -n "$HITS" ]; then
+            echo ""
+            echo "✖ [Secret Scan] 检测到疑似密钥/凭据：" >&2
+            printf '%s\n' "$HITS" | head -20 | sed 's/^/     /' >&2
+            echo "" >&2
+            echo "  处理建议：" >&2
+            echo "    1) 从 staged 区移除并改用环境变量 / .env (gitignored)" >&2
+            echo "    2) 若为误报，添加正则到 .secretsallow（每行一条）" >&2
+            echo "    3) 紧急绕过（需管理员审批）：SKIP_SECRET_SCAN=1 git commit ..." >&2
+            exit 1
+        fi
+        echo "✔ Secret scan 通过"
+    fi
+fi
+
+# === [G-02] Postman 集合校验（条件触发） ===
 CHANGED_API=$(git diff --cached --name-only --diff-filter=ACM -- 'api-testing-demo/')
 if [ -n "$CHANGED_API" ]; then
     echo "▶ Postman 集合校验 (api-testing-demo/**)..."
@@ -27,55 +87,72 @@ if [ -n "$CHANGED_API" ]; then
     echo "✔ Postman 集合校验通过"
 fi
 
-# --- G-04 + G-05: Python ruff 增量检查 ---
-CHANGED_PY=$(git diff --cached --name-only --diff-filter=ACM -- '*.py' | grep -v '/venv/' | grep -v '^venv/' || true)
-if [ -n "$CHANGED_PY" ]; then
-    echo "▶ Python ruff (check + format --check) on staged files..."
-    # 优先使用根 venv，其次使用 PATH 上的 ruff / python -m ruff
-    if [ -x "$REPO_ROOT/venv/bin/ruff" ]; then
-        RUFF="$REPO_ROOT/venv/bin/ruff"
-    elif command -v ruff >/dev/null 2>&1; then
-        RUFF="ruff"
-    elif command -v python3 >/dev/null 2>&1 && python3 -m ruff --version >/dev/null 2>&1; then
-        RUFF="python3 -m ruff"
-    else
-        echo "✖ 未找到 ruff —— 请执行以下任一步骤后重新 commit："
-        echo "    1) 在仓库根创建 venv 并安装 ruff:  python3 -m venv venv && ./venv/bin/pip install ruff"
-        echo "    2) 全局安装 ruff:                  pip install ruff"
-        exit 1
+# === [G-05] Python ruff 增量检查 ===
+if [ "${SKIP_PY_LINT:-0}" != "1" ]; then
+    CHANGED_PY=$(git diff --cached --name-only --diff-filter=ACM -- '*.py' | grep -v '/venv/' | grep -v '^venv/' || true)
+    if [ -n "$CHANGED_PY" ]; then
+        echo "▶ Python ruff (check + format --check) on staged files..."
+        if [ -x "$REPO_ROOT/venv/bin/ruff" ]; then
+            RUFF="$REPO_ROOT/venv/bin/ruff"
+        elif command -v ruff >/dev/null 2>&1; then
+            RUFF="ruff"
+        elif command -v python3 >/dev/null 2>&1 && python3 -m ruff --version >/dev/null 2>&1; then
+            RUFF="python3 -m ruff"
+        else
+            echo "✖ 未找到 ruff —— 请执行以下任一步骤后重新 commit："
+            echo "    1) 在仓库根创建 venv 并安装 ruff:  python3 -m venv venv && ./venv/bin/pip install ruff"
+            echo "    2) 全局安装 ruff:                  pip install ruff"
+            exit 1
+        fi
+        # shellcheck disable=SC2086
+        echo "$CHANGED_PY" | xargs $RUFF check
+        # shellcheck disable=SC2086
+        echo "$CHANGED_PY" | xargs $RUFF format --check
+        echo "✔ Python ruff 通过"
     fi
-    # shellcheck disable=SC2086
-    echo "$CHANGED_PY" | xargs $RUFF check
-    # shellcheck disable=SC2086
-    echo "$CHANGED_PY" | xargs $RUFF format --check
-    echo "✔ Python ruff 通过"
 fi
 
-# --- G-03 + G-04: performance-testing-platform JS lint + format ---
-# 使用递归 pathspec（**/*.js）覆盖任意层级，避免单层 glob 漏检
-# （历史问题：PR #218 中 tests/unit/scripts/*.js 因单层 glob 未被拦截 → CI prettier 红灯）
-CHANGED_JS=$(git diff --cached --name-only --diff-filter=ACM -- \
-    'performance-testing-platform/src/**/*.js' \
-    'performance-testing-platform/tests/**/*.js' \
-    'performance-testing-platform/scripts/**/*.js')
-if [ -n "$CHANGED_JS" ]; then
-    echo "▶ ESLint on staged JS (performance-testing-platform)..."
+# === [G-11] JS eslint + prettier 按子项目触发 ===
+# 函数：对单个 Node 子项目执行 eslint + prettier --check（仅当 node_modules 已安装）
+run_js_project() {
+    PROJ="$1"
+    CHANGED=$(git diff --cached --name-only --diff-filter=ACM -- "$PROJ/*.js" "$PROJ/**/*.js" 2>/dev/null | grep -vE "/(node_modules|dist|build|coverage)/" || true)
+    [ -z "$CHANGED" ] && return 0
+
+    PROJ_DIR="$REPO_ROOT/$PROJ"
+    if [ ! -d "$PROJ_DIR/node_modules" ]; then
+        echo "⚠  $PROJ: 检测到 staged JS 变更但 node_modules 未安装，跳过 lint"
+        echo "   请执行: (cd $PROJ && npm install) 后重新 commit 以获得 lint 保护"
+        return 0
+    fi
+
+    echo "▶ ESLint on staged JS ($PROJ)..."
     (
-        cd "$REPO_ROOT/performance-testing-platform" && \
-        echo "$CHANGED_JS" | sed "s|^performance-testing-platform/||" | xargs npx eslint --no-warn-ignored
+        cd "$PROJ_DIR" && \
+        printf '%s\n' "$CHANGED" | sed "s|^$PROJ/||" | xargs npx --no-install eslint --no-warn-ignored
     ) || {
-        echo "✖ ESLint 失败 — 请修复后重新 commit"
+        echo "✖ ESLint 失败 ($PROJ) — 请修复后重新 commit"
         exit 1
     }
-    echo "▶ Prettier --check on staged JS (performance-testing-platform)..."
-    (
-        cd "$REPO_ROOT/performance-testing-platform" && \
-        echo "$CHANGED_JS" | sed "s|^performance-testing-platform/||" | xargs npx prettier --check
-    ) || {
-        echo "✖ Prettier 检查失败 — 请运行 npm run format 后重新 commit"
-        exit 1
-    }
-    echo "✔ performance-testing-platform JS 检查通过"
+
+    # Prettier 检查（仅当本项目存在 prettier 依赖时运行）
+    if [ -x "$PROJ_DIR/node_modules/.bin/prettier" ]; then
+        echo "▶ Prettier --check on staged JS ($PROJ)..."
+        (
+            cd "$PROJ_DIR" && \
+            printf '%s\n' "$CHANGED" | sed "s|^$PROJ/||" | xargs npx --no-install prettier --check
+        ) || {
+            echo "✖ Prettier 检查失败 ($PROJ) — 请运行 (cd $PROJ && npm run format 或 npx prettier --write) 后重新 commit"
+            exit 1
+        }
+    fi
+    echo "✔ $PROJ JS 检查通过"
+}
+
+if [ "${SKIP_JS_LINT:-0}" != "1" ]; then
+    for PROJ in performance-testing-platform api-testing-demo microservice-testing-platform playwright-demo; do
+        [ -d "$REPO_ROOT/$PROJ" ] && run_js_project "$PROJ"
+    done
 fi
 
 exit 0
