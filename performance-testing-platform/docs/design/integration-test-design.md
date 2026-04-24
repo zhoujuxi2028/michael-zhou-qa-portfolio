@@ -285,7 +285,7 @@ tests/integration/
 | ------------ | ----------------------------------------------------------- |
 | **测试目标** | 编排外部进程间的集成验证（Docker + k6 + JMeter + API 服务） |
 | **执行方式** | `bash scripts/integration-test.sh`                          |
-| **互斥机制** | `scripts/lock.sh` 基于 `mkdir` 原子性的进程锁               |
+| **互斥机制** | `scripts/lib/lock.sh` 基于 `mkdir` 原子性的进程锁            |
 | **用例数**   | ~40（分 7 个 Phase 执行）                                   |
 
 **编排流程：**
@@ -751,13 +751,13 @@ TREND-INT-04: 空数据兜底
   Assert:  输出 "No trend data available"
 ```
 
-#### 3.5.2 Phase 7 Soak 集成脚本 (`scripts/integration-test-phase7-soak.sh`)
+#### 3.5.2 Phase 7 Soak 集成脚本 (`scripts/phases/phase7-soak.sh`)
 
 | 项目         | 说明                                                                           |
 | ------------ | ------------------------------------------------------------------------------ |
 | **测试目标** | 验证 k6 soak → InfluxDB 数据流 + Grafana 告警规则配置的端到端链路              |
 | **执行阶段** | **Stage 4（验收阶段）**，不计入 Stage 3 集成测试范围                           |
-| **执行方式** | `bash scripts/integration-test-phase7-soak.sh`                                 |
+| **执行方式** | `bash scripts/phases/phase7-soak.sh`                                           |
 | **依赖环境** | Docker daemon、k6 CLI、InfluxDB 1.8 (:8086)、Grafana 10.2 (:3010)、API (:3000) |
 | **用例数**   | 2 (K6-SOAK-INT-01, K6-SOAK-INT-02)                                             |
 | **执行时长** | ~10 分钟（3 分钟 soak + 基础设施等待）                                         |
@@ -765,7 +765,7 @@ TREND-INT-04: 空数据兜底
 **架构：**
 
 ```
-scripts/integration-test-phase7-soak.sh
+scripts/phases/phase7-soak.sh
          │
          ├── 基础设施准备
          │     ├── 检查 Docker daemon 状态
@@ -801,7 +801,7 @@ scripts/integration-test-phase7-soak.sh
 
 **与 `integration-test.sh` Phase 4 的区别：**
 
-| 维度          | `integration-test.sh` Phase 4   | `integration-test-phase7-soak.sh`        |
+| 维度          | `integration-test.sh` Phase 4   | `scripts/phases/phase7-soak.sh`          |
 | ------------- | ------------------------------- | ---------------------------------------- |
 | **执行阶段**  | Stage 3 开发阶段                | Stage 4 验收阶段                         |
 | **soak 时长** | 嵌套在多 Phase 主脚本中         | 独立 3 分钟专项 soak                     |
@@ -870,7 +870,7 @@ scripts/integration-test-phase7-soak.sh
 | ------------ | -------------------------------------------------------------- |
 | **API 服务** | `scripts/server.sh start` 启动真实进程（端口 3000）            |
 | **Docker**   | `docker compose up -d` 启动 InfluxDB (:8086) + Grafana (:3010) |
-| **互斥锁**   | `scripts/lock.sh` 防止并行执行                                 |
+| **互斥锁**   | `scripts/lib/lock.sh` 防止并行执行                             |
 | **环境检测** | `scripts/preflight-check.sh --stage4` 检测 Docker/端口/资源    |
 | **清理策略** | `trap cleanup EXIT` + `docker compose down`                    |
 
