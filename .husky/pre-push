@@ -1,5 +1,8 @@
 #!/bin/sh
-# pre-push: performance-testing-platform 质量门控 (P-1)
+# pre-push: performance-testing-platform 质量门控 + 受保护分支拦截（企业级）
+#
+# 企业保护：
+#   A. 禁止直推 main / master / release/* （走 PR 合入）——可用 ALLOW_DIRECT_PUSH=1 应急绕过
 #
 # 触发条件：本次 push 中有 performance-testing-platform/ 下的文件变更
 # 门控检查（按顺序）：
@@ -13,32 +16,62 @@
 #   - 检查项 1-4 是 P-0 门控，任一失败则阻塞 push
 #   - 检查项 5 (集成测试) 是 P-1 门控，Docker 不可用时仅警告不阻塞
 
-# --- 判断本次 push 是否涉及 performance-testing-platform/ ---
 REMOTE="$1"
 URL="$2"
+ZERO40="0000000000000000000000000000000000000000"
 
-# 读取 stdin (local_ref local_sha remote_ref remote_sha)
+# --- G-09: 累积遍历所有 ref，避免单 ref 无变更就跳过 ---
+PERF_CHANGED=0
+PROTECTED_HIT=""
+
 while IFS=' ' read -r LOCAL_REF LOCAL_SHA REMOTE_REF REMOTE_SHA; do
-    # 删除分支操作跳过（LOCAL_SHA 全为 0 表示删除）
-    ZERO40="0000000000000000000000000000000000000000"
-    if [ "$LOCAL_SHA" = "$ZERO40" ]; then
-        continue
-    fi
+    # 空行（无 ref 推送）忽略
+    [ -z "$LOCAL_REF" ] && continue
+    # 删除分支操作跳过
+    [ "$LOCAL_SHA" = "$ZERO40" ] && continue
+
+    # --- G-10: 受保护分支拦截 ---
+    case "$REMOTE_REF" in
+        refs/heads/main|refs/heads/master|refs/heads/release/*)
+            PROTECTED_HIT="$REMOTE_REF"
+            ;;
+    esac
 
     # 新分支：与 remote 无共同祖先时，只检查最新一个 commit
     if [ "$REMOTE_SHA" = "$ZERO40" ]; then
-        RANGE="$LOCAL_SHA^1..$LOCAL_SHA"
+        if git rev-parse --verify "$LOCAL_SHA^1" >/dev/null 2>&1; then
+            RANGE="$LOCAL_SHA^1..$LOCAL_SHA"
+        else
+            RANGE="$LOCAL_SHA"
+        fi
     else
         RANGE="$REMOTE_SHA..$LOCAL_SHA"
     fi
 
     CHANGED=$(git diff --name-only "$RANGE" -- 'performance-testing-platform/' 2>/dev/null)
-
-    if [ -z "$CHANGED" ]; then
-        # 本次 push 未涉及 performance-testing-platform，跳过
-        exit 0
+    if [ -n "$CHANGED" ]; then
+        PERF_CHANGED=1
     fi
 done
+
+# --- 受保护分支保护（先于所有检查） ---
+if [ -n "$PROTECTED_HIT" ]; then
+    if [ "${ALLOW_DIRECT_PUSH:-0}" != "1" ]; then
+        echo ""
+        echo "✖ 拒绝直推受保护分支: $PROTECTED_HIT"
+        echo "  策略：main / master / release/* 禁止直推，必须走 Pull Request。"
+        echo "  应急绕过（仅限管理员临时使用）："
+        echo "      ALLOW_DIRECT_PUSH=1 git push ..."
+        exit 1
+    else
+        echo "⚠  ALLOW_DIRECT_PUSH=1 已启用，允许直推受保护分支: $PROTECTED_HIT"
+    fi
+fi
+
+# 本次 push 未涉及 performance-testing-platform，跳过质量门控
+if [ "$PERF_CHANGED" -eq 0 ]; then
+    exit 0
+fi
 
 # --- 进入 performance-testing-platform 目录 ---
 REPO_ROOT=$(git rev-parse --show-toplevel)
