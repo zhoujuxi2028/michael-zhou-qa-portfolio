@@ -1,7 +1,7 @@
 #!/bin/bash
 # Phase 7: Grafana Real-time Monitoring Integration Tests (K6-SOAK-INT-01~02)
 # Tests k6 soak with InfluxDB/Grafana real-time data flow and alert triggers
-# Usage: bash scripts/integration-test-phase7-soak.sh
+# Usage: bash scripts/phases/phase7-soak.sh
 #
 # Requirements:
 #   - Docker & Docker Compose (or OrbStack)
@@ -15,7 +15,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+# Path resolution: SCRIPT_DIR=scripts/phases/ → SCRIPTS_DIR=scripts/ → PROJECT_DIR=performance-testing-platform/
+SCRIPTS_DIR="$(dirname "$SCRIPT_DIR")"
+PROJECT_DIR="$(dirname "$SCRIPTS_DIR")"
 PORT="${PORT:-3000}"
 GRAFANA_PORT="${GRAFANA_PORT:-3010}"
 INFLUXDB_PORT="${INFLUXDB_PORT:-8086}"
@@ -24,7 +26,9 @@ INFLUXDB_PORT="${INFLUXDB_PORT:-8086}"
 SOAK_VUS="${SOAK_VUS:-20}"  # Light load for quick test (vs 200 for production)
 SOAK_DURATION="3m"           # Short duration for integration test
 INFLUXDB_DB="k6"
+# shellcheck disable=SC2034
 INFLUXDB_ORG="k6"
+# shellcheck disable=SC2034
 INFLUXDB_TIMEOUT="10s"
 
 # Counters
@@ -107,7 +111,7 @@ cleanup() {
   cd "$PROJECT_DIR"
   docker compose down 2>/dev/null || true
   # Stop API server if running standalone
-  bash "$SCRIPT_DIR/server.sh" stop 2>/dev/null || true
+  bash "$SCRIPTS_DIR/server.sh" stop 2>/dev/null || true
 }
 trap cleanup EXIT
 
@@ -244,7 +248,7 @@ fi
 
 # Simulate alert trigger condition: inject high-latency traffic to exceed p95 > 500ms threshold
 echo "  Injecting high-latency traffic to trigger alert..."
-for i in {1..10}; do
+for _ in {1..10}; do
   # Make requests with intentionally slow endpoint (if available) or simple bulk requests
   curl -s "http://localhost:$PORT/api/products" > /dev/null 2>&1 || true
 done

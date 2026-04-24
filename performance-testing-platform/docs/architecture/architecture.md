@@ -446,21 +446,25 @@ performance-lint → unit-tests → ┬─ smoke-test         (grafana/setup-k6-
                                 └─ jmeter-smoke-test  (apt-get install + wget)
 ```
 
-两个 smoke gate 并行运行，均通过才算 CI 绿灯。lint 阶段包含 ESLint 和 Prettier 两个独立检查。
+两个 smoke gate 并行运行，均通过才算 CI 绿灯。lint 阶段包含 ESLint、Prettier 和 ShellCheck 三个独立检查。
 
 ## 8. Phase 7 — CI/CD + 可观测性
 
 ### 8.1 CI Pipeline 架构
 
 ```
-performance-lint → unit-tests (coverage ≥80%) → ┬─ smoke-test       (k6 smoke gate)
-                                                 ├─ jmeter-smoke-test
-                                                 ├─ baseline-compare (regression detection)
-                                                 └─ trend-collect    (historical analysis)
+performance-lint → ┬─ unit-tests (coverage ≥80%) → ┬─ smoke-test       (k6 smoke gate)
+                   │                                ├─ jmeter-smoke-test
+                   │                                ├─ baseline-compare (regression detection)
+                   │                                └─ trend-collect    (historical analysis)
+                   └─ shell-tests (BATS)            → ┬─ smoke-test
+                                                      └─ jmeter-smoke-test
 ```
 
 **CI 流程特点：**
-- **代码质量门禁**: ESLint（语法/逻辑）+ Prettier（格式）独立执行，任一失败即阻断
+
+- **代码质量门禁**: ESLint（语法/逻辑）+ Prettier（格式）+ ShellCheck（shell 脚本静态分析）独立执行，任一失败即阻断
+- **Shell 测试**: BATS (`stage4-selftest.bats`) 25 个 shell 自测用例与 unit-tests 并行运行
 - **覆盖率门禁**: Jest coverage threshold enforced (minimum 80%)
 - **并行执行**: k6 和 JMeter smoke test 同时运行，提高 CI 效率
 - **基线对比**: 自动对比历史性能数据，检测回归
@@ -469,28 +473,31 @@ performance-lint → unit-tests (coverage ≥80%) → ┬─ smoke-test       (k
 - **命名规范**: GitHub Checks 使用 `Performance Testing / <Stage>` 显示名，避免 monorepo 内多个 `Unit Tests` 混淆
 
 **Prettier 检查范围** (ISS-015 后扩展):
+
 - `src/**/*.js` — 源代码
 - `tests/**/*.js` — 所有测试文件（unit + integration + performance）
 - `scripts/**/*.js` — 脚本文件
 
 **本地质量门禁** (pre-commit hook):
+
 - husky v9 + lint-staged：git commit 前自动执行 ESLint + Prettier
 - 覆盖范围与 CI 一致：`src/`, `tests/`, `scripts/` 下所有 `.js` 文件
 
 **分支保护建议** (ISS-015 RCA):
+
 - 建议在 `main` 和 `feature/performance-testing` 分支启用 branch protection rules
 - 要求 `Performance Testing / Code Quality` 和 `Performance Testing / Unit Tests` status checks 通过后才能合并
 - 需要 repo admin 在 GitHub Settings → Branches → Branch protection rules 手动配置
 
 ### 8.2 CI 工作流程组件
 
-| 组件 | 文件 | 作用 | 验证方式 |
-|------|------|------|----------|
-| **Workflow** | `.github/workflows/performance-ci.yml` | 主 CI 流程定义 | GitHub Actions |
-| **Baseline Export** | `scripts/baseline-export.js` | 导出当前性能基线 | `node scripts/baseline-export.js` |
-| **Baseline Compare** | `scripts/baseline-compare.js` | 对比性能基线，检测回归 | `node scripts/baseline-compare.js` |
-| **Trend Collect** | `scripts/trend-collect.js` | 收集历史趋势数据 | `node scripts/trend-collect.js` |
-| **Summary Report** | `scripts/generate-summary.sh` | 生成 Markdown 执行摘要 | `bash scripts/generate-summary.sh` |
+| 组件                 | 文件                                   | 作用                   | 验证方式                           |
+| -------------------- | -------------------------------------- | ---------------------- | ---------------------------------- |
+| **Workflow**         | `.github/workflows/performance-ci.yml` | 主 CI 流程定义         | GitHub Actions                     |
+| **Baseline Export**  | `scripts/baseline-export.js`           | 导出当前性能基线       | `node scripts/baseline-export.js`  |
+| **Baseline Compare** | `scripts/baseline-compare.js`          | 对比性能基线，检测回归 | `node scripts/baseline-compare.js` |
+| **Trend Collect**    | `scripts/trend-collect.js`             | 收集历史趋势数据       | `node scripts/trend-collect.js`    |
+| **Summary Report**   | `scripts/generate-summary.sh`          | 生成 Markdown 执行摘要 | `bash scripts/generate-summary.sh` |
 
 ### 8.3 基线管理策略
 
@@ -506,13 +513,15 @@ performance-lint → unit-tests (coverage ≥80%) → ┬─ smoke-test       (k
 ```
 
 **回归检测逻辑：**
+
 - **p95 延迟**: 如果新值 > 旧值 × 1.1 (10% 上升)，标记为 REGRESSION
-- **错误率**: 如果新值 > 旧值 + 0.5%，标记为 REGRESSION  
+- **错误率**: 如果新值 > 旧值 + 0.5%，标记为 REGRESSION
 - **吞吐量**: 如果新值 < 旧值 × 0.9 (10% 下降)，标记 as REGRESSION
 
 ### 8.4 趋势分析
 
 **存储结构：**
+
 ```
 reports/
 ├── trend.json              # 每次 CI 追加的性能数据
@@ -524,6 +533,7 @@ reports/
 ```
 
 **数据保留策略：**
+
 - `trend.json`: 保留最近 90 天数据（Issue #128）
 - 每日执行追加新数据，自动清理旧数据
 - 支持 Grafana 查询历史趋势
@@ -533,18 +543,21 @@ reports/
 #### 8.5.1 Grafana 面板升级
 
 **新增面板：**
+
 1. **CI 状态面板**: 显示最近 CI 运行状态，通过/失败率
 2. **基线对比面板**: 显示当前 vs 基线的性能对比
 3. **趋势分析面板**: 显示 p95/error rate/throughput 的长期趋势
 4. **业务指标面板**: 订单创建成功率、认证成功率等业务级指标
 
 **面板数据源：**
+
 - InfluxDB (k6 + JMeter)：原始性能数据
 - trend.json：趋势分析数据（通过 Grafana JSON API）
 
 #### 8.5.2 告警规则增强
 
 **新增告警规则：**
+
 ```yaml
 # CI 失败告警
 - alert: CIFailed
@@ -553,9 +566,9 @@ reports/
   labels:
     severity: critical
   annotations:
-    summary: "CI Pipeline Failed"
+    summary: 'CI Pipeline Failed'
 
-# 性能回归告警  
+# 性能回归告警
 - alert: PerformanceRegression
   expr: |
     (
@@ -568,27 +581,29 @@ reports/
   labels:
     severity: warning
   annotations:
-    summary: "Performance Regression Detected"
+    summary: 'Performance Regression Detected'
 ```
 
 ### 8.6 定时测试
 
 **夜间回归测试：**
+
 ```yaml
 name: Nightly Regression
 on:
   schedule:
-    - cron: '0 2 * * *'  # 每天凌晨2点
+    - cron: '0 2 * * *' # 每天凌晨2点
 jobs:
   regression:
     runs-on: ubuntu-latest
     steps:
-      - # 执行完整性能回归测试
-      - # 结果存储在带时间戳的目录
-      - # 生成回归报告并邮件通知
+      -  # 执行完整性能回归测试
+      -  # 结果存储在带时间戳的目录
+      -  # 生成回归报告并邮件通知
 ```
 
 **测试范围：**
+
 - 所有 k6 脚本（smoke, load, stress, spike, capacity, soak）
 - 所有 JMeter 测试计划
 - 基线回归检测
@@ -597,19 +612,21 @@ jobs:
 ### 8.7 PR 集成
 
 **PR 评论功能：**
+
 - 自动在 PR 中添加测试结果摘要
 - 显示基线对比结果
 - 提供趋势分析链接
 - 标注是否存在性能回归
 
 **评论格式：**
+
 ```markdown
 📊 Performance Test Results
 
-| Test | Status | p95 | Error Rate | Baseline Change |
-|------|--------|-----|------------|-----------------|
-| k6-smoke | ✅ PASS | 45ms | 0.0% | +2% |
-| jmeter-smoke | ✅ PASS | 52ms | 0.0% | -1% |
+| Test         | Status  | p95  | Error Rate | Baseline Change |
+| ------------ | ------- | ---- | ---------- | --------------- |
+| k6-smoke     | ✅ PASS | 45ms | 0.0%       | +2%             |
+| jmeter-smoke | ✅ PASS | 52ms | 0.0%       | -1%             |
 
 📈 Trend Analysis: Dashboard link（运行时生成）
 📄 Baseline Comparison: comparison-result.json artifact
@@ -620,6 +637,7 @@ jobs:
 ### 8.8 脚本命令扩展
 
 **新增 npm scripts：**
+
 ```json
 {
   "generate-summary": "bash scripts/generate-summary.sh",
@@ -629,6 +647,7 @@ jobs:
 ```
 
 **脚本功能：**
+
 - `generate-summary`: 生成 Markdown 格式的执行摘要
 - `k6:rate-limit`: 测试 API 限流功能
 - `k6:breakpoint`: 寻找系统崩溃点的递增测试
@@ -644,6 +663,7 @@ jobs:
 | **总计** | **20** | **220** | |
 
 **测试覆盖范围：**
+
 - CI 流程完整性验证
 - 性能回归检测
 - 趋势数据分析

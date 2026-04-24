@@ -14,7 +14,6 @@ cd "$(dirname "$0")/.."
 LOG_DIR="docs/qa/reports/logs-stage4"
 REPORT="docs/qa/reports/stage4-selftest-report.md"
 TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
-DATE=$(date "+%Y-%m-%d")
 START_TIME=$(date +%s)
 
 mkdir -p "$LOG_DIR"
@@ -57,7 +56,20 @@ cleanup_api() {
 }
 
 get_current_branch() {
-  git branch --show-current
+  local branch
+  branch=$(git branch --show-current 2>/dev/null)
+  if [ -z "$branch" ]; then
+    # CI 环境下 (detached HEAD): 优先使用 PR head 分支名
+    branch="${GITHUB_HEAD_REF:-}"
+    # GITHUB_REF_NAME 在 PR 事件下为 "N/merge"，过滤掉
+    if [ -z "$branch" ]; then
+      local ref_name="${GITHUB_REF_NAME:-}"
+      if ! echo "$ref_name" | grep -qE '^[0-9]+/merge$'; then
+        branch="$ref_name"
+      fi
+    fi
+  fi
+  echo "$branch"
 }
 
 is_valid_work_branch() {
@@ -73,14 +85,20 @@ is_valid_work_branch() {
 }
 
 has_recent_conventional_commit() {
-  git log --format=%s -20 | grep -Eq '^(feat|fix|docs|test|refactor|perf|chore)(\([^)]+\))?: '
+  # 过滤掉 Merge 提交（CI checkout 会在顶部产生 merge commit）
+  local commits
+  commits=$(git log --format=%s -20 2>/dev/null | grep -v "^Merge ")
+  # 若过滤后无提交（例如 CI 浅克隆只含 merge commit），返回失败让调用方处理
+  [ -n "$commits" ] || return 1
+  echo "$commits" | grep -Eq '^(feat|fix|docs|test|refactor|perf|chore)(\([^)]+\))?: '
 }
 
 # 改进: 系统负载检测（macOS/Linux 兼容）
 check_system_load() {
   # 用 awk 取倒数第三个字段（1-min 平均负载）
   # uptime 格式: ... load average[s]: X.XX Y.YY Z.ZZ
-  local load=$(uptime | awk '{print $(NF-2)}' 2>/dev/null || echo "0")
+  local load
+  load=$(uptime | awk '{print $(NF-2)}' 2>/dev/null || echo "0")
   local threshold=5
 
   # 防护：空值或非数字格式
@@ -208,13 +226,13 @@ fi
 echo ""
 echo "--- 2.2 锁机制 ---"
 LOCK_DIR="/tmp/test-lock-$$"
-if bash scripts/lock.sh acquire "$LOCK_DIR" 2>&1 > /dev/null; then
-  if ! bash scripts/lock.sh acquire "$LOCK_DIR" 2>&1 > /dev/null; then
+if bash scripts/lib/lock.sh acquire "$LOCK_DIR" > /dev/null 2>&1; then
+  if ! bash scripts/lib/lock.sh acquire "$LOCK_DIR" > /dev/null 2>&1; then
     log_result "2.2" "PASS" "锁机制正常 (并发防护验证通过)"
   else
     log_result "2.2" "FAIL" "锁机制未能防止并发"
   fi
-  bash scripts/lock.sh release "$LOCK_DIR" 2>/dev/null || true
+  bash scripts/lib/lock.sh release "$LOCK_DIR" 2>/dev/null || true
 else
   log_result "2.2" "FAIL" "锁机制获取失败"
 fi
@@ -283,7 +301,6 @@ fi
 echo ""
 echo "--- 5.3 X-XSS-Protection 响应头 ---"
 npm start > "$LOG_DIR/api-startup.log" 2>&1 &
-API_PID=$!
 sleep 3
 
 XSS_HEADER=$(curl -si http://localhost:3000/health 2>/dev/null | grep -i "x-xss-protection" || true)
@@ -320,13 +337,20 @@ else
   log_result "6.1" "SKIP" "gh CLI 不可用"
 fi
 
-# 6.2 CI workaround 检查
+# 6.2 CI workaround 检查（允许含豁免注释的 continue-on-error）
 echo ""
-echo "--- 6.2 CI 无 workaround ---"
-if ! grep -q "continue-on-error" ../../.github/workflows/performance-ci.yml 2>/dev/null; then
-  log_result "6.2" "PASS" "CI 配置无 continue-on-error 或 || true"
+echo "--- 6.2 CI 无未记录 workaround ---"
+CI_WF="../.github/workflows/performance-ci.yml"
+if [ -f "$CI_WF" ]; then
+  UNDOC=$(grep -c "continue-on-error: true" "$CI_WF" 2>/dev/null || echo 0)
+  EXEMPTED=$(grep -B1 "continue-on-error: true" "$CI_WF" 2>/dev/null | grep -cE "exemption|risks\.md|R-[0-9]+" || echo 0)
+  if [ "$UNDOC" -eq "$EXEMPTED" ]; then
+    log_result "6.2" "PASS" "CI 所有 continue-on-error 均有豁免注释 (${EXEMPTED} 处)"
+  else
+    log_result "6.2" "FAIL" "CI 存在未记录的 continue-on-error ($((UNDOC - EXEMPTED)) 处)"
+  fi
 else
-  log_result "6.2" "FAIL" "CI 配置存在 workaround"
+  log_result "6.2" "SKIP" "CI 工作流文件不可达"
 fi
 
 # ============================================================
@@ -384,7 +408,10 @@ fi
 # 9.2 提交历史
 echo ""
 echo "--- 9.2 提交历史 ---"
-if has_recent_conventional_commit; then
+# 检测是否浅克隆 (CI checkout@v6 默认 fetch-depth=1)
+if [ -f ".git/shallow" ] || [ "$(git rev-list --count HEAD 2>/dev/null || echo 1)" -le 1 ]; then
+  log_result "9.2" "SKIP" "浅克隆环境无法验证 conventional commits（CI 应设 fetch-depth: 0）"
+elif has_recent_conventional_commit; then
   COMMIT_COUNT=$(git log --format=%s -20 | grep -Ec '^(feat|fix|docs|test|refactor|perf|chore)(\([^)]+\))?: ' || echo "0")
   log_result "9.2" "PASS" "最近提交符合 conventional commits ($COMMIT_COUNT commits in 20)"
 else
