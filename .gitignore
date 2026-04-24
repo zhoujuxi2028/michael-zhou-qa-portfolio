@@ -6,3 +6,6 @@ coverage/
 .worktrees/
 # JMeter execution logs - test artifacts
 **/jmeter.log
+# Node
+node_modules/
+.secretsallow

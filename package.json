@@ -9,10 +9,26 @@
     "prepare": "husky",
     "test:api": "cd api-testing-demo && npm run test",
     "test:api:smoke": "cd api-testing-demo && npm run test:smoke",
-    "validate:api": "cd api-testing-demo && npm run validate"
+    "validate:api": "cd api-testing-demo && npm run validate",
+    "commitlint": "commitlint --edit",
+    "lint-staged": "lint-staged"
   },
   "devDependencies": {
-    "husky": "^9.0.0"
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^16.4.0"
+  },
+  "lint-staged": {
+    "*.py": [
+      "bash -c 'F=\"$@\"; if [ -x venv/bin/ruff ]; then R=\"venv/bin/ruff\"; elif command -v ruff >/dev/null 2>&1; then R=ruff; else R=\"python3 -m ruff\"; fi; $R check $F && $R format --check $F' --"
+    ],
+    "microservice-testing-platform/**/*.js": [
+      "bash -c 'cd microservice-testing-platform && if [ -x node_modules/.bin/eslint ]; then npx --no-install eslint --no-warn-ignored \"$@\"; fi' --"
+    ],
+    "playwright-demo/**/*.{js,ts}": [
+      "bash -c 'cd playwright-demo && if [ -x node_modules/.bin/eslint ]; then npx --no-install eslint --no-warn-ignored \"$@\"; fi' --"
+    ]
   },
   "engines": {
     "node": ">=18.0.0"
