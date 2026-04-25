@@ -12,6 +12,7 @@
 | `docs/GIT-COMMIT-CONVENTION.md` | Git 提交规范 | 官方 | 统一 commit 规则 |
 | `docs/guides/` | 操作指南、环境搭建、最佳实践 | 各文件 | 面向执行与落地 |
 | `docs/project-management/` | 项目管理归档 | 各文件 | 需求、计划、事后分析等管理记录 |
+| `docs/project-management/defect-tracking/` | Portfolio 缺陷/Waiver 跟踪系统（SSOT） | 各文件 | 制度、登记表、Waiver 政策；项目级登记表入口 |
 | `docs/project-management/postmortems/` | Portfolio 级 postmortem / RCA 归档 | 各文件 | 时间序列沉淀，不放操作指南 |
 | `docs/reports/` | 实施总结、验证记录、专项报告 | 各文件 | 输出结果，不放流程规范 |
 | `docs/learning/` | 学习模块、阶段报告、学习资产 | 各文件 | 面向学习沉淀 |
@@ -107,6 +108,7 @@
 故障排查:           troubleshooting-<issue>.md
 事后分析:           postmortem-<YYYY-QN>.md
 专项 RCA:           RCA-<issue>-<topic>.md
+缺陷登记表:         defect-register.md（项目级放 docs/qa/，Portfolio 级放 docs/project-management/defect-tracking/）
 ```
 
 ## 审查流程 (在 PR 中)
