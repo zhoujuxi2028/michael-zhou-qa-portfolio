@@ -11,6 +11,7 @@
 npm install
 npm run lint
 npm test
+npm run test:bats               # BATS shell 测试 (fast + integration 两套)
 npm run k6:smoke
 npm run jmeter:smoke
 bash scripts/integration-test.sh
@@ -21,7 +22,8 @@ bash scripts/integration-test.sh
 ```bash
 npm run lint
 npm run format:check
-npm run test:coverage
+npm run test:coverage           # Jest 并行 (50% workers, 见 jest.config.js)
+bats tests/unit/scripts/stage4-selftest-fast.bats   # ~1s
 npm run k6:smoke
 ```
 
@@ -32,3 +34,6 @@ npm run k6:smoke
 - 锁机制与排障说明见 `README.md`
 - JMeter 正式运行前优先执行 `npm run jmeter:dryrun`
 - CI 相关改动不要用 `|| true` 或 `continue-on-error` 掩盖失败，详细规则见 `../docs/dev-process-checklist.md`
+- BATS 套件分两层（不再重复跑 npm/eslint）：
+  - `stage4-selftest-fast.bats` — 静态/lock 契约，CI 关键路径阻塞 smoke
+  - `stage4-selftest-integration.bats` — `setup_file()` 共享一次 `stage4-selftest.sh` 输出，CI 与 smoke 并行
