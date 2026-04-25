@@ -167,6 +167,45 @@ wait_for_endpoint() {
   done
 }
 
+# 等待 host:port 上的 TCP 端口可连接。用于区分"容器未起来"与"API 未就绪"两种状态。
+# 用法: wait_for_tcp_port <host> <port> <timeout_seconds>
+wait_for_tcp_port() {
+  local host="$1"
+  local port="$2"
+  local timeout_seconds="${3:-30}"
+  local start_time
+  start_time=$(date +%s)
+
+  while true; do
+    if (exec 3<>"/dev/tcp/${host}/${port}") 2>/dev/null; then
+      exec 3<&- 3>&-
+      log_info "TCP port ready: ${host}:${port}"
+      return 0
+    fi
+
+    if [ $(( $(date +%s) - start_time )) -ge "$timeout_seconds" ]; then
+      log_error "TCP port timeout after ${timeout_seconds}s: ${host}:${port}"
+      return 1
+    fi
+
+    sleep 0.5
+  done
+}
+
+# 转储指定 docker compose 服务的最近日志，用于 readiness/集成失败时的根因诊断。
+# 用法: dump_container_logs <service_name> [tail_lines]
+dump_container_logs() {
+  local service="$1"
+  local tail_lines="${2:-80}"
+  log_warn "--- Begin diagnostic logs for container: ${service} (tail=${tail_lines}) ---"
+  if ! docker compose logs --no-color --tail="$tail_lines" "$service" 2>&1 | while IFS= read -r line; do
+    [ -n "$line" ] && _log "WARN" "  | $line"
+  done; then
+    log_warn "  | (failed to read logs for ${service})"
+  fi
+  log_warn "--- End diagnostic logs for container: ${service} ---"
+}
+
 run_critical() {
   local command="$1"
   local description="$2"
