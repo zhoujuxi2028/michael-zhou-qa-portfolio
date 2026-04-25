@@ -60,12 +60,41 @@ test_error_wrappers() {
   run_optional "true" "optional ok"
 }
 
+# 新增：验证 wait_for_tcp_port 能区分"端口可达"与"端口不可达超时"两种状态
+# 对应 #192 修复点：分层 readiness 中的 TCP 预检
+test_wait_for_tcp_port() {
+  python3 -m http.server 18082 --bind 127.0.0.1 --directory /tmp >/tmp/common-test-tcp.log 2>&1 &
+  local server_pid=$!
+  sleep 1
+
+  wait_for_tcp_port "127.0.0.1" 18082 5
+  local ok_code=$?
+
+  kill "$server_pid" 2>/dev/null || true
+  wait "$server_pid" 2>/dev/null || true
+
+  if [ "$ok_code" -ne 0 ]; then
+    printf '✗ wait_for_tcp_port 应在端口可达时成功\n'
+    failures=$((failures + 1))
+    return
+  fi
+  printf '✓ wait_for_tcp_port 端口可达\n'
+
+  if wait_for_tcp_port "127.0.0.1" 9 1; then
+    printf '✗ wait_for_tcp_port 应在端口不可达时超时失败\n'
+    failures=$((failures + 1))
+    return
+  fi
+  printf '✓ wait_for_tcp_port 端口不可达超时失败\n'
+}
+
 main() {
   test_log_functions
   test_retry_with_backoff
   test_wait_for_endpoint
   test_wait_for_endpoint_timeout
   test_error_wrappers
+  test_wait_for_tcp_port
 
   if [ "$failures" -eq 0 ]; then
     printf 'All common.sh tests passed\n'
