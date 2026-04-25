@@ -37,7 +37,7 @@
 | 类型     | 工具                  | 用例数  | 职责                                                                                           | 执行方式                            |
 | -------- | --------------------- | ------- | ---------------------------------------------------------------------------------------------- | ----------------------------------- |
 | 单元测试 | Jest + Supertest      | 217     | API 功能正确性、helpers 解析逻辑、中间件行为、baseline 判定、k6 补完能力                       | `npm test` / `npx jest tests/unit/` |
-| 集成测试 | Shell + curl + Docker | 60      | 端到端链路验证 (k6→InfluxDB→Grafana、认证流程、k6 helpers、限流中间件、摘要报告、Grafana 集成) | `bash scripts/integration-test.sh`  |
+| 集成测试 | Jest + Supertest / Shell + curl + Docker | 60 | 双引擎：Jest Runner 负责进程内 API/中间件/跨切面集成，Shell Runner 负责端到端链路验证 (k6→InfluxDB→Grafana、认证流程、k6 helpers、限流中间件、摘要报告、Grafana 集成) | `npm run test:integration` + `bash scripts/integration-test.sh` |
 | 性能测试 | k6 + JMeter           | 33      | 延迟/吞吐/错误率、SLA 达标、瓶颈定位、长时间稳定性                                             | npm scripts 手动触发                |
 | 其他     | 手动验证              | 47      | 报告完整性、脚本行为、CI/Grafana/调度设计验证                                                  | 人工检查                            |
 | **合计** |                       | **357** |                                                                                                |                                     |
