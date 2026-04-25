@@ -1,30 +1,26 @@
 #!/usr/bin/env bats
 
-# Stage 4 自测脚本 TDD 测试套件
-# 使用 BATS (Bash Automated Testing System)
+# Stage 4 自测脚本 — Fast BATS 套件
+#
+# 设计原则：
+#   - 仅做"快速静态断言"：文件存在、grep 文档内容、shell 库契约
+#   - 不调用 npm test / eslint / prettier / coverage（这些已在 unit-tests / Code Quality job 覆盖）
+#   - 不启动 API、不跑 stage4-selftest.sh 整脚本（那些用例在 stage4-selftest-integration.bats）
+#   - 目标：单次运行 ≤ 30s，作为 CI 关键路径阻塞 smoke 的快速门禁
 
-# 前置设置
 setup() {
   export PROJECT_ROOT="$(cd "$(dirname "$BATS_TEST_DIRNAME")/../.." && pwd)"
   export SCRIPT="${PROJECT_ROOT}/scripts/stage4-selftest.sh"
-  export LOG_DIR="${PROJECT_ROOT}/docs/qa/reports/logs-stage4"
-  export REPORT="${PROJECT_ROOT}/docs/qa/reports/stage4-selftest-report.md"
   export TEST_LOCK_DIR="/tmp/test-lock-$$"
-
-  # 清理之前的测试数据
   rm -rf "$TEST_LOCK_DIR"
-  mkdir -p "$LOG_DIR"
 }
 
-# 清理
 teardown() {
   rm -rf "$TEST_LOCK_DIR"
-  npm stop > /dev/null 2>&1 || true
-  sleep 1
 }
 
 # ============================================================
-# 前置条件检查测试
+# 前置条件检查
 # ============================================================
 
 @test "前置: 脚本文件存在" {
@@ -51,32 +47,7 @@ teardown() {
 }
 
 # ============================================================
-# 代码质量检查测试 (Section 1)
-# ============================================================
-
-@test "1.1: 单元测试应全部通过" {
-  cd "$PROJECT_ROOT"
-  npm test 2>&1 | grep -qE "[0-9]+ passed"
-}
-
-@test "1.2: ESLint 检查应无错误" {
-  cd "$PROJECT_ROOT"
-  npx eslint . 2>&1 | grep -q "0 error" || npx eslint . > /dev/null 2>&1
-}
-
-@test "1.3: Prettier 格式应一致" {
-  cd "$PROJECT_ROOT"
-  npm run format:check > /dev/null 2>&1
-}
-
-@test "1.4: 代码覆盖率 Statements >= 80%" {
-  cd "$PROJECT_ROOT"
-  npm test -- --coverage 2>&1 | grep "All files" | awk -F'|' '{print $2}' | xargs | sed 's/%//' | \
-  awk '{if ($1 >= 80) exit 0; else exit 1}'
-}
-
-# ============================================================
-# 集成测试检查测试 (Section 2)
+# 集成测试检查 (Section 2) — 仅 lock.sh 的 shell 单元契约
 # ============================================================
 
 @test "2.2: 锁机制应防止并发获取" {
@@ -103,7 +74,7 @@ teardown() {
 }
 
 # ============================================================
-# RTM 检查测试 (Section 3)
+# RTM 检查 (Section 3)
 # ============================================================
 
 @test "3.1: RTM 需求覆盖应 >= 75" {
@@ -113,7 +84,7 @@ teardown() {
 }
 
 # ============================================================
-# 风险管理测试 (Section 4)
+# 风险管理 (Section 4)
 # ============================================================
 
 @test "4.1: 历史风险 H-18 应已记录" {
@@ -122,36 +93,20 @@ teardown() {
 }
 
 # ============================================================
-# 缺陷追踪测试 (Section 5)
+# 缺陷追踪 (Section 5) — 仅静态代码断言
 # ============================================================
+#
+# 注: 5.3 (X-XSS-Protection 响应头) 已迁移至 Jest 集成测试
+# tests/integration/middleware/security-headers.integration.test.js (SEC-INT-03)
+# 不再在 BATS 中启动 API + curl
 
 @test "5.2: X-XSS-Protection 修复代码应存在" {
   cd "$PROJECT_ROOT"
   grep -q 'res.set.*X-XSS-Protection.*1; mode=block' src/app.js
 }
 
-@test "5.3: API 响应头应包含 X-XSS-Protection" {
-  cd "$PROJECT_ROOT"
-
-  # 启动 API
-  npm start > /dev/null 2>&1 &
-  API_PID=$!
-  sleep 3
-
-  # 检查响应头
-  xss_header=$(curl -si http://localhost:3000/health 2>/dev/null | grep -i "x-xss-protection" || true)
-  echo "$xss_header" | grep -q "1; mode=block"
-  result=$?
-
-  # 清理
-  kill $API_PID > /dev/null 2>&1 || true
-  sleep 1
-
-  [ $result -eq 0 ]
-}
-
 # ============================================================
-# CI 检查测试 (Section 6)
+# CI 检查 (Section 6)
 # ============================================================
 
 @test "6.2: CI 中 continue-on-error 须有文档化豁免注释" {
@@ -163,7 +118,7 @@ teardown() {
 }
 
 # ============================================================
-# 文档完整性测试 (Section 8)
+# 文档完整性 (Section 8)
 # ============================================================
 
 @test "8.1: 验收报告文件应存在" {
@@ -177,7 +132,7 @@ teardown() {
 }
 
 # ============================================================
-# 分支和提交测试 (Section 9)
+# 分支和提交 (Section 9)
 # ============================================================
 
 @test "9.1: 当前分支应为有效工作分支" {
@@ -191,64 +146,10 @@ teardown() {
 
 @test "9.2: 最近 20 条提交应包含 conventional commits" {
   cd "$PROJECT_ROOT"
-  # 浅克隆环境跳过检查（例如 checkout@v6 默认 fetch-depth=1）
-  if [ -f ".git/shallow" ] || [ "$(git rev-list --count HEAD 2>/dev/null || echo 1)" -le 1 ]; then
-    skip "浅克隆环境无法验证 conventional commits（CI 需设 fetch-depth: 0）"
+  # 浅克隆环境跳过检查（CI 已设 fetch-depth: 50，正常情况下足够）
+  if [ -f ".git/shallow" ] && [ "$(git rev-list --count HEAD 2>/dev/null || echo 1)" -le 1 ]; then
+    skip "浅克隆环境无法验证 conventional commits"
   fi
-  # 过滤掉 CI checkout 产生的 Merge 提交
-  git log --oneline -20 | grep -v " Merge " | grep -qE "(feat|fix|docs|test|refactor|perf|chore)[:(]"
-}
-
-# ============================================================
-# 报告生成测试
-# ============================================================
-
-@test "报告: 应生成 Markdown 报告文件" {
-  cd "$PROJECT_ROOT"
-
-  # 运行脚本（可能会 SKIP 部分检查，但应该成功）
-  bash "$SCRIPT" > /dev/null 2>&1 || true
-
-  [ -f "$REPORT" ]
-}
-
-@test "报告: Markdown 文件应包含统计表格" {
-  cd "$PROJECT_ROOT"
-
-  bash "$SCRIPT" > /dev/null 2>&1 || true
-  grep -q "| ✅ 通过 |" "$REPORT" || grep -q "PASS" "$REPORT"
-}
-
-@test "报告: 日志目录应已创建" {
-  cd "$PROJECT_ROOT"
-
-  bash "$SCRIPT" > /dev/null 2>&1 || true
-  [ -d "$LOG_DIR" ]
-}
-
-# ============================================================
-# 错误处理测试
-# ============================================================
-
-@test "错误: npm test 失败时脚本应报记录失败" {
-  cd "$PROJECT_ROOT"
-
-  # 修改 package.json 使测试失败（模拟失败场景）
-  # 这里实际上我们不修改，只是验证错误处理逻辑存在
-  bash "$SCRIPT" 2>&1 | grep -q "PASS\|FAIL\|SKIP"
-}
-
-# ============================================================
-# 集成测试 (完整运行)
-# ============================================================
-
-@test "集成: 脚本应成功运行（可能包含 SKIP）" {
-  cd "$PROJECT_ROOT"
-  bash "$SCRIPT" > /dev/null 2>&1
-}
-
-@test "集成: 脚本应输出统计信息" {
-  cd "$PROJECT_ROOT"
-  run bash "$SCRIPT"
-  echo "$output" | grep -q "PASS:\|FAIL:\|SKIP:"
+  # --no-merges 替代后置 grep -v " Merge "，更可靠
+  git log --oneline -n 20 --no-merges | grep -qE "(feat|fix|docs|test|refactor|perf|chore)[:(]"
 }
