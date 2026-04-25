@@ -92,6 +92,24 @@ meets_threshold() {
   awk -v a="$actual" -v t="$threshold" 'BEGIN { exit (a + 0 >= t + 0) ? 0 : 1 }'
 }
 
+# below_threshold <actual> <threshold>
+# 浮点比较；actual < threshold 返回 0（即"指标低于上限 = 通过"，例如错误率 < 1%）
+below_threshold() {
+  local actual="$1" threshold="$2"
+  if ! [[ "$actual" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+    actual=0
+  fi
+  awk -v a="$actual" -v t="$threshold" 'BEGIN { exit (a + 0 < t + 0) ? 0 : 1 }'
+}
+
+# sanitize_number <raw>
+# 清洗 grep -c 等可能产出的多行/含非数字字符的计数；不存在或非数字 → 0
+sanitize_number() {
+  local raw="${1:-0}"
+  raw="${raw//[^0-9]/}"
+  printf '%s' "${raw:-0}"
+}
+
 # ============================================================
 # 报告生成
 # ============================================================
