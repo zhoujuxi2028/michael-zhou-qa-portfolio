@@ -185,7 +185,7 @@
 | ------------------------------------------------ | --------------------------------------------------- | ---------------------------------------------- | ---------------------------------------------------- | ---------- |
 | PERF-CI-COV-FR-001~003                           | CI 覆盖率门禁 (statements ≥ 80%)                    | `.github/workflows/performance-ci.yml`         | CI-COV-01~04                                         | ✅         |
 | PERF-CI-BL-FR-001~002,006                        | 基线回归：单元测试 + CI 自动对比                    | `src/utils/baseline.js`, `performance-ci.yml`  | UT-BL-01~06, CI-BL-01~04                             | ✅         |
-| PERF-CI-BL-FR-003~004                            | 趋势报告：`generate-trend.sh` + trend.json 累积     | `scripts/generate-trend.sh`                    | TREND-01~06                                          | ✅         |
+| PERF-CI-BL-FR-003~004                            | 趋势报告：`trend-collect.js` + trend.json 累积      | `scripts/analysis/trend-collect.js`, `src/utils/trend.js` | TREND-01~06                                          | ✅         |
 | PERF-CI-BL-FR-005                                | Grafana 趋势面板：历史 p95 / throughput 折线图      | `grafana/dashboards/`                          | GRF-TREND-01                                         | ✅         |
 | PERF-OBS-DASH-FR-001~003 / PERF-OBS-ALERT-FR-001 | Grafana 面板增强 (错误分布/热力图/自定义/告警)      | `grafana/dashboards/`                          | GRF-ERR-01, GRF-HEAT-01, GRF-CUSTOM-01, GRF-ALERT-01 | ✅         |
 | PERF-CI-SCHED-FR-001~002                         | 定时调度：nightly soak + weekly capacity workflow   | `.github/workflows/nightly-soak.yml`           | SCHED-01~04                                          | ✅         |
