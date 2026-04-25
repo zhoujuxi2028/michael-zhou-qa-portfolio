@@ -14,6 +14,7 @@ docs/
 ├── M4-LEARNING-COMPLETION.md       # 重点学习总结（保留根层入口）
 ├── guides/                         # 操作指南、环境搭建、最佳实践
 ├── project-management/             # 项目管理归档
+│   ├── defect-tracking/            # Portfolio 缺陷/Waiver 跟踪系统（SSOT）
 │   └── postmortems/                # Postmortem / RCA
 ├── reports/                        # 实施总结、验证记录、专项报告
 ├── learning/                       # 学习模块、阶段文档
@@ -30,6 +31,7 @@ docs/
 | 查看计划模板 | [plan-template.md](plan-template.md) |
 | 查看环境/操作指南 | [guides/](guides/) |
 | 查看 GitHub Labels 策略 | [guides/label-strategy.md](guides/label-strategy.md) |
+| **查看 Portfolio 缺陷跟踪系统** | **[project-management/defect-tracking/](project-management/defect-tracking/)** |
 | 查看 Portfolio 级 postmortem | [project-management/postmortems/](project-management/postmortems/) |
 | 查看专项报告与实施总结 | [reports/](reports/) |
 | 查看学习资料 | [learning/](learning/) |
@@ -37,6 +39,7 @@ docs/
 
 ## 最近新增
 
+- [project-management/defect-tracking/](project-management/defect-tracking/) — Portfolio 级"文档化的问题/缺陷跟踪系统"（v1.0，2026-04-25）
 - [guides/copilot-cloud-agent-ci-architecture.md](guides/copilot-cloud-agent-ci-architecture.md) — Copilot cloud agent CI 架构说明
 - [superpowers/specs/2026-04-23-copilot-cloud-agent-ci-optimization-design.md](superpowers/specs/2026-04-23-copilot-cloud-agent-ci-optimization-design.md) — Copilot cloud agent CI 优化设计
 - [reports/RCA-copilot-cloud-agent-runtime.md](reports/RCA-copilot-cloud-agent-runtime.md) — Copilot cloud agent 耗时 RCA
