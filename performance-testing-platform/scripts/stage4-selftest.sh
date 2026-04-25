@@ -200,6 +200,17 @@ fi
 echo ""
 echo "=== Section 2: 集成测试 ==="
 
+# 2.0 Jest 集成测试 (进程内，无 Docker/k6 依赖)
+echo ""
+echo "--- 2.0 Jest 集成测试 ---"
+JEST_INT_LOG="$LOG_DIR/jest-integration.log"
+if npm run test:integration 2>&1 | tee "$JEST_INT_LOG" > /dev/null; then
+  JEST_INT_PASSED=$(grep -E "Tests:.*[0-9]+ passed" "$JEST_INT_LOG" | grep -oE "[0-9]+ passed" | grep -oE "[0-9]+" | tail -1 || echo "0")
+  log_result "2.0" "PASS" "Jest 集成测试 (${JEST_INT_PASSED} passed)"
+else
+  log_result "2.0" "FAIL" "Jest 集成测试存在失败（详见 $JEST_INT_LOG）"
+fi
+
 # 改进: 2.1 集成测试 - 增加系统负载检测
 echo ""
 echo "--- 2.1 集成测试通过率 ---"
@@ -486,7 +497,8 @@ cat >> "$REPORT" << EOF
 - \`coverage.log\` — 覆盖率报告
 - \`eslint.log\` — ESLint 检查结果
 - \`prettier.log\` — npm run format:check 输出
-- \`integration-test.log\` — 集成测试输出
+- \`jest-integration.log\` — npm run test:integration 输出 (Jest Runner)
+- \`integration-test.log\` — 集成测试输出 (Shell Runner)
 - \`api-startup.log\` — API 启动日志
 
 ---
