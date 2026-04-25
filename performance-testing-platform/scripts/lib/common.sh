@@ -197,11 +197,16 @@ wait_for_tcp_port() {
 dump_container_logs() {
   local service="$1"
   local tail_lines="${2:-80}"
+  local logs
   log_warn "--- Begin diagnostic logs for container: ${service} (tail=${tail_lines}) ---"
-  if ! docker compose logs --no-color --tail="$tail_lines" "$service" 2>&1 | while IFS= read -r line; do
-    [ -n "$line" ] && _log "WARN" "  | $line"
-  done; then
+  if ! logs="$(docker compose logs --no-color --tail="$tail_lines" "$service" 2>&1)"; then
     log_warn "  | (failed to read logs for ${service})"
+  else
+    while IFS= read -r line; do
+      [ -n "$line" ] && _log "WARN" "  | $line"
+    done <<EOF
+$logs
+EOF
   fi
   log_warn "--- End diagnostic logs for container: ${service} ---"
 }

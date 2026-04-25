@@ -4,6 +4,10 @@ set -euo pipefail
 
 LOCK_DIR="${LOCK_DIR:-/tmp/integration-test.lock}"
 
+# Grafana 在 docker-compose.yml 中将容器 3000 映射到 host 3010
+GRAFANA_HOST="${GRAFANA_HOST:-localhost}"
+GRAFANA_PORT="${GRAFANA_PORT:-3010}"
+
 # Grafana readiness 总超时（秒）。可通过环境变量覆盖。
 # 历史上固定 60s 在慢启动环境（macOS 冷启动 / CI runner 抢占）会偶发超时（见 #192）。
 GRAFANA_READY_TIMEOUT="${GRAFANA_READY_TIMEOUT:-120}"
@@ -23,14 +27,14 @@ lock_release() {
 #   2) /api/health 返回合法 JSON（说明 Grafana HTTP 子系统初始化完成）
 # 任一阶段失败时自动 dump grafana / influxdb 容器日志，便于排查 #192 / #194 类问题。
 wait_for_grafana_ready() {
-  if ! wait_for_tcp_port "localhost" 3010 "$GRAFANA_TCP_TIMEOUT"; then
-    log_error "Grafana TCP port 3010 not reachable; container may have failed to start"
+  if ! wait_for_tcp_port "$GRAFANA_HOST" "$GRAFANA_PORT" "$GRAFANA_TCP_TIMEOUT"; then
+    log_error "Grafana TCP port ${GRAFANA_HOST}:${GRAFANA_PORT} not reachable; container may have failed to start"
     dump_container_logs "grafana" 120
     dump_container_logs "influxdb" 60
     return 1
   fi
 
-  if ! wait_for_endpoint "http://localhost:3010/api/health" "json_parse" "$GRAFANA_READY_TIMEOUT"; then
+  if ! wait_for_endpoint "http://${GRAFANA_HOST}:${GRAFANA_PORT}/api/health" "json_parse" "$GRAFANA_READY_TIMEOUT"; then
     log_error "Grafana /api/health did not become healthy within ${GRAFANA_READY_TIMEOUT}s"
     dump_container_logs "grafana" 120
     dump_container_logs "influxdb" 60

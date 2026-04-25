@@ -72,6 +72,7 @@ test_wait_for_tcp_port() {
 
   kill "$server_pid" 2>/dev/null || true
   wait "$server_pid" 2>/dev/null || true
+  rm -f /tmp/common-test-tcp.log
 
   if [ "$ok_code" -ne 0 ]; then
     printf '✗ wait_for_tcp_port 应在端口可达时成功\n'
