@@ -125,7 +125,10 @@ while [ $# -gt 0 ]; do
 done
 
 mkdir -p "$REPORT_DIR" "$LOG_DIR"
-cd "$PROJECT_DIR"
+cd "$PROJECT_DIR" || {
+  echo "❌ 无法进入项目目录: $PROJECT_DIR" >&2
+  exit 2
+}
 
 REPORT_PATH="${REPORT_DIR}/p1-gate-report.md"
 
