@@ -177,7 +177,7 @@ else
       ERRS="${ERRS:-0}"
       if [ "$TOTAL" -gt 0 ]; then
         ERR_PCT=$(awk "BEGIN { printf \"%.2f\", ($ERRS * 100) / $TOTAL }")
-        if meets_threshold "$JMETER_ERROR_MAX_PCT" "$ERR_PCT"; then
+        if below_threshold "$ERR_PCT" "$JMETER_ERROR_MAX_PCT"; then
           log_result "P1-02" PASS "JMeter smoke 通过 (error=${ERR_PCT}% < ${JMETER_ERROR_MAX_PCT}%)"
         else
           log_result "P1-02" FAIL "JMeter smoke 错误率超标 (error=${ERR_PCT}% ≥ ${JMETER_ERROR_MAX_PCT}%)"
@@ -248,17 +248,13 @@ echo "--- P1-05: 无未豁免的 continue-on-error ---"
 if [ ! -f "$WORKFLOW_FILE" ]; then
   log_result "P1-05" SKIP "工作流文件不存在: ${WORKFLOW_FILE}"
 else
-  TOTAL_CO=$(grep -c "continue-on-error: true" "$WORKFLOW_FILE" 2> /dev/null || echo 0)
-  TOTAL_CO=${TOTAL_CO//[^0-9]/}
-  TOTAL_CO=${TOTAL_CO:-0}
+  TOTAL_CO=$(sanitize_number "$(grep -c "continue-on-error: true" "$WORKFLOW_FILE" 2> /dev/null || echo 0)")
   if [ "$TOTAL_CO" -eq 0 ]; then
     log_result "P1-05" PASS "工作流无 continue-on-error: true"
   else
     # 在 continue-on-error 上方 3 行内查找豁免注释（exemption / risks.md / R-NNN）
-    EXEMPTED=$(grep -B3 "continue-on-error: true" "$WORKFLOW_FILE" 2> /dev/null \
-      | grep -cE "exemption|risks\.md|R-[0-9]+" || echo 0)
-    EXEMPTED=${EXEMPTED//[^0-9]/}
-    EXEMPTED=${EXEMPTED:-0}
+    EXEMPTED=$(sanitize_number "$(grep -B3 "continue-on-error: true" "$WORKFLOW_FILE" 2> /dev/null \
+      | grep -cE "exemption|risks\.md|R-[0-9]+" || echo 0)")
     UNDOC=$((TOTAL_CO - EXEMPTED))
     if [ "$UNDOC" -le 0 ]; then
       log_result "P1-05" PASS "全部 ${TOTAL_CO} 处 continue-on-error 已豁免（带 exemption/risks.md/R-NNN 注释）"

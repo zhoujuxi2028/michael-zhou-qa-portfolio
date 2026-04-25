@@ -70,7 +70,7 @@ EOF
 }
 
 @test "前置: 脚本启用 set -uo pipefail（不允许未定义变量）" {
-  grep -qE 'set -[a-z]*u[a-z]*o pipefail|set -uo pipefail|set -euo pipefail' "$SCRIPT"
+  grep -qE 'set -[a-z]*u[a-z]*o pipefail' "$SCRIPT"
 }
 
 # ============================================================
@@ -140,6 +140,27 @@ EOF
 @test "lib: meets_threshold 小于阈值返回 1" {
   run bash -c "source '$LIB'; meets_threshold 79.9 80"
   [ "$status" -eq 1 ]
+}
+
+@test "lib: below_threshold 实际值小于阈值返回 0（用于错误率上限）" {
+  run bash -c "source '$LIB'; below_threshold 0.5 1"
+  [ "$status" -eq 0 ]
+}
+
+@test "lib: below_threshold 实际值等于或大于阈值返回 1" {
+  run bash -c "source '$LIB'; below_threshold 1.0 1"
+  [ "$status" -eq 1 ]
+  run bash -c "source '$LIB'; below_threshold 2.5 1"
+  [ "$status" -eq 1 ]
+}
+
+@test "lib: sanitize_number 清洗多行/非数字输入" {
+  run bash -c "source '$LIB'; sanitize_number ''"
+  [ "$output" = "0" ]
+  run bash -c "source '$LIB'; sanitize_number $'3\n'"
+  [ "$output" = "3" ]
+  run bash -c "source '$LIB'; sanitize_number 'abc'"
+  [ "$output" = "0" ]
 }
 
 @test "lib: write_report 生成包含统计的 Markdown 文件" {
