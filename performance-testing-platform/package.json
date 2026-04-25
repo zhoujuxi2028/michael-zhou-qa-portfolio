@@ -18,7 +18,7 @@
     "test": "NODE_ENV=test jest",
     "test:unit": "NODE_ENV=test jest --testPathPattern=tests/unit",
     "test:integration": "NODE_ENV=test jest --testPathPattern=tests/integration --verbose",
-    "test:coverage": "NODE_ENV=test jest --testPathPattern=tests/unit --coverage --runInBand",
+    "test:coverage": "NODE_ENV=test jest --testPathPattern=tests/unit --coverage",
     "k6:smoke": "mkdir -p reports && k6 run --out 'web-dashboard=export=reports/k6-smoke.html' tests/performance/smoke.k6.js",
     "k6:load": "mkdir -p reports && k6 run --out 'web-dashboard=export=reports/k6-load.html' tests/performance/load.k6.js",
     "k6:stress": "mkdir -p reports && k6 run --out 'web-dashboard=export=reports/k6-stress.html' tests/performance/stress.k6.js",
@@ -51,9 +51,14 @@
     "trend:collect": "node scripts/analysis/trend-collect.js",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
-    "ci:lint": "node scripts/analysis/ci-lint.js ../.github/workflows/performance-ci.yml"
+    "ci:lint": "node scripts/analysis/ci-lint.js ../.github/workflows/performance-ci.yml",
+    "test:bats": "bats tests/unit/scripts/",
+    "gate:p0": "bash scripts/p0-gate-check.sh",
+    "gate:p1": "bash scripts/p1-gate-check.sh",
+    "gate:p1:full": "bash scripts/p1-gate-check.sh --full"
   },
   "devDependencies": {
+    "bats": "^1.13.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "jest": "^29.7.0",

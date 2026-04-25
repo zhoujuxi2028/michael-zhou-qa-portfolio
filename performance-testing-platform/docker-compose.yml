@@ -30,6 +30,12 @@ services:
       - ./grafana/dashboards:/var/lib/grafana/dashboards
     depends_on:
       - influxdb
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:3000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
 
 volumes:
   influxdb-data:
