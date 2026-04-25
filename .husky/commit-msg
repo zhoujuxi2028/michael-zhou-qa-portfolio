@@ -24,6 +24,15 @@ fi
 REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
 
+# 空消息防线：commitlint 默认对纯空输入静默通过；git 默认虽阻止空提交，
+# 但 --allow-empty-message 会触达本 hook，因此在此显式拦截，避免空消息泄漏到历史。
+NON_COMMENT=$(grep -v '^#' "$MSG_FILE" | tr -d '[:space:]')
+if [ -z "$NON_COMMENT" ]; then
+    echo "✖ commit-msg: 提交消息为空（去除注释与空白后无内容）"
+    echo "  请提供符合 Conventional Commits 的消息，例如: feat(perf): add soak test profile"
+    exit 1
+fi
+
 # 忽略 git 自动生成的消息（与 commitlint.config.js ignores 一致，双重保险）
 FIRST_LINE=$(sed -n '1p' "$MSG_FILE")
 case "$FIRST_LINE" in
