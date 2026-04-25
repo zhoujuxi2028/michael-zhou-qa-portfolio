@@ -19,7 +19,7 @@
     "test:unit": "NODE_ENV=test jest --testPathPattern=tests/unit",
     "test:integration": "NODE_ENV=test jest --testPathPattern=tests/integration --verbose",
     "test:coverage": "NODE_ENV=test jest --testPathPattern=tests/unit --coverage",
-    "k6:smoke": "mkdir -p reports && k6 run --out 'web-dashboard=export=reports/k6-smoke.html' tests/performance/smoke.k6.js",
+    "k6:smoke": "bash scripts/k6-smoke.sh",
     "k6:load": "mkdir -p reports && k6 run --out 'web-dashboard=export=reports/k6-load.html' tests/performance/load.k6.js",
     "k6:stress": "mkdir -p reports && k6 run --out 'web-dashboard=export=reports/k6-stress.html' tests/performance/stress.k6.js",
     "k6:spike": "mkdir -p reports && k6 run --out 'web-dashboard=export=reports/k6-spike.html' tests/performance/spike.k6.js",
