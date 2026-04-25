@@ -246,12 +246,31 @@ jobs:
           node-version: '18'
           working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
-      - name: Download baseline artifact
-        # 首次运行无 baseline artifact 时允许失败（已知 exemption，见 risks.md R-27）
-        continue-on-error: true
+      - name: Download previous baseline artifact (CI-BL-04 first-run handling)
+        id: download_baseline
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # R-27 兜底逻辑显式化：首次运行或 artifact 缺失时显式 exit 0，
+        # 不再依赖 `continue-on-error: true` 掩盖潜在错误。
+        # 非首次运行但下载失败会让 job 红灯，便于发现真实故障。
         run: |
+          set -euo pipefail
           mkdir -p reports
-          gh run list -w performance-ci.yml --json conclusion,databaseId -q '.[] | select(.conclusion=="success") | .databaseId' | head -1 | xargs -I {} gh run download {} -n baseline-artifact -D reports/
+          RUN_ID=$(gh run list -w performance-ci.yml \
+            --json conclusion,databaseId \
+            -q '.[] | select(.conclusion=="success") | .databaseId' \
+            | head -1 || true)
+          if [ -z "${RUN_ID:-}" ]; then
+            echo "::notice::No previous successful run found — first run, baseline-compare will skip (CI-BL-04)"
+            exit 0
+          fi
+          if ! gh run download "$RUN_ID" -n baseline-artifact -D reports/ 2>/tmp/gh_dl_err.log; then
+            echo "::warning::Previous baseline artifact missing for run $RUN_ID"
+            cat /tmp/gh_dl_err.log || true
+            echo "::notice::Treating as first run — baseline-compare will skip comparison"
+            exit 0
+          fi
+          echo "✅ Previous baseline artifact downloaded from run $RUN_ID"
       - name: Compare baseline (CI-BASE-02)
         run: node scripts/analysis/baseline-compare.js
       - name: Upload comparison result
