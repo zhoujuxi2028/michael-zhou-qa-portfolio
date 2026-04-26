@@ -129,25 +129,58 @@ describe('k6 Smoke 配置验证', () => {
       pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '../../../package.json'), 'utf-8'));
     });
 
-    test('K6-SMOKE-UT-19: package.json 包含 k6:smoke 脚本', () => {
-      expect(pkg.scripts['k6:smoke']).toBeDefined();
+    test('K6-SMOKE-UT-19: k6:smoke 调用专用 wrapper 脚本', () => {
+      expect(pkg.scripts['k6:smoke']).toContain('bash scripts/k6-smoke.sh');
     });
 
-    test('K6-SMOKE-UT-20: k6:smoke 输出 HTML 报告到 reports/', () => {
-      expect(pkg.scripts['k6:smoke']).toContain('reports/k6-smoke.html');
+    test('K6-SMOKE-UT-20: k6:smoke 支持显式跳过自动启动', () => {
+      const scriptPath = path.join(__dirname, '../../../scripts/k6-smoke.sh');
+      expect(fs.existsSync(scriptPath)).toBe(true);
+
+      const runner = fs.readFileSync(scriptPath, 'utf-8');
+      expect(runner).toContain('K6_SMOKE_SKIP_AUTOSTART');
     });
 
-    test('K6-SMOKE-UT-21: k6:smoke 执行 smoke.k6.js', () => {
-      expect(pkg.scripts['k6:smoke']).toContain('tests/performance/smoke.k6.js');
+    test('K6-SMOKE-UT-21: k6:smoke wrapper 默认启动 single 模式 API', () => {
+      const runner = fs.readFileSync(path.join(__dirname, '../../../scripts/k6-smoke.sh'), 'utf-8');
+      expect(runner).toContain('bash scripts/server.sh start single');
     });
 
-    test('K6-SMOKE-UT-22: k6:smoke 创建 reports 目录', () => {
-      expect(pkg.scripts['k6:smoke']).toContain('mkdir -p reports');
+    test('K6-SMOKE-UT-22: k6:smoke wrapper 让 k6 复用同一目标 URL', () => {
+      const runner = fs.readFileSync(path.join(__dirname, '../../../scripts/k6-smoke.sh'), 'utf-8');
+      expect(runner).toContain('SMOKE_BASE_URL="${BASE_URL:-http://localhost:${PORT:-3000}}"');
+      expect(runner).toContain('export BASE_URL="$SMOKE_BASE_URL"');
+    });
+
+    test('K6-SMOKE-UT-23: k6:smoke wrapper 转发 CLI 参数给 k6', () => {
+      const runner = fs.readFileSync(path.join(__dirname, '../../../scripts/k6-smoke.sh'), 'utf-8');
+      expect(runner).toContain('k6 run --out');
+      expect(runner).toContain('"$@"');
+    });
+
+    test('K6-SMOKE-UT-24: k6:smoke wrapper 仅在实际启动后才接管清理', () => {
+      const runner = fs.readFileSync(path.join(__dirname, '../../../scripts/k6-smoke.sh'), 'utf-8');
+      expect(runner).toContain('START_OUTPUT="$(bash scripts/server.sh start single 2>&1)"');
+      expect(runner).toContain('grep -q "Starting server in single mode on port"');
+      expect(runner).toContain('STARTED_BY_SCRIPT=true');
+    });
+
+    test('K6-SMOKE-UT-25: k6:smoke wrapper 用 BASE_URL 反推 PORT', () => {
+      const runner = fs.readFileSync(path.join(__dirname, '../../../scripts/k6-smoke.sh'), 'utf-8');
+      expect(runner).toContain('SMOKE_PORT=');
+      expect(runner).toContain('export PORT="$SMOKE_PORT"');
+      expect(runner).toContain('SMOKE_BASE_URL="${BASE_URL:-http://localhost:${PORT:-3000}}"');
+    });
+
+    test('K6-SMOKE-UT-26: autostart 后再次确认健康后才运行 k6', () => {
+      const runner = fs.readFileSync(path.join(__dirname, '../../../scripts/k6-smoke.sh'), 'utf-8');
+      expect(runner.split('curl -sf "$HEALTH_URL"').length - 1).toBeGreaterThanOrEqual(2);
+      expect(runner).toContain('Server did not become healthy after autostart');
     });
   });
 
   describe('profiles 目录一致性', () => {
-    test('K6-SMOKE-UT-23: 标准 profile JSON 都通过 validateProfile', () => {
+    test('K6-SMOKE-UT-29: 标准 profile JSON 都通过 validateProfile', () => {
       // capacity.json 使用自定义 defaults 格式（二分法容量测试），不适用标准 profile 验证
       const NON_STANDARD_PROFILES = ['capacity.json'];
       const profileFiles = fs
@@ -162,7 +195,7 @@ describe('k6 Smoke 配置验证', () => {
       }
     });
 
-    test('K6-SMOKE-UT-24: smoke profile 的 vus 是所有 profile 中最小的', () => {
+    test('K6-SMOKE-UT-30: smoke profile 的 vus 是所有 profile 中最小的', () => {
       const smokeProfile = JSON.parse(fs.readFileSync(SMOKE_PROFILE, 'utf-8'));
       const profileFiles = fs.readdirSync(PROFILES_DIR).filter((f) => f.endsWith('.json'));
 
@@ -172,6 +205,22 @@ describe('k6 Smoke 配置验证', () => {
           expect(smokeProfile.vus).toBeLessThanOrEqual(profile.vus);
         }
       }
+    });
+
+    test('K6-SMOKE-UT-27: profile helper 使用 import.meta.resolve 解析 profile 路径', () => {
+      const helper = fs.readFileSync(
+        path.join(__dirname, '../../../tests/performance/helpers/profile.js'),
+        'utf-8'
+      );
+      expect(helper).toContain('import.meta.resolve');
+    });
+
+    test('K6-SMOKE-UT-28: profile helper 不再直接使用 open("../../profiles/")', () => {
+      const helper = fs.readFileSync(
+        path.join(__dirname, '../../../tests/performance/helpers/profile.js'),
+        'utf-8'
+      );
+      expect(helper).not.toContain("open('../../profiles/");
     });
   });
 });
