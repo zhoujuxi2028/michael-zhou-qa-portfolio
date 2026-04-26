@@ -10,9 +10,12 @@ describe('grafana sqlite lock hardening', () => {
   test('docker-compose 为 Grafana 配置 sqlite lock 容错参数', () => {
     const compose = fs.readFileSync(COMPOSE_FILE, 'utf8');
 
-    expect(compose).toContain('- GF_DATABASE_SQLITE_BUSY_TIMEOUT=5000');
-    expect(compose).toContain('- GF_DATABASE_SQLITE_MAX_RETRIES=50');
-    expect(compose).toContain('- GF_DATABASE_SQLITE_MAX_OPEN_CONN=1');
+    expect(compose).toContain('- GF_DATABASE_MAX_OPEN_CONN=1');
+    expect(compose).toContain('- GF_DATABASE_QUERY_RETRIES=50');
+    expect(compose).toContain('- GF_DATABASE_TRANSACTION_RETRIES=50');
+    expect(compose).not.toContain('GF_DATABASE_SQLITE_BUSY_TIMEOUT');
+    expect(compose).not.toContain('GF_DATABASE_SQLITE_MAX_RETRIES');
+    expect(compose).not.toContain('GF_DATABASE_SQLITE_MAX_OPEN_CONN');
   });
 
   test('setup 脚本通过共享 helper 等待 Grafana readiness', () => {

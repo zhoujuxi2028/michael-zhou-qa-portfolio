@@ -57,9 +57,9 @@ describe('grafana sqlite lock hardening', () => {
   test('docker-compose 为 Grafana 配置 sqlite lock 容错参数', () => {
     const compose = fs.readFileSync(COMPOSE_FILE, 'utf8');
 
-    expect(compose).toContain('- GF_DATABASE_SQLITE_BUSY_TIMEOUT=5000');
-    expect(compose).toContain('- GF_DATABASE_SQLITE_MAX_RETRIES=50');
-    expect(compose).toContain('- GF_DATABASE_SQLITE_MAX_OPEN_CONN=1');
+    expect(compose).toContain('- GF_DATABASE_MAX_OPEN_CONN=1');
+    expect(compose).toContain('- GF_DATABASE_QUERY_RETRIES=50');
+    expect(compose).toContain('- GF_DATABASE_TRANSACTION_RETRIES=50');
   });
 
   test('setup 脚本通过共享 helper 等待 Grafana readiness', () => {
@@ -170,9 +170,9 @@ Expected: 只有测试文件改动；本任务不创建 commit，直接进入实
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-      - GF_DATABASE_SQLITE_BUSY_TIMEOUT=5000
-      - GF_DATABASE_SQLITE_MAX_RETRIES=50
-      - GF_DATABASE_SQLITE_MAX_OPEN_CONN=1
+      - GF_DATABASE_MAX_OPEN_CONN=1
+      - GF_DATABASE_QUERY_RETRIES=50
+      - GF_DATABASE_TRANSACTION_RETRIES=50
 ```
 
 - [ ] **Step 2: 把 `setup_phase()` 切到共享 helper**
@@ -397,7 +397,7 @@ Expected:
 
 | 文件 | 修改 |
 |---|---|
-| `docker-compose.yml` | 添加 `GF_DATABASE_SQLITE_BUSY_TIMEOUT=5000`、`GF_DATABASE_SQLITE_MAX_RETRIES=50`、`GF_DATABASE_SQLITE_MAX_OPEN_CONN=1` |
+| `docker-compose.yml` | 添加 `GF_DATABASE_MAX_OPEN_CONN=1`、`GF_DATABASE_QUERY_RETRIES=50`、`GF_DATABASE_TRANSACTION_RETRIES=50` |
 | `scripts/lib/setup.sh` | 改为 `wait_for_grafana_ready` |
 | `tests/integration/phases/phase-1-grafana.sh` | 改为复用 `wait_for_grafana_ready` |
 
