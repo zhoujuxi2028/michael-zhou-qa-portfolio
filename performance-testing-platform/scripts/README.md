@@ -37,19 +37,19 @@ scripts/
 
 ## 快速参考
 
-| 场景                  | 命令                                            |
-| --------------------- | ----------------------------------------------- |
-| 启动 API 服务         | `bash scripts/server.sh start cluster`          |
-| 停止 API 服务         | `bash scripts/server.sh stop`                   |
-| 环境预检              | `bash scripts/preflight-check.sh`               |
-| JMeter 预检           | `npm run jmeter:dryrun`                         |
-| 运行集成测试          | `bash scripts/integration-test.sh`              |
-| 运行阶段集成测试      | `bash scripts/integration-test.sh --phase 6`    |
-| 运行 Phase 7 浸泡测试 | `bash scripts/integration-test.sh --phase soak` |
-| 导出性能基线          | `npm run baseline:export`                       |
-| 趋势数据收集          | `npm run trend:collect`                         |
-| CI workflow 卫生检查  | `npm run ci:lint`                               |
-| Stage 4 验收自测      | `bash scripts/stage4-selftest.sh`               |
+| 场景               | 命令                                              |
+| ---------------- | ----------------------------------------------- |
+| 启动 API 服务        | `bash scripts/server.sh start cluster`          |
+| 停止 API 服务        | `bash scripts/server.sh stop`                   |
+| 环境预检             | `bash scripts/preflight-check.sh`               |
+| JMeter 预检        | `npm run jmeter:dryrun`                         |
+| 运行集成测试           | `bash scripts/integration-test.sh`              |
+| 运行阶段集成测试         | `bash scripts/integration-test.sh --phase 6`    |
+| 运行 Phase 7 浸泡测试  | `bash scripts/integration-test.sh --phase soak` |
+| 导出性能基线           | `npm run baseline:export`                       |
+| 趋势数据收集           | `npm run trend:collect`                         |
+| CI workflow 卫生检查 | `npm run ci:lint`                               |
+| Stage 4 验收自测     | `bash scripts/stage4-selftest.sh`               |
 
 ---
 
