@@ -56,6 +56,8 @@
 | DEF-002 | [#193](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/193) | `docker-compose.yml` `version` 字段过时 | P3 / Low | 2026-04-24 | 代码修复（删除 `version` 字段） | `fix/issue-192-193` |
 | DEF-003 | [#194](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/194) | JM-GRF-01 k6 阈值与 InfluxDB 断言耦合 | P1 / High | 2026-04-24 | 修复：`--no-thresholds` + metric count 断言 | `feature/performance-testing` |
 | DEF-004 | [#195](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/195) | K6-SOAK-INT-01 named scenario 执行冲突与矛盾输出 | P1 / High | 2026-04-24 | 修复：env vars 替代 CLI 覆盖；条件化第二段 check | `feature/performance-testing` |
+| DEF-009 | [#214](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/214) | Grafana sqlite lock 导致 setup 阶段容器退出 | P1 / High | 2026-04-26 | 修复：Grafana `query_retries` / `transaction_retries` / `max_open_conn` + 统一 readiness helper | `a44aa326` |
+| DEF-010 | [#215](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/215) | Phase 6 rate limiter pipeline 因 `grep -q` SIGPIPE 误判为 FAIL | P1 / High | 2026-04-26 | 修复：k6 输出先落盘再 grep，避免 `pipefail` 捕获上游 SIGPIPE 141 | `950ceb00` |
 
 ---
 
@@ -75,4 +77,7 @@
 
 | 日期 | 变更内容 | 操作人 |
 |------|----------|--------|
+| 2026-04-26 | 登记并关闭 `DEF-010`（#215）：修正 Stage 4 register 复用 `DEF-005` 的 ID 冲突 | QA |
+| 2026-04-26 | 关闭 `DEF-009`（#214）：full integration 已通过；补充 RCA 并关闭 Issue | QA |
+| 2026-04-26 | 登记 `DEF-009`（#214）：Grafana sqlite lock 导致 integration test setup 阻塞 | QA |
 | 2026-04-25 | 新建 `docs/qa/defect-register.md`；迁移 `DEF-001` ~ `DEF-004` 历史记录；登记 `DEF-005` ~ `DEF-008`（#202 ~ #205） | QA |

@@ -3,7 +3,7 @@
 run_phase_1_grafana() {
   log_info "Phase 1: Grafana + InfluxDB"
   run_critical "docker compose up -d influxdb grafana" "Start Grafana + InfluxDB" || return 1
-  run_critical "wait_for_endpoint 'http://localhost:3010/api/health' 'json_parse' 60" "Wait for Grafana readiness" || return 1
+  run_critical "wait_for_grafana_ready" "Wait for Grafana readiness" || return 1
   run_critical "bash scripts/server.sh start single" "Start API (single mode)" || return 1
 
   # JM-GRF-01: k6 → InfluxDB data-flow integration test
