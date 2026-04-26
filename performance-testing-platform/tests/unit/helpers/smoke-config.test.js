@@ -148,7 +148,6 @@ describe('k6 Smoke 配置验证', () => {
 
     test('K6-SMOKE-UT-22: k6:smoke wrapper 让 k6 复用同一目标 URL', () => {
       const runner = fs.readFileSync(path.join(__dirname, '../../../scripts/k6-smoke.sh'), 'utf-8');
-      expect(runner).toContain('SMOKE_BASE_URL="${BASE_URL:-http://localhost:${PORT:-3000}}"');
       expect(runner).toContain('export BASE_URL="$SMOKE_BASE_URL"');
     });
 

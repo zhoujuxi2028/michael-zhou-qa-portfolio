@@ -311,6 +311,8 @@ jobs:
       - trend-collect
     steps:
       - name: Verify all upstream jobs succeeded
+        # gate job 不 checkout，覆盖 workflow 级 working-directory，避免目录不存在导致 bash 启动失败
+        working-directory: .
         env:
           NEEDS_JSON: ${{ toJSON(needs) }}
         run: |

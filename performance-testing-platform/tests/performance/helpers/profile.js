@@ -4,10 +4,6 @@ function resolveProfilePath(name) {
   return import.meta.resolve(`../../../profiles/${name}.json`);
 }
 
-function resolveProfilePath(name) {
-  return import.meta.resolve(`../../../profiles/${name}.json`);
-}
-
 export function loadProfile(name) {
   let content;
   try {
