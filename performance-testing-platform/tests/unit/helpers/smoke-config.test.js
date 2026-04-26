@@ -167,7 +167,9 @@ describe('k6 Smoke 配置验证', () => {
       const runner = fs.readFileSync(path.join(__dirname, '../../../scripts/k6-smoke.sh'), 'utf-8');
       expect(runner).toContain('BASE_URL_NO_SCHEME');
       expect(runner).toContain('SMOKE_HOST_PORT');
-      expect(runner).toContain('SMOKE_BASE_URL="${SMOKE_SCHEME}://${SMOKE_HOST_PORT}${SMOKE_PATH}"');
+      expect(runner).toContain(
+        'SMOKE_BASE_URL="${SMOKE_SCHEME}://${SMOKE_HOST_PORT}${SMOKE_PATH}"'
+      );
     });
 
     test('K6-SMOKE-UT-26: autostart 后再次确认健康后才运行 k6', () => {
