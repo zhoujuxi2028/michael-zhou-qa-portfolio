@@ -16,9 +16,14 @@ function normalizeCommand(command) {
 
 function extractWorkflowRunCommand(workflowContent, command) {
   const escaped = command.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const regex = new RegExp(`- run:\\s+${escaped}`);
+  // 同时匹配两种 workflow 写法：
+  //   1) 单行 step：`- run: npm run format:check`
+  //   2) 多行 `run: |` 块内独占一行的命令（前导空白 + 命令 + 行尾）
+  // PR #224 将 lint / format:check 合并到一个多行 Code Style step，故必须支持第 2 种。
+  const regex = new RegExp(`(?:^|\\n)\\s*(?:- run:\\s+)?${escaped}\\s*(?:\\n|$)`);
   const match = workflowContent.match(regex);
-  return match ? match[0].replace(/^- run:\s+/, '') : null;
+  if (!match) return null;
+  return match[0].replace(/^[\s\n]*(?:- run:\s+)?/, '').replace(/\s*$/, '');
 }
 
 describe('格式检查范围一致性', () => {
