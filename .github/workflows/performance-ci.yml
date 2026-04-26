@@ -37,8 +37,9 @@ jobs:
           working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
       - name: Code Style (ESLint + Prettier)
-        # 合并 lint 与 format:check：两者都执行后再统一退出，避免 lint 失败遮蔽 format:check
-        # （历史问题：PR #218 lint 通过、format 失败；若顺序换则 lint 失败时 format 不再跑，缺乏全貌）
+        # 合并 lint 与 format:check：两者都执行后再统一退出，避免一项失败遮蔽另一项
+        # （GitHub Actions 默认 fail-fast：拆成两个 step 时，前者红灯后者就不再跑，
+        #  无法一次拿到所有 Code Style 全貌。历史问题见 PR #218 / RCA-2026-04-26。）
         run: |
           set +e
           npm run lint
