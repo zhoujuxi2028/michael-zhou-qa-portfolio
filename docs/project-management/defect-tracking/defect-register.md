@@ -66,7 +66,7 @@
 
 | 项目 | 登记表位置 | 当前活跃数 | 最近更新 |
 |------|------------|-----------|---------|
-| performance-testing-platform | [defect-register.md](../../../performance-testing-platform/docs/qa/defect-register.md) | 5（DEF-005、DEF-006、DEF-007、DEF-008、DEF-009） | 2026-04-26 |
+| performance-testing-platform | [defect-register.md](../../../performance-testing-platform/docs/qa/defect-register.md) | 4（DEF-005、DEF-006、DEF-007、DEF-008） | 2026-04-26 |
 | api-testing-demo | _(按需初始化，复制 [模板](defect-register-template.md))_ | — | — |
 | playwright-demo | _(按需初始化)_ | — | — |
 | selenium-demo | _(按需初始化)_ | — | — |
@@ -86,5 +86,6 @@
 
 | 日期 | 变更内容 | 操作人 |
 |------|----------|--------|
+| 2026-04-26 | 同步 `performance-testing-platform`：`DEF-009` 已关闭，活跃数调整为 4 | QA |
 | 2026-04-26 | 将 `performance-testing-platform` 入口切换到 `docs/qa/defect-register.md`；同步活跃数至 5（含 `DEF-009`） | QA |
 | 2026-04-25 | 初始建表；Portfolio 级跟踪系统 v1.0 落地；登记 11 个项目级入口 | QA |
