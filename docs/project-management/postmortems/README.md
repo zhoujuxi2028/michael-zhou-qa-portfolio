@@ -11,6 +11,7 @@
 | [postmortem-2026-Q2-copilot-cloud-agent-runtime.md](postmortem-2026-Q2-copilot-cloud-agent-runtime.md) | 问题闭环 | Copilot cloud agent 超时复盘 |
 | [postmortem-2026-Q2-issue-164.md](postmortem-2026-Q2-issue-164.md) | 专项 RCA | Claude Code Review 401 权限问题 |
 | [postmortem-2026-Q2-issue-187-repo-meta-broken-markdown-link.md](postmortem-2026-Q2-issue-187-repo-meta-broken-markdown-link.md) | 问题闭环 | Repository Meta CI Markdown 断链 |
+| [postmortem-2026-Q2-issue-202-205-k6-smoke.md](postmortem-2026-Q2-issue-202-205-k6-smoke.md) | 专项 RCA | k6 smoke baseline 启动稳健性（#202–#205） |
 | [postmortem-issue-68.md](postmortem-issue-68.md) | 问题闭环 | workaround 到期追踪机制缺失 |
 
 ## 2. 企业级归档与治理规则
