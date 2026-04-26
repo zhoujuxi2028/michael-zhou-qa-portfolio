@@ -71,12 +71,15 @@ log_result() {
 # 输出（空格分隔，4 列）：stmt branch funcs lines
 extract_coverage() {
   local line="$1"
-  # 用 awk 切分管道分隔符，去除空格与 % 符号
+  # 先剥离 ANSI 颜色转义序列（macOS 终端或 FORCE_COLOR=1 时 Jest 会输出颜色），
+  # 再用 awk 切分管道分隔符并去除空格与 % 符号。
+  # 若不剥离 ANSI，解析得到的数值会形如 "\e[32;1m95.82\e[0m"，
+  # 后续 meets_threshold 的数字正则会匹配失败被回退为 0，导致覆盖率误判 FAIL。
   echo "$line" | awk -F'|' '{
-    gsub(/[[:space:]%]/, "", $2);
-    gsub(/[[:space:]%]/, "", $3);
-    gsub(/[[:space:]%]/, "", $4);
-    gsub(/[[:space:]%]/, "", $5);
+    for (i = 2; i <= 5; i++) {
+      gsub(/\033\[[0-9;]*[a-zA-Z]/, "", $i);
+      gsub(/[[:space:]%]/, "", $i);
+    }
     printf "%s %s %s %s\n", $2, $3, $4, $5;
   }'
 }
