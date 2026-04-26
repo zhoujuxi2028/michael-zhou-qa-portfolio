@@ -116,6 +116,17 @@ npm test -- --testPathPattern='tests/unit'  # ✅ 33 suites / 311 tests pass
 | 在 postmortem 中固化 canonical target URL 三要素（scheme/authority/path）规则 | 文档 | ✅ 本 PR 落地 |
 | 后续若引入新的 baseline wrapper（jmeter:smoke 之外的入口），按相同模式：canonical URL + 本地白名单 + skip flag | 流程 | 📅 跟进 |
 
+### 5.1 PR #223 CI 复盘（次生事件）
+
+PR #223 首次 push 后 `Performance Testing / Code Quality` job 失败，原因是新增的 `tests/unit/scripts/k6-smoke-wrapper.test.js` 未通过 `prettier --check`（`npm run format:check`）。
+
+| 维度 | 详情 |
+|------|------|
+| 直接原因 | 文件由 `create` 工具一次性写入，未本地跑 `npm run format:check` 与 `prettier --write` |
+| 根因 | 提交前 checklist 漏跑 prettier；本地只跑了 lint + jest |
+| 修复 | `npx prettier --write tests/unit/scripts/k6-smoke-wrapper.test.js` 后重跑 `prettier --check` 通过 |
+| 防御 | 在本仓库 `CLAUDE.md` 「Pre-commit Checklist (Node.js)」已要求 `npx prettier --check`；本次违反流程，记录提醒：**新增 JS 文件后必须 `prettier --write` 一次再提交** |
+
 ---
 
 ## 6. 时间线

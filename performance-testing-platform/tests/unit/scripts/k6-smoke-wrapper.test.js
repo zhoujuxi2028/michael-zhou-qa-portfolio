@@ -135,7 +135,9 @@ describe('scripts/k6-smoke.sh 行为级回归', () => {
 
       expect(result.status).toBe(1);
       const combined = `${result.stdout || ''}\n${result.stderr || ''}`;
-      expect(combined).toContain('Remote target not reachable on http://example.invalid:3000/health');
+      expect(combined).toContain(
+        'Remote target not reachable on http://example.invalid:3000/health'
+      );
       // 不应当出现 server.sh 实际启动时打印的 "Starting server" 文本
       expect(combined).not.toMatch(/Starting server in single mode/);
       // 也不应当调用 fake k6
