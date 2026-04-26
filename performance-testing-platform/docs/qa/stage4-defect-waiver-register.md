@@ -33,7 +33,6 @@
 | DEF-002   | [#193](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/193) | `docker-compose.yml` `version` 字段过时警告                            | P3 / Low  | ❌ Non-blocking              | 2026-04-23 | ✅ Closed | WAV-001     | 修复：删除顶层 `version: '3.8'` 字段                                                                                                             |
 | DEF-003   | [#194](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/194) | JM-GRF-01 失败（Grafana 集成阶段 k6 http_req_failed 86.66%）           | P1 / High | ✅ Blocking                  | 2026-04-23 | 🟢 Fixed  | —           | 根因：k6 smoke 阈值与 Grafana 集成断言耦合。修复：加 `--no-thresholds` + InfluxDB 指标计数断言。Commit: _(本次)_                                 |
 | DEF-004   | [#195](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/195) | K6-SOAK-INT-01 结果矛盾（metrics not written vs custom metrics found） | P1 / High | ✅ Blocking                  | 2026-04-23 | 🟢 Fixed  | —           | 根因：`--vus`/`--duration` 覆盖 named scenario，找不到 `default` 导出。修复：改用 env vars 配置时长；第二段 check 改为条件执行。Commit: _(本次)_ |
-| DEF-005   | [#215](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/215) | Phase 6 rate limiter pipeline 因 `grep -q` SIGPIPE 误判为 FAIL          | P1 / High | ✅ Blocking                  | 2026-04-26 | 🟢 Fixed  | —           | 根因：`tests/integration/phases/phase-6-rate-limiter.sh` 在 `set -o pipefail` 下使用 `npm ... 2>&1 \| grep -q "rate limited (429)"`，`grep -q` 命中后提前退出导致上游 SIGPIPE，pipeline 返回 141。修复：改为先把 k6 输出落盘再 grep，按业务信号 `rate limited (429)` 判 PASS，npm 退出码非零仅记录 WARN。Commit: _(本次)_ |
 
 ---
 
@@ -58,6 +57,7 @@
 | DEF-002   | [#193](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/193) | docker-compose.yml version 字段过时                      | P3 / Low  | 2026-04-24 | 代码修复（删除 version 字段）                                | fix/issue-192-193                  |
 | DEF-003   | [#194](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/194) | JM-GRF-01 k6 阈值与 InfluxDB 断言耦合                    | P1        | 2026-04-24 | 修复：`--no-thresholds` + metric count 断言                  | _(见 feature/performance-testing)_ |
 | DEF-004   | [#195](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/195) | K6-SOAK-INT-01 named scenario exec 函数找不到 + 矛盾输出 | P1        | 2026-04-24 | 修复：env vars 替代 `--vus`/`--duration`；条件化第二段 check | _(见 feature/performance-testing)_ |
+| DEF-010   | [#215](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/215) | Phase 6 rate limiter pipeline 因 `grep -q` SIGPIPE 误判为 FAIL | P1 / High | 2026-04-26 | 修复：k6 输出先落盘再 grep，避免 `pipefail` 捕获上游 SIGPIPE 141 | `950ceb00` |
 
 ---
 
@@ -81,3 +81,4 @@
 | 2026-04-24 | DEF-001/DEF-002 标为 Closed（代码已修复）；WAV-001 关闭；更新 Closed 历史表          | QA     |
 | 2026-04-24 | 修复 DEF-003/DEF-004，状态改为 Fixed；同步至 Closed Defects 历史                     | QA     |
 | 2026-04-24 | DEF-001/DEF-002 标为 Closed（代码已修复，#192/#193）；WAV-001 关闭；更新 Closed 历史表 | QA     |
+| 2026-04-26 | 将 #215 从冲突的 `DEF-005` 改为 `DEF-010`，并移入 Closed Defects 历史 | QA     |
