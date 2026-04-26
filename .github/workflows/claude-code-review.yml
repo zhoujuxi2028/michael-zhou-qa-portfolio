@@ -42,6 +42,15 @@ jobs:
 
       - name: Run Claude Code Review
         id: claude-review
+        # 豁免说明（违反 CLAUDE.md 默认禁用 continue-on-error 规则的明确例外）：
+        # 本步骤调用 Anthropic 第三方 SaaS（claude-code-action），失败原因常为
+        # 外部不可控因素：① 组织月度 token 配额耗尽 ② 上游 action 内部 bun
+        # 运行时告警 ③ Anthropic API 短时不可用。这些**不是仓库代码缺陷**，
+        # 也无法被任何静态测试 / 单元测试预防。该 workflow 是 AI 辅助评审工具，
+        # 不属于业务质量门，不应阻塞 PR 合入与刷红 PR Checks。因此显式允许
+        # 本步骤失败而不影响 job 结论；真正的代码质量由 performance-ci /
+        # api-testing-ci / repo-meta-ci 等必跑 CI 保障。
+        continue-on-error: true
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
