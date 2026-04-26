@@ -33,7 +33,6 @@
 | DEF-006 | [#203](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/203) | `profile.js` 使用 `open('../../profiles/...')` 触发 k6 future warning | P2 / Medium | ❌ Non-blocking | 2026-04-25 | 🟡 Fix in review | — | 本地已改为 `import.meta.resolve()`；warning 已消失，但 Issue 尚未关闭 |
 | DEF-007 | [#204](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/204) | `BASE_URL` 与 `PORT` 组合时目标 URL 归一化不完整 | P1 / High | ✅ Blocking | 2026-04-25 | 🔴 Open | — | `BASE_URL=http://localhost PORT=3001` 时，wrapper / health / k6 目标可能不一致；需补 canonical target URL 修复 |
 | DEF-008 | [#205](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/205) | 远端 smoke 目标误触发本地 autostart | P1 / High | ✅ Blocking | 2026-04-25 | 🔴 Open | — | 非本地目标健康检查失败时仍会执行 `server.sh start single`；会污染远端 smoke 结果 |
-| DEF-009 | [#214](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/214) | Grafana sqlite lock 导致 setup 阶段容器退出 | P1 / High | ✅ Blocking | 2026-04-26 | 🟡 Fixing | — | 根因线索：Grafana SQLite 在 migration / dashboard provisioning 启动期发生 `database is locked`，导致 `/api/health` 永远不可达 |
 
 ---
 
@@ -57,6 +56,7 @@
 | DEF-002 | [#193](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/193) | `docker-compose.yml` `version` 字段过时 | P3 / Low | 2026-04-24 | 代码修复（删除 `version` 字段） | `fix/issue-192-193` |
 | DEF-003 | [#194](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/194) | JM-GRF-01 k6 阈值与 InfluxDB 断言耦合 | P1 / High | 2026-04-24 | 修复：`--no-thresholds` + metric count 断言 | `feature/performance-testing` |
 | DEF-004 | [#195](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/195) | K6-SOAK-INT-01 named scenario 执行冲突与矛盾输出 | P1 / High | 2026-04-24 | 修复：env vars 替代 CLI 覆盖；条件化第二段 check | `feature/performance-testing` |
+| DEF-009 | [#214](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/214) | Grafana sqlite lock 导致 setup 阶段容器退出 | P1 / High | 2026-04-26 | 修复：SQLite busy timeout / retry / max open conn + 统一 Grafana readiness helper | `a44aa326` |
 
 ---
 
@@ -76,5 +76,6 @@
 
 | 日期 | 变更内容 | 操作人 |
 |------|----------|--------|
+| 2026-04-26 | 关闭 `DEF-009`（#214）：full integration 已通过；补充 RCA 并关闭 Issue | QA |
 | 2026-04-26 | 登记 `DEF-009`（#214）：Grafana sqlite lock 导致 integration test setup 阻塞 | QA |
 | 2026-04-25 | 新建 `docs/qa/defect-register.md`；迁移 `DEF-001` ~ `DEF-004` 历史记录；登记 `DEF-005` ~ `DEF-008`（#202 ~ #205） | QA |
