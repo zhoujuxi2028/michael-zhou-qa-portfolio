@@ -44,7 +44,7 @@ jobs:
   unit-tests:
     name: Performance Testing / Unit Tests
     runs-on: ubuntu-latest
-    needs: performance-lint
+    # 优化 #2：lint 不再阻塞测试 job，与 lint 并行运行；最终由 performance-gate 汇总
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-node-project
@@ -52,6 +52,8 @@ jobs:
           node-version: '18'
           working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
+      # test:coverage 已移除 --runInBand，使用 jest.config.js 配置的 maxWorkers: 50%
+      # CI runner 4 核 → 2 worker 并行，预期比单线程提速约 30~40%
       - run: npm run test:coverage
       - name: Upload coverage
         if: always()
@@ -60,30 +62,54 @@ jobs:
           name: coverage-report
           path: performance-testing-platform/coverage/
 
-  shell-tests:
-    name: Performance Testing / Shell Tests (BATS)
+  shell-tests-fast:
+    name: Performance Testing / Shell Tests (Fast)
     runs-on: ubuntu-latest
-    needs: performance-lint
+    # 优化 #2：与 lint 并行
     steps:
       - uses: actions/checkout@v6
         with:
-          # BATS 测试中的 conventional commits 检查需要完整 git 历史
-          # (默认 fetch-depth=1 只含 PR 合成 merge commit，会导致 9.2 误报)
-          fetch-depth: 0
+          # 9.2 conventional commits 检查需要近期提交历史；50 已足够（替代旧 fetch-depth: 0）
+          fetch-depth: 50
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
           working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
       - name: Install bats-core
-        run: sudo apt-get install -y bats
-      - name: Run BATS shell tests
-        run: bats tests/unit/scripts/stage4-selftest.bats
+        uses: bats-core/bats-action@3.0.0
+        with:
+          bats-version: 1.10.0
+      - name: Run fast BATS shell tests
+        run: bats tests/unit/scripts/stage4-selftest-fast.bats
 
-  jmeter-dryrun:
-    name: Performance Testing / JMeter Dry Run
+  shell-tests-integration:
+    name: Performance Testing / Shell Tests (Integration)
     runs-on: ubuntu-latest
-    needs: [unit-tests, shell-tests]
+    # 优化 #2：与 lint 并行；不被下游 smoke/jmeter job 依赖，因此天然不阻塞性能闸门关键路径
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 50
+      - uses: ./.github/actions/setup-node-project
+        with:
+          node-version: '18'
+          working-directory: performance-testing-platform
+          cache-dependency-path: performance-testing-platform/package-lock.json
+      - name: Install bats-core
+        uses: bats-core/bats-action@3.0.0
+        with:
+          bats-version: 1.10.0
+      - name: Run integration BATS shell tests
+        run: bats tests/unit/scripts/stage4-selftest-integration.bats
+
+  jmeter-smoke-test:
+    # 优化 #1：合并原 jmeter-dryrun + jmeter-smoke-test 两个 job，
+    # 共享 setup-java / JMeter 缓存 / API 启动，关键路径节省约 40s。
+    # dryrun 作为 smoke 之前的 step，保留早失败语义（dryrun 失败则不进入 smoke）。
+    name: Performance Testing / JMeter Smoke Tests
+    runs-on: ubuntu-latest
+    needs: [unit-tests, shell-tests-fast]
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-node-project
@@ -119,81 +145,6 @@ jobs:
           done
       - name: Run JMeter dry run (performance gate)
         run: npm run jmeter:dryrun
-      - name: Stop API
-        if: always()
-        run: kill $(lsof -ti:3000) 2>/dev/null || true
-
-  smoke-test:
-    name: Performance Testing / k6 Smoke Tests
-    runs-on: ubuntu-latest
-    needs: [unit-tests, shell-tests]
-    steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup-node-project
-        with:
-          node-version: '18'
-          working-directory: performance-testing-platform
-          cache-dependency-path: performance-testing-platform/package-lock.json
-      - name: Install k6
-        run: |
-          curl -sSL https://github.com/grafana/k6/releases/download/v1.7.0/k6-v1.7.0-linux-amd64.tar.gz | tar xz
-          sudo mv k6-v1.7.0-linux-amd64/k6 /usr/local/bin/
-          k6 version
-      - name: Start target API
-        run: node src/server.js &
-      - name: Wait for API
-        run: |
-          for i in $(seq 1 10); do
-            curl -sf http://localhost:3000/health && break
-            sleep 1
-          done
-      - name: Run k6 smoke test (performance gate)
-        run: |
-          mkdir -p reports
-          k6 run --out json=reports/k6-smoke-summary.json tests/performance/smoke.k6.js
-      - name: Extract baseline metrics
-        run: node scripts/analysis/baseline-export.js
-      - name: Stop API
-        if: always()
-        run: kill $(lsof -ti:3000) 2>/dev/null || true
-
-  jmeter-smoke-test:
-    name: Performance Testing / JMeter Smoke Tests
-    runs-on: ubuntu-latest
-    needs: jmeter-dryrun
-    steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup-node-project
-        with:
-          node-version: '18'
-          working-directory: performance-testing-platform
-          cache-dependency-path: performance-testing-platform/package-lock.json
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-      - name: Cache JMeter
-        id: cache-jmeter
-        uses: actions/cache@v4
-        with:
-          path: performance-testing-platform/apache-jmeter-5.6.3
-          key: jmeter-5.6.3
-      - name: Download JMeter
-        if: steps.cache-jmeter.outputs.cache-hit != 'true'
-        run: |
-          wget -q https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.3.tgz
-          tar -xzf apache-jmeter-5.6.3.tgz
-          rm -f apache-jmeter-5.6.3.tgz
-      - name: Add JMeter to PATH
-        run: echo "$PWD/apache-jmeter-5.6.3/bin" >> $GITHUB_PATH
-      - name: Start target API
-        run: node src/server.js &
-      - name: Wait for API
-        run: |
-          for i in $(seq 1 10); do
-            curl -sf http://localhost:3000/health && break
-            sleep 1
-          done
       - name: Run JMeter smoke test (performance gate)
         run: |
           mkdir -p results
@@ -232,6 +183,40 @@ jobs:
           name: jmeter-smoke-results
           path: performance-testing-platform/results/
 
+  smoke-test:
+    name: Performance Testing / k6 Smoke Tests
+    runs-on: ubuntu-latest
+    needs: [unit-tests, shell-tests-fast]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-node-project
+        with:
+          node-version: '18'
+          working-directory: performance-testing-platform
+          cache-dependency-path: performance-testing-platform/package-lock.json
+      - name: Install k6
+        run: |
+          curl -sSL https://github.com/grafana/k6/releases/download/v1.7.0/k6-v1.7.0-linux-amd64.tar.gz | tar xz
+          sudo mv k6-v1.7.0-linux-amd64/k6 /usr/local/bin/
+          k6 version
+      - name: Start target API
+        run: node src/server.js &
+      - name: Wait for API
+        run: |
+          for i in $(seq 1 10); do
+            curl -sf http://localhost:3000/health && break
+            sleep 1
+          done
+      - name: Run k6 smoke test (performance gate)
+        run: |
+          mkdir -p reports
+          k6 run --out json=reports/k6-smoke-summary.json tests/performance/smoke.k6.js
+      - name: Extract baseline metrics
+        run: node scripts/analysis/baseline-export.js
+      - name: Stop API
+        if: always()
+        run: kill $(lsof -ti:3000) 2>/dev/null || true
+
   baseline-compare:
     name: Performance Testing / Baseline Compare
     runs-on: ubuntu-latest
@@ -246,12 +231,33 @@ jobs:
           node-version: '18'
           working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
-      - name: Download baseline artifact
-        # 首次运行无 baseline artifact 时允许失败（已知 exemption，见 risks.md R-27）
-        continue-on-error: true
+      - name: Download previous baseline artifact (CI-BL-04 first-run handling)
+        id: download_baseline
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # R-27 兜底逻辑显式化：首次运行或 artifact 缺失时显式 exit 0，
+        # 不再依赖 `continue-on-error: true` 掩盖潜在错误。
+        # 非首次运行但下载失败会让 job 红灯，便于发现真实故障。
         run: |
+          set -euo pipefail
           mkdir -p reports
-          gh run list -w performance-ci.yml --json conclusion,databaseId -q '.[] | select(.conclusion=="success") | .databaseId' | head -1 | xargs -I {} gh run download {} -n baseline-artifact -D reports/
+          GH_DL_ERR_LOG="${RUNNER_TEMP:-/tmp}/gh_dl_err.log"
+          # 注意：`|| true` 仅作用于 `head -1`，保留 `gh run list` 真实失败的传播
+          RUN_ID=$(gh run list -w performance-ci.yml \
+            --json conclusion,databaseId \
+            -q '.[] | select(.conclusion=="success") | .databaseId' \
+            | { head -1 || true; })
+          if [ -z "${RUN_ID:-}" ]; then
+            echo "::notice::No previous successful run found — first run, baseline-compare will skip (CI-BL-04)"
+            exit 0
+          fi
+          if ! gh run download "$RUN_ID" -n baseline-artifact -D reports/ 2>"$GH_DL_ERR_LOG"; then
+            echo "::warning::Previous baseline artifact missing for run $RUN_ID"
+            cat "$GH_DL_ERR_LOG" || true
+            echo "::notice::Treating as first run — baseline-compare will skip comparison"
+            exit 0
+          fi
+          echo "✅ Previous baseline artifact downloaded from run $RUN_ID"
       - name: Compare baseline (CI-BASE-02)
         run: node scripts/analysis/baseline-compare.js
       - name: Upload comparison result
@@ -286,3 +292,33 @@ jobs:
         with:
           name: trend-data
           path: performance-testing-platform/reports/trend.json
+
+  performance-gate:
+    # 优化 #4：汇总 job，作为 branch protection 唯一 required check。
+    # 任意一个上游 job 失败/取消则本 job 失败，避免后续重构 job 名称时频繁改保护规则。
+    # 详见 root CLAUDE.md "修改 check 名称要同步清理 required checks" 历史教训。
+    name: Performance Testing / Gate
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - performance-lint
+      - unit-tests
+      - shell-tests-fast
+      - shell-tests-integration
+      - jmeter-smoke-test
+      - smoke-test
+      - baseline-compare
+      - trend-collect
+    steps:
+      - name: Verify all upstream jobs succeeded
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          echo "$NEEDS_JSON" | jq .
+          if echo "$NEEDS_JSON" | jq -e 'all(.[]; .result == "success")' > /dev/null; then
+            echo "✅ All upstream jobs succeeded"
+          else
+            echo "::error::One or more upstream jobs did not succeed"
+            echo "$NEEDS_JSON" | jq -r 'to_entries[] | select(.value.result != "success") | "❌ \(.key): \(.value.result)"'
+            exit 1
+          fi

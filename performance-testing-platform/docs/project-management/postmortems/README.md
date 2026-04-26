@@ -31,6 +31,9 @@
 | [RCA-2026-04-23-prettier-scope-drift.md](RCA-2026-04-23-prettier-scope-drift.md) | RCA | Prettier 检查范围漂移 |
 | [RCA-2026-04-24-bats-ci-detached-head-merge-commit.md](RCA-2026-04-24-bats-ci-detached-head-merge-commit.md) | RCA | BATS 在 CI detached HEAD + merge commit 下失败 |
 | [RCA-2026-04-24-broken-markdown-links-commit-15a3398.md](RCA-2026-04-24-broken-markdown-links-commit-15a3398.md) | RCA | scripts 重构引入 Markdown 断链 |
+| [RCA-2026-04-24-issue-192-193-grafana-readiness.md](RCA-2026-04-24-issue-192-193-grafana-readiness.md) | RCA | Grafana readiness 超时 + docker-compose `version` 字段过时（#192/#193） |
+| [POSTMORTEM-2026-04-25-stage4-integration-test-cluster.md](POSTMORTEM-2026-04-25-stage4-integration-test-cluster.md) | Postmortem | Stage 4 集成测试 #192–#195 集群事件复盘（断言层错配 + 依赖升级缺 preflight 体检） |
+| [RCA-2026-04-26-grafana-sqlite-lock.md](RCA-2026-04-26-grafana-sqlite-lock.md) | RCA | Grafana SQLite lock 导致 integration setup 阶段容器退出（#214） |
 
 ## 3. 维护规则
 
@@ -44,3 +47,5 @@
 ## 4. 历史遗留
 
 - 2026-04-24 归档治理：合并 `postmortem-2026-04-23-*.md`（小写前缀）与 `RCA-2026-04-23-*.md` 重复文档，保留 `RCA-` 版本。
+- 2026-04-25 归档治理：删除小写前缀 `postmortem-2026-04-24-issue-192-193-grafana-readiness.md`（与同事件 `RCA-2026-04-24-issue-192-193-grafana-readiness.md` 重复，违反"单事件单文档"规则）；新增 `POSTMORTEM-2026-04-25-stage4-integration-test-cluster.md` 作为 #192–#195 集群事件的综合复盘。
+- 2026-04-26：新增 `RCA-2026-04-26-grafana-sqlite-lock.md`，闭环 #214 / DEF-009。

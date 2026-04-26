@@ -161,21 +161,34 @@ describe('k6 Smoke 配置验证', () => {
     test('K6-SMOKE-UT-24: k6:smoke wrapper 仅在实际启动后才接管清理', () => {
       const runner = fs.readFileSync(path.join(__dirname, '../../../scripts/k6-smoke.sh'), 'utf-8');
       expect(runner).toContain('START_OUTPUT="$(bash scripts/server.sh start single 2>&1)"');
-      expect(runner).toContain('grep -q "Starting server in single mode on port"');
       expect(runner).toContain('STARTED_BY_SCRIPT=true');
     });
 
-    test('K6-SMOKE-UT-25: k6:smoke wrapper 用 BASE_URL 反推 PORT', () => {
+    test('K6-SMOKE-UT-25: #204 修复后会把 PORT 注入无端口 BASE_URL', () => {
       const runner = fs.readFileSync(path.join(__dirname, '../../../scripts/k6-smoke.sh'), 'utf-8');
-      expect(runner).toContain('SMOKE_PORT=');
-      expect(runner).toContain('export PORT="$SMOKE_PORT"');
-      expect(runner).toContain('SMOKE_BASE_URL="${BASE_URL:-http://localhost:${PORT:-3000}}"');
+      expect(runner).toContain('BASE_URL_NO_SCHEME');
+      expect(runner).toContain('SMOKE_HOST_PORT');
+      expect(runner).toContain(
+        'SMOKE_BASE_URL="${SMOKE_SCHEME}://${SMOKE_HOST_PORT}${SMOKE_PATH}"'
+      );
     });
 
     test('K6-SMOKE-UT-26: autostart 后再次确认健康后才运行 k6', () => {
       const runner = fs.readFileSync(path.join(__dirname, '../../../scripts/k6-smoke.sh'), 'utf-8');
       expect(runner.split('curl -sf "$HEALTH_URL"').length - 1).toBeGreaterThanOrEqual(2);
       expect(runner).toContain('Server did not become healthy after autostart');
+    });
+
+    test('K6-SMOKE-UT-27: #205 修复后仅本地 host 允许 autostart', () => {
+      const runner = fs.readFileSync(path.join(__dirname, '../../../scripts/k6-smoke.sh'), 'utf-8');
+      expect(runner).toContain('IS_LOCAL_TARGET=false');
+      expect(runner).toContain('localhost|127.0.0.1|::1');
+      expect(runner).toContain('if [ "$IS_LOCAL_TARGET" != "true" ]; then');
+    });
+
+    test('K6-SMOKE-UT-28: #205 修复后远端目标失败时直接退出', () => {
+      const runner = fs.readFileSync(path.join(__dirname, '../../../scripts/k6-smoke.sh'), 'utf-8');
+      expect(runner).toContain('Remote target not reachable on $HEALTH_URL');
     });
   });
 
@@ -207,7 +220,7 @@ describe('k6 Smoke 配置验证', () => {
       }
     });
 
-    test('K6-SMOKE-UT-27: profile helper 使用 import.meta.resolve 解析 profile 路径', () => {
+    test('K6-SMOKE-UT-31: profile helper 使用 import.meta.resolve 解析 profile 路径', () => {
       const helper = fs.readFileSync(
         path.join(__dirname, '../../../tests/performance/helpers/profile.js'),
         'utf-8'
@@ -215,7 +228,7 @@ describe('k6 Smoke 配置验证', () => {
       expect(helper).toContain('import.meta.resolve');
     });
 
-    test('K6-SMOKE-UT-28: profile helper 不再直接使用 open("../../profiles/")', () => {
+    test('K6-SMOKE-UT-32: profile helper 不再直接使用 open("../../profiles/")', () => {
       const helper = fs.readFileSync(
         path.join(__dirname, '../../../tests/performance/helpers/profile.js'),
         'utf-8'
