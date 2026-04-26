@@ -154,7 +154,9 @@ fi
 echo ""
 echo "--- P0-04: 覆盖率 (npm run test:coverage) ---"
 COV_LOG="${LOG_DIR}/coverage.log"
-if ! npm run test:coverage > "$COV_LOG" 2>&1; then
+# 强制关闭 Jest 颜色输出，避免 ANSI 转义码污染 "All files" 行的数值解析
+# （macOS 终端或某些 CI 环境下 Jest 即使重定向到文件也会输出颜色）
+if ! NO_COLOR=1 FORCE_COLOR=0 npm run test:coverage > "$COV_LOG" 2>&1; then
   log_result "P0-04" FAIL "覆盖率命令执行失败（详见 ${COV_LOG}）"
 else
   ALL_LINE=$(grep -E "^All files" "$COV_LOG" | tail -1 || true)
