@@ -1,7 +1,8 @@
 import { buildObserverDurationFromStages, buildObserverScenario } from './metricsObserver.js';
 
-// k6 profile parser — uses open() + JSON.parse (NOT Node.js)
-// Path: k6 open() resolves relative to MAIN SCRIPT (tests/performance/) → ../../profiles/<name>.json
+function resolveProfilePath(name) {
+  return import.meta.resolve(`../../../profiles/${name}.json`);
+}
 
 function resolveProfilePath(name) {
   return import.meta.resolve(`../../../profiles/${name}.json`);
