@@ -12,11 +12,22 @@ if [ -n "$CHANGED_PY" ]; then
 fi
 
 # Lint + format check JS files in performance-testing-platform
-CHANGED_JS=$(git diff --cached --name-only --diff-filter=ACM -- 'performance-testing-platform/src/*.js' 'performance-testing-platform/tests/*.js' 'performance-testing-platform/scripts/*.js')
+# 使用递归 pathspec（**/*.js）覆盖任意层级，避免单层 glob 漏检
+# （历史问题：PR #218 中 tests/unit/scripts/*.js 因单层 glob 未被拦截 → CI prettier 红灯）
+CHANGED_JS=$(git diff --cached --name-only --diff-filter=ACM -- \
+    'performance-testing-platform/src/**/*.js' \
+    'performance-testing-platform/tests/**/*.js' \
+    'performance-testing-platform/scripts/**/*.js')
 if [ -n "$CHANGED_JS" ]; then
-    echo "Running eslint on staged JS files (performance-testing-platform)..."
-    cd performance-testing-platform && npx eslint $CHANGED_JS --no-warn-ignored
-    echo "Running prettier --check on staged JS files (performance-testing-platform)..."
-    npx prettier --check $CHANGED_JS
-    cd ..
+    # 钩子在仓库根触发，但 eslint/prettier 配置在子目录；将路径改为相对子目录
+    REL_JS=$(echo "$CHANGED_JS" | sed 's|^performance-testing-platform/||')
+    (
+        cd performance-testing-platform || exit 1
+        echo "Running eslint on staged JS files (performance-testing-platform)..."
+        # shellcheck disable=SC2086
+        npx --no-install eslint $REL_JS || exit 1
+        echo "Running prettier --check on staged JS files (performance-testing-platform)..."
+        # shellcheck disable=SC2086
+        npx --no-install prettier --check $REL_JS || exit 1
+    ) || exit 1
 fi
