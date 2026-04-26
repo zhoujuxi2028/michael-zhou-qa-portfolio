@@ -54,7 +54,7 @@ setup_phase() {
   run_critical "bash scripts/preflight-check.sh --stage4" "Environment preflight check" || return 1
   run_optional "rm -f data/perf.db*" "Clean stale database files"
   run_critical "docker compose up -d influxdb grafana" "Start Docker services" || return 1
-  run_critical "wait_for_endpoint 'http://localhost:3010/api/health' 'json_parse' 120" "Wait for Grafana readiness" || return 1
+  run_critical "wait_for_grafana_ready" "Wait for Grafana readiness" || return 1
   run_critical "bash scripts/server.sh start single" "Start API service" || return 1
 
   log_info "✅ Setup phase complete"

@@ -25,6 +25,9 @@ services:
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_DATABASE_MAX_OPEN_CONN=1
+      - GF_DATABASE_QUERY_RETRIES=50
+      - GF_DATABASE_TRANSACTION_RETRIES=50
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/dashboards:/var/lib/grafana/dashboards
