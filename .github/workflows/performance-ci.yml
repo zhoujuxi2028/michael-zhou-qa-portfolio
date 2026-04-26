@@ -36,8 +36,19 @@ jobs:
           node-version: '18'
           working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
-      - run: npm run lint
-      - run: npm run format:check
+      - name: Code Style (ESLint + Prettier)
+        # 合并 lint 与 format:check：两者都执行后再统一退出，避免 lint 失败遮蔽 format:check
+        # （历史问题：PR #218 lint 通过、format 失败；若顺序换则 lint 失败时 format 不再跑，缺乏全貌）
+        run: |
+          set +e
+          npm run lint
+          LINT_STATUS=$?
+          npm run format:check
+          FORMAT_STATUS=$?
+          echo "ESLint exit: $LINT_STATUS, Prettier exit: $FORMAT_STATUS"
+          if [ "$LINT_STATUS" -ne 0 ] || [ "$FORMAT_STATUS" -ne 0 ]; then
+            exit 1
+          fi
       - name: ShellCheck
         run: find scripts/ -name "*.sh" -print0 | xargs -0 shellcheck --severity=warning
 
