@@ -69,6 +69,24 @@ describe('baseline regression detection', () => {
     );
   });
 
+  // UT-BL-07: 负数基线 → 错误提示（对应 baseline.js 里 p95_ms < 0 的防御分支）
+  test('UT-BL-07: negative baseline p95_ms should throw error', () => {
+    const previousNegative = { p95_ms: -10 };
+    const current = { p95_ms: 420 };
+    expect(() => compareWithBaseline(current, previousNegative)).toThrow(
+      /baseline|positive|invalid/i
+    );
+  });
+
+  // UT-BL-07b: 负数当前指标也应抛错（对称性保护）
+  test('UT-BL-07b: negative current p95_ms should throw error', () => {
+    const previous = { p95_ms: 420 };
+    const currentNegative = { p95_ms: -1 };
+    expect(() => compareWithBaseline(currentNegative, previous)).toThrow(
+      /current|positive|invalid/i
+    );
+  });
+
   // UT-BL-06: 趋势数据追加（保留历史）
   test('UT-BL-06: appendTrend should append entry and keep history', () => {
     const entry1 = { run: 1, p95_ms: 420, error_rate: 0.003 };

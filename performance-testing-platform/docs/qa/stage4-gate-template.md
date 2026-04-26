@@ -51,13 +51,13 @@
 
 ## 2. P0 Gate — 必须全部通过（阻塞发布）
 
-| 用例 ID | 检查项                | 命令                    | 通过标准                                         | 结果 | 证据/备注 |
-| ------- | --------------------- | ----------------------- | ------------------------------------------------ | ---- | --------- |
-| P0-01   | 单元测试全部通过      | `npm run test:unit`     | 全部 PASS，0 failures                            | ⬜   |           |
-| P0-02   | 代码覆盖率达标        | `npm run test:coverage` | stmt ≥ 80%, branch ≥ 70%, func ≥ 80%, line ≥ 80% | ⬜   |           |
-| P0-03   | Lint 0 errors         | `npm run lint`          | 0 errors                                         | ⬜   |           |
-| P0-04   | 格式检查 0 warnings   | `npm run format:check`  | 0 warnings                                       | ⬜   |           |
-| P0-05   | JMeter dry-run 无错误 | `npm run jmeter:dryrun` | 0 errors，字段名/状态码正确                      | ⬜   |           |
+| 用例 ID | 检查项                | 命令                      | 通过标准                                             | 结果  | 证据/备注 |
+| ----- | ------------------ | ----------------------- | ------------------------------------------------ | --- | ----- |
+| P0-01 | 单元测试全部通过           | `npm run test:unit`     | 全部 PASS，0 failures                               | ⬜   |       |
+| P0-02 | 代码覆盖率达标            | `npm run test:coverage` | stmt ≥ 80%, branch ≥ 70%, func ≥ 80%, line ≥ 80% | ⬜   |       |
+| P0-03 | Lint 0 errors      | `npm run lint`          | 0 errors                                         | ⬜   |       |
+| P0-04 | 格式检查 0 warnings    | `npm run format:check`  | 0 warnings                                       | ⬜   |       |
+| P0-05 | JMeter dry-run 无错误 | `npm run jmeter:dryrun` | 0 errors，字段名/状态码正确                               | ⬜   |       |
 
 ---
 

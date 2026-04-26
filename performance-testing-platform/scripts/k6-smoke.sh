@@ -17,6 +17,7 @@ case "$SMOKE_BASE_URL" in
 esac
 
 export PORT="$SMOKE_PORT"
+export BASE_URL="$SMOKE_BASE_URL"
 
 cleanup() {
   if [ "$STARTED_BY_SCRIPT" = "true" ]; then
@@ -30,6 +31,11 @@ mkdir -p reports
 
 if [ "$SKIP_AUTOSTART" != "true" ]; then
   if ! curl -sf "$HEALTH_URL" >/dev/null 2>&1; then
+    if [ "$IS_LOCAL_TARGET" != "true" ]; then
+      echo "❌ Remote target not reachable on $HEALTH_URL. Autostart is disabled for non-local targets."
+      exit 1
+    fi
+
     START_OUTPUT="$(bash scripts/server.sh start single 2>&1)"
     if echo "$START_OUTPUT" | grep -q "Starting server in single mode on port"; then
       STARTED_BY_SCRIPT=true
