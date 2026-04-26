@@ -31,6 +31,8 @@ describe('grafana sqlite lock hardening', () => {
     const script = fs.readFileSync(PHASE1_SCRIPT, 'utf8');
 
     expect(script).toContain('run_critical "wait_for_grafana_ready" "Wait for Grafana readiness"');
-    expect(script).not.toContain(`wait_for_endpoint 'http://localhost:3010/api/health' 'json_parse' 60`);
+    expect(script).not.toContain(
+      `wait_for_endpoint 'http://localhost:3010/api/health' 'json_parse' 60`
+    );
   });
 });
