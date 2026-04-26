@@ -38,7 +38,7 @@ migration failed: executing migration: database is locked
 | Why 1 | 为什么 integration setup 失败？ | Grafana `/api/health` 未就绪并最终超时 |
 | Why 2 | 为什么 Grafana 未就绪？ | 容器启动阶段退出 |
 | Why 3 | 为什么容器退出？ | SQLite migration / provisioning 遇到 `database is locked` |
-| Why 4 | 为什么锁冲突未被容错？ | `docker-compose.yml` 未配置 SQLite busy timeout、retry、open connection 限制 |
+| Why 4 | 为什么锁冲突未被容错？ | `docker-compose.yml` 未配置 Grafana 10.2.0 支持的 SQLite query / transaction retry 与 open connection 限制 |
 | Why 5 | 为什么 readiness 路径未统一？ | `setup.sh` 与 phase script 存在重复等待逻辑，缺少统一 helper 约束 |
 
 **根本原因:** Grafana SQLite 启动期锁冲突缺少容错配置，同时 readiness 调用未统一，导致 transient lock 被放大为 setup 阶段阻塞。
@@ -49,7 +49,7 @@ migration failed: executing migration: database is locked
 
 | 文件 | 修复内容 |
 |------|----------|
-| `docker-compose.yml` | 增加 `GF_DATABASE_SQLITE_BUSY_TIMEOUT=5000`、`GF_DATABASE_SQLITE_MAX_RETRIES=50`、`GF_DATABASE_SQLITE_MAX_OPEN_CONN=1` |
+| `docker-compose.yml` | 增加 `GF_DATABASE_MAX_OPEN_CONN=1`、`GF_DATABASE_QUERY_RETRIES=50`、`GF_DATABASE_TRANSACTION_RETRIES=50` |
 | `scripts/lib/setup.sh` | `setup_phase()` 统一调用 `wait_for_grafana_ready()` |
 | `tests/integration/phases/phase-1-grafana.sh` | 统一复用 `wait_for_grafana_ready()` |
 | `tests/unit/scripts/grafana-sqlite-lock.test.js` | 覆盖 SQLite lock 容错配置和 helper 复用 |
@@ -79,7 +79,7 @@ migration failed: executing migration: database is locked
 
 | 经验 | 后续约束 |
 |------|----------|
-| 容器启动期 transient lock 需要显式容错 | SQLite-backed 服务需配置 busy timeout / retry / connection limit |
+| 容器启动期 transient lock 需要显式容错 | SQLite-backed 服务需配置 query retry / transaction retry / connection limit |
 | Readiness helper 必须单一来源 | setup 与 phase script 统一复用 shared helper |
 | Stage 4 blocker 需区分代码失败与环境门禁 | preflight 失败不等于功能回归失败，需单独记录环境信号 |
 

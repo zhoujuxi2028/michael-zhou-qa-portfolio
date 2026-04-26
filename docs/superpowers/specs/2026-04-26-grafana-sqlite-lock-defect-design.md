@@ -57,9 +57,9 @@
 
 | 配置方向 | 目的 |
 |---|---|
-| `GF_DATABASE_SQLITE_BUSY_TIMEOUT` | 遇到 SQLite lock 时等待更长时间，降低瞬时失败概率 |
-| `GF_DATABASE_SQLITE_MAX_RETRIES` | 迁移 / provisioning 短暂冲突时允许重试 |
-| `GF_DATABASE_SQLITE_MAX_OPEN_CONN` | 限制 SQLite 打开连接数，减少启动期写锁竞争 |
+| `GF_DATABASE_MAX_OPEN_CONN` | 限制 SQLite 打开连接数，减少启动期写锁竞争 |
+| `GF_DATABASE_QUERY_RETRIES` | 查询遇到 SQLite lock 时重试 |
+| `GF_DATABASE_TRANSACTION_RETRIES` | transaction 遇到 SQLite lock 时重试 |
 
 这些配置只影响 Grafana 容器内部 SQLite 行为，不改动外部接口，也不会改变现有 dashboards / datasources 的语义。
 
@@ -122,4 +122,3 @@
 | integration test 通过 | `bash scripts/integration-test.sh` 成功 |
 | readiness 逻辑统一 | 不再保留重复的裸 `wait_for_endpoint` 实现路径 |
 | defect 文档齐全 | Issue、项目级表、Portfolio 主表同步完成 |
-
