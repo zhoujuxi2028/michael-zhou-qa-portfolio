@@ -32,6 +32,14 @@ jobs:
 
       - name: Run Claude Code
         id: claude
+        # 豁免说明（违反 CLAUDE.md 默认禁用 continue-on-error 规则的明确例外）：
+        # 本步骤调用 Anthropic 第三方 SaaS（claude-code-action），失败常因
+        # 外部不可控因素：组织月度 token 配额耗尽 / 上游 action 内部告警 /
+        # Anthropic API 短时不可用。这些**不是仓库代码缺陷**，也无法被静态
+        # 测试或单元测试预防。该 workflow 是 @claude 提及触发的 AI 辅助
+        # 工具，不属于业务质量门。允许失败不阻塞，避免 issue/PR 评论触发
+        # 误报红叉；真正质量由 performance-ci / repo-meta-ci 等保障。
+        continue-on-error: true
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}

@@ -16,6 +16,7 @@
 | UT-BL-04 | PERF-CI-BL-FR-006 | 首次运行无 baseline 文件        | 跳过对比，结果: pass (首次建基线) | UT P1 regression |
 | UT-BL-05 | PERF-CI-BL-FR-006 | baseline JSON 格式异常          | 报错提示，不 crash                | UT P1 regression |
 | UT-BL-06 | PERF-CI-BL-FR-003 | 趋势数据追加                    | trend.json 新增一行，保留历史     | UT P1 regression |
+| UT-BL-07 | PERF-CI-BL-FR-006 | baseline / current p95_ms 为负值 | 抛错，不 crash（防御分支覆盖）    | UT P1 regression |
 
 ## CI 覆盖率门禁
 
