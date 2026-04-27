@@ -17,7 +17,7 @@
 | p95_ms         | number | 0-∞      | 毫秒    | k6 smoke test threshold |
 | error_rate     | number | 0-1      | 比例    | k6 summary.checks       |
 | throughput_rps | number | 0-∞      | 请求/秒 | k6 summary.rate         |
-| run_id         | string | 40 chars | git sha | GitHub run context      |
+| run_id         | string | 40 chars | git sha | GitHub run context（CI 取 `GITHUB_SHA`；本地缺省为 `'local'`；summary.json 缺失走 placeholder 时缺省为 `'placeholder'`，若已设置 `GITHUB_SHA` 仍优先取之） |
 | timestamp      | string | ISO 8601 | -       | date.now()              |
 
 ## trend.json 结构
