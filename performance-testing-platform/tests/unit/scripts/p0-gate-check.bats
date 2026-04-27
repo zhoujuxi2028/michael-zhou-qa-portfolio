@@ -244,6 +244,53 @@ EOF
   [ -f "$GATE_REPORT_DIR/p0-gate-report.md" ]
 }
 
+@test "端到端: 覆盖率 summary 未重新生成时 P0-04 应 FAIL" {
+  export COV_SUMMARY_PATH="${TEST_TMP}/coverage-summary.json"
+  cat > "$COV_SUMMARY_PATH" << 'JSON'
+{"total":{"statements":{"pct":100},"branches":{"pct":100},"functions":{"pct":100},"lines":{"pct":100}}}
+JSON
+
+  mkdir -p "$TEST_TMP/bin"
+  cat > "$TEST_TMP/bin/npm" << 'EOF'
+#!/usr/bin/env bash
+case "$1 $2" in
+  "run test:coverage")
+    echo "coverage command succeeded without summary"
+    exit 0
+    ;;
+  *) exit 0 ;;
+esac
+EOF
+  chmod +x "$TEST_TMP/bin/npm"
+  export PATH="$TEST_TMP/bin:$PATH"
+
+  run bash "$SCRIPT" --report-dir "$GATE_REPORT_DIR" --log-dir "$GATE_LOG_DIR"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"coverage summary 未生成"* ]]
+}
+
+@test "端到端: 覆盖率 summary 无效时 P0-04 应报告解析失败" {
+  export COV_SUMMARY_PATH="${TEST_TMP}/coverage-summary.json"
+  mkdir -p "$TEST_TMP/bin"
+  cat > "$TEST_TMP/bin/npm" << 'EOF'
+#!/usr/bin/env bash
+case "$1 $2" in
+  "run test:coverage")
+    echo '{"total":{"statements":{"pct":95.82}}}' > "${COV_SUMMARY_PATH}"
+    exit 0
+    ;;
+  *) exit 0 ;;
+esac
+EOF
+  chmod +x "$TEST_TMP/bin/npm"
+  export PATH="$TEST_TMP/bin:$PATH"
+
+  run bash "$SCRIPT" --report-dir "$GATE_REPORT_DIR" --log-dir "$GATE_LOG_DIR"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"未能解析 coverage summary"* ]]
+  [[ "$output" != *"覆盖率不达标 (stmt=%"* ]]
+}
+
 # ============================================================
 # 端到端：单元测试失败场景
 # ============================================================
