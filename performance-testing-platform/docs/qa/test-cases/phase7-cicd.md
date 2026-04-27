@@ -40,7 +40,7 @@
 
 | 用例 ID  | 需求 ID           | 验证项                                 | 预期                               | 标签             |
 | -------- | ----------------- | -------------------------------------- | ---------------------------------- | ---------------- |
-| TREND-01 | PERF-CI-BL-FR-004 | `scripts/generate-trend.sh` 生成趋势表 | reports/trend.md 包含最近 N 次指标 | CI P2 regression |
+| TREND-01 | PERF-CI-BL-FR-004 | `src/utils/trend.js#generateTrendMarkdown` 生成趋势表 | reports/trend.md 包含最近 N 次指标 | CI P2 regression |
 | TREND-02 | PERF-CI-BL-FR-003 | trend.json 累积多次运行数据            | JSON 数组长度递增                  | CI P2 regression |
 | TREND-03 | PERF-CI-BL-FR-003 | 空 trend.json 时不 crash               | 输出 "No trend data" 提示          | CI P2 regression |
 | TREND-04 | PERF-CI-BL-FR-004 | trend.json 缺失时仍可生成趋势报告      | 输出 "No trend data" 提示          | UT P1 regression |
