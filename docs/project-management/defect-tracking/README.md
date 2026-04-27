@@ -145,7 +145,7 @@
 
 | 项目 | 登记表位置 | 状态 |
 |------|------------|------|
-| performance-testing-platform | [stage4-defect-waiver-register.md](../../../performance-testing-platform/docs/qa/stage4-defect-waiver-register.md) | ✅ 在用（DEF-001~004） |
+| performance-testing-platform | [defect-register.md](../../../performance-testing-platform/docs/qa/defect-register.md) | ✅ 在用 |
 | 其他子项目 | _(待初始化)_ | 🟡 按需创建：复制 [`defect-register-template.md`](defect-register-template.md) → `<project>/docs/qa/defect-register.md` |
 
 新项目缺陷登记表初始化步骤：
