@@ -33,6 +33,7 @@
 | DEF-006 | [#203](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/203) | `profile.js` 使用 `open('../../profiles/...')` 触发 k6 future warning | P2 / Medium | ❌ Non-blocking | 2026-04-25 | 🟡 Fix in review | — | 本地已改为 `import.meta.resolve()`；warning 已消失，但 Issue 尚未关闭 |
 | DEF-007 | [#204](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/204) | `BASE_URL` 与 `PORT` 组合时目标 URL 归一化不完整 | P1 / High | ✅ Blocking | 2026-04-25 | 🔴 Open | — | `BASE_URL=http://localhost PORT=3001` 时，wrapper / health / k6 目标可能不一致；需补 canonical target URL 修复 |
 | DEF-008 | [#205](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/205) | 远端 smoke 目标误触发本地 autostart | P1 / High | ✅ Blocking | 2026-04-25 | 🔴 Open | — | 非本地目标健康检查失败时仍会执行 `server.sh start single`；会污染远端 smoke 结果 |
+| DEF-011 | _(待开 Issue)_ | PR #232 文档迁移后 `stage4-selftest-fast.bats` 硬编码路径失效 | P1 / High | ✅ Blocking（仅阻塞 PR #232） | 2026-04-27 | 🟡 Triaged — Fix in PR #232 | — | Run [24978059466](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/runs/24978059466) 失败：报告文件迁移至 `docs/qa/reports/execution/` 但 bats / `stage4-selftest.sh` / `stage4-selftest.test.sh` 共 4 处引用未同步；详见 [RCA-2026-04-27-stage4-bats-stale-verification-report-path.md](../project-management/postmortems/RCA-2026-04-27-stage4-bats-stale-verification-report-path.md) |
 
 ---
 
@@ -77,6 +78,7 @@
 
 | 日期 | 变更内容 | 操作人 |
 |------|----------|--------|
+| 2026-04-27 | 登记 `DEF-011`：PR #232 docs/qa 重构后 `stage4-selftest-fast.bats` 验收报告路径断言 FAIL（Run 24978059466） | QA |
 | 2026-04-26 | 登记并关闭 `DEF-010`（#215）：修正 Stage 4 register 复用 `DEF-005` 的 ID 冲突 | QA |
 | 2026-04-26 | 关闭 `DEF-009`（#214）：full integration 已通过；补充 RCA 并关闭 Issue | QA |
 | 2026-04-26 | 登记 `DEF-009`（#214）：Grafana sqlite lock 导致 integration test setup 阻塞 | QA |
