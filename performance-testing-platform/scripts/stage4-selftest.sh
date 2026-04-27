@@ -374,8 +374,8 @@ echo "=== Section 8: 文档完整性 ==="
 # 8.1 验收报告
 echo ""
 echo "--- 8.1 验收报告 ---"
-if [ -f "docs/qa/reports/phase6-stage4-verification-report.md" ]; then
-  SIZE=$(ls -lh docs/qa/reports/phase6-stage4-verification-report.md | awk '{print $5}')
+if [ -f "docs/qa/reports/execution/phase6-stage4-verification-report.md" ]; then
+  SIZE=$(ls -lh docs/qa/reports/execution/phase6-stage4-verification-report.md | awk '{print $5}')
   log_result "8.1" "PASS" "验收报告已存在 ($SIZE)"
 else
   log_result "8.1" "FAIL" "验收报告不存在"
