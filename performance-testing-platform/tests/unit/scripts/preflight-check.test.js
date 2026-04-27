@@ -1,7 +1,10 @@
+const fs = require('fs');
 const { spawnSync, spawn } = require('child_process');
 const path = require('path');
 
 const SCRIPT = path.join(__dirname, '../../../scripts/preflight-check.sh');
+const SERVER_SCRIPT = path.join(__dirname, '../../../scripts/server.sh');
+const COLLECTOR_PID_FILE = '/tmp/metrics-collector.pid';
 
 /**
  * Run preflight-check.sh with optional env overrides.
@@ -43,6 +46,13 @@ function isProcessAlive(pid) {
   }
 }
 
+function waitForFile(filePath, timeoutMs = 5000) {
+  const deadline = Date.now() + timeoutMs;
+  while (!fs.existsSync(filePath) && Date.now() < deadline) {
+    spawnSync('sleep', ['0.2']);
+  }
+}
+
 // ─── TC-PF-01~02: Orphan process cleanup ─────────────────────────────────────
 
 describe('orphan process cleanup', () => {
@@ -74,9 +84,41 @@ describe('orphan process cleanup', () => {
     const result = run(ALL_PASS);
     expect(result.stdout).not.toMatch(/cluster\.js.*killed/i);
   });
+
+  test('TC-PF-04: does not kill managed metrics collector process', () => {
+    fs.rmSync(COLLECTOR_PID_FILE, { force: true });
+
+    const collector = spawn(
+      'bash',
+      [SERVER_SCRIPT, 'collect', '1000', 'reports/preflight-test-metrics.csv'],
+      {
+        detached: true,
+        env: { ...process.env, NODE_ENV: 'development' },
+        stdio: 'ignore',
+      }
+    );
+    collector.unref();
+
+    try {
+      waitForFile(COLLECTOR_PID_FILE);
+      expect(fs.existsSync(COLLECTOR_PID_FILE)).toBe(true);
+      const collectorPid = fs.readFileSync(COLLECTOR_PID_FILE, 'utf8').trim();
+      expect(isProcessAlive(collectorPid)).toBe(true);
+
+      run(ALL_PASS);
+
+      expect(isProcessAlive(collectorPid)).toBe(true);
+    } finally {
+      spawnSync('bash', [SERVER_SCRIPT, 'stop-collect'], {
+        encoding: 'utf-8',
+        env: { ...process.env, NODE_ENV: 'development' },
+      });
+      fs.rmSync(COLLECTOR_PID_FILE, { force: true });
+    }
+  });
 });
 
-// ─── TC-PF-04~05: Load Average check ─────────────────────────────────────────
+// ─── TC-PF-05~06: Load Average check ─────────────────────────────────────────
 
 describe('load average check', () => {
   test('TC-PF-04: passes and prints ✅ when LOAD_THRESHOLD is very high', () => {
