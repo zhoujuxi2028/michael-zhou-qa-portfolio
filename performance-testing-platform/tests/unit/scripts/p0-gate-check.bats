@@ -73,6 +73,10 @@ EOF
   grep -qE 'set -[a-z]*u[a-z]*o pipefail' "$SCRIPT"
 }
 
+@test "前置: 覆盖率脚本不得使用 Bash 特殊变量 LINES 保存 line coverage" {
+  ! grep -Eq 'read .* LINES|\$LINES' "$SCRIPT"
+}
+
 # ============================================================
 # CLI / 帮助
 # ============================================================
@@ -132,6 +136,24 @@ EOF
   [[ "$output" == *"84.9"* ]]
 }
 
+@test "lib: extract_coverage_summary 从 coverage-summary.json 解析 total 百分比" {
+  local summary="${TEST_TMP}/coverage-summary.json"
+  cat > "$summary" << 'EOF'
+{
+  "total": {
+    "statements": { "pct": 95.82 },
+    "branches": { "pct": 92.64 },
+    "functions": { "pct": 100 },
+    "lines": { "pct": 97.37 }
+  }
+}
+EOF
+
+  run bash -c "source '$LIB'; extract_coverage_summary '$summary'"
+  [ "$status" -eq 0 ]
+  [ "$output" = "95.82 92.64 100 97.37" ]
+}
+
 @test "lib: meets_threshold 大于等于阈值返回 0" {
   run bash -c "source '$LIB'; meets_threshold 80.0 80"
   [ "$status" -eq 0 ]
@@ -177,6 +199,7 @@ EOF
 
 @test "端到端: 5 项全 PASS 时退出码为 0 并生成报告" {
   # 写一个能识别所有 P0 命令的 mock
+  export COV_SUMMARY_PATH="${TEST_TMP}/coverage-summary.json"
   mkdir -p "$TEST_TMP/bin"
   cat > "$TEST_TMP/bin/npm" << 'EOF'
 #!/usr/bin/env bash
@@ -194,11 +217,9 @@ case "$1 $2" in
     exit 0
     ;;
   "run test:coverage")
-    cat << 'COV'
-File         | % Stmts | % Branch | % Funcs | % Lines |
--------------|---------|----------|---------|---------|
-All files    |   85.50 |    72.10 |   81.30 |   84.90 |
-COV
+    cat > "${COV_SUMMARY_PATH}" << 'JSON'
+{"total":{"statements":{"pct":85.50},"branches":{"pct":72.10},"functions":{"pct":81.30},"lines":{"pct":84.90}}}
+JSON
     exit 0
     ;;
   "run jmeter:dryrun")
@@ -228,6 +249,7 @@ EOF
 # ============================================================
 
 @test "端到端: 单元测试失败时整体退出码非 0（fail-late）" {
+  export COV_SUMMARY_PATH="${TEST_TMP}/coverage-summary.json"
   mkdir -p "$TEST_TMP/bin"
   cat > "$TEST_TMP/bin/npm" << 'EOF'
 #!/usr/bin/env bash
@@ -237,7 +259,9 @@ case "$1 $2" in
     exit 1
     ;;
   "run test:coverage")
-    echo "All files    |   85.50 |    72.10 |   81.30 |   84.90 |"
+    cat > "${COV_SUMMARY_PATH}" << 'JSON'
+{"total":{"statements":{"pct":85.50},"branches":{"pct":72.10},"functions":{"pct":81.30},"lines":{"pct":84.90}}}
+JSON
     exit 0
     ;;
   *) exit 0 ;;
@@ -257,12 +281,15 @@ EOF
 # ============================================================
 
 @test "端到端: 覆盖率 stmt < 80% 时 P0-04 应 FAIL" {
+  export COV_SUMMARY_PATH="${TEST_TMP}/coverage-summary.json"
   mkdir -p "$TEST_TMP/bin"
   cat > "$TEST_TMP/bin/npm" << 'EOF'
 #!/usr/bin/env bash
 case "$1 $2" in
   "run test:coverage")
-    echo "All files    |   75.50 |    72.10 |   81.30 |   84.90 |"
+    cat > "${COV_SUMMARY_PATH}" << 'JSON'
+{"total":{"statements":{"pct":75.50},"branches":{"pct":72.10},"functions":{"pct":81.30},"lines":{"pct":84.90}}}
+JSON
     exit 0
     ;;
   *) exit 0 ;;
@@ -278,12 +305,15 @@ EOF
 }
 
 @test "端到端: 覆盖率 branch < 70% 时 P0-04 应 FAIL" {
+  export COV_SUMMARY_PATH="${TEST_TMP}/coverage-summary.json"
   mkdir -p "$TEST_TMP/bin"
   cat > "$TEST_TMP/bin/npm" << 'EOF'
 #!/usr/bin/env bash
 case "$1 $2" in
   "run test:coverage")
-    echo "All files    |   85.50 |    65.10 |   81.30 |   84.90 |"
+    cat > "${COV_SUMMARY_PATH}" << 'JSON'
+{"total":{"statements":{"pct":85.50},"branches":{"pct":65.10},"functions":{"pct":81.30},"lines":{"pct":84.90}}}
+JSON
     exit 0
     ;;
   *) exit 0 ;;
