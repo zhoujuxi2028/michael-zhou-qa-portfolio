@@ -12,7 +12,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 cd "$PROJECT_ROOT"
 
 LOG_DIR="docs/qa/reports/logs-stage4"
-REPORT="docs/qa/reports/stage4-selftest-report.md"
+REPORT="docs/qa/reports/execution/stage4-selftest-report.md"
 TEST_LOCK_DIR="/tmp/test-lock-$$"
 
 # 测试计数
@@ -218,7 +218,7 @@ echo ""
 echo "## Section 8: 文档完整性"
 
 test_case "8.1: 验收报告文件存在" \
-  "[ -f 'docs/qa/reports/phase6-stage4-verification-report.md' ]"
+  "[ -f 'docs/qa/reports/execution/phase6-stage4-verification-report.md' ]"
 
 test_case "8.2: CLAUDE.md 包含锁机制文档" \
   "grep -Eq '集成测试锁机制|集成测试有锁' CLAUDE.md"
@@ -250,10 +250,10 @@ echo "--- 运行完整 stage4-selftest.sh 脚本 ---"
 bash scripts/stage4-selftest.sh > /dev/null 2>&1 || true
 
 test_case "报告文件已生成" \
-  "[ -f 'docs/qa/reports/stage4-selftest-report.md' ]"
+  "[ -f 'docs/qa/reports/execution/stage4-selftest-report.md' ]"
 
 test_case "报告包含统计信息" \
-  "grep -q 'PASS\|FAIL\|SKIP' 'docs/qa/reports/stage4-selftest-report.md'"
+  "grep -q 'PASS\|FAIL\|SKIP' 'docs/qa/reports/execution/stage4-selftest-report.md'"
 
 test_case "日志目录已创建" \
   "[ -d 'docs/qa/reports/logs-stage4' ]"
