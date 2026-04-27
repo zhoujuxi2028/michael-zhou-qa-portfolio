@@ -135,3 +135,199 @@ describe('baseline regression detection', () => {
     expect(result).toBeNull();
   });
 });
+
+// ---------------------------------------------------------------------------
+// extractBaselineFromSummary / validateBaseline / buildPlaceholderBaseline
+// 纯函数单测：覆盖 k6 summary 字段兼容性、各分支与 schema 校验
+// 对应 DEF-011（#230）修复回归
+// ---------------------------------------------------------------------------
+const {
+  extractBaselineFromSummary,
+  validateBaseline,
+  buildPlaceholderBaseline,
+} = require('../../../src/utils/baseline');
+
+describe('extractBaselineFromSummary', () => {
+  const fixedNow = new Date('2026-04-27T00:00:00.000Z');
+
+  test('UT-EX-01: 解析 values 形态的 p(95) 字段', () => {
+    const baseline = extractBaselineFromSummary(
+      {
+        metrics: {
+          http_req_duration: { values: { 'p(95)': 3.085, avg: 1.43 } },
+          http_req_failed: { value: 0 },
+          http_reqs: { count: 900, rate: 14.92 },
+        },
+        state: { testRunDurationMs: 60313 },
+      },
+      { runId: 'local', now: fixedNow }
+    );
+    expect(baseline).toEqual({
+      p95_ms: 3,
+      error_rate: 0,
+      throughput_rps: 14.9,
+      run_id: 'local',
+      timestamp: '2026-04-27T00:00:00.000Z',
+    });
+  });
+
+  test('UT-EX-02: 解析顶层 p(95) 字段（旧 k6 形态）', () => {
+    const baseline = extractBaselineFromSummary(
+      {
+        metrics: {
+          http_req_duration: { 'p(95)': 3.69 },
+          http_req_failed: { value: 0 },
+          http_reqs: { count: 885 },
+        },
+        state: { testRunDurationMs: 60100 },
+      },
+      { runId: 'local', now: fixedNow }
+    );
+    expect(baseline.p95_ms).toBe(4);
+    expect(baseline.throughput_rps).toBe(14.7);
+  });
+
+  test('UT-EX-03: 解析 p(0.95) 字段（备选写法）', () => {
+    const baseline = extractBaselineFromSummary(
+      {
+        metrics: {
+          http_req_duration: { values: { 'p(0.95)': 12.3 } },
+          http_req_failed: { value: 0 },
+          http_reqs: { count: 100 },
+        },
+        state: { testRunDurationMs: 60000 },
+      },
+      { runId: 'local', now: fixedNow }
+    );
+    expect(baseline.p95_ms).toBe(12);
+  });
+
+  test('UT-EX-04: http_req_failed 缺失时回退到 checks 通过率', () => {
+    const baseline = extractBaselineFromSummary(
+      {
+        metrics: {
+          http_req_duration: { values: { 'p(95)': 5 } },
+          http_reqs: { count: 200 },
+        },
+        checks: [{ passes: true }, { passes: true }, { passes: false }, { passes: true }],
+        state: { testRunDurationMs: 60000 },
+      },
+      { runId: 'local', now: fixedNow }
+    );
+    // 1/4 = 0.25
+    expect(baseline.error_rate).toBe(0.25);
+  });
+
+  test('UT-EX-05: checks 与 http_req_failed 都缺失时使用兜底 0.01', () => {
+    const baseline = extractBaselineFromSummary(
+      {
+        metrics: {
+          http_req_duration: { values: { 'p(95)': 5 } },
+          http_reqs: { count: 100 },
+        },
+        state: { testRunDurationMs: 60000 },
+      },
+      { runId: 'local', now: fixedNow }
+    );
+    expect(baseline.error_rate).toBe(0.01);
+  });
+
+  test('UT-EX-06: http_reqs / 时长缺失时 throughput 兜底为 50', () => {
+    const baseline = extractBaselineFromSummary(
+      {
+        metrics: {
+          http_req_duration: { values: { 'p(95)': 5 } },
+          http_req_failed: { value: 0 },
+        },
+      },
+      { runId: 'local', now: fixedNow }
+    );
+    expect(baseline.throughput_rps).toBe(50);
+  });
+
+  test('UT-EX-07: http_reqs.value（备选字段）也能被识别', () => {
+    const baseline = extractBaselineFromSummary(
+      {
+        metrics: {
+          http_req_duration: { values: { 'p(95)': 5 } },
+          http_req_failed: { value: 0 },
+          http_reqs: { value: 600 },
+        },
+        state: { testRunDurationMs: 60000 },
+      },
+      { runId: 'local', now: fixedNow }
+    );
+    expect(baseline.throughput_rps).toBe(10);
+  });
+
+  test('UT-EX-08: GITHUB_SHA 存在时 run_id 取 sha', () => {
+    const original = process.env.GITHUB_SHA;
+    process.env.GITHUB_SHA = 'abcdef1234567890';
+    try {
+      const baseline = extractBaselineFromSummary(
+        {
+          metrics: {
+            http_req_duration: { values: { 'p(95)': 5 } },
+            http_req_failed: { value: 0 },
+            http_reqs: { count: 100 },
+          },
+          state: { testRunDurationMs: 60000 },
+        },
+        { now: fixedNow }
+      );
+      expect(baseline.run_id).toBe('abcdef1234567890');
+    } finally {
+      if (original === undefined) delete process.env.GITHUB_SHA;
+      else process.env.GITHUB_SHA = original;
+    }
+  });
+
+  test('UT-EX-09: summary 非对象时抛错', () => {
+    expect(() => extractBaselineFromSummary(null)).toThrow(/Invalid k6 summary/);
+    expect(() => extractBaselineFromSummary('not-an-object')).toThrow(/Invalid k6 summary/);
+  });
+});
+
+describe('validateBaseline', () => {
+  const validBaseline = {
+    p95_ms: 420,
+    error_rate: 0.003,
+    throughput_rps: 45.2,
+    run_id: 'sha-83b6451d',
+    timestamp: '2026-04-17T12:30:00.000Z',
+  };
+
+  test('UT-VB-01: 合法 baseline 通过校验', () => {
+    expect(validateBaseline(validBaseline)).toBe(true);
+  });
+
+  test('UT-VB-02: 非对象抛错', () => {
+    expect(() => validateBaseline(null)).toThrow(/must be an object/);
+  });
+
+  test('UT-VB-03: 缺字段或类型错误抛错', () => {
+    expect(() => validateBaseline({ ...validBaseline, p95_ms: '420' })).toThrow(/p95_ms/);
+    expect(() => validateBaseline({ ...validBaseline, run_id: '' })).toThrow(/run_id/);
+  });
+
+  test('UT-VB-04: 数值越界抛错', () => {
+    expect(() => validateBaseline({ ...validBaseline, p95_ms: -1 })).toThrow(/>= 0/);
+    expect(() => validateBaseline({ ...validBaseline, error_rate: 1.5 })).toThrow(/<= 1/);
+    expect(() => validateBaseline({ ...validBaseline, throughput_rps: NaN })).toThrow(/finite/);
+  });
+});
+
+describe('buildPlaceholderBaseline', () => {
+  test('UT-PH-01: 默认占位值符合 schema', () => {
+    const fixedNow = new Date('2026-04-27T00:00:00.000Z');
+    const baseline = buildPlaceholderBaseline({ runId: 'placeholder', now: fixedNow });
+    expect(baseline).toEqual({
+      p95_ms: 500,
+      error_rate: 0.01,
+      throughput_rps: 50,
+      run_id: 'placeholder',
+      timestamp: '2026-04-27T00:00:00.000Z',
+    });
+    expect(validateBaseline(baseline)).toBe(true);
+  });
+});
