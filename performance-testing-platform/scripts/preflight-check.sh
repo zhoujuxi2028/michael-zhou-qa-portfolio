@@ -30,9 +30,9 @@ echo "=================================================="
 # 注意：只清理 "node -e" 一次性脚本，不清理 cluster.js（由 server.sh stop 管理）
 echo ""
 echo "[ 1/4 ] Checking for orphaned node processes..."
-ORPHAN_PIDS=$(ps aux | grep 'node -e' | grep -v grep | awk '{print $2}' || true)
+ORPHAN_PIDS=$(ps aux | awk '$0 ~ /[n]ode -e/ && $0 !~ /Collecting metrics every/ {print $2}' || true)
 if [ -n "$ORPHAN_PIDS" ]; then
-  echo "  Found orphaned processes: $(echo $ORPHAN_PIDS | tr '\n' ' ')"
+  echo "  Found orphaned processes: $(echo "$ORPHAN_PIDS" | tr '\n' ' ')"
   echo "$ORPHAN_PIDS" | xargs kill -9 2>/dev/null || true
   echo "  Killed."
   sleep 1
