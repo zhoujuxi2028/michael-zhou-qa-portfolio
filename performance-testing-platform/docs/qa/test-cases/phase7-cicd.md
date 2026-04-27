@@ -46,6 +46,13 @@
 | TREND-04 | PERF-CI-BL-FR-004 | trend.json 缺失时仍可生成趋势报告      | 输出 "No trend data" 提示          | UT P1 regression |
 | TREND-05 | PERF-CI-BL-FR-004 | trend.json 为非数组 JSON               | 自动降级为空数据，不 crash         | UT P1 regression |
 | TREND-06 | PERF-CI-BL-FR-004 | trend.json 为无效 JSON 且输出目录缺失  | 自动创建目录并输出空报告           | UT P1 regression |
+| TREND-07 | PERF-CI-BL-FR-007 | `detectConsecutiveDegradation` 连续 N(=3) 次劣化（每步 > 5%） | `degraded=true`，message 含「连续 3 次劣化告警」 | UT P1 regression |
+| TREND-08 | PERF-CI-BL-FR-007 | 抖动 / 非单调序列                      | `degraded=false`，未触发告警       | UT P1 regression |
+| TREND-09 | PERF-CI-BL-FR-007 | 历史数据不足 window+1 条               | 跳过判定，message 含「历史数据不足」 | UT P1 regression |
+| TREND-10 | PERF-CI-BL-FR-007 | `generateTrendMarkdown` 嵌入告警 callout | `trend.md` 顶部包含 `> ⚠️` callout 与告警文案 | UT P1 regression |
+| TREND-INT-05 | PERF-CI-BL-FR-007 | `appendTrend` → 检测 → 报告 端到端 | trend.md 顶部嵌入连续劣化告警      | IT P2 regression |
+| CI-TREND-COMMENT | PERF-CI-BL-FR-008 | PR 触发后 trend-collect job 通过 `actions/github-script` 发布/更新 sticky 评论 | PR 评论包含 `<!-- perf-trend-comment -->` marker + trend.md 内容；多次推送复用同一条评论 | CI P2 regression |
+| CI-TREND-RETENTION | PERF-CI-BL-FR-003 | trend artifact 保留策略             | `retention-days: 90`               | CI P2 regression |
 
 ## Grafana 面板验证
 
