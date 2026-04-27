@@ -28,15 +28,21 @@ try {
 
   // Extract k6 metrics
   const metrics = summary.metrics || {};
-  const duration = metrics.http_req_duration?.values || {};
-  const p95 = duration.p('0.95') || duration['p(95)'] || 500;
+  const durationMetric = metrics.http_req_duration || {};
+  const duration = durationMetric.values || durationMetric;
+  const p95 = duration['p(95)'] || duration['p(0.95)'] || 500;
 
   const checks = summary.checks || [];
   const totalChecks = checks.length;
   const failedChecks = checks.filter((c) => !c.passes).length;
-  const errorRate = totalChecks > 0 ? failedChecks / totalChecks : 0.01;
+  const errorRate =
+    typeof metrics.http_req_failed?.value === 'number'
+      ? metrics.http_req_failed.value
+      : totalChecks > 0
+        ? failedChecks / totalChecks
+        : 0.01;
 
-  const http_reqs = metrics.http_reqs?.value || 0;
+  const http_reqs = metrics.http_reqs?.count || metrics.http_reqs?.value || 0;
   const testDuration = (summary.state?.testRunDurationMs || 60000) / 1000; // seconds
   const throughput_rps = testDuration > 0 ? http_reqs / testDuration : 50;
 
