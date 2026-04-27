@@ -4,7 +4,7 @@
 > **维护人:** QA Lead
 > **更新规则:** 每次 Stage Gate 执行 / Issue 状态变化时同步；Issue 关闭后保留 Closed 历史行
 > **制度参考:** `copilot/update-defect-tracking-system/docs/project-management/defect-tracking/README.md`
-> **相关文档:** [Stage 4 缺陷快照](stage4-defect-waiver-register.md) | [测试计划](test-plan.md)
+> **相关文档:** [Stage 4 缺陷快照](stage4-waiver-register.md) | [测试计划](../test-plan.md)
 
 ---
 
@@ -50,7 +50,7 @@
 
 ## 已关闭缺陷历史（Closed Defects）
 
-> Closed 行永不删除，供审计追溯。`DEF-001` ~ `DEF-004` 来自既有 `stage4-defect-waiver-register.md` 历史记录。
+> Closed 行永不删除，供审计追溯。`DEF-001` ~ `DEF-004` 来自既有 `stage4-waiver-register.md` 历史记录。
 
 | Defect ID | GitHub Issue                                                                 | 标题摘要                                                       | 严重度    | 关闭日期   | 关闭方式                                                                                        | 关联 Commit / PR              |
 | --------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------- | --------- | ---------- | ----------------------------------------------------------------------------------------------- | ----------------------------- |
