@@ -63,7 +63,7 @@ PERF-[子系统]-[子模块]-FR-[序号]
 | PERF-CI-BL-FR-001 | CI 性能基线存储: smoke gate 运行后将 p95 / error rate / throughput 存为 JSON artifact                 | P1     | 中     |
 | PERF-CI-BL-FR-002 | 基线回归检测: CI 下载上次 baseline artifact，对比当前 p95，退化 >20% 则 warning，>50% 则 fail         | P1     | 中     |
 | PERF-CI-BL-FR-003 | 趋势数据收集: 每次 CI 运行提取 p95/throughput/error rate 追加到 `reports/trend.json`                  | P2     | 中     |
-| PERF-CI-BL-FR-004 | 趋势可视化: `scripts/generate-trend.sh` 从 trend.json 生成 Markdown 趋势表（最近 N 次运行的指标对比） | P2     | 中     |
+| PERF-CI-BL-FR-004 | 趋势可视化: `src/utils/trend.js#generateTrendMarkdown` 从 `reports/trend.json` 生成 Markdown 趋势表（最近 N 次运行的指标对比） | P2     | 中     |
 | PERF-CI-BL-FR-005 | Grafana 趋势面板: 历史 p95 / throughput 折线图（从 InfluxDB 聚合）                                    | P3     | 小     |
 | PERF-CI-BL-FR-006 | 基线对比单元测试: 回归检测阈值判定、首次运行无 baseline 兜底                                          | P1     | 小     |
 
