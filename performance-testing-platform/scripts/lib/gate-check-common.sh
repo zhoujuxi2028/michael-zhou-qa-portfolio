@@ -84,6 +84,28 @@ extract_coverage() {
   }'
 }
 
+# extract_coverage_summary <coverage-summary.json>
+# 输出（空格分隔，4 列）：stmt branch funcs lines
+extract_coverage_summary() {
+  local summary_path="$1"
+  [ -f "$summary_path" ] || return 1
+
+  node - "$summary_path" << 'NODE'
+const fs = require('fs');
+
+const summaryPath = process.argv[2];
+const summary = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
+const total = summary.total || {};
+const values = ['statements', 'branches', 'functions', 'lines'].map((key) => total[key] && total[key].pct);
+
+if (values.some((value) => typeof value !== 'number')) {
+  process.exit(1);
+}
+
+process.stdout.write(values.join(' '));
+NODE
+}
+
 # meets_threshold <actual> <threshold>
 # 浮点比较（基于 awk）；actual >= threshold 返回 0
 meets_threshold() {
