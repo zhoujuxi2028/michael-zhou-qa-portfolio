@@ -1,7 +1,7 @@
 # Stage 4 Execution Record — Phase 7
 
 > **模板:** [../../gates/stage4-template.md](../../gates/stage4-template.md)  
-> **缺陷登记:** [../../defects/stage4-waiver-register.md](../../defects/stage4-waiver-register.md)  
+> **缺陷登记:** [../../defects/register.md](../../defects/register.md)  
 > **测试计划:** [../../test-plan.md](../../test-plan.md)
 
 ---

@@ -6,6 +6,25 @@
 
 ---
 
+## 2026-04-27 — 缺陷登记 SSoT 合并
+
+**操作人:** QA Lead
+
+**目标:** 消除 `defects/register.md` 与 `defects/stage4-waiver-register.md` 双轨维护造成的数据重复与 ID 冲突风险（曾引发 DEF-005 / DEF-010 ID 冲突），对齐 SSoT 单一事实来源原则。
+
+### 删除
+
+| 路径                                    | 说明                                                                                        |
+| --------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `defects/stage4-waiver-register.md`     | 与 `defects/register.md` 重复维护；历史 Stage 4 缺陷（DEF-001~004）与 WAV-001 已合并至 register.md |
+
+### 调整
+
+- `defects/register.md` 升级为唯一 active register，统一管理活跃 / 历史 / Waiver。
+- 所有外部引用同步更新：`docs/qa/README.md`、`docs/qa/test-plan.md`、`gates/stage4-template.md`、`reports/execution/stage4-execution-2026-04-24.md`、`docs/README.md`、`docs/project-management/defect-tracking/README.md`。
+
+---
+
 ## 2026-04-27 — P0 文档结构企业级标准化（第 1 批）
 
 **操作人:** QA Lead

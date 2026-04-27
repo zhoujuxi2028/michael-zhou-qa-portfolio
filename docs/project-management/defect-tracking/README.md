@@ -145,7 +145,7 @@
 
 | 项目 | 登记表位置 | 状态 |
 |------|------------|------|
-| performance-testing-platform | [defects/register.md](../../../performance-testing-platform/docs/qa/defects/register.md) （活跃） · [defects/stage4-waiver-register.md](../../../performance-testing-platform/docs/qa/defects/stage4-waiver-register.md) （Stage 4 历史） | ✅ 在用 |
+| performance-testing-platform | [defects/register.md](../../../performance-testing-platform/docs/qa/defects/register.md) （唯一 SSoT，含活跃 + 历史 + Waiver） | ✅ 在用 |
 | 其他子项目 | _(待初始化)_ | 🟡 按需创建：复制 [`defect-register-template.md`](defect-register-template.md) → `<project>/docs/qa/defects/register.md` |
 
 新项目缺陷登记表初始化步骤：
