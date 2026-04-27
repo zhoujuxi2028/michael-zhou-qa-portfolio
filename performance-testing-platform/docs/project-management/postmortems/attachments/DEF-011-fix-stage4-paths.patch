@@ -1,0 +1,109 @@
+From 923a7e6688c654f13f7b61ec324aa14d2041eb9c Mon Sep 17 00:00:00 2001
+From: "copilot-swe-agent[bot]" <198982749+Copilot@users.noreply.github.com>
+Date: Mon, 27 Apr 2026 05:53:35 +0000
+Subject: [PATCH] fix(perf): align stage4-selftest hardcoded paths with
+ reports/execution reorg (DEF-011)
+
+Agent-Logs-Url: https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/sessions/3d48cbe6-97e6-481d-9b8b-989ea3d27490
+
+Co-authored-by: zhoujuxi2028 <242555991+zhoujuxi2028@users.noreply.github.com>
+---
+ performance-testing-platform/scripts/stage4-selftest.sh   | 7 ++++---
+ .../tests/unit/scripts/stage4-selftest-fast.bats          | 2 +-
+ .../tests/unit/scripts/stage4-selftest-integration.bats   | 2 +-
+ .../tests/unit/scripts/stage4-selftest.test.sh            | 8 ++++----
+ 4 files changed, 10 insertions(+), 9 deletions(-)
+
+diff --git a/performance-testing-platform/scripts/stage4-selftest.sh b/performance-testing-platform/scripts/stage4-selftest.sh
+index f429cd7..795ee7f 100755
+--- a/performance-testing-platform/scripts/stage4-selftest.sh
++++ b/performance-testing-platform/scripts/stage4-selftest.sh
+@@ -12,11 +12,12 @@ cd "$(dirname "$0")/.."
+ # ============================================================
+ 
+ LOG_DIR="docs/qa/reports/logs-stage4"
+-REPORT="docs/qa/reports/stage4-selftest-report.md"
++REPORT="docs/qa/reports/execution/stage4-selftest-report.md"
+ TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
+ START_TIME=$(date +%s)
+ 
+ mkdir -p "$LOG_DIR"
++mkdir -p "$(dirname "$REPORT")"
+ 
+ # 计数器（使用全局变量）
+ PASS=0
+@@ -374,8 +375,8 @@ echo "=== Section 8: 文档完整性 ==="
+ # 8.1 验收报告
+ echo ""
+ echo "--- 8.1 验收报告 ---"
+-if [ -f "docs/qa/reports/phase6-stage4-verification-report.md" ]; then
+-  SIZE=$(ls -lh docs/qa/reports/phase6-stage4-verification-report.md | awk '{print $5}')
++if [ -f "docs/qa/reports/execution/phase6-stage4-verification-report.md" ]; then
++  SIZE=$(ls -lh docs/qa/reports/execution/phase6-stage4-verification-report.md | awk '{print $5}')
+   log_result "8.1" "PASS" "验收报告已存在 ($SIZE)"
+ else
+   log_result "8.1" "FAIL" "验收报告不存在"
+diff --git a/performance-testing-platform/tests/unit/scripts/stage4-selftest-fast.bats b/performance-testing-platform/tests/unit/scripts/stage4-selftest-fast.bats
+index 04e3083..5e14c6b 100644
+--- a/performance-testing-platform/tests/unit/scripts/stage4-selftest-fast.bats
++++ b/performance-testing-platform/tests/unit/scripts/stage4-selftest-fast.bats
+@@ -123,7 +123,7 @@ teardown() {
+ 
+ @test "8.1: 验收报告文件应存在" {
+   cd "$PROJECT_ROOT"
+-  [ -f "docs/qa/reports/phase6-stage4-verification-report.md" ]
++  [ -f "docs/qa/reports/execution/phase6-stage4-verification-report.md" ]
+ }
+ 
+ @test "8.2: CLAUDE.md 应包含锁机制文档" {
+diff --git a/performance-testing-platform/tests/unit/scripts/stage4-selftest-integration.bats b/performance-testing-platform/tests/unit/scripts/stage4-selftest-integration.bats
+index c4ab104..531394e 100644
+--- a/performance-testing-platform/tests/unit/scripts/stage4-selftest-integration.bats
++++ b/performance-testing-platform/tests/unit/scripts/stage4-selftest-integration.bats
+@@ -20,7 +20,7 @@ setup_file() {
+   export PROJECT_ROOT="$(cd "$(dirname "$BATS_TEST_DIRNAME")/../.." && pwd)"
+   export SCRIPT="${PROJECT_ROOT}/scripts/stage4-selftest.sh"
+   export LOG_DIR="${PROJECT_ROOT}/docs/qa/reports/logs-stage4"
+-  export REPORT="${PROJECT_ROOT}/docs/qa/reports/stage4-selftest-report.md"
++  export REPORT="${PROJECT_ROOT}/docs/qa/reports/execution/stage4-selftest-report.md"
+ 
+   mkdir -p "$LOG_DIR"
+ 
+diff --git a/performance-testing-platform/tests/unit/scripts/stage4-selftest.test.sh b/performance-testing-platform/tests/unit/scripts/stage4-selftest.test.sh
+index 69e7212..45039e5 100755
+--- a/performance-testing-platform/tests/unit/scripts/stage4-selftest.test.sh
++++ b/performance-testing-platform/tests/unit/scripts/stage4-selftest.test.sh
+@@ -12,7 +12,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+ cd "$PROJECT_ROOT"
+ 
+ LOG_DIR="docs/qa/reports/logs-stage4"
+-REPORT="docs/qa/reports/stage4-selftest-report.md"
++REPORT="docs/qa/reports/execution/stage4-selftest-report.md"
+ TEST_LOCK_DIR="/tmp/test-lock-$$"
+ 
+ # 测试计数
+@@ -218,7 +218,7 @@ echo ""
+ echo "## Section 8: 文档完整性"
+ 
+ test_case "8.1: 验收报告文件存在" \
+-  "[ -f 'docs/qa/reports/phase6-stage4-verification-report.md' ]"
++  "[ -f 'docs/qa/reports/execution/phase6-stage4-verification-report.md' ]"
+ 
+ test_case "8.2: CLAUDE.md 包含锁机制文档" \
+   "grep -Eq '集成测试锁机制|集成测试有锁' CLAUDE.md"
+@@ -250,10 +250,10 @@ echo "--- 运行完整 stage4-selftest.sh 脚本 ---"
+ bash scripts/stage4-selftest.sh > /dev/null 2>&1 || true
+ 
+ test_case "报告文件已生成" \
+-  "[ -f 'docs/qa/reports/stage4-selftest-report.md' ]"
++  "[ -f 'docs/qa/reports/execution/stage4-selftest-report.md' ]"
+ 
+ test_case "报告包含统计信息" \
+-  "grep -q 'PASS\|FAIL\|SKIP' 'docs/qa/reports/stage4-selftest-report.md'"
++  "grep -q 'PASS\|FAIL\|SKIP' 'docs/qa/reports/execution/stage4-selftest-report.md'"
+ 
+ test_case "日志目录已创建" \
+   "[ -d 'docs/qa/reports/logs-stage4' ]"
+-- 
+2.53.0
+
