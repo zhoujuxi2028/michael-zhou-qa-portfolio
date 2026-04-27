@@ -183,5 +183,5 @@ A6: preflight-check.sh 第 32 行 grep 模式 'node -e|cluster\.js' 会在并行
 | 文档                                                 | 说明                                      |
 | ---------------------------------------------------- | ----------------------------------------- |
 | [rca-cluster-test-gap.md](rca-cluster-test-gap.md)   | 前次 RCA：cluster.js 测试覆盖率从 0% 补齐 |
-| [rtm.md](../rtm.md)                                  | 需求追溯矩阵（SM-10 更新）                |
-| [phase2-metrics.md](../test-cases/phase2-metrics.md) | Phase 2 用例表（CLU 用例更新）            |
+| [rtm.md](../../rtm.md)                                  | 需求追溯矩阵（SM-10 更新）                |
+| [phase2-metrics.md](../../test-cases/phase2-metrics.md) | Phase 2 用例表（CLU 用例更新）            |

@@ -3,7 +3,7 @@
 > **项目:** Performance Testing Platform  
 > **维护人:** QA Lead  
 > **更新规则:** 每次 Stage 4 Gate 执行时同步更新；issue 关闭后标记 Closed，保留历史行  
-> **相关文档:** [Gate Template](stage4-gate-template.md) | [测试计划](test-plan.md)
+> **相关文档:** [Gate Template](../gates/stage4-template.md) | [项目级缺陷登记](register.md) | [测试计划](../test-plan.md)
 
 ---
 
