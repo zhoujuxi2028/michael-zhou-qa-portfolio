@@ -123,7 +123,7 @@ teardown() {
 
 @test "8.1: 验收报告文件应存在" {
   cd "$PROJECT_ROOT"
-  [ -f "docs/qa/reports/phase6-stage4-verification-report.md" ]
+  [ -f "docs/qa/reports/execution/phase6-stage4-verification-report.md" ]
 }
 
 @test "8.2: CLAUDE.md 应包含锁机制文档" {
