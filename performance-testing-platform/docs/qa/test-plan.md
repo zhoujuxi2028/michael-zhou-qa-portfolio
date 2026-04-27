@@ -503,7 +503,8 @@ npm run generate-summary                    # 生成执行摘要报告
 | 风险清单                             | [risks.md](../project-management/risks.md)                                                   | 技术风险 + 缓解措施                                                               |
 | 需求文档                             | [requirements.md](../project-management/requirements.md)                                     | Phase 1~7 需求编号                                                                |
 | 开发流程                             | [dev-process-checklist.md](../../../docs/dev-process-checklist.md)                           | 5 阶段流程 + checklist                                                            |
-| **Stage 4 Gate Template**            | [stage4-gate-template.md](stage4-gate-template.md)                                           | 每次 Stage 4 验收的可复用 Gate 模板；含 P0/P1/P2 checklist 与 Gate Decision Rules |
-| **Stage 4 Defect/Waiver Register**   | [stage4-defect-waiver-register.md](stage4-defect-waiver-register.md)                         | 缺陷与 waiver 登记表；当前活跃 DEF-001~004（#192~#195）                           |
-| **Stage 4 Execution Record（当前）** | [reports/stage4-execution-2026-04-24.md](reports/stage4-execution-2026-04-24.md)             | Phase 7 Stage 4 执行记录；当前状态：🔴 BLOCKED（DEF-003/004）                     |
-| Phase 6 Stage 4 验收报告（归档）     | [reports/phase6-stage4-verification-report.md](reports/phase6-stage4-verification-report.md) | Phase 6 历史验收结果归档                                                          |
+| **Stage 4 Gate Template**            | [gates/stage4-template.md](gates/stage4-template.md)                                         | 每次 Stage 4 验收的可复用 Gate 模板；含 P0/P1/P2 checklist 与 Gate Decision Rules |
+| **Stage 4 Defect/Waiver Register**   | [defects/stage4-waiver-register.md](defects/stage4-waiver-register.md)                       | 缺陷与 waiver 登记表；当前活跃 DEF-001~004（#192~#195）                           |
+| **项目级缺陷登记 (Active)**          | [defects/register.md](defects/register.md)                                                   | 当前活跃 DEF-***；与 Portfolio 缺陷追踪联动                                       |
+| **Stage 4 Execution Record（当前）** | [reports/execution/stage4-execution-2026-04-24.md](reports/execution/stage4-execution-2026-04-24.md) | Phase 7 Stage 4 执行记录；当前状态：🔴 BLOCKED（DEF-003/004）                     |
+| Phase 6 Stage 4 验收报告（归档）     | [reports/execution/phase6-stage4-verification-report.md](reports/execution/phase6-stage4-verification-report.md) | Phase 6 历史验收结果归档                                                          |

@@ -2,7 +2,7 @@
 
 # scripts/p1-gate-check.sh — Stage 4 P1 门禁一键自检
 #
-# 覆盖 5 个 P1 验收项（详见 docs/qa/stage4-gate-template.md）：
+# 覆盖 5 个 P1 验收项（详见 docs/qa/gates/stage4-template.md）：
 #   P1-01  k6 smoke              npm run k6:smoke           （仅 --full 跑）
 #   P1-02  JMeter smoke          npm run jmeter:smoke       （仅 --full 跑）
 #   P1-03  Shell 集成测试        bash scripts/integration-test.sh
@@ -64,7 +64,7 @@ P1 Gate Check — Stage 4 强烈建议级一键自检
   --log-dir <DIR>         日志输出目录（默认 docs/qa/reports/logs-p1）
   --workflow <FILE>       performance-ci.yml 路径（用于 P1-05 静态扫描）
 
-覆盖的 5 项检查（依据 docs/qa/stage4-gate-template.md）:
+覆盖的 5 项检查（依据 docs/qa/gates/stage4-template.md）:
   P1-01  k6 smoke               p95 < 500ms, error < 1%
   P1-02  JMeter smoke           error < 1%
   P1-03  Shell 集成测试         scripts/integration-test.sh

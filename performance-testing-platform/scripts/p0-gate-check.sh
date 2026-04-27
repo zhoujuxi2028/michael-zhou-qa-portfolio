@@ -2,7 +2,7 @@
 
 # scripts/p0-gate-check.sh — Stage 4 P0 门禁一键自检
 #
-# 覆盖 5 个 P0 验收项（详见 docs/qa/stage4-gate-template.md）：
+# 覆盖 5 个 P0 验收项（详见 docs/qa/gates/stage4-template.md）：
 #   P0-01  单元测试            npm run test:unit
 #   P0-02  Lint                npm run lint
 #   P0-03  格式检查            npm run format:check
@@ -33,7 +33,7 @@ source "$SCRIPT_DIR/lib/gate-check-common.sh"
 REPORT_DIR="${GATE_REPORT_DIR:-${PROJECT_DIR}/docs/qa/reports}"
 LOG_DIR="${GATE_LOG_DIR:-${PROJECT_DIR}/docs/qa/reports/logs-p0}"
 
-# 覆盖率阈值（与 stage4-gate-template.md 一致）
+# 覆盖率阈值（与 gates/stage4-template.md 一致）
 COV_STMT_MIN=80
 COV_BRANCH_MIN=70
 COV_FUNC_MIN=80
@@ -55,7 +55,7 @@ P0 Gate Check — Stage 4 阻塞级一键自检
   --report-dir <DIR>      报告输出目录（默认 docs/qa/reports）
   --log-dir <DIR>         日志输出目录（默认 docs/qa/reports/logs-p0）
 
-覆盖的 5 项检查（依据 docs/qa/stage4-gate-template.md）:
+覆盖的 5 项检查（依据 docs/qa/gates/stage4-template.md）:
   P0-01  单元测试         npm run test:unit
   P0-02  Lint             npm run lint            （0 errors）
   P0-03  格式检查         npm run format:check    （0 warnings）
