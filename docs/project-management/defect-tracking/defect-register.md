@@ -29,6 +29,8 @@
 | _(暂无 Portfolio 级活跃缺陷)_ | | | | | | | | | |
 
 > 已存在的项目级活跃缺陷请见对应项目登记表（见第 6 节"项目级登记入口"）。
+>
+> **2026-04-27 关注：** `performance-testing-platform/DEF-011`（PR #232 stage4 bats 硬编码路径）属于项目内缺陷，仅阻塞 PR #232 CI；未跨项目，按制度不入 Portfolio 活跃表，仅在此提示并由项目级登记表跟踪闭环。
 
 ---
 
@@ -66,7 +68,7 @@
 
 | 项目 | 登记表位置 | 当前活跃数 | 最近更新 |
 |------|------------|-----------|---------|
-| performance-testing-platform | [defect-register.md](../../../performance-testing-platform/docs/qa/defect-register.md) | 4（DEF-005、DEF-006、DEF-007、DEF-008） | 2026-04-26 |
+| performance-testing-platform | [defect-register.md](../../../performance-testing-platform/docs/qa/defect-register.md) | 5（DEF-005、DEF-006、DEF-007、DEF-008、DEF-011） | 2026-04-27 |
 | api-testing-demo | _(按需初始化，复制 [模板](defect-register-template.md))_ | — | — |
 | playwright-demo | _(按需初始化)_ | — | — |
 | selenium-demo | _(按需初始化)_ | — | — |
@@ -86,6 +88,7 @@
 
 | 日期 | 变更内容 | 操作人 |
 |------|----------|--------|
+| 2026-04-27 | 同步 `performance-testing-platform`：登记 `DEF-011`（PR #232 bats 硬编码路径），活跃数 4 → 5；附 RCA-2026-04-27 | QA |
 | 2026-04-26 | 同步 `performance-testing-platform`：`DEF-009` 已关闭，活跃数调整为 4 | QA |
 | 2026-04-26 | 将 `performance-testing-platform` 入口切换到 `docs/qa/defect-register.md`；同步活跃数至 5（含 `DEF-009`） | QA |
 | 2026-04-25 | 初始建表；Portfolio 级跟踪系统 v1.0 落地；登记 11 个项目级入口 | QA |
