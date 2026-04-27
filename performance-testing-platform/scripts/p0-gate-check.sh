@@ -154,22 +154,19 @@ fi
 echo ""
 echo "--- P0-04: 覆盖率 (npm run test:coverage) ---"
 COV_LOG="${LOG_DIR}/coverage.log"
-# 强制关闭 Jest 颜色输出，避免 ANSI 转义码污染 "All files" 行的数值解析
-# （macOS 终端或某些 CI 环境下 Jest 即使重定向到文件也会输出颜色）
+COV_SUMMARY="${COV_SUMMARY_PATH:-${PROJECT_DIR}/coverage/coverage-summary.json}"
+# 强制关闭 Jest 颜色输出；判定以 coverage-summary.json 为准，避免控制台表格格式影响门禁。
 if ! NO_COLOR=1 FORCE_COLOR=0 npm run test:coverage > "$COV_LOG" 2>&1; then
   log_result "P0-04" FAIL "覆盖率命令执行失败（详见 ${COV_LOG}）"
 else
-  ALL_LINE=$(grep -E "^All files" "$COV_LOG" | tail -1 || true)
-  if [ -z "$ALL_LINE" ]; then
-    log_result "P0-04" FAIL "未在覆盖率输出中找到 'All files' 行（详见 ${COV_LOG}）"
+  if ! read -r STMT BRANCH FUNCS LINE_COV <<< "$(extract_coverage_summary "$COV_SUMMARY")"; then
+    log_result "P0-04" FAIL "未能解析 coverage summary: ${COV_SUMMARY}（详见 ${COV_LOG}）"
   else
-    # 解析 4 列百分比
-    read -r STMT BRANCH FUNCS LINES <<< "$(extract_coverage "$ALL_LINE")"
-    DETAIL="stmt=${STMT}% branch=${BRANCH}% func=${FUNCS}% line=${LINES}%"
+    DETAIL="stmt=${STMT}% branch=${BRANCH}% func=${FUNCS}% line=${LINE_COV}%"
     if meets_threshold "$STMT" "$COV_STMT_MIN" \
       && meets_threshold "$BRANCH" "$COV_BRANCH_MIN" \
       && meets_threshold "$FUNCS" "$COV_FUNC_MIN" \
-      && meets_threshold "$LINES" "$COV_LINE_MIN"; then
+      && meets_threshold "$LINE_COV" "$COV_LINE_MIN"; then
       log_result "P0-04" PASS "覆盖率达标 (${DETAIL})"
     else
       log_result "P0-04" FAIL \
