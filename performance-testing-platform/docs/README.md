@@ -34,7 +34,7 @@ docs/
 │   ├── test-plan.md           # 测试计划
 │   ├── rtm.md                 # 需求追溯矩阵 (RTM)
 │   ├── stage4-gate-template.md        # Stage 4 Gate 可复用模板
-│   ├── stage4-defect-waiver-register.md # 缺陷与 Waiver 登记表
+│   ├── defect-register.md             # 项目级缺陷与 Waiver 登记表（active + closed）
 │   ├── test-cases/            # 测试用例（index + phase1~7 + 集成 + 性能目录）
 │   ├── specs/                 # 测试规格
 │   └── reports/               # 测试报告（含 archive/、stage4 执行记录、Phase 6 历史归档）
