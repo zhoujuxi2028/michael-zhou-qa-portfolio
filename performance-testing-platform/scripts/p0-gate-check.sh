@@ -156,12 +156,16 @@ echo "--- P0-04: 覆盖率 (npm run test:coverage) ---"
 COV_LOG="${LOG_DIR}/coverage.log"
 COV_SUMMARY="${COV_SUMMARY_PATH:-${PROJECT_DIR}/coverage/coverage-summary.json}"
 # 强制关闭 Jest 颜色输出；判定以 coverage-summary.json 为准，避免控制台表格格式影响门禁。
+rm -f "$COV_SUMMARY"
 if ! NO_COLOR=1 FORCE_COLOR=0 npm run test:coverage > "$COV_LOG" 2>&1; then
   log_result "P0-04" FAIL "覆盖率命令执行失败（详见 ${COV_LOG}）"
 else
-  if ! read -r STMT BRANCH FUNCS LINE_COV <<< "$(extract_coverage_summary "$COV_SUMMARY")"; then
+  if [ ! -f "$COV_SUMMARY" ]; then
+    log_result "P0-04" FAIL "coverage summary 未生成: ${COV_SUMMARY}（详见 ${COV_LOG}）"
+  elif ! COVERAGE_VALUES="$(extract_coverage_summary "$COV_SUMMARY")"; then
     log_result "P0-04" FAIL "未能解析 coverage summary: ${COV_SUMMARY}（详见 ${COV_LOG}）"
   else
+    read -r STMT BRANCH FUNCS LINE_COV <<< "$COVERAGE_VALUES"
     DETAIL="stmt=${STMT}% branch=${BRANCH}% func=${FUNCS}% line=${LINE_COV}%"
     if meets_threshold "$STMT" "$COV_STMT_MIN" \
       && meets_threshold "$BRANCH" "$COV_BRANCH_MIN" \
