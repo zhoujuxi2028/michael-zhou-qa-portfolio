@@ -66,6 +66,8 @@ PERF-[子系统]-[子模块]-FR-[序号]
 | PERF-CI-BL-FR-004 | 趋势可视化: `src/utils/trend.js#generateTrendMarkdown` 从 `reports/trend.json` 生成 Markdown 趋势表（最近 N 次运行的指标对比） | P2     | 中     |
 | PERF-CI-BL-FR-005 | Grafana 趋势面板: 历史 p95 / throughput 折线图（从 InfluxDB 聚合）                                    | P3     | 小     |
 | PERF-CI-BL-FR-006 | 基线对比单元测试: 回归检测阈值判定、首次运行无 baseline 兜底                                          | P1     | 小     |
+| PERF-CI-BL-FR-007 | 趋势退化告警: `detectConsecutiveDegradation` 连续 N(默认 3) 次每步劣化 > 5% 时触发告警，并在 `reports/trend.md` 顶部嵌入 callout | P2     | 中     |
+| PERF-CI-BL-FR-008 | PR 趋势评论: trend-collect job 在 PR 事件时通过 `actions/github-script` 发布/更新 sticky 评论，输出最近趋势对比与劣化告警 | P2     | 小     |
 
 ### 7.3.2 CI 覆盖率门禁（PERF-CI-COV-FR）
 
