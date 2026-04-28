@@ -12,11 +12,12 @@ cd "$(dirname "$0")/.."
 # ============================================================
 
 LOG_DIR="docs/qa/reports/logs-stage4"
-REPORT="docs/qa/reports/stage4-selftest-report.md"
+REPORT="docs/qa/reports/execution/stage4-selftest-report.md"
 TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
 START_TIME=$(date +%s)
 
 mkdir -p "$LOG_DIR"
+mkdir -p "$(dirname "$REPORT")"
 
 # 计数器（使用全局变量）
 PASS=0
@@ -374,8 +375,8 @@ echo "=== Section 8: 文档完整性 ==="
 # 8.1 验收报告
 echo ""
 echo "--- 8.1 验收报告 ---"
-if [ -f "docs/qa/reports/phase6-stage4-verification-report.md" ]; then
-  SIZE=$(ls -lh docs/qa/reports/phase6-stage4-verification-report.md | awk '{print $5}')
+if [ -f "docs/qa/reports/execution/phase6-stage4-verification-report.md" ]; then
+  SIZE=$(ls -lh docs/qa/reports/execution/phase6-stage4-verification-report.md | awk '{print $5}')
   log_result "8.1" "PASS" "验收报告已存在 ($SIZE)"
 else
   log_result "8.1" "FAIL" "验收报告不存在"
