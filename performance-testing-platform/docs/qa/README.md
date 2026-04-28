@@ -32,8 +32,7 @@ docs/qa/
 │   └── stage4-template.md       #   ─ Stage 4 验收 Gate 模板（决策矩阵）
 │
 ├── defects/                     # 缺陷与 Waiver 登记
-│   ├── register.md              #   ─ 项目级活跃缺陷登记表（DEF-***）
-│   └── stage4-waiver-register.md#   ─ Stage 4 缺陷/Waiver 历史快照
+│   └── register.md              #   ─ 项目级缺陷登记表（DEF-***，含活跃 + 历史 + Waiver）
 │
 └── reports/                     # 测试报告（按类型分类）
     ├── README.md                #   ─ 报告命名约定与目录说明
@@ -57,7 +56,7 @@ docs/qa/
 | 想看所有用例和当前通过率          | [test-cases/index.md](test-cases/index.md)                             |
 | 准备进行 Stage 4 验收             | [gates/stage4-template.md](gates/stage4-template.md)                   |
 | 想知道当前活跃缺陷                | [defects/register.md](defects/register.md)                             |
-| 查阅 Stage 4 历史缺陷与 waiver    | [defects/stage4-waiver-register.md](defects/stage4-waiver-register.md) |
+| 查阅历史缺陷与 waiver             | [defects/register.md](defects/register.md) (Closed Defects / Waiver 表)|
 | 查阅最近一次 Stage 4 执行结果     | [reports/execution/](reports/execution/)                               |
 | 查阅根因分析（RCA）记录           | [reports/rca/](reports/rca/)                                           |
 | 写新报告时如何命名 / 放哪个目录   | [reports/README.md](reports/README.md)                                 |
