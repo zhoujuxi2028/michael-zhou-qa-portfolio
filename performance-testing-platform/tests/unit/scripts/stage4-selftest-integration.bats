@@ -31,8 +31,10 @@ setup_file() {
 
   cd "$PROJECT_ROOT"
   # 整脚本运行一次（允许非零退出，由各 @test 自行断言契约）
-  bash "$SCRIPT" > "$SELFTEST_OUT" 2>&1
-  echo $? > "$SELFTEST_EXIT"
+  # 注：bats setup_file 默认 errexit；用 `|| true` 显式吞掉非零退出，
+  # 真实退出码通过 $SELFTEST_EXIT 传给后续 @test 自行断言。
+  bash "$SCRIPT" > "$SELFTEST_OUT" 2>&1 && rc=0 || rc=$?
+  echo "$rc" > "$SELFTEST_EXIT"
 }
 
 # 注：setup_file() 中的 export 变量会被 bats 自动传递到各 @test，
