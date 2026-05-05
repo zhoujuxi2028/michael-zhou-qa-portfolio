@@ -31,13 +31,15 @@ docs/
 │   └── plans/                 # AI 辅助规划记录
 │
 ├── qa/                        # 质量保证
+│   ├── README.md              # QA 目录导航首页
+│   ├── CHANGELOG.md           # QA 文档变更日志
 │   ├── test-plan.md           # 测试计划
 │   ├── rtm.md                 # 需求追溯矩阵 (RTM)
-│   ├── stage4-gate-template.md        # Stage 4 Gate 可复用模板
-│   ├── defect-register.md             # 项目级缺陷与 Waiver 登记表（active + closed）
+│   ├── gates/                 # Stage Gate 模板（含 stage4-template.md）
+│   ├── defects/               # 缺陷与 Waiver 登记（统一收口至 register.md）
 │   ├── test-cases/            # 测试用例（index + phase1~7 + 集成 + 性能目录）
 │   ├── specs/                 # 测试规格
-│   └── reports/               # 测试报告（含 archive/、stage4 执行记录、Phase 6 历史归档）
+│   └── reports/               # 测试报告（execution/ rca/ investigations/ capacity/ checklists/ logs/ archive/）
 │
 ├── devops/                    # CI/CD 与基础设施
 │   ├── phase7-cicd-architecture.yml
