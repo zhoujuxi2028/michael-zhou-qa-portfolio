@@ -2,8 +2,8 @@
 
 > **版本:** v1.0  
 > **适用范围:** Performance Testing Platform — 每个 Phase 的 Stage 4 验收  
-> **使用方式:** 每次验收时，复制 `reports/stage4-execution-YYYY-MM-DD.md`，填写实际结果  
-> **相关文档:** [缺陷/Waiver 登记表](defect-register.md) | [测试计划](test-plan.md)
+> **使用方式:** 每次验收时，复制 `../reports/execution/stage4-execution-YYYY-MM-DD.md`，填写实际结果  
+> **相关文档:** [缺陷/Waiver 登记表](../defects/register.md) | [测试计划](../test-plan.md)
 
 ---
 
@@ -45,7 +45,7 @@
 | EC-02 | 依赖已安装，无 error                 | `npm install`                                                        | ⬜   |
 | EC-03 | 风险清单已更新                       | `docs/project-management/risks.md` 已同步                            | ⬜   |
 | EC-04 | 环境检测通过（Docker daemon 运行中） | `bash scripts/preflight-check.sh --stage4` exit 0                    | ⬜   |
-| EC-05 | Defect/Waiver Register 已更新至最新  | [defect-register.md](defect-register.md) | ⬜   |
+| EC-05 | Defect/Waiver Register 已更新至最新  | [../defects/register.md](../defects/register.md) | ⬜   |
 
 ---
 
@@ -87,7 +87,7 @@
 ## 5. Blocker 清单
 
 > 当前验收周期内，所有阻塞 Gate PASS 的 issue。  
-> 详细信息见 [defect-register.md](defect-register.md)
+> 详细信息见 [../defects/register.md](../defects/register.md)
 
 | Issue #  | 标题摘要 | 严重度 | Blocker? | 状态 | Waiver ID |
 | -------- | -------- | ------ | -------- | ---- | --------- |
