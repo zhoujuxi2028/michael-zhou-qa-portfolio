@@ -470,7 +470,7 @@ git commit -m "test(phase7): add coverage gate tests (CI-COV-01~04)"
 **Files:**
 
 - Create: `tests/unit/utils/trend.test.js`
-- Reference: `scripts/generate-trend.sh` (实现脚本)
+- Reference: `src/utils/trend.js` (Markdown 报告生成) + `scripts/analysis/trend-collect.js` (CI 趋势采集 CLI)
 
 **目标:** 测试趋势数据累积和报告生成
 
@@ -494,7 +494,7 @@ describe('Trend Reporting (TREND)', () => {
     if (fs.existsSync(TREND_MD)) fs.unlinkSync(TREND_MD);
   });
 
-  // TREND-01: generate-trend.sh produces Markdown table
+  // TREND-01: src/utils/trend.js#generateTrendMarkdown produces Markdown table
   test('TREND-01: generateTrendReport creates reports/trend.md', () => {
     recordTrend({ date: '2026-04-17', p95: 500, error_rate: 0.5 });
     recordTrend({ date: '2026-04-18', p95: 510, error_rate: 0.6 });
