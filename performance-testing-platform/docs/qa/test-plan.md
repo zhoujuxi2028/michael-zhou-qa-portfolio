@@ -435,7 +435,8 @@ npm run generate-summary                    # 生成执行摘要报告
   └─ CI job baseline-compare (CI-BL-01~04)
 
 第3轮：趋势报告（~1 min）
-  └─ scripts/generate-trend.sh (TREND-01~03)
+  ├─ node scripts/analysis/trend-collect.js  (追加 reports/trend.json，CI trend-collect job)
+  └─ src/utils/trend.js#generateTrendMarkdown (生成 reports/trend.md，TREND-01~03)
 
 第4轮：Grafana 集成（Docker）（~10 min）
   ├─ docker-compose up (InfluxDB + Grafana)

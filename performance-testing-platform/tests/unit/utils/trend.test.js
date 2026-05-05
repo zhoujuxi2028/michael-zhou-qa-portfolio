@@ -4,7 +4,7 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { generateTrendMarkdown } = require('../../../src/utils/trend');
+const { generateTrendMarkdown, detectConsecutiveDegradation } = require('../../../src/utils/trend');
 
 describe('trend reporting', () => {
   const testDir = path.join(__dirname, '../../fixtures/trend');
@@ -99,5 +99,68 @@ describe('trend reporting', () => {
     expect(fs.existsSync(nestedReportFile)).toBe(true);
     const content = fs.readFileSync(nestedReportFile, 'utf-8');
     expect(content).toContain('No trend data');
+  });
+
+  // TREND-07: 连续 N 次劣化告警（默认 window=3，每步 > 5%）
+  test('TREND-07: detectConsecutiveDegradation flags consecutive degradation', () => {
+    const trendData = [
+      { run: 1, date: '2026-04-17T10:00Z', p95_ms: 100 },
+      { run: 2, date: '2026-04-17T11:00Z', p95_ms: 110 }, // +10%
+      { run: 3, date: '2026-04-17T12:00Z', p95_ms: 122 }, // +10.9%
+      { run: 4, date: '2026-04-17T13:00Z', p95_ms: 135 }, // +10.7%
+    ];
+
+    const result = detectConsecutiveDegradation(trendData);
+
+    expect(result.degraded).toBe(true);
+    expect(result.window).toBe(3);
+    expect(result.deltas).toHaveLength(3);
+    expect(result.message).toContain('连续 3 次劣化告警');
+  });
+
+  // TREND-08: 非单调劣化或抖动 -> 不告警
+  test('TREND-08: detectConsecutiveDegradation does not flag non-monotonic series', () => {
+    const trendData = [
+      { run: 1, date: '2026-04-17T10:00Z', p95_ms: 100 },
+      { run: 2, date: '2026-04-17T11:00Z', p95_ms: 110 }, // +10%
+      { run: 3, date: '2026-04-17T12:00Z', p95_ms: 105 }, // -4.5% (恢复)
+      { run: 4, date: '2026-04-17T13:00Z', p95_ms: 115 }, // +9.5%
+    ];
+
+    const result = detectConsecutiveDegradation(trendData);
+
+    expect(result.degraded).toBe(false);
+    expect(result.message).toContain('未触发连续');
+  });
+
+  // TREND-09: 数据不足 window+1 时跳过判定
+  test('TREND-09: detectConsecutiveDegradation skips when data insufficient', () => {
+    const trendData = [
+      { run: 1, date: '2026-04-17T10:00Z', p95_ms: 100 },
+      { run: 2, date: '2026-04-17T11:00Z', p95_ms: 200 },
+    ];
+
+    const result = detectConsecutiveDegradation(trendData, { window: 3 });
+
+    expect(result.degraded).toBe(false);
+    expect(result.message).toContain('历史数据不足');
+  });
+
+  // TREND-10: 报告嵌入告警 callout
+  test('TREND-10: generateTrendMarkdown embeds degradation alert callout', () => {
+    const trendData = [
+      { run: 1, date: '2026-04-17T10:00Z', p95_ms: 100, error_rate: 0.001, throughput_rps: 50 },
+      { run: 2, date: '2026-04-17T11:00Z', p95_ms: 110, error_rate: 0.001, throughput_rps: 50 },
+      { run: 3, date: '2026-04-17T12:00Z', p95_ms: 122, error_rate: 0.001, throughput_rps: 50 },
+      { run: 4, date: '2026-04-17T13:00Z', p95_ms: 135, error_rate: 0.001, throughput_rps: 50 },
+    ];
+    fs.writeFileSync(trendFile, JSON.stringify(trendData, null, 2));
+    const degradation = detectConsecutiveDegradation(trendData);
+
+    generateTrendMarkdown(trendFile, reportFile, { degradation });
+
+    const content = fs.readFileSync(reportFile, 'utf-8');
+    expect(content).toContain('> ⚠️');
+    expect(content).toContain('连续 3 次劣化告警');
   });
 });
