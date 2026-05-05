@@ -20,7 +20,7 @@ setup_file() {
   export PROJECT_ROOT="$(cd "$(dirname "$BATS_TEST_DIRNAME")/../.." && pwd)"
   export SCRIPT="${PROJECT_ROOT}/scripts/stage4-selftest.sh"
   export LOG_DIR="${PROJECT_ROOT}/docs/qa/reports/logs-stage4"
-  export REPORT="${PROJECT_ROOT}/docs/qa/reports/stage4-selftest-report.md"
+  export REPORT="${PROJECT_ROOT}/docs/qa/reports/execution/stage4-selftest-report.md"
 
   mkdir -p "$LOG_DIR"
 
