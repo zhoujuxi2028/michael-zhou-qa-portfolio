@@ -96,7 +96,7 @@
 | ------------ | ---------------------- | -------------------------------------- | ----- |
 | `CI-COV`     | CI 覆盖率门禁          | `.github/workflows/performance-ci.yml` | 7     |
 | `CI-BL`      | CI 基线回归            | `.github/workflows/performance-ci.yml` | 7     |
-| `TREND`      | 趋势报告               | `scripts/generate-trend.sh`            | 7     |
+| `TREND`      | 趋势报告               | `src/utils/trend.js` + `scripts/analysis/trend-collect.js` | 7     |
 | `GRF-ERR`    | Grafana 错误分布面板   | `grafana/dashboards/`                  | 7     |
 | `GRF-HEAT`   | Grafana 延迟热力图     | `grafana/dashboards/`                  | 7     |
 | `GRF-CUSTOM` | Grafana 自定义指标面板 | `grafana/dashboards/`                  | 7     |

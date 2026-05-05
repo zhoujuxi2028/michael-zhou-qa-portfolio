@@ -112,4 +112,30 @@ describe('趋势采集集成测试 (TREND-INT)', () => {
     const content = fs.readFileSync(reportFile, 'utf-8');
     expect(content).toContain('No trend data available');
   });
+
+  // TREND-INT-05: 连续劣化端到端 (appendTrend → detectConsecutiveDegradation → 告警嵌入 trend.md)
+  test('TREND-INT-05: 连续 3 次劣化应在 trend.md 顶部嵌入告警 callout', () => {
+    const { detectConsecutiveDegradation } = require('../../../src/utils/trend');
+    const samples = [
+      { run: 1, p95_ms: 100 },
+      { run: 2, p95_ms: 112 }, // +12%
+      { run: 3, p95_ms: 125 }, // +11.6%
+      { run: 4, p95_ms: 140 }, // +12%
+    ];
+    samples.forEach((s) =>
+      appendTrend(
+        { ...s, date: new Date().toISOString(), error_rate: 0.001, throughput_rps: 50 },
+        trendFile
+      )
+    );
+
+    const trendData = JSON.parse(fs.readFileSync(trendFile, 'utf-8'));
+    const degradation = detectConsecutiveDegradation(trendData);
+    generateTrendMarkdown(trendFile, reportFile, { degradation });
+
+    expect(degradation.degraded).toBe(true);
+    const content = fs.readFileSync(reportFile, 'utf-8');
+    expect(content).toContain('> ⚠️');
+    expect(content).toContain('连续 3 次劣化告警');
+  });
 });
