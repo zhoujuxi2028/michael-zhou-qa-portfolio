@@ -28,7 +28,7 @@
 
 | Defect ID | GitHub Issue | 标题摘要 | 严重度 | Blocking? | 发现日期 | 状态 | 关联 Waiver | 备注 |
 |-----------|--------------|----------|--------|-----------|----------|------|-------------|------|
-| SEC-DEF-001 | TBD | Security Tests dependency-scan job 失败 - safety check 缺少策略文件 | P2 | No | 2026-05-17 | 🔧 Fixing | N/A | safety check 默认查找 `.safety-policy.yml` 但文件不存在 |
+| SEC-DEF-001 | TBD | Security Tests dependency-scan job 失败 - safety check 缺少策略文件 | P2 | No | 2026-05-17 | ✅ Fixed | N/A | safety check 默认查找 `.safety-policy.yml` 但文件不存在。[RCA](../project-management/RCA-2026-05-17-SEC-DEF-001-dependency-scan-failure.md) |
 
 ---
 
