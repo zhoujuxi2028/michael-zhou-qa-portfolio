@@ -73,7 +73,7 @@
 | playwright-demo | _(按需初始化)_ | — | — |
 | selenium-demo | _(按需初始化)_ | — | — |
 | iwsva-cypress-e2e | _(按需初始化)_ | — | — |
-| security-testing-demo | _(按需初始化)_ | — | — |
+| security-testing-demo | [defect-register.md](../../../security-testing-demo/docs/qa/defect-register.md) | 1（SEC-DEF-001） | 2026-05-17 |
 | k8s-auto-testing-platform | _(按需初始化)_ | — | — |
 | sid-iam-testing-platform | _(按需初始化)_ | — | — |
 | microservice-testing-platform | _(按需初始化)_ | — | — |
@@ -88,6 +88,7 @@
 
 | 日期 | 变更内容 | 操作人 |
 |------|----------|--------|
+| 2026-05-17 | 初始化 `security-testing-demo` 项目级登记表；登记 `SEC-DEF-001`（dependency-scan job 失败） | QA |
 | 2026-04-27 | 同步 `performance-testing-platform`：登记 `DEF-011`（PR #232 bats 硬编码路径），活跃数 4 → 5；附 RCA-2026-04-27 | QA |
 | 2026-04-26 | 同步 `performance-testing-platform`：`DEF-009` 已关闭，活跃数调整为 4 | QA |
 | 2026-04-26 | 将 `performance-testing-platform` 入口切换到 `docs/qa/defect-register.md`；同步活跃数至 5（含 `DEF-009`） | QA |
