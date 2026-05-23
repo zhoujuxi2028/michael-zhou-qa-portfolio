@@ -133,6 +133,8 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | Workflow | Project | Purpose |
 |----------|---------|---------|
 | `api-testing-ci.yml` | api-testing-demo | Validate collections → Newman tests (280+ assertions) |
+| `cicd-demo-pr.yml` | cicd-demo | PR Gate: lint + unit/contract tests + Docker build + quick security scan |
+| `cicd-demo-deploy.yml` | cicd-demo | Deploy Pipeline: Helm package → staging (auto) → production (manual approval) |
 | `k8s-ci.yml` | k8s-auto-testing-platform | K8S CI (code quality, unit tests, integration) |
 | `performance-ci.yml` | performance-testing-platform | Lint → unit tests → k6 + JMeter smoke gate |
 | `security-tests.yml` | security-testing-demo | Security tests (DVWA, Juice Shop, ZAP, OWASP Top 10) |
