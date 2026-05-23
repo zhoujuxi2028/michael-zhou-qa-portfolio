@@ -145,7 +145,43 @@ cicd-demo/
     └── guides/                  #   CI/CD guide, troubleshooting
 ```
 
-## CI/CD Pipeline Architecture
+## Security Scanning Strategy
+
+### 4-Layer Defense in Depth
+
+| Layer | Tool | Scope | Severity Gate |
+|-------|------|-------|---------------|
+| Dependency | `npm audit` | JS packages (prod only) | `--audit-level=moderate` → **pipeline fails** |
+| Filesystem | Trivy `fs` | Source code + deps | CRITICAL → **pipeline fails** (via Quality Gate job) |
+| Container | Trivy `image` | Docker image layers + OS pkgs | Report only (SARIF → GitHub Security Tab) |
+| IaC | Trivy `config` | Terraform + K8s manifests | CRITICAL → **pipeline fails** (via Quality Gate job) |
+
+### Quality Gate Design
+
+```
+npm-audit ──┐
+trivy-fs ───┤ (report mode, exit-code: 0)
+trivy-docker┤ → all artifacts uploaded regardless
+trivy-iac ──┘
+                                ↓
+              security-quality-gate (exit-code: 1, CRITICAL only)
+              ↓ FAIL on CRITICAL vulnerabilities
+```
+
+- **Report jobs** use `exit-code: '0'` — always collect full SARIF artifacts
+- **Quality Gate job** uses `exit-code: '1'` for CRITICAL severity only
+- Scan results visible in **GitHub Security Tab** (Code scanning alerts) and **Workflow Artifacts**
+
+### Suppressing Known / Accepted Risks
+
+Add entries to `cicd-demo/.trivyignore`:
+
+```
+# Format: CVE-ID  # reason | expires: YYYY-MM-DD
+CVE-2024-12345  # false positive - not exploitable in our context | expires: 2025-06-01
+```
+
+
 
 ### Current (Phase 1): CI with Manual CD
 
