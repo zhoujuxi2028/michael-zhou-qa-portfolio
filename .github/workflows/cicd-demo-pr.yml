@@ -1,0 +1,213 @@
+name: CICD Demo / PR Pipeline
+
+# PR-触发的快速校验流水线，展示 PR → Merge 工作流。
+# 与 docker-tests.yml（nightly 全量回归）和 security-scan.yml（深度安全扫描）形成分层策略：
+#   PR 阶段：< 5 分钟快速反馈（lint + 构建 + 单元/契约校验 + 轻量安全扫描）
+#   合并后：cicd-demo-deploy.yml 触发部署
+#   夜间：完整的 Docker 回归 + 完整 SARIF 扫描
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'cicd-demo/**'
+      - '.github/workflows/cicd-demo-pr.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: cicd-demo-pr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+defaults:
+  run:
+    working-directory: cicd-demo
+
+env:
+  # PR 流水线不运行 Cypress，跳过 Cypress 二进制下载以加速 npm ci
+  CYPRESS_INSTALL_BINARY: '0'
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Job 1: Lint —— ESLint 静态检查
+  # ---------------------------------------------------------------------------
+  lint:
+    name: CICD Demo / Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: cicd-demo/.nvmrc
+          cache: npm
+          cache-dependency-path: cicd-demo/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+  # ---------------------------------------------------------------------------
+  # Job 2: Unit Tests —— 配置/契约校验（Postman collection, Helm chart, K8s YAML）
+  # 不跑 Cypress / Newman 全量（那放在 docker-tests.yml nightly）
+  # ---------------------------------------------------------------------------
+  unit-tests:
+    name: CICD Demo / Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: cicd-demo/.nvmrc
+          cache: npm
+          cache-dependency-path: cicd-demo/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate Postman collection JSON & structure
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in postman/*.json; do
+            echo "Validating $f"
+            python3 -m json.tool "$f" > /dev/null
+          done
+          # 结构校验：用 postman-collection SDK 加载并校验对象结构（不发任何请求）
+          node -e "
+            const collection = require('./postman/api-collection.json');
+            const { Collection } = require('postman-collection');
+            const c = new Collection(collection);
+            if (!c.items.count()) throw new Error('Collection has no items');
+            console.log('Collection OK: ' + c.items.count() + ' item(s)');
+          "
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.0
+
+      - name: Helm lint
+        run: helm lint helm/qa-portfolio
+
+      - name: Helm template render (dev values)
+        run: helm template qa-portfolio helm/qa-portfolio > /tmp/helm-rendered.yaml
+
+      - name: Validate K8s manifests (kubeconform)
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -sSLo /tmp/kubeconform.tar.gz \
+            https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz
+          tar -xzf /tmp/kubeconform.tar.gz -C /tmp
+          /tmp/kubeconform -summary -ignore-missing-schemas -skip Ingress k8s/
+
+      - name: Validate rendered Helm output
+        run: /tmp/kubeconform -summary -ignore-missing-schemas -skip Ingress /tmp/helm-rendered.yaml
+
+  # ---------------------------------------------------------------------------
+  # Job 3: Build —— Docker image 构建（不 push）
+  # ---------------------------------------------------------------------------
+  build:
+    name: CICD Demo / Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build Newman Docker image (PR validation)
+        uses: docker/build-push-action@v6
+        with:
+          context: cicd-demo
+          file: cicd-demo/Dockerfile.newman
+          push: false
+          load: true
+          tags: qa-newman-demo:pr-${{ github.event.pull_request.number || 'manual' }}
+          cache-from: type=gha,scope=cicd-demo-newman
+          cache-to: type=gha,mode=max,scope=cicd-demo-newman
+
+      - name: Verify built image
+        run: docker image inspect qa-newman-demo:pr-${{ github.event.pull_request.number || 'manual' }}
+
+  # ---------------------------------------------------------------------------
+  # Job 4: Security Scan —— 快速安全检查（npm audit + Trivy fs HIGH/CRITICAL）
+  # 深度扫描（SARIF, Docker image, IaC）仍由 security-scan.yml 处理
+  # ---------------------------------------------------------------------------
+  security-scan:
+    name: CICD Demo / Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: cicd-demo/.nvmrc
+          cache: npm
+          cache-dependency-path: cicd-demo/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: npm audit (production deps, moderate gate)
+        run: npm audit --omit=dev --audit-level=moderate
+
+      - name: Trivy fs scan (HIGH/CRITICAL gate)
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          scan-type: fs
+          scan-ref: cicd-demo
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+          ignore-unfixed: true
+          trivyignores: 'cicd-demo/.trivyignore'
+
+  # ---------------------------------------------------------------------------
+  # Job 5: PR Gate —— 汇总闸口（Branch Protection 的 Required Check）
+  # 配置 branch protection 时，将本 job 设为 required，即可一处守住所有 PR 校验
+  # ---------------------------------------------------------------------------
+  pr-gate:
+    name: CICD Demo / PR Gate
+    runs-on: ubuntu-latest
+    needs: [lint, unit-tests, build, security-scan]
+    if: always()
+    timeout-minutes: 2
+    steps:
+      - name: Aggregate PR check results
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Lint:          ${{ needs.lint.result }}"
+          echo "Unit tests:    ${{ needs.unit-tests.result }}"
+          echo "Build:         ${{ needs.build.result }}"
+          echo "Security scan: ${{ needs.security-scan.result }}"
+
+          for result in \
+            "${{ needs.lint.result }}" \
+            "${{ needs.unit-tests.result }}" \
+            "${{ needs.build.result }}" \
+            "${{ needs.security-scan.result }}"; do
+            if [ "$result" != "success" ]; then
+              echo "::error::PR gate failed — one or more checks did not succeed."
+              exit 1
+            fi
+          done
+          echo "✅ All PR checks passed — safe to merge."
