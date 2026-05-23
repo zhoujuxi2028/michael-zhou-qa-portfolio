@@ -268,11 +268,45 @@ jobs:
             trivy-iac-report.txt
           retention-days: 30
 
-  # Job 5: Security summary report
+  # Job 5: Security Quality Gate - fails pipeline on CRITICAL vulnerabilities
+  security-quality-gate:
+    name: Security Quality Gate
+    runs-on: ubuntu-latest
+    needs: [npm-audit, trivy-filesystem, trivy-docker, trivy-iac]
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      # Interview Talking Point:
+      # "This job enforces a hard Quality Gate: CRITICAL vulnerabilities fail the pipeline.
+      # This is separate from the reporting jobs above (which use exit-code: 0) so we can
+      # still collect full scan artifacts even when the gate triggers."
+      - name: Run Trivy Quality Gate (filesystem - CRITICAL only)
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          scan-type: 'fs'
+          scan-ref: 'cicd-demo'
+          format: 'table'
+          severity: 'CRITICAL'
+          exit-code: '1'
+          trivyignores: 'cicd-demo/.trivyignore'
+
+      - name: Run Trivy Quality Gate (IaC - CRITICAL only)
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          scan-type: 'config'
+          scan-ref: 'cicd-demo'
+          format: 'table'
+          severity: 'CRITICAL'
+          exit-code: '1'
+
+  # Job 6: Security summary report
   security-summary:
     name: Generate Security Summary
     runs-on: ubuntu-latest
-    needs: [npm-audit, trivy-filesystem, trivy-docker, trivy-iac]
+    needs: [npm-audit, trivy-filesystem, trivy-docker, trivy-iac, security-quality-gate]
     if: always()
     timeout-minutes: 5
 
@@ -297,6 +331,7 @@ jobs:
           echo "| Trivy Filesystem | ${{ needs.trivy-filesystem.result }} |" >> security-summary.md
           echo "| Trivy Docker | ${{ needs.trivy-docker.result }} |" >> security-summary.md
           echo "| Trivy IaC | ${{ needs.trivy-iac.result }} |" >> security-summary.md
+          echo "| **Security Quality Gate** | ${{ needs.security-quality-gate.result }} |" >> security-summary.md
           echo "" >> security-summary.md
 
           echo "## Artifacts" >> security-summary.md

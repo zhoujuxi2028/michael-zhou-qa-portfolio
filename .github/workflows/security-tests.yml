@@ -219,9 +219,11 @@ jobs:
       - name: Run dependency vulnerability scan
         run: |
           mkdir -p reports
-          # 使用 --disable-optional-telemetry-data 跳过策略文件检查
-          # 如果扫描失败，生成空报告以保证 artifact 上传
-          safety check --json --disable-optional-telemetry-data > reports/dependency-scan.json || echo '{"vulnerabilities": []}' > reports/dependency-scan.json
+          if ! safety check --json > reports/dependency-scan.json; then
+            echo '{"error":"dependency scan failed; see workflow logs for details"}' > reports/dependency-scan.json
+            cat reports/dependency-scan.json
+            exit 1
+          fi
           cat reports/dependency-scan.json
 
       - name: Upload dependency report
