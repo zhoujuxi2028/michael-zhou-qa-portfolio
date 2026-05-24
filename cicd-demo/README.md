@@ -20,7 +20,7 @@ Code Push → GitHub Actions (CI) → Docker Build & Test → Helm Package
 | **GitOps** | ArgoCD | 2 apps (dev auto-sync, staging manual), self-healing |
 | **Security Scanning** | Trivy + npm audit | 4-layer scanning (filesystem, Docker, IaC, dependencies) |
 | **Monitoring** | Prometheus + Grafana | Metrics collection, 2 dashboards (14 panels) |
-| **CI Pipeline** | GitHub Actions | 2 active workflows: Docker regression + security scan |
+| **CI Pipeline** | GitHub Actions | 2 active workflows: Docker regression + security scan (位于仓库根 `.github/workflows/`) |
 | **Validation Layer** | Cypress + Newman | 16 E2E tests + 18 API assertions (pipeline validation) |
 | **Containerization** | Docker Compose | Cypress + Newman in containers, reproducible test env |
 
@@ -65,13 +65,13 @@ k3d cluster create qa-portfolio --agents 2 --port "8080:80@loadbalancer"
 cd terraform && terraform init && terraform apply -var-file=environments/dev.tfvars
 
 # Deploy to K8s
-./scripts/deploy-to-k8s.sh
+cd ../k8s && ./deploy-to-k8s.sh
 
 # Install ArgoCD
-./gitops/argocd/install-argocd.sh
+cd ../gitops/argocd && ./install-argocd.sh
 
 # Install monitoring
-./monitoring/deploy-monitoring.sh
+cd ../../monitoring && ./deploy-monitoring.sh
 ```
 
 ### Access Dashboards
@@ -93,56 +93,126 @@ kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-prometheus 909
 
 ```
 cicd-demo/
-├── .github/workflows/           # Active root workflows
-│   ├── docker-tests.yml         #   Nightly / manual Docker regression tests
-│   └── security-scan.yml        #   Push / PR / daily security scanning
+├── .github/
+│   └── WORKFLOWS-GUIDE.md          # Workflows 说明（实际 workflows 在仓库根 .github/workflows/）
 │
-├── cypress/                     # Cypress E2E tests (16 tests)
-├── postman/                     # Newman API tests (18 assertions)
-├── docker-compose.yml           # Container orchestration
-├── Dockerfile.newman            # Newman container
+├── cypress/                         # Cypress E2E 测试
+│   ├── e2e/
+│   │   ├── 01-api-tests.cy.js      #   API 端点验证
+│   │   └── 02-ui-tests.cy.js       #   UI 功能验证
+│   └── support/                     #   Cypress 支持文件
 │
-├── terraform/                   # Infrastructure as Code
-│   ├── main.tf                  #   S3 buckets, DynamoDB table
-│   ├── variables.tf             #   Configurable parameters
-│   ├── backend.tf               #   Localstack S3 backend
-│   └── environments/            #   dev / staging / production tfvars
+├── postman/                         # Newman API 测试
+│   ├── api-collection.json          #   Postman 集合 (18 assertions)
+│   └── environment.json             #   环境变量配置
 │
-├── k8s/                         # Kubernetes manifests
-│   ├── namespace.yaml           #   qa-portfolio namespace
-│   ├── deployment.yaml          #   Test results server (nginx)
-│   ├── job-cypress.yaml         #   Cypress test job
-│   ├── job-newman.yaml          #   Newman test job
-│   ├── service.yaml             #   ClusterIP service
-│   ├── ingress.yaml             #   External access
-│   ├── configmap-*.yaml         #   Test configs, nginx config
-│   └── pvc.yaml                 #   Persistent storage (5Gi)
+├── terraform/                       # Infrastructure as Code
+│   ├── main.tf                      #   S3 buckets, DynamoDB table
+│   ├── variables.tf                 #   可配置参数
+│   ├── outputs.tf                   #   输出定义
+│   ├── provider.tf                  #   Provider 配置 (Localstack)
+│   ├── backend.tf                   #   S3 远程状态后端
+│   ├── modules/                     #   可复用 Terraform 模块
+│   └── environments/                #   多环境 tfvars
+│       ├── dev.tfvars               #     开发环境
+│       ├── staging.tfvars           #     预生产环境
+│       └── production.tfvars        #     生产环境
 │
-├── gitops/argocd/               # GitOps configuration
-│   ├── install-argocd.sh        #   ArgoCD installation script
-│   ├── project.yaml             #   AppProject with RBAC
-│   └── applications/            #   Dev (auto-sync) + Staging (manual)
+├── k8s/                             # Kubernetes 清单文件
+│   ├── namespace.yaml               #   qa-portfolio 命名空间
+│   ├── deployment.yaml              #   测试结果服务器 (nginx)
+│   ├── service.yaml                 #   ClusterIP Service
+│   ├── ingress.yaml                 #   外部访问入口
+│   ├── configmap.yaml               #   配置数据
+│   ├── pvc.yaml                     #   持久化存储 (5Gi)
+│   ├── job-cypress.yaml             #   Cypress 测试 Job
+│   ├── job-newman.yaml              #   Newman 测试 Job
+│   ├── deploy-to-k8s.sh            #   一键部署脚本
+│   └── README.md                    #   K8S 部署说明
 │
-├── monitoring/                  # Observability stack
-│   ├── prometheus-values.yaml   #   Prometheus + Grafana Helm values
-│   ├── dashboards/              #   Cluster Overview + Test Metrics JSON
-│   ├── deploy-monitoring.sh     #   Automated deployment
-│   └── verify-monitoring.sh     #   Health verification
+├── helm/qa-portfolio/               # Helm Chart
+│   ├── Chart.yaml                   #   Chart 元数据
+│   ├── values.yaml                  #   默认值
+│   ├── values-staging.yaml          #   Staging 覆盖值
+│   ├── values-production.yaml       #   Production 覆盖值
+│   └── templates/                   #   K8S 模板
+│       ├── deployment.yaml          #     Deployment 模板
+│       ├── service.yaml             #     Service 模板
+│       ├── ingress.yaml             #     Ingress 模板
+│       ├── configmap.yaml           #     ConfigMap 模板
+│       ├── namespace.yaml           #     Namespace 模板
+│       ├── pvc.yaml                 #     PVC 模板
+│       ├── job-cypress.yaml         #     Cypress Job 模板
+│       ├── job-newman.yaml          #     Newman Job 模板
+│       ├── _helpers.tpl             #     模板助手函数
+│       └── NOTES.txt                #     安装后提示
 │
-├── security/                    # Security scanning config
-│   ├── trivy-config.yaml        #   Scan rules, severity thresholds
-│   └── security-report.sh       #   Consolidated report generator
+├── gitops/argocd/                   # GitOps 配置
+│   ├── install-argocd.sh            #   ArgoCD 安装脚本
+│   ├── project.yaml                 #   AppProject (RBAC)
+│   └── applications/                #   应用定义
+│       ├── qa-portfolio-dev.yaml    #     Dev 环境 (auto-sync)
+│       └── qa-portfolio-staging.yaml#     Staging 环境 (manual sync)
 │
-├── scripts/                     # Automation scripts
-│   ├── validate-environment.sh  #   Pre-flight checks
-│   └── fix-permissions.sh       #   Docker file permission fix
+├── monitoring/                      # 可观测性堆栈
+│   ├── prometheus-values.yaml       #   Prometheus + Grafana Helm values
+│   ├── deploy-monitoring.sh         #   自动化部署脚本
+│   ├── verify-monitoring.sh         #   健康检查脚本
+│   ├── MONITORING.md                #   监控架构文档
+│   ├── dashboards/                  #   Grafana 仪表盘
+│   │   ├── cluster-overview.json    #     集群概览 (14 panels)
+│   │   └── test-metrics.json        #     测试指标仪表盘
+│   ├── grafana/                     #   Grafana 配置
+│   └── prometheus/                  #   Prometheus 配置
 │
-└── docs/                        # Documentation
-    ├── WBS.md                   #   Work breakdown (Phase 1 + Phase 2)
-    ├── ARCHITECTURE.md          #   Technical architecture deep dive
-    ├── FAQ-GUIDE.md             #   35+ Q&A
-    ├── QUICKSTART.md            #   5-minute setup guide
-    └── guides/                  #   CI/CD guide, troubleshooting
+├── security/                        # 安全扫描配置
+│   ├── trivy-config.yaml            #   扫描规则、严重度阈值
+│   ├── security-report.sh           #   综合报告生成器
+│   └── README.md                    #   安全扫描说明
+│
+├── scripts/                         # 自动化脚本
+│   ├── validate-environment.sh      #   环境预检
+│   ├── fix-permissions.sh           #   Docker 文件权限修复
+│   ├── deploy-helm.sh              #   Helm 部署脚本
+│   ├── generate-dashboard.sh        #   仪表盘生成
+│   ├── run-regression-test-with-logs.sh  # 回归测试（带日志）
+│   ├── track-test-execution.sh      #   测试执行追踪
+│   ├── track-test-execution-simple.sh   # 简化版执行追踪
+│   └── test-logs/                   #   测试日志输出
+│
+├── docs/                            # 文档
+│   ├── README.md                    #   文档索引
+│   ├── architecture/
+│   │   └── ARCHITECTURE.md          #     技术架构深度解析
+│   ├── guides/
+│   │   ├── QUICKSTART.md            #     5 分钟快速上手
+│   │   ├── FAQ-GUIDE.md             #     35+ 常见问题解答
+│   │   ├── CI-CD-GUIDE.md           #     CI/CD 管道指南
+│   │   ├── TROUBLESHOOTING.md       #     故障排查手册
+│   │   └── GITHUB-ACTIONS-VERIFICATION.md  # GitHub Actions 验证
+│   ├── project-management/
+│   │   ├── WBS.md                   #     工作分解结构
+│   │   ├── CICD-COMPLETE-ANALYSIS.md#     CI/CD 完整分析
+│   │   └── REGRESSION-TEST-RESULT.md#     回归测试结果
+│   ├── fixes/                       #   Bug 修复记录
+│   │   ├── BUG-LIST.md              #     Bug 清单
+│   │   ├── BUGFIX-SUMMARY.md        #     修复摘要
+│   │   └── BUG-FIX-LOG-2026-02-21.md#    修复日志
+│   ├── diagrams/                    #   架构图（预留）
+│   ├── AZURE-VS-GITHUB-ACTIONS.md   #   跨平台 CI/CD 对比
+│   ├── VERIFICATION-GUIDE.md        #   验证指南
+│   └── PHASE-*.md                   #   各阶段完成报告
+│
+├── docker-compose.yml               # 容器编排（测试环境）
+├── docker-compose.localstack.yml    # Localstack 本地 AWS 模拟
+├── Dockerfile.newman                # Newman 容器镜像
+├── cypress.config.js                # Cypress 配置
+├── package.json                     # NPM 依赖 & 脚本
+├── azure-pipelines.yml              # Azure Pipelines 配置参考
+├── verify-all-phases.sh             # 全阶段验证脚本
+├── create-test-pr.sh                # 测试 PR 创建脚本
+├── CLAUDE.md                        # Claude 项目指南
+└── SECURITY.md                      # 安全策略
 ```
 
 ## Security Scanning Strategy
@@ -330,13 +400,14 @@ flowchart LR
 
 | Document | What It Covers |
 |----------|---------------|
-| [WBS.md](docs/project-management/WBS.md) | Phase 1 (complete) + Phase 2 (planned) task breakdown |
-| [ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md) | Technical architecture, design decisions, scaling |
-| [FAQ-GUIDE.md](docs/guides/FAQ-GUIDE.md) | 35+ Q&A across 6 technology areas |
-| [QUICKSTART.md](docs/guides/QUICKSTART.md) | 5-minute setup from zero to running cluster |
-| [CI-CD-GUIDE.md](docs/guides/CI-CD-GUIDE.md) | CI/CD pipeline setup and integration |
-| [azure-pipelines.yml](azure-pipelines.yml) | GitHub Actions → Azure Pipelines translation |
-| [Azure vs GitHub Actions](docs/AZURE-VS-GITHUB-ACTIONS.md) | Cross-platform CI/CD FAQ |
+| [ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md) | 技术架构、设计决策、扩展性 |
+| [WBS.md](docs/project-management/WBS.md) | Phase 1 (完成) + Phase 2 (计划中) 工作分解 |
+| [QUICKSTART.md](docs/guides/QUICKSTART.md) | 5 分钟从零到集群运行 |
+| [FAQ-GUIDE.md](docs/guides/FAQ-GUIDE.md) | 35+ Q&A，覆盖 6 个技术领域 |
+| [CI-CD-GUIDE.md](docs/guides/CI-CD-GUIDE.md) | CI/CD 管道搭建与集成 |
+| [TROUBLESHOOTING.md](docs/guides/TROUBLESHOOTING.md) | 故障排查手册 |
+| [Azure vs GitHub Actions](docs/AZURE-VS-GITHUB-ACTIONS.md) | 跨平台 CI/CD 对比 FAQ |
+| [MONITORING.md](monitoring/MONITORING.md) | 监控架构与仪表盘配置 |
 
 ## FAQ
 
