@@ -1,0 +1,219 @@
+name: CICD Demo / Deploy Pipeline
+
+# Merge 到 main 后触发的部署流水线，展示 PR → Merge → Deploy 完整闭环。
+#
+# 流程：
+#   1. build-and-package  — Helm chart lint + package + 上传 artifact
+#   2. deploy-staging      — 自动部署到 staging 环境（GitHub Environment: staging）
+#   3. deploy-production   — 手动审批部署到 production（GitHub Environment: production）
+#
+# 注意：本流水线在 GitHub Actions runner 内做 dry-run 部署演示（helm template + kubectl --dry-run）
+#       真实集群部署应通过 ArgoCD（见 cicd-demo/gitops/argocd/）或在 self-hosted runner 上配置 KUBECONFIG。
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cicd-demo/**'
+      - '.github/workflows/cicd-demo-deploy.yml'
+  workflow_dispatch:
+    inputs:
+      skip_production:
+        description: 'Skip production deployment'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  # 同一时刻只允许一个部署 pipeline，避免环境抖动；但不取消进行中的部署
+  group: cicd-demo-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: cicd-demo
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Stage 1: Build & Package —— Helm chart 校验 + 打包
+  # ---------------------------------------------------------------------------
+  build-and-package:
+    name: CICD Demo / Build & Package
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      chart_version: ${{ steps.package.outputs.chart_version }}
+      chart_file: ${{ steps.package.outputs.chart_file }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.0
+
+      - name: Helm lint (all environments)
+        run: |
+          helm lint helm/qa-portfolio
+          helm lint helm/qa-portfolio -f helm/qa-portfolio/values-staging.yaml
+          helm lint helm/qa-portfolio -f helm/qa-portfolio/values-production.yaml
+
+      - name: Helm package
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          helm package helm/qa-portfolio --destination dist
+          CHART_FILE=$(ls dist/qa-portfolio-*.tgz | head -n1)
+          CHART_VERSION=$(basename "$CHART_FILE" .tgz | sed 's/qa-portfolio-//')
+          echo "chart_file=$(basename "$CHART_FILE")" >> "$GITHUB_OUTPUT"
+          echo "chart_version=$CHART_VERSION" >> "$GITHUB_OUTPUT"
+          echo "Packaged: $CHART_FILE (version=$CHART_VERSION)"
+
+      - name: Upload Helm chart artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: helm-chart
+          path: cicd-demo/dist/*.tgz
+          retention-days: 30
+
+  # ---------------------------------------------------------------------------
+  # Stage 2: Deploy to Staging —— 自动部署
+  # GitHub Environment「staging」可选配置 secrets / variables / approval
+  # ---------------------------------------------------------------------------
+  deploy-staging:
+    name: CICD Demo / Deploy Staging
+    runs-on: ubuntu-latest
+    needs: build-and-package
+    timeout-minutes: 10
+    environment:
+      name: staging
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.0
+
+      - name: Download Helm chart
+        uses: actions/download-artifact@v8
+        with:
+          name: helm-chart
+          path: cicd-demo/dist
+
+      - name: Render manifests for staging
+        run: |
+          mkdir -p rendered
+          helm template qa-portfolio "dist/${{ needs.build-and-package.outputs.chart_file }}" \
+            -f helm/qa-portfolio/values-staging.yaml \
+            --namespace qa-portfolio-staging \
+            > rendered/staging.yaml
+          echo "Rendered $(wc -l < rendered/staging.yaml) lines for staging"
+
+      - name: Simulate deploy (dry-run)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "🚀 [staging] Helm release: qa-portfolio v${{ needs.build-and-package.outputs.chart_version }}"
+          echo "🚀 [staging] Target namespace: qa-portfolio-staging"
+          echo "🚀 [staging] Commit: ${{ github.sha }}"
+          # 真实集群部署示例（在 self-hosted runner 上启用）：
+          #   helm upgrade --install qa-portfolio dist/${{ needs.build-and-package.outputs.chart_file }} \
+          #     --namespace qa-portfolio-staging --create-namespace \
+          #     -f helm/qa-portfolio/values-staging.yaml --wait --atomic
+          echo "✅ [staging] Dry-run deploy completed."
+
+      - name: Upload rendered staging manifests
+        uses: actions/upload-artifact@v7
+        with:
+          name: staging-manifests
+          path: cicd-demo/rendered/staging.yaml
+          retention-days: 30
+
+  # ---------------------------------------------------------------------------
+  # Stage 3: Deploy to Production —— 需 GitHub Environment「production」手动审批
+  # ---------------------------------------------------------------------------
+  deploy-production:
+    name: CICD Demo / Deploy Production
+    runs-on: ubuntu-latest
+    needs: [build-and-package, deploy-staging]
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.skip_production != true }}
+    timeout-minutes: 10
+    environment:
+      name: production
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.0
+
+      - name: Download Helm chart
+        uses: actions/download-artifact@v8
+        with:
+          name: helm-chart
+          path: cicd-demo/dist
+
+      - name: Render manifests for production
+        run: |
+          mkdir -p rendered
+          helm template qa-portfolio "dist/${{ needs.build-and-package.outputs.chart_file }}" \
+            -f helm/qa-portfolio/values-production.yaml \
+            --namespace qa-portfolio \
+            > rendered/production.yaml
+          echo "Rendered $(wc -l < rendered/production.yaml) lines for production"
+
+      - name: Simulate deploy (dry-run)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "🚀 [production] Helm release: qa-portfolio v${{ needs.build-and-package.outputs.chart_version }}"
+          echo "🚀 [production] Target namespace: qa-portfolio"
+          echo "🚀 [production] Commit: ${{ github.sha }}"
+          # 真实集群部署示例：
+          #   helm upgrade --install qa-portfolio dist/${{ needs.build-and-package.outputs.chart_file }} \
+          #     --namespace qa-portfolio --create-namespace \
+          #     -f helm/qa-portfolio/values-production.yaml --wait --atomic --timeout 5m
+          echo "✅ [production] Dry-run deploy completed."
+
+      - name: Upload rendered production manifests
+        uses: actions/upload-artifact@v7
+        with:
+          name: production-manifests
+          path: cicd-demo/rendered/production.yaml
+          retention-days: 90
+
+  # ---------------------------------------------------------------------------
+  # Stage 4: Deploy Summary
+  # ---------------------------------------------------------------------------
+  deploy-summary:
+    name: CICD Demo / Deploy Summary
+    runs-on: ubuntu-latest
+    needs: [build-and-package, deploy-staging, deploy-production]
+    if: always()
+    timeout-minutes: 2
+    steps:
+      - name: Print summary
+        shell: bash
+        run: |
+          {
+            echo "# CICD Demo Deploy Summary"
+            echo ""
+            echo "**Commit**: ${{ github.sha }}"
+            echo "**Chart**: qa-portfolio v${{ needs.build-and-package.outputs.chart_version }}"
+            echo ""
+            echo "| Stage | Result |"
+            echo "|-------|--------|"
+            echo "| Build & Package | ${{ needs.build-and-package.result }} |"
+            echo "| Deploy Staging  | ${{ needs.deploy-staging.result }} |"
+            echo "| Deploy Production | ${{ needs.deploy-production.result }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
