@@ -50,7 +50,7 @@
 
 | Defect ID | GitHub Issue | 标题摘要 | 项目 / 范围 | 严重度 | 关闭日期 | 关闭方式 | 关联 Commit / PR |
 |-----------|--------------|----------|-------------|--------|----------|----------|-------------------|
-| _(初始建表，暂无 Portfolio 级 Closed 历史)_ | | | | | | | |
+| PDEF-001 | N/A | `defect-register.md` 指向 `performance-testing-platform/docs/qa/defect-register.md` 的 Markdown 链接断链（真实路径为 `docs/qa/defects/register.md`），导致 `Repository Meta CI / lint` 在 PR #248（run #26346106861）报红 | 仓库级 / docs 治理 | P2 | 2026-05-23 | 修正链接 + 补充 RCA | PR (本次) / [RCA](../postmortems/RCA-2026-05-23-PDEF-001-broken-markdown-link.md) |
 
 ---
 
@@ -68,12 +68,12 @@
 
 | 项目 | 登记表位置 | 当前活跃数 | 最近更新 |
 |------|------------|-----------|---------|
-| performance-testing-platform | [defect-register.md](../../../performance-testing-platform/docs/qa/defect-register.md) | 5（DEF-005、DEF-006、DEF-007、DEF-008、DEF-011） | 2026-04-27 |
+| performance-testing-platform | [defects/register.md](../../../performance-testing-platform/docs/qa/defects/register.md) | 5（DEF-005、DEF-006、DEF-007、DEF-008、DEF-011） | 2026-04-27 |
 | api-testing-demo | _(按需初始化，复制 [模板](defect-register-template.md))_ | — | — |
 | playwright-demo | _(按需初始化)_ | — | — |
 | selenium-demo | _(按需初始化)_ | — | — |
 | iwsva-cypress-e2e | _(按需初始化)_ | — | — |
-| security-testing-demo | _(按需初始化)_ | — | — |
+| security-testing-demo | [defect-register.md](../../../security-testing-demo/docs/qa/defect-register.md) | 1（SEC-DEF-001） | 2026-05-17 |
 | k8s-auto-testing-platform | _(按需初始化)_ | — | — |
 | sid-iam-testing-platform | _(按需初始化)_ | — | — |
 | microservice-testing-platform | _(按需初始化)_ | — | — |
@@ -88,6 +88,8 @@
 
 | 日期 | 变更内容 | 操作人 |
 |------|----------|--------|
+| 2026-05-23 | 登记并关闭 `PDEF-001`（`defect-register.md` 指向 perf-platform 项目级登记表的链接断链，导致 PR #248 `Repository Meta CI` 失败）；修正链接为 `defects/register.md`，附 RCA | QA |
+| 2026-05-17 | 初始化 `security-testing-demo` 项目级登记表；登记 `SEC-DEF-001`（dependency-scan job 失败） | QA |
 | 2026-04-27 | 同步 `performance-testing-platform`：登记 `DEF-011`（PR #232 bats 硬编码路径），活跃数 4 → 5；附 RCA-2026-04-27 | QA |
 | 2026-04-26 | 同步 `performance-testing-platform`：`DEF-009` 已关闭，活跃数调整为 4 | QA |
 | 2026-04-26 | 将 `performance-testing-platform` 入口切换到 `docs/qa/defect-register.md`；同步活跃数至 5（含 `DEF-009`） | QA |
