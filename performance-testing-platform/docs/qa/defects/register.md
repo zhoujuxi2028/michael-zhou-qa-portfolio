@@ -36,6 +36,7 @@
 | DEF-011   | [#230](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/230)  | `baseline-export.js` 不兼容当前 k6 summary `p(95)` 字段                 | P1 / High   | ✅ Blocking        | 2026-04-27 | 🟡 Fix in review | —           | 阻塞本机 `reports/baseline.json` 生成；已兼容 `http_req_duration.values['p(95)']` 与 `http_req_failed.value`，等待 PR #231 合并并关闭 Issue                          |
 | DEF-012   | [PR #231](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/231) | `baseline-export.test.js` 在 CI 下 `run_id` 断言失败（GITHUB_SHA 注入） | P1 / High   | ✅ Blocking        | 2026-04-27 | 🟡 Fix in review | —           | CI 自动注入 `GITHUB_SHA` 导致 `run_id` 取到 commit SHA，断言 `'local'` 失败；修复：spawn 子进程时显式清除 `GITHUB_SHA` / `GITHUB_RUN_ID`，让单测在 CI 与本地行为一致 |
 | DEF-014   | —                                                                             | Grafana dashboard 面板空白：datasource uid 未固定导致 InfluxDB 绑定失效  | P2 / Medium | ❌ Non-blocking    | 2026-05-24 | ✅ Fixed         | —           | `influxdb.yml` / `influxdb-jmeter.yml` 未设置 `uid` 字段，Grafana 自动生成随机 uid，与 dashboard JSON 中引用的 `influxdb` / `influxdb-jmeter` 不匹配；修复：在两个 provisioning 文件中显式添加 `uid` 字段 |
+| DEF-015   | —                                                                             | Grafana 容器继承宿主机代理（port 7890）导致无法查询 InfluxDB              | P1 / High   | ✅ Blocking        | 2026-05-24 | ✅ Fixed         | —           | 宿主机配置了 Clash 代理（127.0.0.1:7890），Grafana 容器继承后尝试通过代理访问内部 `influxdb:8086`，在容器内 127.0.0.1 指向容器自身导致 502；修复：docker-compose.yml Grafana 服务添加 `NO_PROXY=influxdb,localhost,127.0.0.1` |
 
 ---
 
