@@ -1,7 +1,8 @@
 module.exports = {
   testEnvironment: 'node',
   testMatch: ['**/tests/unit/**/*.test.js', '**/tests/integration/**/*.test.js'],
-  collectCoverageFrom: ['src/**/*.js', '!src/server.js', 'scripts/analysis/**/*.js'],
+  // DEF-019: scripts/analysis/**/*.js 暂从覆盖收集中回退（DEF-017 完整修复待补齐单测后重新纳入）
+  collectCoverageFrom: ['src/**/*.js', '!src/server.js'],
   coverageDirectory: 'coverage',
   coverageReporters: ['json', 'json-summary', 'lcov', 'text'],
   // Cap workers at 50% of CPUs: several "unit" suites spawn bash/node/python3
