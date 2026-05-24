@@ -102,4 +102,37 @@ capture_grafana_snapshot() {
 report_phase() {
   generate_markdown_report
   generate_json_report
+  prune_old_logs 3
+}
+
+prune_old_logs() {
+  local keep="${1:-3}"
+  local dir="${LOG_DIR:-tests/integration/logs}"
+
+  # 收集所有 .log 的数字 run_id，按时间戳升序（最旧在前）
+  local all_ids=()
+  local f id
+  while IFS= read -r f; do
+    id="${f##*/integration-test-}"
+    id="${id%.log}"
+    case "$id" in
+      ''|*[!0-9]*) continue ;;
+    esac
+    all_ids+=("$id")
+  done < <(find "$dir" -maxdepth 1 -name 'integration-test-*.log' 2>/dev/null | sort)
+
+  local total_count="${#all_ids[@]}"
+  if [ "$total_count" -le "$keep" ]; then
+    return 0
+  fi
+
+  local delete_count=$(( total_count - keep ))
+  local i
+  for (( i = 0; i < delete_count; i++ )); do
+    id="${all_ids[$i]}"
+    rm -f "$dir/integration-test-${id}.log" \
+          "$dir/integration-test-${id}.md" \
+          "$dir/integration-test-${id}.json"
+    rm -rf "$dir/snapshots/${id}" 2>/dev/null || true
+  done
 }
