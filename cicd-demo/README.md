@@ -297,8 +297,104 @@ Total Pods: 30+
 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
+| `cicd-demo-pr.yml` | PR to main (`cicd-demo/**`) | **PR Gate**: lint + unit/contract tests + Docker build + quick security scan (< 5 min) |
+| `cicd-demo-deploy.yml` | Push to main (`cicd-demo/**`), manual | **Deploy Pipeline**: Helm package → staging (auto) → production (manual approval) |
 | `docker-tests.yml` | Nightly (02:00 UTC), manual | Docker container regression tests (Cypress + Newman) |
 | `security-scan.yml` | Push/PR to main (`cicd-demo/**`), daily (03:00 UTC), manual | Trivy filesystem / Docker / IaC + npm audit → SARIF |
+
+### PR → Merge → Deploy 流程
+
+```
+┌───────────────────────────────────────────────────────────────────────┐
+│  Developer pushes feature branch → opens PR to main                   │
+└───────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌───────────────────────────────────────────────────────────────────────┐
+│  cicd-demo-pr.yml (on: pull_request)                                  │
+│                                                                       │
+│   ┌────────┐  ┌────────────┐  ┌───────┐  ┌──────────────┐             │
+│   │  lint  │  │ unit-tests │  │ build │  │ security-scan│  (parallel) │
+│   └───┬────┘  └─────┬──────┘  └───┬───┘  └──────┬───────┘             │
+│       └─────────────┴─────────────┴─────────────┘                     │
+│                          │                                            │
+│                          ▼                                            │
+│                  ┌───────────────┐                                    │
+│                  │   pr-gate     │ ◄── Branch Protection 唯一 Required│
+│                  │ (aggregator)  │     Check                          │
+│                  └───────┬───────┘                                    │
+└──────────────────────────┼────────────────────────────────────────────┘
+                           │ ✅ all green
+                           ▼
+                  ┌────────────────┐
+                  │  Squash merge  │
+                  │   into main    │
+                  └───────┬────────┘
+                          │
+                          ▼
+┌───────────────────────────────────────────────────────────────────────┐
+│  cicd-demo-deploy.yml (on: push to main)                              │
+│                                                                       │
+│   ┌──────────────────┐                                                │
+│   │ build-and-package│  (helm lint × 3 envs, helm package)            │
+│   └────────┬─────────┘                                                │
+│            ▼                                                          │
+│   ┌──────────────────┐                                                │
+│   │  deploy-staging  │  Environment: staging  (auto)                  │
+│   └────────┬─────────┘                                                │
+│            ▼                                                          │
+│   ┌──────────────────┐                                                │
+│   │ deploy-production│  Environment: production  (👤 manual approval) │
+│   └────────┬─────────┘                                                │
+│            ▼                                                          │
+│   ┌──────────────────┐                                                │
+│   │  deploy-summary  │  (写入 GITHUB_STEP_SUMMARY)                    │
+│   └──────────────────┘                                                │
+└───────────────────────────────────────────────────────────────────────┘
+```
+
+```mermaid
+flowchart LR
+    PR[Open PR] --> Lint[lint]
+    PR --> UT[unit-tests]
+    PR --> Build[build]
+    PR --> Sec[security-scan]
+    Lint --> Gate[pr-gate]
+    UT --> Gate
+    Build --> Gate
+    Sec --> Gate
+    Gate -->|all green| Merge[Squash merge → main]
+    Merge --> Pkg[build-and-package]
+    Pkg --> Stg[deploy-staging<br/>auto]
+    Stg --> Prd[deploy-production<br/>manual approval]
+    Prd --> Sum[deploy-summary]
+```
+
+### Branch Protection 配置（Settings → Branches → `main`）
+
+为保证 PR 必须通过 PR Pipeline 才能合并，需在仓库设置中启用以下规则：
+
+| 设置 | 取值 |
+|------|------|
+| Require a pull request before merging | ✅ 开启 |
+| Require approvals | ≥ 1 |
+| Require status checks to pass before merging | ✅ 开启 |
+| Required status check | `CICD Demo / PR Gate` |
+| Require branches to be up to date before merging | ✅ 开启 |
+| Require conversation resolution before merging | ✅ 开启 |
+
+> `pr-gate` 是 `cicd-demo-pr.yml` 中 `needs: [lint, unit-tests, build, security-scan]` 的聚合 job，一处配置即可守住所有 PR 校验。任何子 job 失败时 `pr-gate` 也会失败。
+
+### GitHub Environments 配置（Settings → Environments）
+
+部署流水线使用 GitHub Environments 控制 staging / production 的访问与审批：
+
+| Environment | 配置建议 |
+|-------------|----------|
+| `staging` | 自动部署；可选 secrets：`STAGING_KUBECONFIG` |
+| `production` | Required reviewers ≥ 1（手动审批）；wait timer 可选；secrets：`PROD_KUBECONFIG` |
+
+> 在 GitHub-hosted runner 上 deploy job 默认执行 dry-run（`helm template` 渲染产物作为 artifact 上传）。如需真实集群部署，请取消脚本中注释的 `helm upgrade --install` 行，并在 self-hosted runner 上配置 `KUBECONFIG`。
 
 ## Documentation
 
