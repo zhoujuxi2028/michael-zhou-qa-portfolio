@@ -38,7 +38,7 @@ mkdir -p results
 rm -f "$RESULT_FILE"
 
 # Run JMeter in non-GUI mode with minimal config
-export JVM_ARGS="${JVM_ARGS:--Dhttp.proxyHost= -Dhttps.proxyHost=}"
+export JVM_ARGS="${JVM_ARGS:--Dhttp.proxyHost= -Dhttps.proxyHost= -Duser.home=${HOME}}"
 jmeter -n -t "$JMX_FILE" \
   -q "$DRYRUN_PROPS" \
   -Jport="$PORT" \
