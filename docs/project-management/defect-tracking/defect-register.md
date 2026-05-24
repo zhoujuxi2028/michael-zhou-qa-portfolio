@@ -51,6 +51,7 @@
 | Defect ID | GitHub Issue | 标题摘要 | 项目 / 范围 | 严重度 | 关闭日期 | 关闭方式 | 关联 Commit / PR |
 |-----------|--------------|----------|-------------|--------|----------|----------|-------------------|
 | PDEF-001 | N/A | `defect-register.md` 指向 `performance-testing-platform/docs/qa/defect-register.md` 的 Markdown 链接断链（真实路径为 `docs/qa/defects/register.md`），导致 `Repository Meta CI / lint` 在 PR #248（run #26346106861）报红 | 仓库级 / docs 治理 | P2 | 2026-05-23 | 修正链接 + 补充 RCA | PR (本次) / [RCA](../postmortems/RCA-2026-05-23-PDEF-001-broken-markdown-link.md) |
+| PDEF-002 | N/A | `cicd-demo-pr.yml` 的 `pr-gate` 汇总 job 继承 workflow 级 `defaults.run.working-directory: cicd-demo`，但该 job 不 checkout 仓库，导致 `An error occurred trying to start process '/usr/bin/bash' with working directory '.../cicd-demo'. No such file or directory`，在 PR #249（run #26346396345）`CICD Demo / PR Gate` 报红 | cicd-demo / CI | P2 | 2026-05-24 | 在 `pr-gate` job 内显式设置 `defaults.run.working-directory: .` 覆盖 workflow 级默认；补充 RCA | PR #249 / [RCA](../postmortems/RCA-2026-05-24-PDEF-002-cicd-pr-gate-working-dir.md) |
 
 ---
 
@@ -88,6 +89,7 @@
 
 | 日期 | 变更内容 | 操作人 |
 |------|----------|--------|
+| 2026-05-24 | 登记并关闭 `PDEF-002`（`cicd-demo-pr.yml` 的 `pr-gate` job 继承 workflow 级 `working-directory: cicd-demo`，因不 checkout 仓库导致 bash 启动失败）；在 job 内显式覆盖 `working-directory: .`，附 RCA | QA |
 | 2026-05-23 | 登记并关闭 `PDEF-001`（`defect-register.md` 指向 perf-platform 项目级登记表的链接断链，导致 PR #248 `Repository Meta CI` 失败）；修正链接为 `defects/register.md`，附 RCA | QA |
 | 2026-05-17 | 初始化 `security-testing-demo` 项目级登记表；登记 `SEC-DEF-001`（dependency-scan job 失败） | QA |
 | 2026-04-27 | 同步 `performance-testing-platform`：登记 `DEF-011`（PR #232 bats 硬编码路径），活跃数 4 → 5；附 RCA-2026-04-27 | QA |
