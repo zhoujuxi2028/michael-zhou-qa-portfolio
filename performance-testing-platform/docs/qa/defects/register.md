@@ -60,6 +60,7 @@
 | DEF-004   | [#195](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/195) | K6-SOAK-INT-01 named scenario 执行冲突与矛盾输出               | P1 / High | 2026-04-24 | 修复：env vars 替代 CLI 覆盖；条件化第二段 check                                                | `feature/performance-testing` |
 | DEF-009   | [#214](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/214) | Grafana sqlite lock 导致 setup 阶段容器退出                    | P1 / High | 2026-04-26 | 修复：Grafana `query_retries` / `transaction_retries` / `max_open_conn` + 统一 readiness helper | `a44aa326`                    |
 | DEF-010   | [#215](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/215) | Phase 6 rate limiter pipeline 因 `grep -q` SIGPIPE 误判为 FAIL | P1 / High | 2026-04-26 | 修复：k6 输出先落盘再 grep，避免 `pipefail` 捕获上游 SIGPIPE 141                                | `950ceb00`                    |
+| DEF-013   | [#252](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/252) | JMeter 运行时在项目目录创建字面量 `?` 文件夹（user.home 解析异常） | P3 / Low  | 2026-05-24 | 修复：`jmeter-dryrun.sh` JVM_ARGS 默认值追加 `-Duser.home=${HOME}`；删除已生成的 `?` 目录      | `fix/def-013-jmeter-question-mark-dir` |
 
 ---
 
@@ -85,4 +86,5 @@
 | 2026-04-25 | 新建 `docs/qa/defect-register.md`；迁移 `DEF-001` ~ `DEF-004` 历史记录；登记 `DEF-005` ~ `DEF-008`（#202 ~ #205）                       | QA     |
 | 2026-04-27 | 登记 `DEF-011`（#230）：`baseline-export.js` 不兼容当前 k6 summary，阻塞本机 baseline 生成                                              | QA     |
 | 2026-04-27 | 登记 `DEF-012`（PR #231）：`baseline-export.test.js` 在 CI 下因 `GITHUB_SHA` 注入导致 `run_id` 断言失败；修复后单测在本地 / CI 表现一致 | QA     |
+| 2026-05-24 | 登记并关闭 `DEF-013`（#252）：JMeter 运行时 `user.home` 解析异常，在项目目录创建字面量 `?` 文件夹；修复 `jmeter-dryrun.sh` JVM_ARGS，删除污染目录 | QA     |
 | 2026-04-27 | 合并 `stage4-waiver-register.md` 至本表（SSoT 单一事实来源）；迁移 `WAV-001` 至 Waiver 表；删除 Stage 4 单独 register 文件 | QA     |

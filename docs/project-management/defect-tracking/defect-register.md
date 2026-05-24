@@ -69,7 +69,7 @@
 
 | 项目 | 登记表位置 | 当前活跃数 | 最近更新 |
 |------|------------|-----------|---------|
-| performance-testing-platform | [defects/register.md](../../../performance-testing-platform/docs/qa/defects/register.md) | 5（DEF-005、DEF-006、DEF-007、DEF-008、DEF-011） | 2026-04-27 |
+| performance-testing-platform | [defects/register.md](../../../performance-testing-platform/docs/qa/defects/register.md) | 6（DEF-005、DEF-006、DEF-007、DEF-008、DEF-011、DEF-012） | 2026-05-24 |
 | api-testing-demo | _(按需初始化，复制 [模板](defect-register-template.md))_ | — | — |
 | playwright-demo | _(按需初始化)_ | — | — |
 | selenium-demo | _(按需初始化)_ | — | — |
@@ -89,6 +89,7 @@
 
 | 日期 | 变更内容 | 操作人 |
 |------|----------|--------|
+| 2026-05-24 | 同步 `performance-testing-platform`：登记并关闭 `DEF-013`（#252，JMeter user.home 解析异常创建 `?` 目录）；活跃数更新为 6（补录 DEF-012） | QA |
 | 2026-05-24 | 登记并关闭 `PDEF-002`（`cicd-demo-pr.yml` 的 `pr-gate` job 继承 workflow 级 `working-directory: cicd-demo`，因不 checkout 仓库导致 bash 启动失败）；在 job 内显式覆盖 `working-directory: .`，附 RCA | QA |
 | 2026-05-23 | 登记并关闭 `PDEF-001`（`defect-register.md` 指向 perf-platform 项目级登记表的链接断链，导致 PR #248 `Repository Meta CI` 失败）；修正链接为 `defects/register.md`，附 RCA | QA |
 | 2026-05-17 | 初始化 `security-testing-demo` 项目级登记表；登记 `SEC-DEF-001`（dependency-scan job 失败） | QA |
