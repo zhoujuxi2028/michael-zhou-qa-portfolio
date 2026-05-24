@@ -35,6 +35,9 @@
 | DEF-008   | [#205](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/205)  | 远端 smoke 目标误触发本地 autostart                                     | P1 / High   | ✅ Blocking        | 2026-04-25 | 🔴 Open          | —           | 非本地目标健康检查失败时仍会执行 `server.sh start single`；会污染远端 smoke 结果                                                                                     |
 | DEF-011   | [#230](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/230)  | `baseline-export.js` 不兼容当前 k6 summary `p(95)` 字段                 | P1 / High   | ✅ Blocking        | 2026-04-27 | 🟡 Fix in review | —           | 阻塞本机 `reports/baseline.json` 生成；已兼容 `http_req_duration.values['p(95)']` 与 `http_req_failed.value`，等待 PR #231 合并并关闭 Issue                          |
 | DEF-012   | [PR #231](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/231) | `baseline-export.test.js` 在 CI 下 `run_id` 断言失败（GITHUB_SHA 注入） | P1 / High   | ✅ Blocking        | 2026-04-27 | 🟡 Fix in review | —           | CI 自动注入 `GITHUB_SHA` 导致 `run_id` 取到 commit SHA，断言 `'local'` 失败；修复：spawn 子进程时显式清除 `GITHUB_SHA` / `GITHUB_RUN_ID`，让单测在 CI 与本地行为一致 |
+| DEF-019   | [PR #255](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/255) | DEF-016+017 修复组合导致 CI 覆盖率回归：analysis 脚本 0-25% 拖低整体至 68% | P1 / High   | ✅ Blocking        | 2026-05-24 | ✅ Fixed         | —           | DEF-017 添加 `scripts/analysis/**/*.js` 到 collectCoverageFrom，但无对应单测，与 DEF-016 的 80% 阈值矛盾；修复：回退 DEF-017，待补齐测试后再纳入 |
+| DEF-020   | [PR #255](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/255) | Portfolio 缺陷登记主表链接断链：feature 分支指向旧路径 `docs/qa/defect-register.md` | P2 / Medium | ❌ Non-blocking    | 2026-05-24 | ✅ Fixed         | —           | main 已修复（PDEF-001），feature 分支需合并 main 或手动修正为 `docs/qa/defects/register.md` |
+| DEF-021   | [PR #255](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/255) | `stage4-defect-waiver-register.md` 引用不存在的 `stage4-gate-template.md`   | P3 / Low    | ❌ Non-blocking    | 2026-05-24 | ✅ Fixed         | —           | 修复：更正为 `gates/stage4-template.md`（实际路径） |
 
 ---
 
@@ -80,6 +83,7 @@
 
 | 日期       | 变更内容                                                                                                                                | 操作人 |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 2026-05-24 | 登记 `DEF-019`（PR #255 覆盖率回归，P1）、`DEF-020`（Portfolio 登记表断链，P2）、`DEF-021`（stage4 register 断链，P3）；DEF-019 已修复，DEF-017 回退为 Deferred | QA     |
 | 2026-04-26 | 登记并关闭 `DEF-010`（#215）：修正 Stage 4 register 复用 `DEF-005` 的 ID 冲突                                                           | QA     |
 | 2026-04-26 | 关闭 `DEF-009`（#214）：full integration 已通过；补充 RCA 并关闭 Issue                                                                  | QA     |
 | 2026-04-26 | 登记 `DEF-009`（#214）：Grafana sqlite lock 导致 integration test setup 阻塞                                                            | QA     |
