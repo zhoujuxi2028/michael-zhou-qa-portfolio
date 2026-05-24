@@ -50,18 +50,14 @@ describe('prune_old_logs()', () => {
     // 最旧的两组应该被删除
     for (const id of [100, 200]) {
       for (const ext of ['log', 'md', 'json']) {
-        expect(
-          fs.existsSync(path.join(logDir, `integration-test-${id}.${ext}`))
-        ).toBe(false);
+        expect(fs.existsSync(path.join(logDir, `integration-test-${id}.${ext}`))).toBe(false);
       }
     }
 
     // 最新的三组应该保留
     for (const id of [300, 400, 500]) {
       for (const ext of ['log', 'md', 'json']) {
-        expect(
-          fs.existsSync(path.join(logDir, `integration-test-${id}.${ext}`))
-        ).toBe(true);
+        expect(fs.existsSync(path.join(logDir, `integration-test-${id}.${ext}`))).toBe(true);
       }
     }
 
@@ -89,9 +85,7 @@ describe('prune_old_logs()', () => {
 
     for (const id of [100, 200, 300]) {
       for (const ext of ['log', 'md', 'json']) {
-        expect(
-          fs.existsSync(path.join(logDir, `integration-test-${id}.${ext}`))
-        ).toBe(true);
+        expect(fs.existsSync(path.join(logDir, `integration-test-${id}.${ext}`))).toBe(true);
       }
     }
 
@@ -119,9 +113,7 @@ describe('prune_old_logs()', () => {
 
     for (const id of [100, 200]) {
       for (const ext of ['log', 'md', 'json']) {
-        expect(
-          fs.existsSync(path.join(logDir, `integration-test-${id}.${ext}`))
-        ).toBe(true);
+        expect(fs.existsSync(path.join(logDir, `integration-test-${id}.${ext}`))).toBe(true);
       }
     }
 
