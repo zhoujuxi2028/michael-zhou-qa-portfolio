@@ -271,6 +271,7 @@ open http://localhost:3010   # 左侧菜单 → Dashboards → k6 Results
 |---------|------|------|
 | 面板空白 | 未跑测试，InfluxDB 无数据 | 执行步骤 4 后刷新 |
 | 面板空白（有数据但不显示） | datasource uid 未固定，Grafana 重建后随机生成新 uid（DEF-014） | 已修复：`provisioning/datasources/*.yml` 已显式设置 `uid` |
+| 面板空白（502 proxy 错误） | 宿主机 Clash 代理被 Grafana 容器继承，内部请求走代理失败（DEF-015） | 已修复：`docker-compose.yml` Grafana 服务添加 `NO_PROXY=influxdb,localhost,127.0.0.1` |
 | 无法访问 3010 | 容器未启动 | 执行步骤 1-2 |
 | 容器启动慢 | OrbStack/Docker 冷启动 | 多等 30 秒再执行步骤 2 |
 
