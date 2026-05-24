@@ -190,6 +190,12 @@ jobs:
     needs: [lint, unit-tests, build, security-scan]
     if: always()
     timeout-minutes: 2
+    # 覆盖 workflow 级 defaults.run.working-directory（=cicd-demo），
+    # 因为本 job 仅汇总状态、不 checkout 仓库，沿用默认目录会触发
+    # "No such file or directory" 的 bash 启动失败（PDEF-002）。
+    defaults:
+      run:
+        working-directory: .
     steps:
       - name: Aggregate PR check results
         shell: bash
