@@ -37,6 +37,9 @@
 | DEF-012   | [PR #231](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/231) | `baseline-export.test.js` 在 CI 下 `run_id` 断言失败（GITHUB_SHA 注入） | P1 / High   | ✅ Blocking        | 2026-04-27 | 🟡 Fix in review | —           | CI 自动注入 `GITHUB_SHA` 导致 `run_id` 取到 commit SHA，断言 `'local'` 失败；修复：spawn 子进程时显式清除 `GITHUB_SHA` / `GITHUB_RUN_ID`，让单测在 CI 与本地行为一致 |
 | DEF-014   | —                                                                             | Grafana dashboard 面板空白：datasource uid 未固定导致 InfluxDB 绑定失效  | P2 / Medium | ❌ Non-blocking    | 2026-05-24 | ✅ Fixed         | —           | `influxdb.yml` / `influxdb-jmeter.yml` 未设置 `uid` 字段，Grafana 自动生成随机 uid，与 dashboard JSON 中引用的 `influxdb` / `influxdb-jmeter` 不匹配；修复：在两个 provisioning 文件中显式添加 `uid` 字段 |
 | DEF-015   | —                                                                             | Grafana 容器继承宿主机代理（port 7890）导致无法查询 InfluxDB              | P1 / High   | ✅ Blocking        | 2026-05-24 | ✅ Fixed         | —           | 宿主机配置了 Clash 代理（127.0.0.1:7890），Grafana 容器继承后尝试通过代理访问内部 `influxdb:8086`，在容器内 127.0.0.1 指向容器自身导致 502；修复：docker-compose.yml Grafana 服务添加 `NO_PROXY=influxdb,localhost,127.0.0.1` |
+| DEF-016   | —                                                                             | `jest.config.js` branches 覆盖率阈值 70% 低于其他指标 80%，标准不一致    | P2 / Medium | ❌ Non-blocking    | 2026-05-24 | ✅ Fixed         | —           | 修复：`branches: 70` → `branches: 80`，与 functions/lines/statements 统一 |
+| DEF-017   | —                                                                             | `scripts/analysis/*.js` 未纳入 `collectCoverageFrom`，覆盖统计不完整     | P2 / Medium | ❌ Non-blocking    | 2026-05-24 | ✅ Fixed         | —           | 修复：`collectCoverageFrom` 加入 `scripts/analysis/**/*.js` |
+| DEF-018   | —                                                                             | `coverage.test.js` 全部用 mock 数据自验证，不测真实覆盖行为               | P2 / Medium | ❌ Non-blocking    | 2026-05-24 | ✅ Fixed         | —           | 修复：重写为真实配置验证（阈值断言、collectCoverageFrom 内容、reporters、.gitignore）；移除 CI-COV-01/03/04 mock 逻辑 |
 
 ---
 
@@ -90,3 +93,4 @@
 | 2026-04-27 | 登记 `DEF-012`（PR #231）：`baseline-export.test.js` 在 CI 下因 `GITHUB_SHA` 注入导致 `run_id` 断言失败；修复后单测在本地 / CI 表现一致 | QA     |
 | 2026-05-24 | 登记并关闭 `DEF-013`（#252）：JMeter 运行时 `user.home` 解析异常，在项目目录创建字面量 `?` 文件夹；修复 `jmeter-dryrun.sh` JVM_ARGS，删除污染目录 | QA     |
 | 2026-04-27 | 合并 `stage4-waiver-register.md` 至本表（SSoT 单一事实来源）；迁移 `WAV-001` 至 Waiver 表；删除 Stage 4 单独 register 文件 | QA     |
+| 2026-05-24 | 登记 `DEF-016`（branches 阈值不一致）、`DEF-017`（scripts/analysis/ 未纳入覆盖）、`DEF-018`（coverage.test.js mock 自验证） | QA     |
