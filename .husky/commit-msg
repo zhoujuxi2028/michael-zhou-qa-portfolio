@@ -1,16 +1,42 @@
 #!/bin/sh
-# Validate commit message format (conventional commits)
-# Requires: feat|fix|docs|style|refactor|test|chore|ci|perf
+# Validate commit message format (Conventional Commits)
+# 规则与 .github/workflows/commit-guard.yml 保持一致，避免本地通过但 CI 红灯：
+#   1. 格式: <type>(<scope>)?!?: <subject>
+#      types: feat|fix|docs|style|refactor|test|chore|ci|perf|build|revert
+#      scope 字符集: [a-z0-9._/-]+
+#   2. subject 长度 ≤ 72
+#   3. subject 末尾无英文/中文句号
 
-MSG=$(cat "$1")
-PATTERN="^(feat|fix|docs|style|refactor|test|chore|ci|perf)(\(.+\))?!?: .+"
+SUBJECT=$(head -n 1 "$1")
+# 忽略 fixup!/squash!/merge 自动 commit
+case "$SUBJECT" in
+  fixup!*|squash!*|"Merge "*|"Revert "*) exit 0 ;;
+esac
 
-if ! echo "$MSG" | grep -qE "$PATTERN"; then
-  echo "❌ Invalid commit message format."
-  echo "   Expected: <type>(<scope>): <subject>"
-  echo "   Types: feat|fix|docs|style|refactor|test|chore|ci|perf"
-  echo "   Example: feat(perf): add soak test scripts"
+PATTERN='^(feat|fix|docs|style|refactor|test|chore|ci|perf|build|revert)(\([a-z0-9._/-]+\))?!?: .+'
+
+fail() {
+  echo "❌ Invalid commit message: $1"
   echo ""
-  echo "   Got: $MSG"
+  echo "   Subject: $SUBJECT"
+  echo ""
+  echo "   规范: <type>(<scope>)?!?: <subject>  (subject ≤ 72, 无末尾句号)"
+  echo "   types: feat|fix|docs|style|refactor|test|chore|ci|perf|build|revert"
+  echo "   scope 字符集: [a-z0-9._/-]+"
+  echo "   示例: feat(perf): add soak test scripts"
   exit 1
+}
+
+if ! printf '%s' "$SUBJECT" | grep -qE "$PATTERN"; then
+  fail "格式不符合 Conventional Commits"
 fi
+
+LEN=${#SUBJECT}
+if [ "$LEN" -gt 72 ]; then
+  fail "subject 长度 $LEN > 72"
+fi
+
+case "$SUBJECT" in
+  *.)  fail "subject 末尾带英文句号" ;;
+  *。) fail "subject 末尾带中文句号" ;;
+esac
