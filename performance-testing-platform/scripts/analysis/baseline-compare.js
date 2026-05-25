@@ -54,6 +54,21 @@ try {
   const previous = loadBaseline(prevBaselineFile);
   const result = compareWithBaseline(current, previous);
 
+  // 持久化对比结果到 JSON,供 CI artifact 与 PR 评论 step 消费
+  // (PERF-CI-BL-FR-002 — 设计依据 docs/devops/phase7-gap-remediation-design.md §3.3)
+  const persisted = {
+    status: result.status,
+    delta: result.delta,
+    current,
+    previous,
+    generated_at: new Date().toISOString(),
+  };
+  try {
+    fs.writeFileSync('reports/comparison-result.json', JSON.stringify(persisted, null, 2));
+  } catch (writeErr) {
+    console.warn(`⚠️  Failed to persist comparison-result.json: ${writeErr.message}`);
+  }
+
   console.log(`\nBaseline Comparison Result:`);
   console.log(`Status: ${result.status}`);
   console.log(`Delta: ${(result.delta * 100).toFixed(1)}%`);
