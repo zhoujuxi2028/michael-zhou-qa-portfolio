@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git Push 连接方式性能测试报告</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f5f7fa; color: #333; margin: 0; padding: 24px; }
+  h1 { font-size: 22px; color: #1a1a2e; border-bottom: 3px solid #4f46e5; padding-bottom: 10px; }
+  h2 { font-size: 16px; color: #4f46e5; margin-top: 32px; }
+  .meta { background: #fff; border-radius: 8px; padding: 16px 20px; margin: 16px 0; box-shadow: 0 1px 4px rgba(0,0,0,0.08); font-size: 13px; color: #555; display: flex; gap: 32px; flex-wrap: wrap; }
+  .meta span b { color: #333; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 24px; }
+  th { background: #4f46e5; color: #fff; padding: 11px 14px; text-align: left; font-size: 13px; font-weight: 600; }
+  td { padding: 10px 14px; font-size: 13px; border-bottom: 1px solid #f0f0f0; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f9f8ff; }
+  .ok  { color: #16a34a; font-weight: 600; }
+  .err { color: #dc2626; font-weight: 600; }
+  .warn{ color: #d97706; font-weight: 600; }
+  .bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .bar { height: 14px; border-radius: 4px; min-width: 4px; }
+  .bar-1 { background: #ef4444; }
+  .bar-2 { background: #22c55e; }
+  .bar-3 { background: #f59e0b; }
+  .bar-4 { background: #3b82f6; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .badge-best  { background: #dcfce7; color: #16a34a; }
+  .badge-good  { background: #dbeafe; color: #1d4ed8; }
+  .badge-slow  { background: #fef9c3; color: #92400e; }
+  .badge-fail  { background: #fee2e2; color: #991b1b; }
+  .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 16px 0 24px; }
+  .card { background: #fff; border-radius: 8px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); text-align: center; border-top: 4px solid; }
+  .card-1 { border-color: #ef4444; }
+  .card-2 { border-color: #22c55e; }
+  .card-3 { border-color: #f59e0b; }
+  .card-4 { border-color: #3b82f6; }
+  .card .label { font-size: 12px; color: #666; margin-bottom: 8px; }
+  .card .avg { font-size: 28px; font-weight: 700; color: #1a1a2e; }
+  .card .unit { font-size: 12px; color: #888; }
+  .card .sub  { font-size: 11px; color: #999; margin-top: 4px; }
+  .note { background: #fef9c3; border-left: 4px solid #f59e0b; padding: 10px 14px; border-radius: 4px; font-size: 13px; margin: 8px 0 16px; }
+  .recommend { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 16px 20px; font-size: 13px; margin-top: 8px; }
+  .recommend b { color: #16a34a; }
+</style>
+</head>
+<body>
+
+<h1>Git Push 连接方式性能测试报告</h1>
+
+<div class="meta">
+  <span><b>测试日期：</b>2026-05-24</span>
+  <span><b>测试机器：</b>MacBook-Pro (macOS Darwin 25.4.0)</span>
+  <span><b>代理工具：</b>Bywave (HTTP :7890 / SOCKS5 :7891)</span>
+  <span><b>测试方法：</b>git ls-remote（完整认证+数据传输，不触发 pre-push hook）</span>
+  <span><b>每种情况：</b>连续测试 3 次</span>
+</div>
+
+<h2>各方式平均耗时对比</h2>
+<div class="summary-grid">
+  <div class="card card-1">
+    <div class="label">① SSH 直连</div>
+    <div class="avg">24.0</div>
+    <div class="unit">秒（平均）</div>
+    <div class="sub">稳定但最慢</div>
+  </div>
+  <div class="card card-2">
+    <div class="label">② HTTPS 直连</div>
+    <div class="avg">6.3</div>
+    <div class="unit">秒（平均，有效）</div>
+    <div class="sub">最快，但有失败</div>
+  </div>
+  <div class="card card-3">
+    <div class="label">③ SSH + SOCKS5 :7891</div>
+    <div class="avg">13.8</div>
+    <div class="unit">秒（平均，含异常）</div>
+    <div class="sub">有偶发超时</div>
+  </div>
+  <div class="card card-4">
+    <div class="label">④ HTTPS + HTTP :7890</div>
+    <div class="avg">5.9</div>
+    <div class="unit">秒（有效1次）</div>
+    <div class="sub">成功率低</div>
+  </div>
+</div>
+
+<h2>详细测试数据</h2>
+<table>
+  <thead>
+    <tr>
+      <th>情况</th>
+      <th>协议 / 代理</th>
+      <th>第1次</th>
+      <th>第2次</th>
+      <th>第3次</th>
+      <th>成功率</th>
+      <th>有效平均</th>
+      <th>评级</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>① SSH 直连</td>
+      <td>SSH / 无代理</td>
+      <td class="ok">12,822 ms ✅</td>
+      <td class="warn">28,059 ms ✅</td>
+      <td class="warn">31,142 ms ✅</td>
+      <td>3/3 (100%)</td>
+      <td>
+        <div class="bar-wrap">
+          <div class="bar bar-1" style="width:120px"></div>
+          <span>24,008 ms</span>
+        </div>
+      </td>
+      <td><span class="badge badge-slow">慢 / 稳定</span></td>
+    </tr>
+    <tr>
+      <td>② HTTPS 直连</td>
+      <td>HTTPS / 无代理</td>
+      <td class="ok">4,924 ms ✅</td>
+      <td class="ok">8,729 ms ✅</td>
+      <td class="err">5,159 ms ❌</td>
+      <td>2/3 (67%)</td>
+      <td>
+        <div class="bar-wrap">
+          <div class="bar bar-2" style="width:32px"></div>
+          <span>6,327 ms（有效）</span>
+        </div>
+      </td>
+      <td><span class="badge badge-good">快 / 不稳定</span></td>
+    </tr>
+    <tr>
+      <td>③ SSH + SOCKS5 :7891</td>
+      <td>SSH / SOCKS5 :7891</td>
+      <td class="ok">9,414 ms ✅</td>
+      <td class="err">312,097 ms ✅*</td>
+      <td class="ok">18,266 ms ✅</td>
+      <td>3/3 (100%)*</td>
+      <td>
+        <div class="bar-wrap">
+          <div class="bar bar-3" style="width:69px"></div>
+          <span>13,840 ms（剔除异常）</span>
+        </div>
+      </td>
+      <td><span class="badge badge-good">中 / 偶发超时</span></td>
+    </tr>
+    <tr>
+      <td>④ HTTPS + HTTP :7890</td>
+      <td>HTTPS / HTTP :7890</td>
+      <td class="ok">7,638 ms ✅</td>
+      <td class="err">5,164 ms ❌</td>
+      <td class="err">5,171 ms ❌</td>
+      <td>1/3 (33%)</td>
+      <td>
+        <div class="bar-wrap">
+          <div class="bar bar-4" style="width:30px"></div>
+          <span>5,991 ms（有效）</span>
+        </div>
+      </td>
+      <td><span class="badge badge-fail">快 / 成功率低</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="note">
+  * 情况③第2次耗时 312s（约 5 分钟），为网络波动导致的偶发超时，非正常值。剔除后有效平均为 13,840ms。
+</div>
+
+<h2>各情况失败原因分析</h2>
+<table>
+  <thead>
+    <tr>
+      <th>情况</th>
+      <th>失败次数</th>
+      <th>exit code</th>
+      <th>根因</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>② HTTPS 直连</td>
+      <td>1/3</td>
+      <td>128</td>
+      <td>token 认证偶发 403（新 token 首次使用缓存未同步）</td>
+    </tr>
+    <tr>
+      <td>③ SSH + SOCKS5 :7891</td>
+      <td>0/3（但有超时）</td>
+      <td>0</td>
+      <td>第2次 SOCKS5 代理连接卡顿 312s，Bywave 服务器偶发路由问题</td>
+    </tr>
+    <tr>
+      <td>④ HTTPS + HTTP :7890</td>
+      <td>2/3</td>
+      <td>128</td>
+      <td>HTTP proxy :7890 对 HTTPS CONNECT 隧道限制，token 被代理拦截</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>综合评估</h2>
+<table>
+  <thead>
+    <tr>
+      <th>情况</th>
+      <th>速度</th>
+      <th>稳定性</th>
+      <th>配置复杂度</th>
+      <th>推荐指数</th>
+      <th>适用场景</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>① SSH 直连</td>
+      <td>⭐⭐</td>
+      <td>⭐⭐⭐⭐⭐</td>
+      <td>低（已有 SSH key）</td>
+      <td>⭐⭐⭐</td>
+      <td>网络好时的备用方案</td>
+    </tr>
+    <tr>
+      <td>② HTTPS 直连</td>
+      <td>⭐⭐⭐⭐⭐</td>
+      <td>⭐⭐⭐</td>
+      <td>中（需配置 PAT + osxkeychain）</td>
+      <td>⭐⭐⭐⭐</td>
+      <td>网络直连畅通时首选</td>
+    </tr>
+    <tr style="background:#f0fdf4">
+      <td><b>③ SSH + SOCKS5 :7891</b></td>
+      <td>⭐⭐⭐⭐</td>
+      <td>⭐⭐⭐⭐</td>
+      <td>低（~/.ssh/config 一行）</td>
+      <td><b>⭐⭐⭐⭐⭐</b></td>
+      <td><b>当前网络环境下综合最优</b></td>
+    </tr>
+    <tr>
+      <td>④ HTTPS + HTTP :7890</td>
+      <td>⭐⭐⭐⭐⭐</td>
+      <td>⭐⭐</td>
+      <td>低</td>
+      <td>⭐⭐</td>
+      <td>不推荐（成功率仅 33%）</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>推荐配置</h2>
+<div class="recommend">
+  <b>推荐：情况③ — SSH + SOCKS5 :7891</b><br><br>
+  写入 <code>~/.ssh/config</code> 后，所有 git push/pull 自动生效，无需额外参数：
+  <pre style="background:#f1f5f9;padding:12px;border-radius:6px;margin-top:10px;font-size:13px">Host github.com
+  ProxyCommand nc -x 127.0.0.1:7891 %h %p
+  ServerAliveInterval 30
+  ServerAliveCountMax 10</pre>
+  验证命令：<code>ssh -T git@github.com</code><br><br>
+  <b>注意：</b>Bywave 需保持运行，SOCKS5 端口 7891 需已开启。偶发超时时可重试，通常第二次即正常。
+</div>
+
+</body>
+</html>
