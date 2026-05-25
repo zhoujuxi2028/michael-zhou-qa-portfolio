@@ -183,12 +183,12 @@
 
 | 需求 ID                                          | 需求                                                | 实现文件                                       | 测试用例 ID                                          | 状态       |
 | ------------------------------------------------ | --------------------------------------------------- | ---------------------------------------------- | ---------------------------------------------------- | ---------- |
-| PERF-CI-COV-FR-001~003                           | CI 覆盖率门禁 (statements ≥ 80%)                    | `.github/workflows/performance-ci.yml`         | CI-COV-01~04                                         | ✅         |
-| PERF-CI-BL-FR-001~002,006                        | 基线回归：单元测试 + CI 自动对比                    | `src/utils/baseline.js`, `performance-ci.yml`  | UT-BL-01~06, CI-BL-01~04                             | ✅         |
+| PERF-CI-COV-FR-001~003                           | CI 覆盖率门禁 (statements ≥ 80%)                    | `.github/workflows/performance-ci.yml`, `jest.config.js` | CI-COV-01~04                                         | ✅ (#135 闭环 2026-05-25) |
+| PERF-CI-BL-FR-001~002,006                        | 基线回归：单元测试 + CI 自动对比 + PR 评论          | `src/utils/baseline.js`, `performance-ci.yml`, `scripts/analysis/baseline-compare.js` | UT-BL-01~06, CI-BL-01~04                             | ✅ (#135 闭环 2026-05-25) |
 | PERF-CI-BL-FR-003~004                            | 趋势报告：`trend-collect.js` + trend.json 累积      | `scripts/analysis/trend-collect.js`, `src/utils/trend.js` | TREND-01~06                                          | ✅         |
 | PERF-CI-BL-FR-005                                | Grafana 趋势面板：历史 p95 / throughput 折线图      | `grafana/dashboards/`                          | GRF-TREND-01                                         | ✅         |
 | PERF-OBS-DASH-FR-001~003 / PERF-OBS-ALERT-FR-001 | Grafana 面板增强 (错误分布/热力图/自定义/告警)      | `grafana/dashboards/`                          | GRF-ERR-01, GRF-HEAT-01, GRF-CUSTOM-01, GRF-ALERT-01 | ✅         |
-| PERF-CI-SCHED-FR-001~002                         | 定时调度：nightly soak + weekly capacity workflow   | `.github/workflows/nightly-soak.yml`           | SCHED-01~04                                          | ✅         |
+| PERF-CI-SCHED-FR-001~002                         | 定时调度：nightly soak + weekly capacity workflow   | `.github/workflows/nightly-soak.yml`           | SCHED-01~04                                          | ✅ (#135 闭环 2026-05-25) |
 | PERF-ENGINE-K6-FR-011~013                        | funnel helper 迁移：stress / capacity / soak        | `stress.k6.js`, `capacity.k6.js`, `soak.k6.js` | K6-FUNNEL-01~03                                      | ✅ Phase 7 |
 | PERF-ENGINE-K6-FR-014                            | breakpoint handleSummary graceful/catastrophic 分类 | `tests/performance/breakpoint.k6.js`           | K6-CLASS-01~02                                       | ✅ Phase 7 |
 | PERF-ENGINE-K6-FR-015                            | 熔断恢复行为测试                                    | `tests/performance/rate-limit.k6.js`           | K6-RECOVERY-01                                       | ✅ Phase 7 |

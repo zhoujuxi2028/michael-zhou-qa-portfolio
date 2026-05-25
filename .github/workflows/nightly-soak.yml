@@ -1,0 +1,132 @@
+name: Nightly Soak & Weekly Capacity
+
+# Phase 7 PERF-CI-SCHED-FR-001/002
+# - nightly soak-short: 每天 UTC 03:00 (北京 11:00) 运行 ~5min soak,验证内存/事件循环稳定性
+# - weekly capacity: 每周日 UTC 06:00 运行容量探测,找出系统当前 sweet spot
+# - 手动触发: workflow_dispatch.scenario = soak-short | capacity
+#
+# Artifact retention: 30 天 (SCHED-04)
+# 并发控制: cancel-in-progress=false,定时任务排队等待 (R-29)
+#
+# 设计依据: performance-testing-platform/docs/devops/phase7-gap-remediation-design.md
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # nightly soak-short
+    - cron: '0 6 * * 0' # weekly capacity (Sunday)
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: 'Scenario to run'
+        required: true
+        default: 'soak-short'
+        type: choice
+        options:
+          - soak-short
+          - capacity
+
+concurrency:
+  group: nightly-soak-${{ github.workflow }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: performance-testing-platform
+
+jobs:
+  nightly-soak:
+    name: Nightly Soak (soak-short)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '0 3 * * *') ||
+      (github.event_name == 'workflow_dispatch' && inputs.scenario == 'soak-short')
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-node-project
+        with:
+          node-version: '18'
+          working-directory: performance-testing-platform
+          cache-dependency-path: performance-testing-platform/package-lock.json
+      - name: Install k6
+        run: |
+          curl -sSL https://github.com/grafana/k6/releases/download/v1.7.0/k6-v1.7.0-linux-amd64.tar.gz | tar xz
+          sudo mv k6-v1.7.0-linux-amd64/k6 /usr/local/bin/
+          k6 version
+      - name: Start target API
+        run: node src/server.js &
+      - name: Wait for API
+        run: |
+          for i in $(seq 1 10); do
+            curl -sf http://localhost:3000/health && break
+            sleep 1
+          done
+      - name: Run k6 soak-short
+        run: |
+          mkdir -p reports results
+          k6 run \
+            --out json=results/k6-soak-short-${{ github.run_id }}.json \
+            --out 'web-dashboard=export=reports/k6-soak-short.html' \
+            tests/performance/soak-short.k6.js
+      - name: Stop API
+        if: always()
+        run: kill $(lsof -ti:3000) 2>/dev/null || true
+      - name: Upload nightly soak artifact (SCHED-04 retention 30d)
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nightly-soak-${{ github.run_id }}
+          path: |
+            performance-testing-platform/results/
+            performance-testing-platform/reports/k6-soak-short.html
+          retention-days: 30
+
+  weekly-capacity:
+    name: Weekly Capacity Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '0 6 * * 0') ||
+      (github.event_name == 'workflow_dispatch' && inputs.scenario == 'capacity')
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-node-project
+        with:
+          node-version: '18'
+          working-directory: performance-testing-platform
+          cache-dependency-path: performance-testing-platform/package-lock.json
+      - name: Install k6
+        run: |
+          curl -sSL https://github.com/grafana/k6/releases/download/v1.7.0/k6-v1.7.0-linux-amd64.tar.gz | tar xz
+          sudo mv k6-v1.7.0-linux-amd64/k6 /usr/local/bin/
+          k6 version
+      - name: Start target API
+        run: node src/server.js &
+      - name: Wait for API
+        run: |
+          for i in $(seq 1 10); do
+            curl -sf http://localhost:3000/health && break
+            sleep 1
+          done
+      - name: Run k6 capacity test
+        run: |
+          mkdir -p reports results
+          k6 run \
+            --out json=results/k6-capacity-${{ github.run_id }}.json \
+            --out 'web-dashboard=export=reports/k6-capacity.html' \
+            tests/performance/capacity.k6.js
+      - name: Stop API
+        if: always()
+        run: kill $(lsof -ti:3000) 2>/dev/null || true
+      - name: Upload weekly capacity artifact (SCHED-04 retention 30d)
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: weekly-capacity-${{ github.run_id }}
+          path: |
+            performance-testing-platform/results/
+            performance-testing-platform/reports/k6-capacity.html
+          retention-days: 30
