@@ -6,7 +6,7 @@
 
 | 目录 | 说明 |
 |------|------|
-| [defect-tracking/](defect-tracking/) | Portfolio 级缺陷/Waiver 跟踪系统（SSOT） |
+| [defect-tracking/](defect-tracking/) | Portfolio 级缺陷/Waiver/Flaky/依赖风险跟踪系统（SSOT） |
 | [postmortems/](postmortems/) | 季度复盘、专项 RCA、问题闭环文档 |
 
 ## 管理规则
