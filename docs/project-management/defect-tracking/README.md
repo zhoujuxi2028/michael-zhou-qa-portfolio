@@ -9,7 +9,7 @@
 
 ## 1. 系统总览
 
-本系统由 **三个入口 + 四份文档 + 一套工作流** 构成：
+本系统由 **三个入口 + 六份文档 + 一套工作流** 构成：
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
@@ -19,7 +19,9 @@
 │   ├── README.md                  ← 制度、流程、角色（本文）  │
 │   ├── defect-register.md         ← Portfolio 跨项目活跃登记 │
 │   ├── defect-register-template.md← 项目级模板（可复制）     │
-│   └── waiver-policy.md           ← Waiver 政策与审批流程    │
+│   ├── waiver-policy.md           ← Waiver 政策与审批流程    │
+│   ├── flaky-register.md          ← Flaky 分级与处置跟踪     │
+│   └── dependency-risk-sla.md     ← 依赖风险修复时限规则     │
 └──────────┬───────────────────┬──────────────────┬───────────┘
            │                   │                  │
            ▼                   ▼                  ▼
@@ -163,6 +165,8 @@
 | Portfolio 缺陷登记主表 | [defect-register.md](defect-register.md) |
 | 项目级登记模板 | [defect-register-template.md](defect-register-template.md) |
 | Waiver 政策 | [waiver-policy.md](waiver-policy.md) |
+| Flaky 治理登记表 | [flaky-register.md](flaky-register.md) |
+| 依赖风险修复 SLA | [dependency-risk-sla.md](dependency-risk-sla.md) |
 | GitHub Labels 策略 | [../../guides/label-strategy.md](../../guides/label-strategy.md) |
 | Workaround 追踪 | [../../guides/workaround-tracking.md](../../guides/workaround-tracking.md) |
 | Postmortem 归档 | [../postmortems/README.md](../postmortems/README.md) |
