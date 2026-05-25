@@ -23,7 +23,7 @@
 | 质量门禁 | Lint 通过；关键测试通过；无 Critical/High 漏洞；至少 1 人 review；不能绕过必需检查 |
 | 输出产物 | PR checks、review comments、SARIF 报告、测试摘要、构建日志 |
 | 失败处理 | 阻止合并；把失败原因定位到具体规则、测试或漏洞；修复后重新触发 PR 检查 |
-| Demo 映射 | 当前 `security-scan.yml` 可作为 PR 安全门禁；后续可补充 PR lint/test workflow |
+| Demo 映射 | 当前 `security-scan.yml` + `codeql-analysis.yml` 可作为 PR 安全门禁；后续可补充 PR lint/test workflow |
 
 **重点**：PR 门禁是最早、最便宜的质量控制点。不要把所有问题留到 staging 或生产前才发现。
 
@@ -79,7 +79,7 @@
 | 质量门禁 | 无 Critical/High 漏洞；无明文密钥；镜像基础层无高危漏洞；IaC 无高危错误配置 |
 | 输出产物 | SARIF、JSON 扫描结果、安全摘要、SBOM、忽略项说明 |
 | 失败处理 | Critical/High 默认阻断；无法立即修复时必须记录风险接受理由、负责人和过期时间 |
-| Demo 映射 | `security-scan.yml`、`npm run security:audit`、`npm run security:scan`、`security/trivy-config.yaml` |
+| Demo 映射 | `security-scan.yml`（Trivy/npm audit）、`codeql-analysis.yml`（代码语义 SAST）、`npm run security:audit`、`npm run security:scan`、`security/trivy-config.yaml` |
 
 **重点**：安全扫描不是只在上线前跑一次。依赖漏洞会在代码不变的情况下新披露，所以需要定时扫描。
 
