@@ -27,7 +27,8 @@ npm test
 
 ## GitHub Actions（根目录 `.github/workflows/`）
 - `cicd-demo-pr.yml` — PR Gate（lint + unit/contract tests + Docker build + 快速安全扫描）
-- `cicd-demo-deploy.yml` — Deploy Pipeline（Helm package → staging auto → production 手动审批）
+- `cicd-demo-deploy.yml` — Deploy Pipeline（Helm package + SBOM → staging auto + smoke test → production 手动审批）
+- `cicd-demo-terraform.yml` — Terraform CI（fmt-check + validate + Trivy IaC + tf-gate）
 - `docker-tests.yml` — Nightly Docker 全量回归
 - `security-scan.yml` — 深度安全扫描（Trivy fs/Docker/IaC + npm audit → SARIF）
 
