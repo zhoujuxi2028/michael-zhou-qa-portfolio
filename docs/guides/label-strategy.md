@@ -22,6 +22,27 @@
 ### 1.2 项目标签 (Project)
 用于标识 Issue 属于哪个项目/代码库。
 
+> **推荐使用 `proj:xxx` 格式**（统一命名空间，便于过滤）。旧格式标签保留兼容。
+> 可通过 `.github/workflows/setup-labels.yml` (`workflow_dispatch`) 一键创建。
+
+#### 1.2.1 新格式 `proj:xxx`（推荐）
+
+| 标签 | 颜色 | 子项目 |
+|------|------|--------|
+| `proj:performance` | 🔵 0052cc | performance-testing-platform |
+| `proj:playwright` | 🟣 7057ff | playwright-demo |
+| `proj:api-testing` | 🔵 0075ca | api-testing-demo |
+| `proj:selenium` | 🟠 f9a03f | selenium-demo |
+| `proj:cypress-e2e` | 🟣 5319e7 | iwsva-cypress-e2e |
+| `proj:security` | 🔴 d73a4a | security-testing-demo |
+| `proj:k8s` | 🟢 006b75 | k8s-auto-testing-platform |
+| `proj:sid-iam` | 🔵 1d76db | sid-iam-testing-platform |
+| `proj:microservice` | 🟢 0e8a16 | microservice-testing-platform |
+| `proj:cicd` | 🔵 c5def5 | cicd-demo |
+| `proj:ai-testing` | 🟡 e4e669 | ai-testing-platform |
+
+#### 1.2.2 旧格式（兼容保留）
+
 | 标签 | 颜色 | 说明 |
 |------|------|------|
 | `performance-testing` | 🔵 0066ff | Performance Testing Platform (k6 + JMeter) |
