@@ -166,6 +166,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `security-tests.yml` | security-testing-demo | Security tests (DVWA, Juice Shop, ZAP, OWASP Top 10) |
 | `sid-iam-ci.yml` | sid-iam-testing-platform | SID IAM CI (code quality, unit tests, integration) |
 | `docker-tests.yml` | cicd-demo | Docker-based nightly regression tests |
+| `codeql-analysis.yml` | repository (JS+Python) | CodeQL 代码语义漏洞扫描 (XSS, SQLi, path traversal) |
 | `security-scan.yml` | cicd-demo | Security scanning (Trivy, npm audit, SARIF) |
 | `repo-meta-ci.yml` | repository root | PR 级轻量 lint（docs / workflow / JSON / shell / Markdown links） |
 | `claude.yml` | repository | Claude Code 助手触发入口 |
