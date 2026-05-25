@@ -67,6 +67,7 @@
 - [ ] 配置文件已产出 → `package.json` / `requirements.txt`、`jest.config.js` / `pytest.ini`、`.eslintrc.*` / `.prettierrc` 等
 - [ ] 每个 Task 完成后独立 commit
 - [ ] Commit message 遵循 conventional commits（`feat:`, `fix:`, `test:`, `docs:`）
+- [ ] Commit subject 本地预检通过 → `bash scripts/check-commit-guard.sh`（subject ≤ 72）
 - [ ] 代码符合项目 lint 规范（ESLint/Prettier 或 black/flake8）
 - [ ] 新依赖已添加到 `package.json` 或 `requirements.txt`
 - [ ] 无硬编码路径、密钥、凭证
@@ -88,11 +89,14 @@
 - [ ] Lint 检查通过 → `npx eslint .` 或 `black --check src/ tests/`
 - [ ] Format 检查通过 → `npx prettier --check .` 或 `isort --check-only src/ tests/`
 - [ ] 覆盖率达标 → `npm test -- --coverage`（按 `jest.config.js` 阈值）或 `pytest --cov`（按项目要求）
+- [ ] 增量覆盖率不下降（相对目标分支最近绿色基线）
 - [ ] 集成/E2E 测试通过（如适用）→ `npm run test:integration` / `npm run test:e2e`
 - [ ] 测试报告已产出（如适用）→ `coverage/` 目录、测试结果截图
 - [ ] CI 流水线绿灯 → push 后检查 GitHub Actions → `.github/workflows/*.yml`
 - [ ] CI workaround 复验 → 移除所有 `continue-on-error`、`|| true`、`skip` 后再跑一次，确认真实结果为 0 failures（防止 #27/#34 假绿灯）
 - [ ] CI 报红验证 → 故意让测试失败一次，确认 CI 能正确检测到失败
+- [ ] 失败原因已分类统计（代码缺陷 / 环境波动 / 数据问题 / 依赖问题）
+- [ ] flaky 用例已按 P0/P1/P2 分级并登记（连续 N 次不稳定，默认 N=3）
 - [ ] JMeter dry-run 通过（如适用）→ `npm run jmeter:dryrun` 验证字段名和状态码正确（防止 #50 字段名错误）
 - [ ] 本地 pre-commit checklist 全部通过（参考根 CLAUDE.md Pre-commit Checklist）
 - [ ] 测试暴露的风险已评估 → `docs/project-management/risks.md`（是否阻塞发布）
@@ -110,6 +114,7 @@
 - [ ] 根 README.md 已注册 → `README.md`（项目列表）
 - [ ] Wiki 已同步（如需要）→ GitHub Wiki 页面
 - [ ] 最终风险确认 → `docs/project-management/risks.md`（遗留风险记录到 Issue）
+- [ ] 若修改 workflow，已同步 `README.md` + `CLAUDE.md` + branch protection required checks
 - [ ] PR merged → `gh pr merge`
 - [ ] Issue 已关闭 → `gh issue close <number>` 并附完成摘要（防止 #85 遗漏）
 
