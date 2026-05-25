@@ -181,13 +181,81 @@ jobs:
           trivyignores: 'cicd-demo/.trivyignore'
 
   # ---------------------------------------------------------------------------
-  # Job 5: PR Gate —— 汇总闸口（Branch Protection 的 Required Check）
+  # Job 5: Quality Gate —— 测试覆盖量化门控
+  # 要求：Newman 断言数 ≥15 + Cypress 测试用例数 ≥15
+  # 面试要点：CI 入口的量化质量门，防止测试数量缩水的代码进入主干
+  # ---------------------------------------------------------------------------
+  quality-gate:
+    name: CICD Demo / Quality Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: cicd-demo/.nvmrc
+          cache: npm
+          cache-dependency-path: cicd-demo/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Count Newman assertions (threshold ≥15)
+        id: newman-count
+        shell: bash
+        run: |
+          set -euo pipefail
+          COLLECTION="postman/api-collection.json"
+          COUNT=$(grep -c '"pm\.test(' "$COLLECTION" || true)
+          echo "newman_assertions=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "Newman assertions found: $COUNT"
+          THRESHOLD=15
+          if [ "$COUNT" -lt "$THRESHOLD" ]; then
+            echo "::error::Quality Gate FAILED: Newman assertions $COUNT < required $THRESHOLD"
+            exit 1
+          fi
+          echo "✅ Newman assertion gate passed: $COUNT ≥ $THRESHOLD"
+
+      - name: Count Cypress test cases (threshold ≥15)
+        id: cypress-count
+        shell: bash
+        run: |
+          set -euo pipefail
+          COUNT=$(grep -rh "^\s*it(" cypress/e2e/ | wc -l | tr -d ' ')
+          echo "cypress_tests=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "Cypress test cases found: $COUNT"
+          THRESHOLD=15
+          if [ "$COUNT" -lt "$THRESHOLD" ]; then
+            echo "::error::Quality Gate FAILED: Cypress tests $COUNT < required $THRESHOLD"
+            exit 1
+          fi
+          echo "✅ Cypress test gate passed: $COUNT ≥ $THRESHOLD"
+
+      - name: Quality Gate Summary
+        shell: bash
+        run: |
+          {
+            echo "# ✅ Quality Gate Report"
+            echo ""
+            echo "| Gate | Result | Threshold | Actual |"
+            echo "|------|--------|-----------|--------|"
+            echo "| Newman Assertions | ✅ PASS | ≥15 | ${{ steps.newman-count.outputs.newman_assertions }} |"
+            echo "| Cypress Test Cases | ✅ PASS | ≥15 | ${{ steps.cypress-count.outputs.cypress_tests }} |"
+            echo ""
+            echo "> 面试要点：量化质量门控确保每个 PR 都维持最低测试密度，防止测试覆盖度退化。"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  # Job 6: PR Gate —— 汇总闸口（Branch Protection 的 Required Check）
   # 配置 branch protection 时，将本 job 设为 required，即可一处守住所有 PR 校验
   # ---------------------------------------------------------------------------
   pr-gate:
     name: CICD Demo / PR Gate
     runs-on: ubuntu-latest
-    needs: [lint, unit-tests, build, security-scan]
+    needs: [lint, unit-tests, build, security-scan, quality-gate]
     if: always()
     timeout-minutes: 2
     # 覆盖 workflow 级 defaults.run.working-directory（=cicd-demo），
@@ -205,15 +273,53 @@ jobs:
           echo "Unit tests:    ${{ needs.unit-tests.result }}"
           echo "Build:         ${{ needs.build.result }}"
           echo "Security scan: ${{ needs.security-scan.result }}"
+          echo "Quality gate:  ${{ needs.quality-gate.result }}"
 
           for result in \
             "${{ needs.lint.result }}" \
             "${{ needs.unit-tests.result }}" \
             "${{ needs.build.result }}" \
-            "${{ needs.security-scan.result }}"; do
+            "${{ needs.security-scan.result }}" \
+            "${{ needs.quality-gate.result }}"; do
             if [ "$result" != "success" ]; then
               echo "::error::PR gate failed — one or more checks did not succeed."
               exit 1
             fi
           done
           echo "✅ All PR checks passed — safe to merge."
+
+  # ---------------------------------------------------------------------------
+  # Job 7: Push Pipeline Metrics —— 推送 PR 流水线指标到 Prometheus Pushgateway
+  # 面试要点：每次 CI 运行后度量数据入库，Grafana 追踪质量趋势
+  # ---------------------------------------------------------------------------
+  push-metrics:
+    name: CICD Demo / Push Metrics
+    runs-on: ubuntu-latest
+    needs: [lint, unit-tests, build, security-scan, quality-gate, pr-gate]
+    if: always()
+    timeout-minutes: 3
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Push PR pipeline metrics
+        shell: bash
+        env:
+          PUSHGATEWAY_URL: ${{ vars.PUSHGATEWAY_URL || 'http://localhost:9091' }}
+          CI_ENVIRONMENT: ci
+        run: |
+          set -euo pipefail
+          chmod +x cicd-demo/scripts/push-metrics.sh
+          GATE="${{ needs.pr-gate.result }}"
+          STATUS="failure"
+          [ "$GATE" = "success" ] && STATUS="success"
+          bash cicd-demo/scripts/push-metrics.sh \
+            --job        "pr-pipeline" \
+            --status     "$STATUS" \
+            --duration   "0" \
+            --tests-passed "0" \
+            --tests-failed "0"
+          echo "Metrics push attempted (Pushgateway may not be running in CI — that is expected)."

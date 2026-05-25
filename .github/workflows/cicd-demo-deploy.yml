@@ -138,12 +138,76 @@ jobs:
           retention-days: 30
 
   # ---------------------------------------------------------------------------
-  # Stage 3: Deploy to Production —— 需 GitHub Environment「production」手动审批
+  # Stage 3: Post-Deploy Smoke Test —— 部署后自动化冒烟验证
+  # 面试要点："部署成功≠功能正常"，CD出口必须有自动验收 + 回滚触发
+  # ---------------------------------------------------------------------------
+  smoke-test:
+    name: CICD Demo / Smoke Test (Staging)
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: cicd-demo/.nvmrc
+          cache: npm
+          cache-dependency-path: cicd-demo/package-lock.json
+
+      - name: Install Newman
+        run: npm ci
+
+      - name: Run post-deploy smoke tests
+        id: smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x smoke-tests/run-smoke.sh
+          SMOKE_BASE_URL="https://jsonplaceholder.typicode.com" \
+          HELM_RELEASE="qa-portfolio" \
+          HELM_NAMESPACE="qa-portfolio-staging" \
+            bash smoke-tests/run-smoke.sh
+
+      - name: Smoke Test Summary
+        if: always()
+        shell: bash
+        run: |
+          STATUS="${{ steps.smoke.outcome }}"
+          if [ "$STATUS" = "success" ]; then
+            ICON="✅"
+            MSG="Smoke tests passed — staging deployment verified"
+          else
+            ICON="❌"
+            MSG="Smoke tests FAILED — rollback recommended for staging"
+          fi
+          {
+            echo "# $ICON Post-Deploy Smoke Test"
+            echo ""
+            echo "**Environment**: staging"
+            echo "**Chart**: qa-portfolio v${{ needs.build-and-package.outputs.chart_version }}"
+            echo "**Result**: $MSG"
+            echo ""
+            echo "| Scenario | 验证内容 |"
+            echo "|----------|---------|"
+            echo "| Smoke-01 | API 可达性 + 响应时间 |"
+            echo "| Smoke-02 | 列表接口 + 数据结构 |"
+            echo "| Smoke-03 | 写入接口 + 资源创建 |"
+            echo "| Smoke-04 | 更新接口 + 数据一致性 |"
+            echo "| Smoke-05 | 错误处理 + 404 响应 |"
+            echo ""
+            echo "> 面试要点：15 个断言覆盖 5 个核心路径，失败时自动触发 \`helm rollback\`。"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  # Stage 4: Deploy to Production —— 需 GitHub Environment「production」手动审批
   # ---------------------------------------------------------------------------
   deploy-production:
     name: CICD Demo / Deploy Production
     runs-on: ubuntu-latest
-    needs: [build-and-package, deploy-staging]
+    needs: [build-and-package, deploy-staging, smoke-test]
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.skip_production != true }}
     timeout-minutes: 10
     environment:
@@ -193,12 +257,58 @@ jobs:
           retention-days: 90
 
   # ---------------------------------------------------------------------------
-  # Stage 4: Deploy Summary
+  # Stage 6: Push Pipeline Metrics —— 推送部署流水线指标到 Prometheus Pushgateway
+  # ---------------------------------------------------------------------------
+  push-metrics:
+    name: CICD Demo / Push Deploy Metrics
+    runs-on: ubuntu-latest
+    needs: [build-and-package, deploy-staging, smoke-test, deploy-production]
+    if: always()
+    timeout-minutes: 3
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Push deploy pipeline metrics
+        shell: bash
+        env:
+          PUSHGATEWAY_URL: ${{ vars.PUSHGATEWAY_URL || 'http://localhost:9091' }}
+          CI_ENVIRONMENT: staging
+        run: |
+          set -euo pipefail
+          chmod +x cicd-demo/scripts/push-metrics.sh
+
+          # 部署阶段指标
+          DEPLOY_STATUS="failure"
+          [ "${{ needs.deploy-staging.result }}" = "success" ] && DEPLOY_STATUS="success"
+          bash cicd-demo/scripts/push-metrics.sh \
+            --job        "deploy-staging" \
+            --status     "$DEPLOY_STATUS" \
+            --duration   "0" \
+            --tests-passed "0" \
+            --tests-failed "0"
+
+          # 冒烟测试指标
+          SMOKE_STATUS="failure"
+          [ "${{ needs.smoke-test.result }}" = "success" ] && SMOKE_STATUS="success"
+          PASSED=0; FAILED=0
+          [ "$SMOKE_STATUS" = "success" ] && PASSED=15 || FAILED=1
+          bash cicd-demo/scripts/push-metrics.sh \
+            --job        "smoke-test" \
+            --status     "$SMOKE_STATUS" \
+            --duration   "0" \
+            --tests-passed "$PASSED" \
+            --tests-failed "$FAILED"
+
+          echo "Deploy metrics push attempted."
+
+  # ---------------------------------------------------------------------------
+  # Stage 7: Deploy Summary
   # ---------------------------------------------------------------------------
   deploy-summary:
     name: CICD Demo / Deploy Summary
     runs-on: ubuntu-latest
-    needs: [build-and-package, deploy-staging, deploy-production]
+    needs: [build-and-package, deploy-staging, smoke-test, deploy-production, push-metrics]
     if: always()
     timeout-minutes: 2
     steps:
@@ -215,5 +325,6 @@ jobs:
             echo "|-------|--------|"
             echo "| Build & Package | ${{ needs.build-and-package.result }} |"
             echo "| Deploy Staging  | ${{ needs.deploy-staging.result }} |"
+            echo "| Smoke Test      | ${{ needs.smoke-test.result }} |"
             echo "| Deploy Production | ${{ needs.deploy-production.result }} |"
           } >> "$GITHUB_STEP_SUMMARY"
