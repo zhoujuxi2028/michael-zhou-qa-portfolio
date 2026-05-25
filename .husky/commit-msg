@@ -1,88 +1,42 @@
 #!/bin/sh
-# commit-msg: Conventional Commits 校验
-#
-# 架构（G-12 迁移后）：
-#   - 规则定义: commitlint.config.js（extends @commitlint/config-conventional）
-#   - 执行器:   @commitlint/cli（通过 npx --no-install）
-#   - 兜底:     .github/workflows/commit-guard.yml 的 conventional-commits job
-#
-# 应急绕过（仅限审批后使用）：
-#   COMMIT_MSG_SKIP=1 git commit -m "..."
-#
-# 故障降级：如 node_modules 未安装（npm install 未执行），退回内建正则，避免阻断贡献者。
+# Validate commit message format (Conventional Commits)
+# 规则与 .github/workflows/commit-guard.yml 保持一致，避免本地通过但 CI 红灯：
+#   1. 格式: <type>(<scope>)?!?: <subject>
+#      types: feat|fix|docs|style|refactor|test|chore|ci|perf|build|revert
+#      scope 字符集: [a-z0-9._/-]+
+#   2. subject 长度 ≤ 72
+#   3. subject 末尾无英文/中文句号
 
-set -e
-
-MSG_FILE="$1"
-[ -f "$MSG_FILE" ] || { echo "✖ commit-msg: 无法读取 $MSG_FILE"; exit 1; }
-
-if [ "${COMMIT_MSG_SKIP:-0}" = "1" ]; then
-    echo "⚠  COMMIT_MSG_SKIP=1 已启用，跳过 commit-msg 校验"
-    exit 0
-fi
-
-REPO_ROOT=$(git rev-parse --show-toplevel)
-cd "$REPO_ROOT"
-
-# 空消息防线：commitlint 默认对纯空输入静默通过；git 默认虽阻止空提交，
-# 但 --allow-empty-message 会触达本 hook，因此在此显式拦截，避免空消息泄漏到历史。
-NON_COMMENT=$(grep -v '^#' "$MSG_FILE" | tr -d '[:space:]')
-if [ -z "$NON_COMMENT" ]; then
-    echo "✖ commit-msg: 提交消息为空（去除注释与空白后无内容）"
-    echo "  请提供符合 Conventional Commits 的消息，例如: feat(perf): add soak test profile"
-    exit 1
-fi
-
-# 忽略 git 自动生成的消息（与 commitlint.config.js ignores 一致，双重保险）
-FIRST_LINE=$(sed -n '1p' "$MSG_FILE")
-case "$FIRST_LINE" in
-    "Merge "*|"Revert \""*|"fixup! "*|"squash! "*|"amend! "*)
-        exit 0
-        ;;
+SUBJECT=$(head -n 1 "$1")
+# 忽略 fixup!/squash!/merge 自动 commit
+case "$SUBJECT" in
+  fixup!*|squash!*|"Merge "*|"Revert "*) exit 0 ;;
 esac
 
-# 优先使用 commitlint（G-12 目标）
-if [ -x "$REPO_ROOT/node_modules/.bin/commitlint" ]; then
-    exec npx --no-install commitlint --edit "$MSG_FILE"
-fi
-
-# --- 降级路径：commitlint 未安装时使用内建正则 ---
-echo "⚠  commitlint 未安装（缺少 node_modules）；使用内建正则降级校验"
-echo "   请执行 'npm install' 以启用完整的 commitlint 规则"
-
-CLEAN_MSG=$(grep -v '^#' "$MSG_FILE")
-SUBJECT=$(printf '%s\n' "$CLEAN_MSG" | sed -n '1p')
-LINE2=$(printf '%s\n' "$CLEAN_MSG" | sed -n '2p')
-TOTAL_LINES=$(printf '%s\n' "$CLEAN_MSG" | awk 'END { print NR }')
+PATTERN='^(feat|fix|docs|style|refactor|test|chore|ci|perf|build|revert)(\([a-z0-9._/-]+\))?!?: .+'
 
 fail() {
-    echo ""
-    echo "✖ commit-msg 校验失败: $1"
-    echo ""
-    echo "  规范示例:"
-    echo "    feat(perf): add soak test profile"
-    echo ""
-    echo "    支持 10h 长跑场景, RPS=500。"
-    echo ""
-    echo "    Refs: #123"
-    echo ""
-    echo "  当前消息:"
-    echo "    $SUBJECT"
-    echo ""
-    echo "  应急绕过: COMMIT_MSG_SKIP=1 git commit ..."
-    exit 1
+  echo "❌ Invalid commit message: $1"
+  echo ""
+  echo "   Subject: $SUBJECT"
+  echo ""
+  echo "   规范: <type>(<scope>)?!?: <subject>  (subject ≤ 72, 无末尾句号)"
+  echo "   types: feat|fix|docs|style|refactor|test|chore|ci|perf|build|revert"
+  echo "   scope 字符集: [a-z0-9._/-]+"
+  echo "   示例: feat(perf): add soak test scripts"
+  exit 1
 }
 
-SUBJECT_PATTERN='^(feat|fix|docs|style|refactor|test|chore|ci|perf|build|revert)(\([a-z0-9._/-]+\))?!?: .+'
-printf '%s' "$SUBJECT" | grep -qE "$SUBJECT_PATTERN" || fail "Subject 格式不符合 Conventional Commits"
-SUBJECT_LEN=$(printf '%s' "$SUBJECT" | wc -c)
-[ "$SUBJECT_LEN" -le 72 ] || fail "Subject 长度 $SUBJECT_LEN 超过 72 字符"
-case "$(printf '%s' "$SUBJECT" | tail -c 3)" in
-    *.)  fail "Subject 末尾不应带英文句号" ;;
-    *。) fail "Subject 末尾不应带中文句号" ;;
-esac
-if [ "$TOTAL_LINES" -gt 1 ] && [ -n "$LINE2" ]; then
-    fail "Subject 与 body 之间必须有空行分隔（第 2 行应为空）"
+if ! printf '%s' "$SUBJECT" | grep -qE "$PATTERN"; then
+  fail "格式不符合 Conventional Commits"
 fi
 
-exit 0
+LEN=${#SUBJECT}
+if [ "$LEN" -gt 72 ]; then
+  fail "subject 长度 $LEN > 72"
+fi
+
+case "$SUBJECT" in
+  *.)  fail "subject 末尾带英文句号" ;;
+  *。) fail "subject 末尾带中文句号" ;;
+esac
