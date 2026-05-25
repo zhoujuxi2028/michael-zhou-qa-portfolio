@@ -107,17 +107,18 @@ Test automation, performance testing, and DevOps demonstration projects.
 
 | Workflow | Project | Trigger | Purpose |
 |----------|---------|---------|---------|
-| `pipeline.yml` | cicd-demo | Push to main, manual | Full pipeline: Lint → Build → E2E → Deploy |
-| `pr-checks.yml` | cicd-demo | PR to main | Fast PR validation (2-3 min) |
+| `cicd-demo-pr.yml` | cicd-demo | PR to main (`cicd-demo/**`) | **PR Pipeline**: lint + unit/contract tests + Docker build + quick security scan + `pr-gate` 聚合 (< 5 min) |
+| `cicd-demo-deploy.yml` | cicd-demo | Push to main (`cicd-demo/**`), manual | **Deploy Pipeline**: Helm package → staging (auto) → production (manual approval) |
 | `docker-tests.yml` | cicd-demo | Nightly, manual | Docker regression tests |
 | `security-scan.yml` | cicd-demo | Push/PR, daily, manual | Trivy + npm audit → SARIF |
-| `helm-deploy.yml` | cicd-demo | Push to main (helm/**), PR | Helm chart validation & deploy |
 | `security-tests.yml` | security-testing-demo | Push/PR, weekly, manual | DVWA + Juice Shop + ZAP + dependency scan |
 | `k8s-ci.yml` | k8s-auto-testing-platform | Push/PR, manual | Code quality + unit tests + K8S integration |
 | `playwright-tests.yml` | playwright-demo | Push/PR to main | Cross-browser E2E (Chromium, Firefox, WebKit) |
 | `sid-iam-ci.yml` | sid-iam-testing-platform | Push/PR, manual | Code quality + unit tests + integration (138 tests) |
 | `microservice-ci.yml` | microservice-testing-platform | Push/PR | Lint → unit → contract → integration → E2E (101 tests) |
 | `performance-ci.yml` | performance-testing-platform | Push/PR | Lint → unit tests → k6 + JMeter smoke gate |
+
+> **PR → Merge → Deploy 端到端流程**：`cicd-demo` 演示了完整的 CI/CD 闭环 — PR 触发并行的 lint/unit-tests/build/security-scan 四个 job 经 `pr-gate` 聚合，合并到 `main` 后自动触发 `build-and-package` → `deploy-staging`（自动）→ `deploy-production`（手动审批）。详见 [cicd-demo/README.md#pr--merge--deploy-流程](./cicd-demo/README.md#pr--merge--deploy-流程) 的 ASCII / Mermaid 流程图与 Branch Protection 配置说明。
 
 ---
 
