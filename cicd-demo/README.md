@@ -353,37 +353,92 @@ Total Pods: 30+
 └───────────────────────────────────────────────────────────────────────┘
 ```
 
+#### PR → Merge → Deploy 端到端流程图（Mermaid）
+
 ```mermaid
-flowchart LR
-    PR[Open PR] --> Lint[lint]
-    PR --> UT[unit-tests]
-    PR --> Build[build]
-    PR --> Sec[security-scan]
-    Lint --> Gate[pr-gate]
-    UT --> Gate
-    Build --> Gate
-    Sec --> Gate
-    Gate -->|all green| Merge[Squash merge → main]
-    Merge --> Pkg[build-and-package]
-    Pkg --> Stg[deploy-staging<br/>auto]
-    Stg --> Prd[deploy-production<br/>manual approval]
-    Prd --> Sum[deploy-summary]
+flowchart TD
+    subgraph DEV["👤 开发者本地"]
+        Push[push feature branch]
+        OpenPR[Open PR → main]
+        Push --> OpenPR
+    end
+
+    subgraph PRP["🔍 PR Pipeline · cicd-demo-pr.yml<br/>on: pull_request"]
+        direction LR
+        Lint["CICD Demo / Lint<br/>ESLint"]
+        UT["CICD Demo / Unit Tests<br/>Postman + Helm + kubeconform"]
+        Build["CICD Demo / Build<br/>Docker Buildx"]
+        Sec["CICD Demo / Security Scan<br/>npm audit + Trivy"]
+        Gate["CICD Demo / PR Gate<br/>(aggregator · Required Check)"]
+        Lint --> Gate
+        UT --> Gate
+        Build --> Gate
+        Sec --> Gate
+    end
+
+    subgraph BP["🛡️ Branch Protection · main"]
+        Approve["Required reviewers ≥ 1<br/>+ pr-gate ✅"]
+    end
+
+    subgraph DEP["🚀 Deploy Pipeline · cicd-demo-deploy.yml<br/>on: push → main"]
+        direction TB
+        Pkg["build-and-package<br/>helm lint × 3 envs + helm package"]
+        Stg["deploy-staging<br/>🟢 Env: staging (auto)"]
+        Prd["deploy-production<br/>🔒 Env: production (manual approval)"]
+        Sum["deploy-summary<br/>GITHUB_STEP_SUMMARY"]
+        Pkg --> Stg --> Prd --> Sum
+    end
+
+    OpenPR --> Lint
+    OpenPR --> UT
+    OpenPR --> Build
+    OpenPR --> Sec
+    Gate -->|all green| Approve
+    Approve -->|Squash merge| Pkg
 ```
 
 ### Branch Protection 配置（Settings → Branches → `main`）
 
 为保证 PR 必须通过 PR Pipeline 才能合并，需在仓库设置中启用以下规则：
 
+**配置路径**：`GitHub Repo → Settings → Branches → Branch protection rules → Add rule`
+
 | 设置 | 取值 |
 |------|------|
+| Branch name pattern | `main` |
 | Require a pull request before merging | ✅ 开启 |
 | Require approvals | ≥ 1 |
+| Dismiss stale pull request approvals when new commits are pushed | ✅ 开启 |
 | Require status checks to pass before merging | ✅ 开启 |
-| Required status check | `CICD Demo / PR Gate` |
 | Require branches to be up to date before merging | ✅ 开启 |
 | Require conversation resolution before merging | ✅ 开启 |
+| Do not allow bypassing the above settings | ✅ 开启 |
 
-> `pr-gate` 是 `cicd-demo-pr.yml` 中 `needs: [lint, unit-tests, build, security-scan]` 的聚合 job，一处配置即可守住所有 PR 校验。任何子 job 失败时 `pr-gate` 也会失败。
+**必需 Status Checks**（与 `cicd-demo-pr.yml` 中 jobs 一一对应）：
+
+| Status Check 名称 | 来源 Job | 是否必需 |
+|-------------------|----------|----------|
+| `CICD Demo / PR Gate` | `pr-gate` (aggregator) | ✅ **唯一必需** |
+| `CICD Demo / Lint` | `lint` | ⚪ 可选（已被 pr-gate 聚合） |
+| `CICD Demo / Unit Tests` | `unit-tests` | ⚪ 可选（已被 pr-gate 聚合） |
+| `CICD Demo / Build` | `build` | ⚪ 可选（已被 pr-gate 聚合） |
+| `CICD Demo / Security Scan` | `security-scan` | ⚪ 可选（已被 pr-gate 聚合） |
+
+> 💡 **设计取舍**：`pr-gate` 通过 `needs: [lint, unit-tests, build, security-scan]` 聚合所有子 job，任何一个失败则 gate 失败。**只配置 `CICD Demo / PR Gate` 一项必需 check 即可**，避免新增/重命名子 job 时需要同步更新 branch protection（参考 CLAUDE.md "CI Job Naming Convention" 段对历史 required check 漂移的教训）。
+>
+> 如希望在 PR UI 中并排显示各子 job 状态以便排错，可将其他 4 项也加入必需 checks 列表（功能等价，仅 UI 表达不同）。
+
+**本地验证 Checklist**（提 PR 前确认）：
+
+- [ ] `cd cicd-demo && npm ci` 安装依赖成功
+- [ ] `npm run lint`（ESLint）无错误
+- [ ] `npm test`（如适用）通过
+- [ ] `helm lint helm/qa-portfolio --values helm/qa-portfolio/values-dev.yaml` 通过
+- [ ] `helm template ... | kubeconform -strict -summary -` 通过
+- [ ] `docker build -f Dockerfile.newman -t cicd-demo:pr-check .` 成功
+- [ ] `npm audit --omit=dev --audit-level=moderate` 无 ≥ moderate 漏洞
+- [ ] `trivy fs --severity HIGH,CRITICAL --exit-code 1 .` 无 HIGH/CRITICAL 漏洞
+- [ ] commit subject ≤ 72 字符（避免 PDEF-003 / Commit Guard 红灯）
 
 ### GitHub Environments 配置（Settings → Environments）
 
