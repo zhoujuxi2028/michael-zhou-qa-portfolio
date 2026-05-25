@@ -89,7 +89,7 @@
 
 | 日期 | 变更内容 | 操作人 |
 |------|----------|--------|
-| 2026-05-24 | 同步 `performance-testing-platform`：落实 `DEF-019` 实际修复（回退 `jest.config.js` 中 `scripts/analysis/**/*.js` 收集 + 调整 CI-COV-02 断言，覆盖率 68% → 95.77%）；`DEF-017` 状态改为 🟡 Deferred；新增 `DEF-022`（PR #255 commit-msg 合规失败，3 个 commit subject 违规，需 PR 维护者 rebase reword 后 force-push） | QA |
+| 2026-05-24 | DEF-022 状态修订：Agent 已尝试 `git filter-branch` 重写违规 subject，但受 `report_progress` 自动 rebase（patch-id 去重）影响无法 force-push；建议仓库维护者改 PR #257 base → `feature/performance-testing`（1 步解锁），或本地 force-push 重写后的历史 | QA |
 | 2026-05-24 | 同步 `performance-testing-platform`：登记 `DEF-019`（PR #255 覆盖率回归，P1 Blocking）、`DEF-020`（登记表断链，P2）、`DEF-021`（stage4 register 断链，P3）；活跃数更新为 9 | QA |
 | 2026-05-24 | 同步 `performance-testing-platform`：登记并关闭 `DEF-013`（#252，JMeter user.home 解析异常创建 `?` 目录）；活跃数更新为 6（补录 DEF-012） | QA |
 | 2026-05-24 | 登记并关闭 `PDEF-002`（`cicd-demo-pr.yml` 的 `pr-gate` job 继承 workflow 级 `working-directory: cicd-demo`，因不 checkout 仓库导致 bash 启动失败）；在 job 内显式覆盖 `working-directory: .`，附 RCA | QA |
