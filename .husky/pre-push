@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# pre-push hook
+# 在 push 前对待推送 commit 区间执行 Commit Guard 本地模拟，
+# 避免出现在 CI 才发现 subject 违规（DEF-022 复盘改进项）。
+
+set -e
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+GUARD="$REPO_ROOT/scripts/check-commit-guard.sh"
+
+if [ ! -x "$GUARD" ]; then
+    echo "warn: $GUARD not found or not executable; skipping Commit Guard pre-push check" >&2
+    exit 0
+fi
+
+# stdin 格式：<local_ref> <local_sha> <remote_ref> <remote_sha>
+# 对每一个待推送的 ref 区间跑一次校验。
+EXIT=0
+NULL_SHA="0000000000000000000000000000000000000000"
+
+while read -r LOCAL_REF LOCAL_SHA _REMOTE_REF REMOTE_SHA; do
+    # 跳过删除分支
+    [ "$LOCAL_SHA" = "$NULL_SHA" ] && continue
+
+    if [ "$REMOTE_SHA" = "$NULL_SHA" ]; then
+        # 新分支：与 origin/main 比较
+        BASE=$(git rev-parse --verify --quiet origin/main 2>/dev/null \
+            || git rev-parse --verify --quiet main 2>/dev/null \
+            || echo "")
+    else
+        BASE="$REMOTE_SHA"
+    fi
+
+    if [ -z "$BASE" ]; then
+        echo "warn: cannot determine base for $LOCAL_REF; skipping Commit Guard check" >&2
+        continue
+    fi
+
+    BASE_SHORT=$(git rev-parse --short "$BASE" 2>/dev/null || echo "$BASE")
+    HEAD_SHORT=$(git rev-parse --short "$LOCAL_SHA" 2>/dev/null || echo "$LOCAL_SHA")
+    echo "→ Commit Guard: checking ${BASE_SHORT}..${HEAD_SHORT} ($LOCAL_REF)"
+    if ! "$GUARD" "$BASE" "$LOCAL_SHA"; then
+        EXIT=1
+    fi
+done
+
+if [ "$EXIT" -ne 0 ]; then
+    echo ""
+    echo "❌ Commit Guard 本地校验失败，请 rebase reword 后重试。"
+    echo "   绕过（不推荐）：git push --no-verify"
+    exit 1
+fi

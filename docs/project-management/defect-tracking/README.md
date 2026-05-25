@@ -120,10 +120,12 @@
 | 阶段 | 缺陷处理动作 |
 |------|--------------|
 | 3. 开发 | 发现缺陷立即 Log Issue + 加入登记表（Triaged） |
-| 4. 测试 | Stage Gate 前盘点 Active Defects，P0/Blocking-P1 阻塞 Gate 通过 |
-| 5. 收尾 | PR 描述列出关联 Defect ID；合并后将 Closed 行搬迁到历史区 |
+| 4. 测试 | Stage Gate 前盘点 Active Defects，P0/Blocking-P1 阻塞 Gate 通过；**必须本地运行 [`scripts/check-commit-guard.sh`](../../../scripts/check-commit-guard.sh) 模拟 CI 的 Commit Guard 校验**（见 DEF-022 复盘） |
+| 5. 收尾 | PR 描述列出关联 Defect ID；合并后将 Closed 行搬迁到历史区；**确认 PR 实际 base 与描述声明的目标分支一致**（DEF-022 直接原因） |
 
 > 项目可在自身 `docs/qa/` 中维护 Stage 4 Gate Template 及缺陷快照；模板见 [`defect-register-template.md`](defect-register-template.md)。
+>
+> **本地 Commit Guard 模拟**：`scripts/check-commit-guard.sh [BASE] [HEAD]`（默认 `origin/main..HEAD`）。已挂载到 `.husky/pre-push`，push 前自动拦截 subject 违规。绕过仅在确认必要时使用 `git push --no-verify`。
 
 ## 9. 维护节奏
 
