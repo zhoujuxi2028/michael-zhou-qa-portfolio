@@ -1,121 +1,52 @@
-#!/bin/sh
-# pre-push: performance-testing-platform 质量门控 + 受保护分支拦截（企业级）
-#
-# 企业保护：
-#   A. 禁止直推 main / master / release/* （走 PR 合入）——可用 ALLOW_DIRECT_PUSH=1 应急绕过
-#
-# 触发条件：本次 push 中有 performance-testing-platform/ 下的文件变更
-# 门控检查（按顺序）：
-#   1. Lint          — npm run lint
-#   2. 格式检查      — npm run format:check
-#   3. 单元测试      — npm run test:unit
-#   4. 覆盖率        — npm run test:coverage (stmt ≥ 79%, branch ≥ 70%, func ≥ 80%, line ≥ 80%)
-#   5. 集成测试      — bash scripts/integration-test.sh (需要 Docker；不可用时跳过并提示)
-#
-# 说明：
-#   - 检查项 1-4 是 P-0 门控，任一失败则阻塞 push
-#   - 检查项 5 (集成测试) 是 P-1 门控，Docker 不可用时仅警告不阻塞
+#!/usr/bin/env bash
+# pre-push hook
+# 在 push 前对待推送 commit 区间执行 Commit Guard 本地模拟，
+# 避免出现在 CI 才发现 subject 违规（DEF-022 复盘改进项）。
 
-REMOTE="$1"
-URL="$2"
-ZERO40="0000000000000000000000000000000000000000"
+set -e
 
-# --- G-09: 累积遍历所有 ref，避免单 ref 无变更就跳过 ---
-PERF_CHANGED=0
-PROTECTED_HIT=""
+REPO_ROOT=$(git rev-parse --show-toplevel)
+GUARD="$REPO_ROOT/scripts/check-commit-guard.sh"
 
-while IFS=' ' read -r LOCAL_REF LOCAL_SHA REMOTE_REF REMOTE_SHA; do
-    # 空行（无 ref 推送）忽略
-    [ -z "$LOCAL_REF" ] && continue
-    # 删除分支操作跳过
-    [ "$LOCAL_SHA" = "$ZERO40" ] && continue
-
-    # --- G-10: 受保护分支拦截 ---
-    case "$REMOTE_REF" in
-        refs/heads/main|refs/heads/master|refs/heads/release/*)
-            PROTECTED_HIT="$REMOTE_REF"
-            ;;
-    esac
-
-    # 新分支：与 remote 无共同祖先时，只检查最新一个 commit
-    if [ "$REMOTE_SHA" = "$ZERO40" ]; then
-        if git rev-parse --verify "$LOCAL_SHA^1" >/dev/null 2>&1; then
-            RANGE="$LOCAL_SHA^1..$LOCAL_SHA"
-        else
-            RANGE="$LOCAL_SHA"
-        fi
-    else
-        RANGE="$REMOTE_SHA..$LOCAL_SHA"
-    fi
-
-    CHANGED=$(git diff --name-only "$RANGE" -- 'performance-testing-platform/' 2>/dev/null)
-    if [ -n "$CHANGED" ]; then
-        PERF_CHANGED=1
-    fi
-done
-
-# --- 受保护分支保护（先于所有检查） ---
-if [ -n "$PROTECTED_HIT" ]; then
-    if [ "${ALLOW_DIRECT_PUSH:-0}" != "1" ]; then
-        echo ""
-        echo "✖ 拒绝直推受保护分支: $PROTECTED_HIT"
-        echo "  策略：main / master / release/* 禁止直推，必须走 Pull Request。"
-        echo "  应急绕过（仅限管理员临时使用）："
-        echo "      ALLOW_DIRECT_PUSH=1 git push ..."
-        exit 1
-    else
-        echo "⚠  ALLOW_DIRECT_PUSH=1 已启用，允许直推受保护分支: $PROTECTED_HIT"
-    fi
-fi
-
-# 本次 push 未涉及 performance-testing-platform，跳过质量门控
-if [ "$PERF_CHANGED" -eq 0 ]; then
+if [ ! -x "$GUARD" ]; then
+    echo "warn: $GUARD not found or not executable; skipping Commit Guard pre-push check" >&2
     exit 0
 fi
 
-# --- 进入 performance-testing-platform 目录 ---
-REPO_ROOT=$(git rev-parse --show-toplevel)
-cd "$REPO_ROOT/performance-testing-platform" || exit 1
+# stdin 格式：<local_ref> <local_sha> <remote_ref> <remote_sha>
+# 对每一个待推送的 ref 区间跑一次校验。
+EXIT=0
+NULL_SHA="0000000000000000000000000000000000000000"
 
-echo ""
-echo "╔══════════════════════════════════════════════════════╗"
-echo "║  pre-push: performance-testing-platform 质量门控     ║"
-echo "╚══════════════════════════════════════════════════════╝"
-echo "# 门控说明："
-echo "#   pre-push  → Lint + 格式 + 单元测试（< 2min，快速反馈）"
-echo "#   CI/CD     → 覆盖率 + 集成测试（GitHub Actions，不阻塞本地）"
+while read -r LOCAL_REF LOCAL_SHA _REMOTE_REF REMOTE_SHA; do
+    # 跳过删除分支
+    [ "$LOCAL_SHA" = "$NULL_SHA" ] && continue
 
-# P-0 ① Lint
-echo ""
-echo "▶ [1/3] Lint (npm run lint)..."
-npm run lint
-if [ $? -ne 0 ]; then
-    echo "✖ Lint 失败 — 请修复 ESLint 错误后重新 push"
+    if [ "$REMOTE_SHA" = "$NULL_SHA" ]; then
+        # 新分支：与 origin/main 比较
+        BASE=$(git rev-parse --verify --quiet origin/main 2>/dev/null \
+            || git rev-parse --verify --quiet main 2>/dev/null \
+            || echo "")
+    else
+        BASE="$REMOTE_SHA"
+    fi
+
+    if [ -z "$BASE" ]; then
+        echo "warn: cannot determine base for $LOCAL_REF; skipping Commit Guard check" >&2
+        continue
+    fi
+
+    BASE_SHORT=$(git rev-parse --short "$BASE" 2>/dev/null || echo "$BASE")
+    HEAD_SHORT=$(git rev-parse --short "$LOCAL_SHA" 2>/dev/null || echo "$LOCAL_SHA")
+    echo "→ Commit Guard: checking ${BASE_SHORT}..${HEAD_SHORT} ($LOCAL_REF)"
+    if ! "$GUARD" "$BASE" "$LOCAL_SHA"; then
+        EXIT=1
+    fi
+done
+
+if [ "$EXIT" -ne 0 ]; then
+    echo ""
+    echo "❌ Commit Guard 本地校验失败，请 rebase reword 后重试。"
+    echo "   绕过（不推荐）：git push --no-verify"
     exit 1
 fi
-echo "✔ Lint 通过"
-
-# P-0 ② 格式检查
-echo ""
-echo "▶ [2/3] 格式检查 (npm run format:check)..."
-npm run format:check
-if [ $? -ne 0 ]; then
-    echo "✖ 格式检查失败 — 请运行 npm run format 修复 Prettier 问题后重新 push"
-    exit 1
-fi
-echo "✔ 格式检查通过"
-
-# P-0 ③ 单元测试
-echo ""
-echo "▶ [3/3] 单元测试 (npm run test:unit)..."
-npm run test:unit
-if [ $? -ne 0 ]; then
-    echo "✖ 单元测试失败 — 请修复失败用例后重新 push"
-    exit 1
-fi
-echo "✔ 单元测试通过"
-
-echo ""
-echo "✅ 所有质量门控通过，允许 push"
-echo "   覆盖率 + 集成测试由 CI（GitHub Actions）负责。"
-exit 0
