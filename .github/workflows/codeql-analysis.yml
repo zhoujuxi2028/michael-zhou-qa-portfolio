@@ -1,0 +1,63 @@
+name: CodeQL Analysis
+
+# REQ-CICD-01: 代码语义级漏洞扫描
+# 与 security-scan.yml (Trivy/npm audit) 互补：
+# - Trivy: 依赖漏洞 + 容器扫描
+# - CodeQL: 代码语义分析（XSS、SQL 注入、路径遍历等）
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/*.js'
+      - '**/*.py'
+      - '.github/workflows/codeql-analysis.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - '**/*.js'
+      - '**/*.py'
+      - '.github/workflows/codeql-analysis.yml'
+  schedule:
+    # 每周一 04:00 UTC 定期扫描，检测新披露的漏洞模式
+    - cron: '0 4 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: codeql-${{ github.ref }}-${{ matrix.language }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  analyze:
+    name: CodeQL / ${{ matrix.language }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript, python]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          # 使用默认查询套件 + security-extended 增强检测
+          queries: security-extended
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v4
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: '/language:${{ matrix.language }}'
