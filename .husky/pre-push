@@ -74,7 +74,13 @@ fi
 REPO_ROOT=$(git rev-parse --show-toplevel)
 GUARD="$REPO_ROOT/scripts/check-commit-guard.sh"
 
-if [ -x "$GUARD" ] && [ -n "$GUARD_BASE" ] && [ -n "$GUARD_HEAD" ]; then
+if [ -x "$GUARD" ] && [ -n "$GUARD_HEAD" ]; then
+    # Use merge-base with origin/main to only check commits that diverge from main,
+    # avoiding false positives when force-pushing rebased history that includes already-merged commits.
+    MERGE_BASE=$(git merge-base origin/main "$GUARD_HEAD" 2>/dev/null || echo "")
+    if [ -n "$MERGE_BASE" ]; then
+        GUARD_BASE="$MERGE_BASE"
+    fi
     BASE_SHORT=$(git rev-parse --short "$GUARD_BASE" 2>/dev/null || echo "$GUARD_BASE")
     HEAD_SHORT=$(git rev-parse --short "$GUARD_HEAD" 2>/dev/null || echo "$GUARD_HEAD")
     echo "→ Commit Guard: checking ${BASE_SHORT}..${HEAD_SHORT}"
