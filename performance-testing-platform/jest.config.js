@@ -9,12 +9,15 @@ module.exports = {
   // subprocesses (server-sh, preflight-check, integration-test-phase7-soak, lock).
   // Default (ncpu-1) saturates CPU → subprocess timeouts and jest-worker IPC crashes.
   maxWorkers: '50%',
+  // 阈值对齐 phase7-cicd.md §7.3.2 PERF-CI-COV-FR-003
+  // (statements ≥80%, branches ≥70%, functions ≥80%, lines ≥80%)
+  // 详见 docs/devops/phase7-gap-remediation-design.md §3.1
   coverageThreshold: {
     global: {
-      branches: 60,
-      functions: 60,
-      lines: 60,
-      statements: 60,
+      branches: 70,
+      functions: 80,
+      lines: 80,
+      statements: 80,
     },
   },
 };
