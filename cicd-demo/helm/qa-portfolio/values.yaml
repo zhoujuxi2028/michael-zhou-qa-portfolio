@@ -132,3 +132,26 @@ ingressClass:
   enabled: true
   name: nginx
   controller: k8s.io/ingress-nginx
+
+# --- Autoscaling (HPA) ---
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+# --- NetworkPolicy ---
+networkPolicy:
+  enabled: false
+  # 允许来自指定命名空间的入流量（例如：ingress-nginx）
+  allowFromNamespaces: []
+  #   - ingress-nginx
+
+# --- PodDisruptionBudget ---
+podDisruptionBudget:
+  enabled: false
+  # 至少保留 1 个 Pod 可用（与 minReplicas > 1 配合使用）
+  minAvailable: 1
+  # 或者：maxUnavailable: 1
+
