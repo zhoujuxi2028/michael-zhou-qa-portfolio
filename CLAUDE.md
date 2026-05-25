@@ -110,6 +110,32 @@ python3 -m venv venv && source venv/bin/activate
 - **Commit Convention**: 详见 [GIT-COMMIT-CONVENTION.md](docs/GIT-COMMIT-CONVENTION.md) - 格式统一、issue 关联、Copilot 署名
 - **Conventional Commits Format**: `<type>(<scope>): <subject> [#issue]`
 
+### ⚠️ Commit Subject 长度硬上限：72 字符（Cloud Agent 必读）
+
+`Commit Guard` workflow 强制校验 subject ≤ 72 字符，违规直接 PR 红灯阻塞合并。
+
+| 提交路径 | 是否触发 Husky 客户端防线 | 兜底 |
+|----------|---------------------------|------|
+| 本地 `git push` | ✅ `.husky/pre-push` 自动跑 `scripts/check-commit-guard.sh` | CI |
+| **Cloud Agent `report_progress`** | ❌ **不经过 Husky，客户端防线全部失效** | 仅 CI 事后拦截 |
+
+**Cloud Agent 提交规则（防 PDEF-003 / DEF-022 复发）**：
+
+1. **拟稿即心算字符数**：`<type>(<scope>): <subject> (#issue)` 中 type+scope+`(#NNN)` 通常占 18-22 字符；**描述空间 ≤ 50 字符**
+2. **超长信号词**：subject 含 "align / update / refactor + 多个名词列表 + (#issue)" 时几乎必超 72，必须缩写
+3. **常用安全模板**：
+   - `docs(<scope>): sync workflow names (#NNN)`（≤ 45）
+   - `fix(<scope>): <动词> <对象> (#NNN)`（≤ 50）
+   - 避免在 subject 罗列 ≥ 2 个工作流/文件名，搬到 body 描述
+4. **本地校验等价命令**（Agent 在 bash 中可直接验证拟稿 subject）：
+   ```bash
+   SUBJECT="docs(readme): sync workflow table (#242)"
+   echo "len=${#SUBJECT}"   # 必须 ≤ 72
+   ```
+5. **失败后**：受 `report_progress` patch-id 去重限制，Agent **无法**通过 filter-branch + push 重写已推送的违规 commit；必须由仓库维护者 squash-merge 或本地 force-push。预防优先于补救。
+
+参考：[PDEF-003 RCA](docs/project-management/postmortems/RCA-2026-05-25-PDEF-003-commit-subject-length.md)、[DEF-022](performance-testing-platform/docs/qa/defects/register.md)、[`scripts/check-commit-guard.sh`](scripts/check-commit-guard.sh)
+
 ### Feature Branches
 
 | Branch | Description | Status |
