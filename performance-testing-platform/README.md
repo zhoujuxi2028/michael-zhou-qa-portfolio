@@ -246,11 +246,34 @@ npm run k6:smoke             # 运行 smoke test → reports/k6-smoke.html
 
 ### Grafana 可视化
 
+> **前提**：需要 Docker（推荐 OrbStack）。Grafana 本身不产生数据，必须先跑测试把结果写入 InfluxDB，面板才有内容。
+
 ```bash
-docker compose up -d         # API + Grafana + InfluxDB
-npm run k6:load:influx       # 运行 load test，输出到 InfluxDB
-# 打开 http://localhost:3010  → k6 Results dashboard
+# 1. 启动 Grafana + InfluxDB 容器（不含 API，API 单独用 npm start）
+docker compose up -d influxdb grafana
+
+# 2. 等待 Grafana 就绪（返回 {"database":"ok"} 才算完成）
+curl -s http://localhost:3010/api/health
+
+# 3. 启动目标 API
+npm start
+
+# 4. 运行测试并将结果写入 InfluxDB
+npm run k6:smoke:influx      # 快速验证（smoke，约 1 分钟）
+# 或
+npm run k6:load:influx       # 负载测试（load，数据更丰富）
+
+# 5. 打开 Grafana
+open http://localhost:3010   # 左侧菜单 → Dashboards → k6 Results
 ```
+
+| 常见问题 | 原因 | 解决 |
+|---------|------|------|
+| 面板空白 | 未跑测试，InfluxDB 无数据 | 执行步骤 4 后刷新 |
+| 面板空白（有数据但不显示） | datasource uid 未固定，Grafana 重建后随机生成新 uid（DEF-014） | 已修复：`provisioning/datasources/*.yml` 已显式设置 `uid` |
+| 面板空白（502 proxy 错误） | 宿主机 Clash 代理被 Grafana 容器继承，内部请求走代理失败（DEF-015） | 已修复：`docker-compose.yml` Grafana 服务添加 `NO_PROXY=influxdb,localhost,127.0.0.1` |
+| 无法访问 3010 | 容器未启动 | 执行步骤 1-2 |
+| 容器启动慢 | OrbStack/Docker 冷启动 | 多等 30 秒再执行步骤 2 |
 
 ## 项目结构
 

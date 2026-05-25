@@ -69,7 +69,7 @@
 
 | 项目 | 登记表位置 | 当前活跃数 | 最近更新 |
 |------|------------|-----------|---------|
-| performance-testing-platform | [defects/register.md](../../../performance-testing-platform/docs/qa/defects/register.md) | 9（DEF-005、DEF-006、DEF-007、DEF-008、DEF-011、DEF-012、DEF-019、DEF-020、DEF-021） | 2026-05-24 |
+| performance-testing-platform | [defects/register.md](../../../performance-testing-platform/docs/qa/defects/register.md) | 10（DEF-005、DEF-006、DEF-007、DEF-008、DEF-011、DEF-012、DEF-017、DEF-019、DEF-020、DEF-021、DEF-022） | 2026-05-24 |
 | api-testing-demo | _(按需初始化，复制 [模板](defect-register-template.md))_ | — | — |
 | playwright-demo | _(按需初始化)_ | — | — |
 | selenium-demo | _(按需初始化)_ | — | — |
@@ -89,6 +89,7 @@
 
 | 日期 | 变更内容 | 操作人 |
 |------|----------|--------|
+| 2026-05-24 | DEF-022 状态修订：Agent 已尝试 `git filter-branch` 重写违规 subject，但受 `report_progress` 自动 rebase（patch-id 去重）影响无法 force-push；建议仓库维护者改 PR #257 base → `feature/performance-testing`（1 步解锁），或本地 force-push 重写后的历史 | QA |
 | 2026-05-24 | 同步 `performance-testing-platform`：登记 `DEF-019`（PR #255 覆盖率回归，P1 Blocking）、`DEF-020`（登记表断链，P2）、`DEF-021`（stage4 register 断链，P3）；活跃数更新为 9 | QA |
 | 2026-05-24 | 同步 `performance-testing-platform`：登记并关闭 `DEF-013`（#252，JMeter user.home 解析异常创建 `?` 目录）；活跃数更新为 6（补录 DEF-012） | QA |
 | 2026-05-24 | 登记并关闭 `PDEF-002`（`cicd-demo-pr.yml` 的 `pr-gate` job 继承 workflow 级 `working-directory: cicd-demo`，因不 checkout 仓库导致 bash 启动失败）；在 job 内显式覆盖 `working-directory: .`，附 RCA | QA |
