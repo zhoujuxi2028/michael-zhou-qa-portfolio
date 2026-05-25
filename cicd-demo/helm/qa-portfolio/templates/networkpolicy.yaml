@@ -1,0 +1,45 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "qa-portfolio.fullname" . }}-results-server
+  labels:
+    {{- include "qa-portfolio.resultsServer.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "qa-portfolio.resultsServer.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # 允许来自 Ingress 控制器的流量（HTTP/80）
+    - ports:
+        - port: 80
+          protocol: TCP
+    {{- if .Values.networkPolicy.allowFromNamespaces }}
+    # 允许来自指定命名空间的流量
+    - from:
+        {{- range .Values.networkPolicy.allowFromNamespaces }}
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ . | quote }}
+        {{- end }}
+      ports:
+        - port: 80
+          protocol: TCP
+    {{- end }}
+  egress:
+    # 允许 DNS 查询
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    # 允许访问外部 API（测试目标）
+    - ports:
+        - port: 443
+          protocol: TCP
+        - port: 80
+          protocol: TCP
+{{- end }}

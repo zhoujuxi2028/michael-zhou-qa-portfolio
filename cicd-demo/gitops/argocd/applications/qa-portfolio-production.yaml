@@ -1,0 +1,75 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: qa-portfolio-production
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    environment: production
+    team: qa
+    project: qa-portfolio
+  annotations:
+    # 生产环境需要手动触发同步，禁止自动 prune
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: qa-portfolio
+
+  source:
+    repoURL: https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio.git
+    targetRevision: main
+    path: cicd-demo/helm/qa-portfolio
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-production.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: qa-portfolio-prod
+
+  syncPolicy:
+    automated:
+      # 生产环境：禁止自动 selfHeal，防止意外回滚
+      selfHeal: false
+      # 生产环境：禁止自动 prune，防止误删资源
+      prune: false
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - Validate=true
+      - ServerSideApply=false
+      # 生产环境：最后才执行 prune，降低风险
+      - PruneLast=true
+      # 生产环境：使用 Replace 策略，确保资源完整更新
+      - RespectIgnoreDifferences=true
+    retry:
+      limit: 2
+      backoff:
+        duration: 30s
+        maxDuration: 10m
+        factor: 2
+
+  # 忽略 Deployment 的副本数与注解（可能被 HPA 或其他控制器修改）
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/template/metadata/annotations
+    - group: autoscaling
+      kind: HorizontalPodAutoscaler
+      jsonPointers:
+        - /spec/metrics
+
+  # 健康检查自定义（可选，ArgoCD 默认会检测 Deployment、Job 等资源状态）
+  info:
+    - name: Description
+      value: "Production deployment of QA Portfolio — requires manual sync approval"
+    - name: Environment
+      value: "production"
+    - name: Namespace
+      value: "qa-portfolio-prod"
