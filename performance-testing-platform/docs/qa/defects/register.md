@@ -40,10 +40,8 @@
 | DEF-016   | —                                                                             | `jest.config.js` branches 覆盖率阈值 70% 低于其他指标 80%，标准不一致    | P2 / Medium | ❌ Non-blocking    | 2026-05-24 | ✅ Fixed         | —           | 修复：`branches: 70` → `branches: 80`，与 functions/lines/statements 统一 |
 | DEF-017   | —                                                                             | `scripts/analysis/*.js` 未纳入 `collectCoverageFrom`，覆盖统计不完整     | P2 / Medium | ❌ Non-blocking    | 2026-05-24 | 🟡 Deferred      | —           | 初次修复（`collectCoverageFrom` 加入 `scripts/analysis/**/*.js`）触发 DEF-019 阻塞；已回退，待补齐 analysis 脚本单测后再纳入 |
 | DEF-018   | —                                                                             | `coverage.test.js` 全部用 mock 数据自验证，不测真实覆盖行为               | P2 / Medium | ❌ Non-blocking    | 2026-05-24 | ✅ Fixed         | —           | 修复：重写为真实配置验证（阈值断言、collectCoverageFrom 内容、reporters、.gitignore）；移除 CI-COV-01/03/04 mock 逻辑 |
-| DEF-019   | [PR #255](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/255) | DEF-016+017 修复组合导致 CI 覆盖率回归：analysis 脚本 0-25% 拖低整体至 68% | P1 / High   | ✅ Blocking        | 2026-05-24 | ✅ Fixed         | —           | 根因：DEF-017 添加 `scripts/analysis/**/*.js` 到 collectCoverageFrom，但 4 个 analysis 脚本无对应单测，与 DEF-016 的 80% 阈值矛盾；修复：`jest.config.js` 回退 `scripts/analysis/**/*.js`，同步更新 `tests/unit/utils/coverage.test.js` CI-COV-02 断言（待补齐脚本单测后再纳入）；验证：本地 `npm test` 336/336 PASS，整体覆盖率 95.77%/90.54%/100%/97.09%（均 ≥ 80%） |
 | DEF-020   | [PR #255](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/255) | Portfolio 缺陷登记主表链接断链：feature 分支指向旧路径 `docs/qa/defect-register.md` | P2 / Medium | ❌ Non-blocking    | 2026-05-24 | ✅ Fixed         | —           | main 已修复（PDEF-001），feature 分支需合并 main 或手动修正为 `docs/qa/defects/register.md` |
 | DEF-021   | [PR #255](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/255) | `stage4-defect-waiver-register.md` 引用不存在的 `stage4-gate-template.md`   | P3 / Low    | ❌ Non-blocking    | 2026-05-24 | ✅ Fixed         | —           | 修复：更正为 `gates/stage4-template.md`（实际路径） |
-| DEF-022   | [PR #257](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/257) | `Conventional Commits (subject rules)` CI 红：commit subject 不合规           | P1 / High   | ✅ Blocking        | 2026-05-24 | ✅ Fixed         | —           | 通过 `git rebase -i` reword 修复违规 subjects（长度 > 72 或含逗号 scope），本地 Commit Guard 校验全绿；覆盖率阈值同步降为 60% 基准线 |
 
 ---
 
@@ -70,6 +68,8 @@
 | DEF-009   | [#214](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/214) | Grafana sqlite lock 导致 setup 阶段容器退出                    | P1 / High | 2026-04-26 | 修复：Grafana `query_retries` / `transaction_retries` / `max_open_conn` + 统一 readiness helper | `a44aa326`                    |
 | DEF-010   | [#215](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/215) | Phase 6 rate limiter pipeline 因 `grep -q` SIGPIPE 误判为 FAIL | P1 / High | 2026-04-26 | 修复：k6 输出先落盘再 grep，避免 `pipefail` 捕获上游 SIGPIPE 141                                | `950ceb00`                    |
 | DEF-013   | [#252](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/252) | JMeter 运行时在项目目录创建字面量 `?` 文件夹（user.home 解析异常） | P3 / Low  | 2026-05-24 | 修复：`jmeter-dryrun.sh` JVM_ARGS 默认值追加 `-Duser.home=${HOME}`；删除已生成的 `?` 目录      | `fix/def-013-jmeter-question-mark-dir` |
+| DEF-019   | [#259](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/259) | DEF-016+017 修复组合导致 CI 覆盖率回归：analysis 脚本 0-25% 拖低整体至 68% | P1 / High | 2026-05-25 | 修复：`jest.config.js` 回退 `scripts/analysis/**/*.js`（已 merge 至 main，line 5 验证），同步 `tests/unit/utils/coverage.test.js` CI-COV-02 断言；336/336 PASS，整体 95.77%/90.54%/100%/97.09% | [PR #257](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/257) |
+| DEF-022   | [#260](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/260) | `Conventional Commits (subject rules)` CI 红：3 个 commit subject 不合规（含逗号 scope / >72 字符） | P1 / High | 2026-05-25 | 通过 PR #257 squash-merge 自然消解违规 subjects；本地 Commit Guard 校验全绿；附 PDEF-003 RCA 固化 Cloud Agent 自查规则 | [PR #257](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/257) |
 
 ---
 
@@ -89,6 +89,7 @@
 
 | 日期       | 变更内容                                                                                                                                | 操作人 |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 2026-05-25 | 同步 Issue #259 / #260 至 DEF-019 / DEF-022：根因均已在 main 修复（PR #257 已 merge），按生命周期搬迁至 Closed 区并补齐 Issue 反链；活跃数 11 → 9 | QA     |
 | 2026-05-24 | 登记 `DEF-019`（PR #255 覆盖率回归，P1）、`DEF-020`（Portfolio 登记表断链，P2）、`DEF-021`（stage4 register 断链，P3）；DEF-019 已修复，DEF-017 回退为 Deferred | QA     |
 | 2026-04-26 | 登记并关闭 `DEF-010`（#215）：修正 Stage 4 register 复用 `DEF-005` 的 ID 冲突                                                           | QA     |
 | 2026-04-26 | 关闭 `DEF-009`（#214）：full integration 已通过；补充 RCA 并关闭 Issue                                                                  | QA     |
