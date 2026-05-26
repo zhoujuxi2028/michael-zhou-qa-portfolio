@@ -36,7 +36,10 @@ docs/
 | 查看事故升级矩阵 | [INCIDENT-ESCALATION.md](INCIDENT-ESCALATION.md) |
 | 查看 5 阶段开发流程 | [dev-process-checklist.md](dev-process-checklist.md) |
 | 查看提交规范 | [GIT-COMMIT-CONVENTION.md](GIT-COMMIT-CONVENTION.md) |
+| 查看计划模板 | [plan-template.md](plan-template.md) |
 | 查看环境/操作指南 | [process/](process/) |
+| 查看统一质量门禁基线 | [process/portfolio-quality-gate-baseline.md](process/portfolio-quality-gate-baseline.md) |
+| 查看测试数据与环境标准 | [process/test-data-environment-standard.md](process/test-data-environment-standard.md) |
 | 查看 GitHub Labels 策略 | [process/label-strategy.md](process/label-strategy.md) |
 | **查看 Portfolio 缺陷跟踪系统** | **[project-management/defect-tracking/](project-management/defect-tracking/)** |
 | 查看 Portfolio 级 postmortem | [project-management/postmortems/](project-management/postmortems/) |
@@ -49,6 +52,10 @@ docs/
 ## 最近新增
 
 - [project-management/defect-tracking/](project-management/defect-tracking/) — Portfolio 级"文档化的问题/缺陷跟踪系统"（v1.0，2026-04-25）
+- [process/portfolio-quality-gate-baseline.md](process/portfolio-quality-gate-baseline.md) — 统一质量门禁与治理基线（v1.0，2026-05-25）
+- [process/test-data-environment-standard.md](process/test-data-environment-standard.md) — 测试数据与环境一致性标准（v1.0，2026-05-25）
+- [project-management/defect-tracking/flaky-register.md](project-management/defect-tracking/flaky-register.md) — Flaky 分级与治理登记表
+- [project-management/defect-tracking/dependency-risk-sla.md](project-management/defect-tracking/dependency-risk-sla.md) — 依赖风险修复 SLA
 - [process/copilot-cloud-agent-ci-architecture.md](process/copilot-cloud-agent-ci-architecture.md) — Copilot cloud agent CI 架构说明
 - [design/specs/2026-04-23-copilot-cloud-agent-ci-optimization-design.md](design/specs/2026-04-23-copilot-cloud-agent-ci-optimization-design.md) — Copilot cloud agent CI 优化设计
 - [reports/RCA-copilot-cloud-agent-runtime.md](reports/RCA-copilot-cloud-agent-runtime.md) — Copilot cloud agent 耗时 RCA
