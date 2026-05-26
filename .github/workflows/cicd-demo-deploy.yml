@@ -256,6 +256,7 @@ jobs:
 
   # ---------------------------------------------------------------------------
   # Stage 5: Deploy Summary
+  # 不继承 workflow 级 working-directory，该 job 无需 checkout
   # ---------------------------------------------------------------------------
   deploy-summary:
     name: CICD Demo / Deploy Summary
@@ -263,6 +264,9 @@ jobs:
     needs: [build-and-package, deploy-staging, smoke-test-staging, deploy-production]
     if: always()
     timeout-minutes: 2
+    defaults:
+      run:
+        working-directory: .
     steps:
       - name: Print summary
         shell: bash
