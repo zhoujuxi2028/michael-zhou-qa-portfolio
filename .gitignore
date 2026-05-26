@@ -9,3 +9,5 @@ coverage/
 # Node
 node_modules/
 .secretsallow
+.DS_Store
+**/.DS_Store

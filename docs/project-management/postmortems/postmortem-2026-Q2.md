@@ -140,7 +140,7 @@ Q1 期间三次 CI 故障（#35 trivy Node 20 / #37 ZAP 权限变更 / #39 k6 ac
 
 #### 修复措施
 
-创建 `docs/guides/third-party-action-audit.md`，包含：
+创建 `docs/process/third-party-action-audit.md`，包含：
 1. **当前 action 清单**（14 个 action，版本、用途、已知问题、状态）
 2. **季度巡检 Checklist**（版本检查、已知问题跟踪、权限模型检查、Node.js 兼容性）
 3. **升级操作规范**（全量扫描 → changelog → 全 trigger 路径验证 → 故意失败验证）
@@ -187,7 +187,7 @@ Q1 期间三次 CI 故障（#35 trivy Node 20 / #37 ZAP 权限变更 / #39 k6 ac
 |-------|---------|---------|------|
 | #87 | 配置修复 | `security-testing-demo/.zap/rules.tsv` | ✅ 已提交 |
 | #87 | Workflow 修复 | `.github/workflows/security-tests.yml` | ✅ 已提交 |
-| #71 | 新建文档 | `docs/guides/third-party-action-audit.md` | ✅ 已提交 |
+| #71 | 新建文档 | `docs/process/third-party-action-audit.md` | ✅ 已提交 |
 | #75 | 验证已完成 | `.github/workflow-template.yml`（已存在） | ✅ 已验证 |
 | #77 | 验证已完成 | `performance-testing-platform/docs/architecture/architecture.md`（已有行号） | ✅ 已验证 |
 
@@ -202,7 +202,7 @@ Q1 期间三次 CI 故障（#35 trivy Node 20 / #37 ZAP 权限变更 / #39 k6 ac
 | ZAP 扫描靶机时，`allow_issue_writing: false` + rules.tsv IGNORE 预期告警 | #87 |
 | 配置修复后，在 CLAUDE.md/文档中固化，防止回归 | #87 配置回归模式 |
 | 改进计划 issue open 超 2 周未处理，下次 sprint 优先级提升 | #71 #75 #77 延迟模式 |
-| 第三方 action 季度巡检：见 `docs/guides/third-party-action-audit.md` | #71 |
+| 第三方 action 季度巡检：见 `docs/process/third-party-action-audit.md` | #71 |
 
 ---
 
@@ -210,5 +210,5 @@ Q1 期间三次 CI 故障（#35 trivy Node 20 / #37 ZAP 权限变更 / #39 k6 ac
 
 | 风险 | 描述 | 缓解措施 |
 |------|------|---------|
-| trivy-action 内部 Node 20 警告 | `aquasecurity/trivy-action@v0.35.0` 内部依赖 `actions/cache@v4.2.4`（Node 20），GitHub 最终会强制停用 | 每季度巡检时复查上游 trivy-action 是否发布修复版本（见 `docs/guides/third-party-action-audit.md` #35 章节） |
+| trivy-action 内部 Node 20 警告 | `aquasecurity/trivy-action@v0.35.0` 内部依赖 `actions/cache@v4.2.4`（Node 20），GitHub 最终会强制停用 | 每季度巡检时复查上游 trivy-action 是否发布修复版本（见 `docs/process/third-party-action-audit.md` #35 章节） |
 | 本专题改进项需持续防回归 | #71 #75 #77 对应修复已落地，但后续新增 workflow / 文档若不复用规范，仍可能回退 | 在季度 action 审计、workflow 评审、设计文档 review 中持续复核 |
