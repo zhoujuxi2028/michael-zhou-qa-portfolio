@@ -110,6 +110,28 @@ if [ -x "$MD_LINK_SCRIPT" ] && [ -n "$GUARD_HEAD" ] && [ -n "$GUARD_BASE" ]; the
     fi
 fi
 
+# --- Workflow 文档同步检查（.github/workflows/*.yml 变更时）---
+# PDEF-006: pre-push hook 未覆盖 workflow 文档同步检查
+SYNC_SCRIPT="$REPO_ROOT/scripts/check-workflow-doc-sync.sh"
+if [ -x "$SYNC_SCRIPT" ] && [ -n "$GUARD_HEAD" ] && [ -n "$GUARD_BASE" ]; then
+    WF_LIST=$(git diff --name-only "${GUARD_BASE}..${GUARD_HEAD}" 2>/dev/null | grep '^\.github/workflows/.*\.ya\?ml$' || true)
+    if [ -n "$WF_LIST" ]; then
+        TMP_CHANGED=$(mktemp)
+        echo "$WF_LIST" > "$TMP_CHANGED"
+        echo "→ Workflow doc sync: checking $(echo "$WF_LIST" | wc -l | tr -d ' ') workflow file(s)"
+        if ! (cd "$REPO_ROOT" && "$SYNC_SCRIPT" "$TMP_CHANGED"); then
+            rm -f "$TMP_CHANGED"
+            echo ""
+            echo "✖ Workflow 文档未同步 — 请在 README.md 和 CLAUDE.md 中登记变更的 workflow 文件名"
+            echo "   绕过（不推荐）：git push --no-verify"
+            exit 1
+        fi
+        rm -f "$TMP_CHANGED"
+    else
+        echo "→ Workflow doc sync: no workflow changes, skip"
+    fi
+fi
+
 # 本次 push 未涉及 performance-testing-platform，跳过质量门控
 if [ "$PERF_CHANGED" -eq 0 ]; then
     exit 0

@@ -203,6 +203,16 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 bash scripts/check-markdown-links.sh   # 检查变更的 .md 文件相对路径
 ```
 
+### 变更 `.github/workflows/*.yml` 时
+
+```bash
+git diff --name-only origin/main...HEAD > /tmp/changed-files.txt
+bash scripts/check-workflow-doc-sync.sh /tmp/changed-files.txt
+rm /tmp/changed-files.txt
+```
+
+> pre-push hook 已自动执行此检查（PDEF-006 修复后）。手动运行用于本地提前验证。
+
 ### Python Projects
 
 ```bash
