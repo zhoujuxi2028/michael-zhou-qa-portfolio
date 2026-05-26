@@ -131,6 +131,14 @@ GitHub → Actions → [Workflow Name] → Run workflow
 - [ ] No new environment assumptions
 ```
 
+**文档防漂移自动检查（仓库级）**
+
+```bash
+bash scripts/check-workflow-doc-sync.sh changed-files.txt
+```
+
+用途：当 `.github/workflows/*.yml` 变更时，自动校验根 `README.md` 与 `CLAUDE.md` 是否同步了 workflow 名称。
+
 ## Integration with Dev Process
 
 **位置:** `docs/dev-process-checklist.md` — Phase 4 (Testing)

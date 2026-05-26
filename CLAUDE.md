@@ -163,6 +163,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `cicd-demo-deploy.yml` | cicd-demo | Deploy Pipeline: Helm package → staging (auto) → production (manual approval) |
 | `k8s-ci.yml` | k8s-auto-testing-platform | K8S CI (code quality, unit tests, integration) |
 | `performance-ci.yml` | performance-testing-platform | Lint → unit tests → k6 + JMeter smoke gate |
+| `nightly-soak.yml` | performance-testing-platform | Scheduled: nightly soak-short + weekly capacity test, artifact retention 30 days |
 | `security-tests.yml` | security-testing-demo | Security tests (DVWA, Juice Shop, ZAP, OWASP Top 10) |
 | `sid-iam-ci.yml` | sid-iam-testing-platform | SID IAM CI (code quality, unit tests, integration) |
 | `docker-tests.yml` | cicd-demo | Docker-based nightly regression tests |
