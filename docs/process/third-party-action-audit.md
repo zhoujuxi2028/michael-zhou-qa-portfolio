@@ -29,6 +29,9 @@
 | `aquasecurity/trivy-action` | v0.35.0 | 漏洞扫描 | 内部依赖 `actions/cache@v4.2.4` (Node 20)，非阻断性 | ⚠️ 已记录 (#35) |
 | `zaproxy/action-baseline` | v0.15.0 | ZAP DAST 基线扫描 | v0.9+ 改变权限模型，workflow_dispatch 下 write 受限 | ✅ 已修复 (#37)，`allow_issue_writing: false` |
 | `github/codeql-action/upload-sarif` | v4 | SARIF 上传 | 无 | ✅ 正常 |
+| `github/codeql-action/init` | v4 | CodeQL 初始化 | 无 | ✅ 正常 |
+| `github/codeql-action/autobuild` | v4 | CodeQL 自动构建 | 无 | ✅ 正常 |
+| `github/codeql-action/analyze` | v4 | CodeQL 分析执行 | 无 | ✅ 正常 |
 | `docker/setup-buildx-action` | v4 | Docker Buildx | 无 | ✅ 正常 |
 | `azure/setup-helm` | v5 | Helm 安装 | 无 | ✅ 正常 |
 | `helm/kind-action` | v1 | Kind K8s 集群 | 无 | ✅ 正常 |

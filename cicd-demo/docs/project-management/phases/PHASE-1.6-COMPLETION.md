@@ -60,8 +60,7 @@ kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-alertmanager 9
 
 ## Related Documentation
 
-- Monitoring details: [monitoring/MONITORING.md](../monitoring/MONITORING.md)
-- Interview prep: [INTERVIEW-GUIDE.md](./INTERVIEW-GUIDE.md)
+- Monitoring details: [monitoring/MONITORING.md](../../../monitoring/MONITORING.md)
 
 ---
 
