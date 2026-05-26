@@ -116,13 +116,39 @@ alertmanager:
     global:
       resolve_timeout: 5m
     route:
-      group_by: ['alertname', 'cluster']
-      group_wait: 10s
-      group_interval: 10s
-      repeat_interval: 12h
-      receiver: 'null'
+      group_by: ['alertname', 'cluster', 'namespace']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 4h
+      receiver: 'default'
+      routes:
+        # 测试任务失败 — 高优先级，立即通知
+        - match:
+            team: qa
+          receiver: 'qa-team'
+          group_wait: 10s
+          repeat_interval: 1h
+        # 基础设施告警 — 标准优先级
+        - match:
+            team: infra
+          receiver: 'infra-team'
     receivers:
-      - name: 'null'
+      # 默认接收器（演示环境：记录到日志，不发送通知）
+      - name: 'default'
+      # QA 团队接收器（生产环境配置 Slack/PagerDuty）
+      - name: 'qa-team'
+        # 生产环境取消注释并配置 Slack webhook：
+        # slack_configs:
+        #   - api_url: '{{ .SlackWebhookURL }}'
+        #     channel: '#qa-alerts'
+        #     title: '{{ .GroupLabels.alertname }}'
+        #     text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+      # 基础设施团队接收器
+      - name: 'infra-team'
+        # 生产环境取消注释并配置 PagerDuty：
+        # pagerduty_configs:
+        #   - routing_key: '{{ .PagerDutyRoutingKey }}'
+        #     description: '{{ .GroupLabels.alertname }}'
 
 
 # Node Exporter - Per-node metrics

@@ -44,3 +44,22 @@ ingress:
       paths:
         - path: /
           pathType: Prefix
+
+# 生产环境启用 HPA（需要 Metrics Server）
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+# 生产环境启用 NetworkPolicy（网络隔离）
+networkPolicy:
+  enabled: true
+  allowFromNamespaces:
+    - ingress-nginx
+
+# 生产环境启用 PodDisruptionBudget（高可用保障）
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
