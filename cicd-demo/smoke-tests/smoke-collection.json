@@ -1,0 +1,166 @@
+{
+  "info": {
+    "name": "CI/CD Smoke Tests — Post-Deploy Verification",
+    "description": "轻量冒烟套件：每次部署后验证核心路径可用。面试要点：部署成功≠功能正常，CD出口必须有自动化验收。",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://jsonplaceholder.typicode.com",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Smoke-01: Health Check — API 可达性",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/users/1"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[Smoke] API 可达，状态码 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"[Smoke] 响应时间 < 3000ms\", function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+              "});",
+              "",
+              "pm.test(\"[Smoke] Content-Type 为 JSON\", function () {",
+              "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Smoke-02: 数据读取 — 列表接口",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/posts"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[Smoke] 列表接口返回 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"[Smoke] 响应为非空数组\", function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body).to.be.an('array').and.have.length.above(0);",
+              "});",
+              "",
+              "pm.test(\"[Smoke] 列表项含必要字段\", function () {",
+              "    const item = pm.response.json()[0];",
+              "    pm.expect(item).to.have.property('id');",
+              "    pm.expect(item).to.have.property('title');",
+              "    pm.expect(item).to.have.property('userId');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Smoke-03: 数据写入 — 创建资源",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{baseUrl}}/posts",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\": \"Smoke Test Post\", \"body\": \"Post-deploy smoke verification\", \"userId\": 1}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[Smoke] 创建资源返回 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"[Smoke] 响应包含分配的 ID\", function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body).to.have.property('id');",
+              "    pm.expect(body.id).to.be.a('number');",
+              "});",
+              "",
+              "pm.test(\"[Smoke] 写入数据与请求一致\", function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.title).to.equal('Smoke Test Post');",
+              "    pm.expect(body.userId).to.equal(1);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Smoke-04: 数据更新 — 修改资源",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{baseUrl}}/posts/1",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"id\": 1, \"title\": \"Smoke Updated\", \"body\": \"Updated by smoke test\", \"userId\": 1}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[Smoke] 更新资源返回 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"[Smoke] 更新内容反映在响应中\", function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.title).to.equal('Smoke Updated');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Smoke-05: 错误处理 — 404 场景",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/posts/99999"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[Smoke] 不存在资源返回 404\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test(\"[Smoke] 错误响应时间 < 3000ms\", function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

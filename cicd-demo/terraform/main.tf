@@ -20,6 +20,24 @@ locals {
   )
 }
 
+# S3 桶加密使用的 KMS Customer Managed Key
+resource "aws_kms_key" "s3" {
+  description             = "${local.name_prefix} S3 encryption key"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+
+  tags = {
+    Name        = "${local.name_prefix}-s3-kms"
+    Environment = var.environment
+  }
+}
+
+# KMS 别名（便于运维识别）
+resource "aws_kms_alias" "s3" {
+  name          = "alias/${local.name_prefix}-s3"
+  target_key_id = aws_kms_key.s3.key_id
+}
+
 # ==============================================================================
 # S3 Bucket - Artifacts Storage
 # ==============================================================================
@@ -55,7 +73,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "artifacts" {
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      sse_algorithm     = "aws:kms"
+      kms_master_key_id = aws_kms_key.s3.arn
     }
   }
 }
@@ -130,7 +149,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" 
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      sse_algorithm     = "aws:kms"
+      kms_master_key_id = aws_kms_key.s3.arn
     }
   }
 }
