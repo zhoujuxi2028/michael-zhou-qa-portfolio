@@ -1,4 +1,4 @@
-name: K8S Auto Testing Platform CI
+name: K8S Testing CI
 
 on:
   push:
