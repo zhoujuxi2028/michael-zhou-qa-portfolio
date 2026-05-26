@@ -55,7 +55,7 @@
 | PDEF-003 | N/A | PR #262（`copilot/feat-add-pr-pipeline`）head commit `8d3d124` subject `docs(readme): align workflow table with cicd-demo PR/Deploy pipelines (#242)` 长度 76 > 72，`Commit Guard / Conventional Commits (subject rules)` 在 run #26380345263 / job #77648244381 报红；Cloud Agent 经 `report_progress` 提交时绕过 Husky `pre-push`，原本部署的 `scripts/check-commit-guard.sh` 防线失效 | 仓库级 / CI + 流程 | P2 | 2026-05-25 | 在根 `CLAUDE.md` Git Workflow 章节固化 Agent commit subject ≤ 72 字符与字符数自查规则；附 RCA。修复 commit 自身需仓库维护者 squash-merge 或本地 force-push（Agent 受 report_progress patch-id 去重限制无法重写） | PR #262 / [RCA](../postmortems/RCA-2026-05-25-PDEF-003-commit-subject-length.md) |
 | PDEF-004 | N/A | `docs/guides/label-strategy.md` 指向 `performance-testing-platform/docs/qa/reports/phase6-stage4-verification-report.md` 的 Markdown 链接断链（真实路径为 `docs/qa/reports/execution/phase6-stage4-verification-report.md`），导致 PR #269 在 `Repository Meta CI / lint`（run #26429424413，job #77799391938）报红 | 仓库级 / docs 治理 | P2 | 2026-05-26 | 修正链接到 `reports/execution` 实际路径；登记缺陷并补充 RCA | PR #269 / [RCA](../postmortems/RCA-2026-05-26-PDEF-004-label-strategy-broken-link.md) |
 | PDEF-004 | N/A | PR #270（`copilot/optimize-cicd-demo`）`CICD Demo / Terraform CI` 在 run #26407541306 失败：`Terraform Security` 命中 `AVD-AWS-0132 (HIGH)`（`cicd-demo/terraform/main.tf` 两处 S3 SSE 使用 `AES256` 而非 CMK），导致 `Terraform Gate` 二次失败（同次 run 内 2 个失败 job） | cicd-demo / CI + Terraform 安全基线 | P2 | 2026-05-26 | 将两个 S3 加密策略统一升级为 `aws:kms` + `kms_master_key_id`，新增 `aws_kms_key`/`aws_kms_alias`；补充 RCA | PR #270（待 cherry-pick） / [RCA](../postmortems/RCA-2026-05-26-PDEF-004-pr270-terraform-kms-gate.md) |
-| PDEF-005 | N/A | DEF-023 RCA 文件中 2 处相对路径多一层 `../`（5 层而非 4 层，指向 repo 外）；`defects/register.md` 中 RCA 反链少一层 `../`（1 层而非 2 层），导致 PR #276 `Repository Meta CI / lint`（run [#26445816667](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/runs/26445816667) / job [#77851746079](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/runs/26445816667/job/77851746079)）报红 3 处断链 | 仓库级 / docs 治理 | P2 | 2026-05-26 | 修正 3 处相对路径；登记 PDEF-005（Closed） | PR #276 |
+| PDEF-005 | N/A | DEF-023 RCA 文件中 2 处相对路径多一层 `../`（5 层而非 4 层，指向 repo 外）；`defects/register.md` 中 RCA 反链少一层 `../`（1 层而非 2 层），导致 PR #276 `Repository Meta CI / lint`（run [#26445816667](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/runs/26445816667) / job [#77851746079](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/runs/26445816667/job/77851746079)）报红 3 处断链 | 仓库级 / docs 治理 | P2 | 2026-05-26 | 修正 3 处相对路径；登记 PDEF-005（Closed） | PR #276 / [RCA](../postmortems/RCA-2026-05-26-PDEF-005-rca-broken-links.md) |
 
 ---
 
@@ -65,7 +65,7 @@
 
 | 模式 | 触发次数（本季度） | 季度 | 关联 Defect IDs | 关联 Postmortem | 状态 |
 |------|--------------------|------|-----------------|-----------------|------|
-| _(无活跃模式)_ | | | | | |
+| Markdown 断链（相对路径错误） | 3 | 2026-Q2 | PDEF-001、PDEF-004（label-strategy）、PDEF-005 | [RCA-PDEF-005](../postmortems/RCA-2026-05-26-PDEF-005-rca-broken-links.md)（含模式分析） | 🟡 AI-1/2 待落地（本地检查工具缺失） |
 
 ---
 
