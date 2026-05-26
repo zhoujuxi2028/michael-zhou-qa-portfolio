@@ -23,7 +23,7 @@
 | 质量门禁 | Lint 通过；关键测试通过；无 Critical/High 漏洞；至少 1 人 review；不能绕过必需检查 |
 | 输出产物 | PR checks、review comments、SARIF 报告、测试摘要、构建日志 |
 | 失败处理 | 阻止合并；把失败原因定位到具体规则、测试或漏洞；修复后重新触发 PR 检查 |
-| Demo 映射 | 当前 `security-scan.yml` + `codeql-analysis.yml` 可作为 PR 安全门禁；后续可补充 PR lint/test workflow |
+| Demo 映射 | `cicd-demo-pr.yml`（lint + unit tests + Docker build + 安全扫描）、`security-scan.yml`、`codeql-analysis.yml` |
 
 **重点**：PR 门禁是最早、最便宜的质量控制点。不要把所有问题留到 staging 或生产前才发现。
 
@@ -107,7 +107,7 @@
 | 质量门禁 | 目标环境可用；配置完整；依赖服务连通；数据库迁移脚本已验证；关键 smoke test 通过 |
 | 输出产物 | 环境检查日志、部署摘要、approval record、smoke test report |
 | 失败处理 | 停止部署；明确是环境、配置、依赖还是版本问题；修复后重新执行部署前验证 |
-| Demo 映射 | `scripts/validate-environment.sh`、`azure-pipelines.yml` 的 staged deployment 设计 |
+| Demo 映射 | `scripts/validate-environment.sh`、`cicd-demo-deploy.yml`（staging auto-deploy + production 手动审批） |
 
 **重点**：部署前验证关注“是否可以安全部署”，不是重复执行完整回归。
 
