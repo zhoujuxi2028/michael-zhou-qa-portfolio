@@ -55,6 +55,7 @@
 | PDEF-003 | N/A | PR #262（`copilot/feat-add-pr-pipeline`）head commit `8d3d124` subject `docs(readme): align workflow table with cicd-demo PR/Deploy pipelines (#242)` 长度 76 > 72，`Commit Guard / Conventional Commits (subject rules)` 在 run #26380345263 / job #77648244381 报红；Cloud Agent 经 `report_progress` 提交时绕过 Husky `pre-push`，原本部署的 `scripts/check-commit-guard.sh` 防线失效 | 仓库级 / CI + 流程 | P2 | 2026-05-25 | 在根 `CLAUDE.md` Git Workflow 章节固化 Agent commit subject ≤ 72 字符与字符数自查规则；附 RCA。修复 commit 自身需仓库维护者 squash-merge 或本地 force-push（Agent 受 report_progress patch-id 去重限制无法重写） | PR #262 / [RCA](../postmortems/RCA-2026-05-25-PDEF-003-commit-subject-length.md) |
 | PDEF-004 | N/A | `docs/guides/label-strategy.md` 指向 `performance-testing-platform/docs/qa/reports/phase6-stage4-verification-report.md` 的 Markdown 链接断链（真实路径为 `docs/qa/reports/execution/phase6-stage4-verification-report.md`），导致 PR #269 在 `Repository Meta CI / lint`（run #26429424413，job #77799391938）报红 | 仓库级 / docs 治理 | P2 | 2026-05-26 | 修正链接到 `reports/execution` 实际路径；登记缺陷并补充 RCA | PR #269 / [RCA](../postmortems/RCA-2026-05-26-PDEF-004-label-strategy-broken-link.md) |
 | PDEF-004 | N/A | PR #270（`copilot/optimize-cicd-demo`）`CICD Demo / Terraform CI` 在 run #26407541306 失败：`Terraform Security` 命中 `AVD-AWS-0132 (HIGH)`（`cicd-demo/terraform/main.tf` 两处 S3 SSE 使用 `AES256` 而非 CMK），导致 `Terraform Gate` 二次失败（同次 run 内 2 个失败 job） | cicd-demo / CI + Terraform 安全基线 | P2 | 2026-05-26 | 将两个 S3 加密策略统一升级为 `aws:kms` + `kms_master_key_id`，新增 `aws_kms_key`/`aws_kms_alias`；补充 RCA | PR #270（待 cherry-pick） / [RCA](../postmortems/RCA-2026-05-26-PDEF-004-pr270-terraform-kms-gate.md) |
+| PDEF-005 | N/A | DEF-023 RCA 文件中 2 处相对路径多一层 `../`（5 层而非 4 层，指向 repo 外）；`defects/register.md` 中 RCA 反链少一层 `../`（1 层而非 2 层），导致 PR #276 `Repository Meta CI / lint`（run [#26445816667](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/runs/26445816667) / job [#77851746079](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/runs/26445816667/job/77851746079)）报红 3 处断链 | 仓库级 / docs 治理 | P2 | 2026-05-26 | 修正 3 处相对路径；登记 PDEF-005（Closed） | PR #276 / [RCA](../postmortems/RCA-2026-05-26-PDEF-005-rca-broken-links.md) |
 
 ---
 
@@ -64,7 +65,7 @@
 
 | 模式 | 触发次数（本季度） | 季度 | 关联 Defect IDs | 关联 Postmortem | 状态 |
 |------|--------------------|------|-----------------|-----------------|------|
-| _(无活跃模式)_ | | | | | |
+| Markdown 断链（相对路径错误） | 3 | 2026-Q2 | PDEF-001、PDEF-004（label-strategy）、PDEF-005 | [RCA-PDEF-005](../postmortems/RCA-2026-05-26-PDEF-005-rca-broken-links.md)（含模式分析） | 🟡 AI-1/2 待落地（本地检查工具缺失） |
 
 ---
 
@@ -72,7 +73,7 @@
 
 | 项目 | 登记表位置 | 当前活跃数 | 最近更新 |
 |------|------------|-----------|---------|
-| performance-testing-platform | [defects/register.md](../../../performance-testing-platform/docs/qa/defects/register.md) | 9（DEF-005、DEF-006、DEF-007、DEF-008、DEF-011、DEF-012、DEF-017、DEF-020、DEF-021） | 2026-05-25 |
+| performance-testing-platform | [defects/register.md](../../../performance-testing-platform/docs/qa/defects/register.md) | 10（DEF-005、DEF-006、DEF-007、DEF-008、DEF-011、DEF-012、DEF-017、DEF-020、DEF-021、DEF-023） | 2026-05-26 |
 | api-testing-demo | _(按需初始化，复制 [模板](defect-register-template.md))_ | — | — |
 | playwright-demo | _(按需初始化)_ | — | — |
 | selenium-demo | _(按需初始化)_ | — | — |
@@ -92,6 +93,8 @@
 
 | 日期 | 变更内容 | 操作人 |
 |------|----------|--------|
+| 2026-05-26 | 登记并关闭 `PDEF-005`：DEF-023 RCA 文件 2 处路径多 1 层 `../`（outside repo）；`defects/register.md` RCA 反链少 1 层；3 处断链导致 PR #276 `Repository Meta CI / lint`（run #26445816667）报红；修正路径后关闭 | QA |
+| 2026-05-26 | 登记 `DEF-023`（[#278](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/278)）：perf-platform `stage4-selftest-fast.bats:144` 分支白名单缺 `docs/`，PR #276 CI 红灯（run #26438598385 / job #77827370629）；Fix in review（PR #276）；pre-push 改进 PR #277；活跃数 9 → 10 | QA |
 | 2026-05-26 | 登记并关闭 `PDEF-004`：`docs/guides/label-strategy.md` 指向 `phase6-stage4-verification-report.md` 的路径缺少 `execution/` 目录，导致 PR #269 的 `Repository Meta CI / lint`（run #26429424413，job #77799391938）失败；已修复链接并补充 RCA | QA |
 | 2026-05-26 | 登记并关闭 `PDEF-004`：PR #270 的 `cicd-demo-terraform.yml` 安全门禁命中 `AVD-AWS-0132`，同次 run 触发 `Terraform Security` + `Terraform Gate` 双失败；修复为 S3 改用 CMK（`aws:kms` + `kms_master_key_id`）并补充 RCA | QA |
 | 2026-05-25 | 同步 GitHub Issue #259（DEF-019 覆盖率回归）、#260（DEF-022 commit subject 违规）至 perf-platform 项目级登记表：均已通过 PR #257 merge 修复，按缺陷生命周期搬迁至 Closed 区并补齐 Issue 反链；perf-platform 活跃数 10 → 9 | QA |

@@ -136,6 +136,18 @@ python3 -m venv venv && source venv/bin/activate
 
 参考：[PDEF-003 RCA](docs/project-management/postmortems/RCA-2026-05-25-PDEF-003-commit-subject-length.md)、[DEF-022](performance-testing-platform/docs/qa/defects/register.md)、[`scripts/check-commit-guard.sh`](scripts/check-commit-guard.sh)
 
+### Branch Prefix Convention
+
+已用合法前缀（**新增前缀须同步更新 `performance-testing-platform/tests/unit/scripts/stage4-selftest-fast.bats` 白名单**，参见 DEF-023 RCA）：
+
+| 前缀 | 用途 |
+|------|------|
+| `feature/` | 新功能 |
+| `fix/` | Bug 修复 |
+| `docs/` | 文档更新 |
+| `copilot/` | Cloud Agent / Copilot 自动分支 |
+| `hotfix/` | 紧急修复 |
+
 ### Feature Branches
 
 | Branch | Description | Status |

@@ -141,7 +141,7 @@ teardown() {
   if [ -z "$branch" ]; then
     branch="${GITHUB_HEAD_REF:-}"
   fi
-  echo "$branch" | grep -qE "^(main|feature/|fix/|copilot/|hotfix/)"
+  echo "$branch" | grep -qE "^(main|feature/|fix/|docs/|copilot/|hotfix/)"
 }
 
 @test "9.2: 最近 20 条提交应包含 conventional commits" {
