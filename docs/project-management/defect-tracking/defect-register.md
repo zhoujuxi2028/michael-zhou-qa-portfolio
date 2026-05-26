@@ -72,7 +72,7 @@
 
 | 项目 | 登记表位置 | 当前活跃数 | 最近更新 |
 |------|------------|-----------|---------|
-| performance-testing-platform | [defects/register.md](../../../performance-testing-platform/docs/qa/defects/register.md) | 9（DEF-005、DEF-006、DEF-007、DEF-008、DEF-011、DEF-012、DEF-017、DEF-020、DEF-021） | 2026-05-25 |
+| performance-testing-platform | [defects/register.md](../../../performance-testing-platform/docs/qa/defects/register.md) | 10（DEF-005、DEF-006、DEF-007、DEF-008、DEF-011、DEF-012、DEF-017、DEF-020、DEF-021、DEF-023） | 2026-05-26 |
 | api-testing-demo | _(按需初始化，复制 [模板](defect-register-template.md))_ | — | — |
 | playwright-demo | _(按需初始化)_ | — | — |
 | selenium-demo | _(按需初始化)_ | — | — |
@@ -92,6 +92,7 @@
 
 | 日期 | 变更内容 | 操作人 |
 |------|----------|--------|
+| 2026-05-26 | 登记 `DEF-023`（[#278](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/278)）：perf-platform `stage4-selftest-fast.bats:144` 分支白名单缺 `docs/`，PR #276 CI 红灯（run #26438598385 / job #77827370629）；Fix in review（PR #276）；pre-push 改进 PR #277；活跃数 9 → 10 | QA |
 | 2026-05-26 | 登记并关闭 `PDEF-004`：`docs/guides/label-strategy.md` 指向 `phase6-stage4-verification-report.md` 的路径缺少 `execution/` 目录，导致 PR #269 的 `Repository Meta CI / lint`（run #26429424413，job #77799391938）失败；已修复链接并补充 RCA | QA |
 | 2026-05-26 | 登记并关闭 `PDEF-004`：PR #270 的 `cicd-demo-terraform.yml` 安全门禁命中 `AVD-AWS-0132`，同次 run 触发 `Terraform Security` + `Terraform Gate` 双失败；修复为 S3 改用 CMK（`aws:kms` + `kms_master_key_id`）并补充 RCA | QA |
 | 2026-05-25 | 同步 GitHub Issue #259（DEF-019 覆盖率回归）、#260（DEF-022 commit subject 违规）至 perf-platform 项目级登记表：均已通过 PR #257 merge 修复，按缺陷生命周期搬迁至 Closed 区并补齐 Issue 反链；perf-platform 活跃数 10 → 9 | QA |
