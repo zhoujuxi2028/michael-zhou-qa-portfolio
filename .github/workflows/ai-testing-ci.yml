@@ -1,4 +1,4 @@
-name: AI Testing Platform CI
+name: AI Testing CI
 
 on:
   workflow_dispatch:
