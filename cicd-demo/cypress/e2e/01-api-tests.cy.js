@@ -135,5 +135,12 @@ describe('API Tests - JSONPlaceholder', () => {
         expect(response.status).to.eq(404)
       })
     })
+
+    it('should return empty array for user with no albums', () => {
+      cy.request(`${baseUrl}/users/1/albums`).then((response) => {
+        expect(response.status).to.eq(200)
+        expect(response.body).to.be.an('array')
+      })
+    })
   })
 })
