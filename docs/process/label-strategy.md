@@ -71,7 +71,7 @@
 | `documentation` | 文档改进 |
 | `enhancement` | 新功能请求 |
 | `known-issue/external` | 上游/第三方问题 |
-| `workaround` | 临时绕过方案，必须附 deadline（默认 5 天），超期升级 P1，详见 `docs/guides/workaround-tracking.md` |
+| `workaround` | 临时绕过方案，必须附 deadline（默认 5 天），超期升级 P1，详见 `docs/process/workaround-tracking.md` |
 | `good first issue` | 适合新手的任务 |
 | `help wanted` | 需要帮助 |
 | `duplicate` | 重复 Issue |

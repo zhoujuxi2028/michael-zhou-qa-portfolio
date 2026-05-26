@@ -23,7 +23,7 @@ Error: Process completed with exit code 1.
 
 ## 2. 直接原因
 
-`/home/runner/work/michael-zhou-qa-portfolio/michael-zhou-qa-portfolio/docs/guides/label-strategy.md` 中的链接写成了：
+`/home/runner/work/michael-zhou-qa-portfolio/michael-zhou-qa-portfolio/docs/process/label-strategy.md` 中的链接写成了：
 
 ```md
 ../reports/phase6-stage4-verification-report.md
@@ -49,7 +49,7 @@ Error: Process completed with exit code 1.
 
 这是一次 **跨目录文档引用路径失真**：
 
-1. `label-strategy.md` 位于 `docs/guides/`
+1. `label-strategy.md` 位于 `docs/process/`
 2. 被引用的验收报告位于 `performance-testing-platform/docs/qa/reports/`
 3. 链接编写时误按 `docs/` 目录内局部相对路径思维书写，遗漏了先返回仓库根目录再进入子项目目录
 
@@ -60,7 +60,7 @@ Error: Process completed with exit code 1.
 ## 4. 根因链路
 
 ```text
-编辑 docs/guides/label-strategy.md
+编辑 docs/process/label-strategy.md
   → 新增/保留了错误相对路径 ../reports/phase6-stage4-verification-report.md
     → PR #187 触发 Repository Meta CI
       → repo-meta-ci.yml 按 Markdown 文件所在目录解析链接
@@ -100,14 +100,14 @@ Error: Process completed with exit code 1.
 
 ```text
 Broken links before fix:
-docs/guides/label-strategy.md: ../reports/phase6-stage4-verification-report.md
+docs/process/label-strategy.md: ../reports/phase6-stage4-verification-report.md
 ```
 
 ### 变更后验证
 
 已执行以下回归校验：
 
-1. 对 `docs/guides/label-strategy.md` 重新执行同类 Markdown 链接解析校验
+1. 对 `docs/process/label-strategy.md` 重新执行同类 Markdown 链接解析校验
 2. 对本次新增/修改的文档批量执行 Markdown 链接校验
 3. 核对目标报告文件真实存在
 

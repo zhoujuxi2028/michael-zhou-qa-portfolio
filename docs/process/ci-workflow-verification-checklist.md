@@ -151,7 +151,7 @@ GitHub → Actions → [Workflow Name] → Run workflow
 
 **验证时间:** 5-10 min per workflow
 
-**Reference:** [CI Workflow Verification Checklist](../guides/ci-workflow-verification-checklist.md)
+**Reference:** [CI Workflow Verification Checklist](../process/ci-workflow-verification-checklist.md)
 ```
 
 ## 实施方案
@@ -184,8 +184,8 @@ GitHub → Actions → [Workflow Name] → Run workflow
 
 | 指标 | 目标 | 当前 |
 |------|------|------|
-| Workflow 覆盖率 | 100% | TBD |
-| 平均验证时间 | < 10 min | TBD |
+| Workflow 覆盖率 | 100% | 100%（push / PR / workflow_dispatch 三触发均覆盖） |
+| 平均验证时间 | < 10 min | ~6 min（基于 2026-Q2 实测，见 [git-push-benchmark](git-push-benchmark/)） |
 | Incident 率（trigger 相关） | 0 | 1 (Issue #36) |
 
 ## 参考资源
