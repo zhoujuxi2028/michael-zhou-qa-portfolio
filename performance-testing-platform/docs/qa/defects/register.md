@@ -42,6 +42,7 @@
 | DEF-018   | —                                                                             | `coverage.test.js` 全部用 mock 数据自验证，不测真实覆盖行为               | P2 / Medium | ❌ Non-blocking    | 2026-05-24 | ✅ Fixed         | —           | 修复：重写为真实配置验证（阈值断言、collectCoverageFrom 内容、reporters、.gitignore）；移除 CI-COV-01/03/04 mock 逻辑 |
 | DEF-020   | [PR #255](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/255) | Portfolio 缺陷登记主表链接断链：feature 分支指向旧路径 `docs/qa/defect-register.md` | P2 / Medium | ❌ Non-blocking    | 2026-05-24 | ✅ Fixed         | —           | main 已修复（PDEF-001），feature 分支需合并 main 或手动修正为 `docs/qa/defects/register.md` |
 | DEF-021   | [PR #255](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/255) | `stage4-defect-waiver-register.md` 引用不存在的 `stage4-gate-template.md`   | P3 / Low    | ❌ Non-blocking    | 2026-05-24 | ✅ Fixed         | —           | 修复：更正为 `gates/stage4-template.md`（实际路径） |
+| DEF-023   | [#278](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/278) / [PR #276](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/276) | BATS 9.1 分支白名单缺少 `docs/` 前缀，PR #276 CI 红灯 | P2 / Medium | ✅ Blocking (PR)  | 2026-05-26 | 🟡 Fix in review | —           | `stage4-selftest-fast.bats:144` pattern 未含 `docs/`；修复：加入 `docs/`；pre-push 改进见 PR #277；[RCA](../../project-management/postmortems/RCA-2026-05-26-DEF-023-bats-branch-whitelist.md) |
 
 ---
 
@@ -89,6 +90,7 @@
 
 | 日期       | 变更内容                                                                                                                                | 操作人 |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 2026-05-26 | 登记 `DEF-023`（PR #276）：BATS 9.1 分支白名单缺 `docs/` 前缀，导致 CI 红灯；修复 `stage4-selftest-fast.bats` 第 144 行 pattern，加入 `docs/` | QA     |
 | 2026-05-25 | 同步 Issue #259 / #260 至 DEF-019 / DEF-022：根因均已在 main 修复（PR #257 已 merge），按生命周期搬迁至 Closed 区并补齐 Issue 反链；活跃数 11 → 9 | QA     |
 | 2026-05-24 | 登记 `DEF-019`（PR #255 覆盖率回归，P1）、`DEF-020`（Portfolio 登记表断链，P2）、`DEF-021`（stage4 register 断链，P3）；DEF-019 已修复，DEF-017 回退为 Deferred | QA     |
 | 2026-04-26 | 登记并关闭 `DEF-010`（#215）：修正 Stage 4 register 复用 `DEF-005` 的 ID 冲突                                                           | QA     |
