@@ -7,6 +7,9 @@ CHANGED_FILE_LIST="${1:-changed-files.txt}"
 
 if [ ! -f "$CHANGED_FILE_LIST" ]; then
   echo "info: $CHANGED_FILE_LIST not found, skip workflow-doc sync check."
+  echo "      本地运行方式："
+  echo "        git diff --name-only origin/main...HEAD > /tmp/changed-files.txt"
+  echo "        bash scripts/check-workflow-doc-sync.sh /tmp/changed-files.txt"
   exit 0
 fi
 
