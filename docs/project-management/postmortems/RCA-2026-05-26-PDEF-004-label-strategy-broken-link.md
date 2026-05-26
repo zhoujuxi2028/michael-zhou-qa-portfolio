@@ -10,7 +10,7 @@
 
 ## 1. 问题描述
 
-PR #269 在 `Repository Meta CI / lint` 失败（run #26424617666，job #77785667644，exit code 1）。
+PR #269 在 `Repository Meta CI / lint` 失败（run #26429424413，job #77799391938，exit code 1）。
 
 **错误信息**：
 
@@ -61,8 +61,8 @@ Broken Markdown links detected:
 
 ## 5. 相关链接
 
-- Workflow Run: https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/runs/26424617666
-- Failing Job: https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/runs/26424617666/job/77785667644
+- Workflow Run: https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/runs/26429424413
+- Failing Job: https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/runs/26429424413/job/77799391938
 - Triggering PR: #269
 - Defect Register: [../defect-tracking/defect-register.md](../defect-tracking/defect-register.md)
 
