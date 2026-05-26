@@ -50,9 +50,8 @@ Enhanced `security/README.md` with config file usage guides and npm scripts refe
 
 ## Related Documentation
 
-- Security details: [security/README.md](../security/README.md)
-- Error classification: [ERROR-CLASSIFICATION.md](../ERROR-CLASSIFICATION.md)
-- Interview prep: [INTERVIEW-GUIDE.md](./INTERVIEW-GUIDE.md)
+- Security details: [security/README.md](../../../security/README.md)
+- Error classification: [ERROR-CLASSIFICATION.md](../../reference/ERROR-CLASSIFICATION.md)
 
 ---
 
