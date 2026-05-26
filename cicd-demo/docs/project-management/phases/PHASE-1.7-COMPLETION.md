@@ -50,9 +50,8 @@ Added documentation section with links to all guides and interview preparation s
 
 ## Related Documentation
 
-- Interview prep: [INTERVIEW-GUIDE.md](./INTERVIEW-GUIDE.md)
-- Quick start: [QUICKSTART.md](./QUICKSTART.md)
-- Architecture: [ARCHITECTURE.md](./ARCHITECTURE.md)
+- Quick start: [QUICKSTART.md](../../guides/QUICKSTART.md)
+- Architecture: [ARCHITECTURE.md](../../architecture/ARCHITECTURE.md)
 
 ---
 

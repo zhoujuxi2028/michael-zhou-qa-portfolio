@@ -66,8 +66,8 @@
 ### 已实施
 
 - 新增 `.github/workflows/copilot-setup-steps.yml`
-- 新增 `docs/guides/copilot-cloud-agent-ci-architecture.md`
-- 新增 `docs/superpowers/specs/2026-04-23-copilot-cloud-agent-ci-optimization-design.md`
+- 新增 `docs/process/copilot-cloud-agent-ci-architecture.md`
+- 新增 `do../design/specs/2026-04-23-copilot-cloud-agent-ci-optimization-design.md`
 - 新增本次 RCA 与 postmortem
 
 ### 设计取舍

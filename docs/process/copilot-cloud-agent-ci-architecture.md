@@ -49,8 +49,8 @@ GitHub 动态 workflow
 | 工件 | 作用 |
 |------|------|
 | `.github/workflows/copilot-setup-steps.yml` | 为 Copilot cloud agent 提供轻量级 Node / Python 预热与缓存恢复 |
-| `docs/guides/copilot-cloud-agent-ci-architecture.md` | 记录当前架构、耗时分布与优化原则 |
-| `docs/superpowers/specs/2026-04-23-copilot-cloud-agent-ci-optimization-design.md` | 记录优化设计与非目标 |
+| `docs/process/copilot-cloud-agent-ci-architecture.md` | 记录当前架构、耗时分布与优化原则 |
+| `do../design/specs/2026-04-23-copilot-cloud-agent-ci-optimization-design.md` | 记录优化设计与非目标 |
 | `docs/reports/RCA-copilot-cloud-agent-runtime.md` | RCA |
 | `docs/project-management/postmortems/postmortem-2026-Q2-copilot-cloud-agent-runtime.md` | Postmortem |
 
