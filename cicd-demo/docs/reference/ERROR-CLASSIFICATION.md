@@ -433,10 +433,10 @@ find cypress/ -user root -ls
 
 ## Related Documentation
 
-- [TROUBLESHOOTING.md](./guides/TROUBLESHOOTING.md) - Detailed issue resolution
-- [CI-CD-GUIDE.md](./guides/CI-CD-GUIDE.md) - CI/CD architecture and best practices
+- [TROUBLESHOOTING.md](../guides/TROUBLESHOOTING.md) - Detailed issue resolution
+- [CI-CD-GUIDE.md](../guides/CI-CD-GUIDE.md) - CI/CD architecture and best practices
 - [README.md](../../README.md) - Project overview and quick start
-- [BUG-LIST.md](./fixes/BUG-LIST.md) - Historical bug tracking
+- [BUG-LIST.md](../fixes/BUG-LIST.md) - Historical bug tracking
 
 ---
 
