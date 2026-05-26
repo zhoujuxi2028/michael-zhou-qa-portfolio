@@ -1,4 +1,4 @@
-name: Nightly Soak & Weekly Capacity
+name: Performance / Nightly
 
 # Phase 7 PERF-CI-SCHED-FR-001/002
 # - nightly soak-short: 每天 UTC 03:00 (北京 11:00) 运行 ~5min soak,验证内存/事件循环稳定性
