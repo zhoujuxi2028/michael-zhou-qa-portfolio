@@ -184,6 +184,12 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 
 ## Pre-commit Checklist
 
+### 通用（含 Markdown 文件变更时）
+
+```bash
+bash scripts/check-markdown-links.sh   # 检查变更的 .md 文件相对路径
+```
+
 ### Python Projects
 
 ```bash
