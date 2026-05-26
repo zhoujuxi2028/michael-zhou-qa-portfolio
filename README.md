@@ -108,7 +108,8 @@ Test automation, performance testing, and DevOps demonstration projects.
 | Workflow | Project | Trigger | Purpose |
 |----------|---------|---------|---------|
 | `cicd-demo-pr.yml` | cicd-demo | PR to main (`cicd-demo/**`) | **PR Pipeline**: lint + unit/contract tests + Docker build + quick security scan + `pr-gate` 聚合 (< 5 min) |
-| `cicd-demo-deploy.yml` | cicd-demo | Push to main (`cicd-demo/**`), manual | **Deploy Pipeline**: Helm package → staging (auto) → production (manual approval) |
+| `cicd-demo-deploy.yml` | cicd-demo | Push to main (`cicd-demo/**`), manual | **Deploy Pipeline**: Helm package + SBOM → staging (auto) → smoke test → production (manual approval) |
+| `cicd-demo-terraform.yml` | cicd-demo | PR to main (`cicd-demo/terraform/**`) | **Terraform CI**: fmt-check + validate + Trivy IaC security scan + tf-gate |
 | `docker-tests.yml` | cicd-demo | Nightly, manual | Docker regression tests |
 | `security-scan.yml` | cicd-demo | Push/PR, daily, manual | Trivy + npm audit → SARIF |
 | `security-tests.yml` | security-testing-demo | Push/PR, weekly, manual | DVWA + Juice Shop + ZAP + dependency scan |

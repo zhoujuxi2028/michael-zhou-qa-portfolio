@@ -1,0 +1,148 @@
+# PrometheusRule — QA Portfolio 测试与基础设施告警规则
+# 部署到 monitoring namespace，由 kube-prometheus-stack 的 Prometheus Operator 自动加载。
+#
+# 使用方法：
+#   kubectl apply -f cicd-demo/monitoring/alertrules/test-alerts.yaml
+#
+# 前置条件：
+#   - kube-prometheus-stack 已安装（monitoring namespace）
+#   - prometheus-values.yaml 中 serviceMonitorSelectorNilUsesHelmValues: false
+
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: qa-portfolio-alerts
+  namespace: monitoring
+  labels:
+    # kube-prometheus-stack 通过这些标签发现 PrometheusRule
+    app: kube-prometheus-stack
+    release: prometheus
+    app.kubernetes.io/part-of: qa-portfolio
+spec:
+  groups:
+    # ==========================================================================
+    # 测试任务告警 — 监控 K8s Job 执行状态
+    # ==========================================================================
+    - name: test-execution
+      interval: 1m
+      rules:
+        # 测试任务失败告警
+        - alert: TestJobFailed
+          expr: >
+            kube_job_status_failed{namespace=~"qa-portfolio.*"} > 0
+          for: 2m
+          labels:
+            severity: warning
+            team: qa
+            project: qa-portfolio
+          annotations:
+            summary: "测试任务 {{ $labels.job_name }} 失败"
+            description: >
+              K8s Job {{ $labels.job_name }} 在命名空间 {{ $labels.namespace }} 中失败。
+              请检查 Pod 日志：kubectl logs -n {{ $labels.namespace }} -l job-name={{ $labels.job_name }}
+
+        # 2 小时内无测试任务完成
+        - alert: NoTestJobsCompleted
+          expr: >
+            (absent(kube_job_status_succeeded{namespace=~"qa-portfolio.*"})
+             or sum(kube_job_status_succeeded{namespace=~"qa-portfolio.*"}) == 0)
+          for: 2h
+          labels:
+            severity: warning
+            team: qa
+            project: qa-portfolio
+          annotations:
+            summary: "过去 2 小时内没有测试任务完成"
+            description: >
+              qa-portfolio 相关命名空间中，过去 2 小时内没有任何测试任务成功完成。
+              请确认 CI/CD 流水线和 K8s 集群状态正常。
+
+        # 测试任务运行时间超过阈值（防止僵尸任务）
+        - alert: TestJobRunningTooLong
+          expr: >
+            (time() - kube_job_status_start_time{namespace=~"qa-portfolio.*"})
+            * on(job_name, namespace) kube_job_status_active{namespace=~"qa-portfolio.*"} > 3600
+          for: 5m
+          labels:
+            severity: warning
+            team: qa
+            project: qa-portfolio
+          annotations:
+            summary: "测试任务 {{ $labels.job_name }} 运行超过 1 小时"
+            description: >
+              K8s Job {{ $labels.job_name }} 在命名空间 {{ $labels.namespace }} 已运行超过 1 小时。
+              可能存在死锁或无限等待，请检查任务状态。
+
+    # ==========================================================================
+    # 资源压力告警 — 监控集群资源使用
+    # ==========================================================================
+    - name: resource-pressure
+      interval: 2m
+      rules:
+        # 内存使用率高
+        - alert: HighMemoryPressure
+          expr: >
+            (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) > 0.85
+          for: 5m
+          labels:
+            severity: warning
+            team: infra
+            project: qa-portfolio
+          annotations:
+            summary: "节点 {{ $labels.instance }} 内存使用率高"
+            description: >
+              节点 {{ $labels.instance }} 内存使用率超过 85%（当前：{{ $value | humanizePercentage }}）。
+              请考虑清理未使用的容器或扩容节点。
+
+        # CPU 使用率高
+        - alert: HighCPUUsage
+          expr: >
+            100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+          for: 5m
+          labels:
+            severity: warning
+            team: infra
+            project: qa-portfolio
+          annotations:
+            summary: "节点 {{ $labels.instance }} CPU 使用率高"
+            description: >
+              节点 {{ $labels.instance }} CPU 使用率超过 80%（当前：{{ $value | humanize }}%）。
+              正在运行的测试任务可能影响集群其他服务。
+
+        # Pod 频繁重启（CrashLoopBackOff）
+        - alert: PodCrashLooping
+          expr: >
+            rate(kube_pod_container_status_restarts_total{namespace=~"qa-portfolio.*"}[5m]) > 0
+          for: 5m
+          labels:
+            severity: critical
+            team: qa
+            project: qa-portfolio
+          annotations:
+            summary: "Pod {{ $labels.pod }} 正在 CrashLoop"
+            description: >
+              容器 {{ $labels.container }} 在 Pod {{ $labels.pod }}（命名空间 {{ $labels.namespace }}）
+              中频繁重启，可能存在应用错误或配置问题。
+              请执行：kubectl describe pod {{ $labels.pod }} -n {{ $labels.namespace }}
+
+    # ==========================================================================
+    # 磁盘空间告警 — 监控 PVC 使用
+    # ==========================================================================
+    - name: storage
+      interval: 5m
+      rules:
+        # PVC 使用率高（测试结果存储空间不足）
+        - alert: PVCUsageHigh
+          expr: >
+            (kubelet_volume_stats_used_bytes{namespace=~"qa-portfolio.*"}
+             / kubelet_volume_stats_capacity_bytes{namespace=~"qa-portfolio.*"}) > 0.80
+          for: 10m
+          labels:
+            severity: warning
+            team: qa
+            project: qa-portfolio
+          annotations:
+            summary: "PVC {{ $labels.persistentvolumeclaim }} 使用率超 80%"
+            description: >
+              命名空间 {{ $labels.namespace }} 中的 PVC {{ $labels.persistentvolumeclaim }}
+              使用率已超过 80%。测试结果存储可能很快耗尽，请清理旧的测试报告。

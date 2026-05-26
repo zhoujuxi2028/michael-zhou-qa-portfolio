@@ -3,9 +3,10 @@ name: CICD Demo / Deploy Pipeline
 # Merge 到 main 后触发的部署流水线，展示 PR → Merge → Deploy 完整闭环。
 #
 # 流程：
-#   1. build-and-package  — Helm chart lint + package + 上传 artifact
+#   1. build-and-package  — Helm chart lint + package + SBOM 生成 + 上传 artifact
 #   2. deploy-staging      — 自动部署到 staging 环境（GitHub Environment: staging）
-#   3. deploy-production   — 手动审批部署到 production（GitHub Environment: production）
+#   3. smoke-test-staging  — staging 冒烟测试（Newman API 校验）
+#   4. deploy-production   — 手动审批部署到 production（GitHub Environment: production）
 #
 # 注意：本流水线在 GitHub Actions runner 内做 dry-run 部署演示（helm template + kubectl --dry-run）
 #       真实集群部署应通过 ArgoCD（见 cicd-demo/gitops/argocd/）或在 self-hosted runner 上配置 KUBECONFIG。
@@ -82,6 +83,20 @@ jobs:
           path: cicd-demo/dist/*.tgz
           retention-days: 30
 
+      # -----------------------------------------------------------------------
+      # SBOM（Software Bill of Materials）生成
+      # 使用 Syft 生成 CycloneDX 格式的软件物料清单，用于供应链安全审计
+      # -----------------------------------------------------------------------
+      - name: Generate SBOM with Syft
+        uses: anchore/sbom-action@v0
+        with:
+          path: cicd-demo
+          format: cyclonedx-json
+          output-file: sbom.cyclonedx.json
+          artifact-name: sbom-cyclonedx
+          upload-artifact: true
+          upload-artifact-retention: 90
+
   # ---------------------------------------------------------------------------
   # Stage 2: Deploy to Staging —— 自动部署
   # GitHub Environment「staging」可选配置 secrets / variables / approval
@@ -138,14 +153,14 @@ jobs:
           retention-days: 30
 
   # ---------------------------------------------------------------------------
-  # Stage 3: Post-Deploy Smoke Test —— 部署后自动化冒烟验证
-  # 面试要点："部署成功≠功能正常"，CD出口必须有自动验收 + 回滚触发
+  # Stage 3: Staging Smoke Test —— staging 部署后的快速冒烟校验
+  # 用 Newman 调用外部 API 校验，确保网络环境和核心断言正常
   # ---------------------------------------------------------------------------
-  smoke-test:
-    name: CICD Demo / Smoke Test (Staging)
+  smoke-test-staging:
+    name: CICD Demo / Staging Smoke Test
     runs-on: ubuntu-latest
     needs: deploy-staging
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -159,47 +174,30 @@ jobs:
 
       - name: Install Newman
         run: npm ci
+        working-directory: cicd-demo
 
-      - name: Run post-deploy smoke tests
-        id: smoke
+      - name: Run Newman smoke test
+        working-directory: cicd-demo
         shell: bash
         run: |
           set -euo pipefail
-          chmod +x smoke-tests/run-smoke.sh
-          SMOKE_BASE_URL="https://jsonplaceholder.typicode.com" \
-          HELM_RELEASE="qa-portfolio" \
-          HELM_NAMESPACE="qa-portfolio-staging" \
-            bash smoke-tests/run-smoke.sh
+          echo "🔍 [staging] Running Newman smoke test against external API..."
+          newman run postman/api-collection.json \
+            -e postman/environment.json \
+            --iteration-count 1 \
+            --timeout-request 10000 \
+            -r cli,junit \
+            --reporter-junit-export newman/smoke-junit.xml
+          echo "✅ [staging] Smoke test passed."
 
-      - name: Smoke Test Summary
+      - name: Upload smoke test results
         if: always()
-        shell: bash
-        run: |
-          STATUS="${{ steps.smoke.outcome }}"
-          if [ "$STATUS" = "success" ]; then
-            ICON="✅"
-            MSG="Smoke tests passed — staging deployment verified"
-          else
-            ICON="❌"
-            MSG="Smoke tests FAILED — rollback recommended for staging"
-          fi
-          {
-            echo "# $ICON Post-Deploy Smoke Test"
-            echo ""
-            echo "**Environment**: staging"
-            echo "**Chart**: qa-portfolio v${{ needs.build-and-package.outputs.chart_version }}"
-            echo "**Result**: $MSG"
-            echo ""
-            echo "| Scenario | 验证内容 |"
-            echo "|----------|---------|"
-            echo "| Smoke-01 | API 可达性 + 响应时间 |"
-            echo "| Smoke-02 | 列表接口 + 数据结构 |"
-            echo "| Smoke-03 | 写入接口 + 资源创建 |"
-            echo "| Smoke-04 | 更新接口 + 数据一致性 |"
-            echo "| Smoke-05 | 错误处理 + 404 响应 |"
-            echo ""
-            echo "> 面试要点：15 个断言覆盖 5 个核心路径，失败时自动触发 \`helm rollback\`。"
-          } >> "$GITHUB_STEP_SUMMARY"
+        uses: actions/upload-artifact@v7
+        with:
+          name: staging-smoke-results
+          path: cicd-demo/newman/smoke-junit.xml
+          if-no-files-found: ignore
+          retention-days: 14
 
   # ---------------------------------------------------------------------------
   # Stage 4: Deploy to Production —— 需 GitHub Environment「production」手动审批
@@ -207,7 +205,7 @@ jobs:
   deploy-production:
     name: CICD Demo / Deploy Production
     runs-on: ubuntu-latest
-    needs: [build-and-package, deploy-staging, smoke-test]
+    needs: [build-and-package, smoke-test-staging]
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.skip_production != true }}
     timeout-minutes: 10
     environment:
@@ -257,58 +255,12 @@ jobs:
           retention-days: 90
 
   # ---------------------------------------------------------------------------
-  # Stage 6: Push Pipeline Metrics —— 推送部署流水线指标到 Prometheus Pushgateway
-  # ---------------------------------------------------------------------------
-  push-metrics:
-    name: CICD Demo / Push Deploy Metrics
-    runs-on: ubuntu-latest
-    needs: [build-and-package, deploy-staging, smoke-test, deploy-production]
-    if: always()
-    timeout-minutes: 3
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Push deploy pipeline metrics
-        shell: bash
-        env:
-          PUSHGATEWAY_URL: ${{ vars.PUSHGATEWAY_URL || 'http://localhost:9091' }}
-          CI_ENVIRONMENT: staging
-        run: |
-          set -euo pipefail
-          chmod +x cicd-demo/scripts/push-metrics.sh
-
-          # 部署阶段指标
-          DEPLOY_STATUS="failure"
-          [ "${{ needs.deploy-staging.result }}" = "success" ] && DEPLOY_STATUS="success"
-          bash cicd-demo/scripts/push-metrics.sh \
-            --job        "deploy-staging" \
-            --status     "$DEPLOY_STATUS" \
-            --duration   "0" \
-            --tests-passed "0" \
-            --tests-failed "0"
-
-          # 冒烟测试指标
-          SMOKE_STATUS="failure"
-          [ "${{ needs.smoke-test.result }}" = "success" ] && SMOKE_STATUS="success"
-          PASSED=0; FAILED=0
-          [ "$SMOKE_STATUS" = "success" ] && PASSED=15 || FAILED=1
-          bash cicd-demo/scripts/push-metrics.sh \
-            --job        "smoke-test" \
-            --status     "$SMOKE_STATUS" \
-            --duration   "0" \
-            --tests-passed "$PASSED" \
-            --tests-failed "$FAILED"
-
-          echo "Deploy metrics push attempted."
-
-  # ---------------------------------------------------------------------------
-  # Stage 7: Deploy Summary
+  # Stage 5: Deploy Summary
   # ---------------------------------------------------------------------------
   deploy-summary:
     name: CICD Demo / Deploy Summary
     runs-on: ubuntu-latest
-    needs: [build-and-package, deploy-staging, smoke-test, deploy-production, push-metrics]
+    needs: [build-and-package, deploy-staging, smoke-test-staging, deploy-production]
     if: always()
     timeout-minutes: 2
     steps:
@@ -323,8 +275,8 @@ jobs:
             echo ""
             echo "| Stage | Result |"
             echo "|-------|--------|"
-            echo "| Build & Package | ${{ needs.build-and-package.result }} |"
-            echo "| Deploy Staging  | ${{ needs.deploy-staging.result }} |"
-            echo "| Smoke Test      | ${{ needs.smoke-test.result }} |"
+            echo "| Build & Package   | ${{ needs.build-and-package.result }} |"
+            echo "| Deploy Staging    | ${{ needs.deploy-staging.result }} |"
+            echo "| Staging Smoke     | ${{ needs.smoke-test-staging.result }} |"
             echo "| Deploy Production | ${{ needs.deploy-production.result }} |"
           } >> "$GITHUB_STEP_SUMMARY"
