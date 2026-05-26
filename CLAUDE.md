@@ -170,6 +170,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 
 | Workflow | Project | Purpose |
 |----------|---------|---------|
+| `ai-testing-ci.yml` | ai-testing-platform | AI Testing CI: code quality + unit tests (43 tests, 91% coverage) |
 | `api-testing-ci.yml` | api-testing-demo | Validate collections → Newman tests (280+ assertions) |
 | `cicd-demo-pr.yml` | cicd-demo | PR Gate: lint + unit/contract tests + Docker build + quick security scan |
 | `cicd-demo-deploy.yml` | cicd-demo | Deploy Pipeline: Helm package + SBOM → staging (auto) → smoke test → production (manual approval) |
