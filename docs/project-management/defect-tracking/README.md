@@ -89,7 +89,7 @@
 
 ## 6. GitHub 集成（Issues + Labels）
 
-每个登记的缺陷 **必须**对应一个 GitHub Issue。Label 组合规范见 [`docs/guides/label-strategy.md`](../../guides/label-strategy.md)：
+每个登记的缺陷 **必须**对应一个 GitHub Issue。Label 组合规范见 [`docs/process/label-strategy.md`](../../process/label-strategy.md)：
 
 | 维度 | 必填 | 示例 |
 |------|------|------|
@@ -141,7 +141,7 @@
 短期 workaround 必须同时：
 1. 在 GitHub Issue 上加 `workaround` label，附 deadline（默认 5 天）
 2. 在登记表 Waiver 区登记对应 `WAV-NNN`，状态 `🟡 待审批` 或 `✅ 已审批`
-3. 详细规则见 [`docs/guides/workaround-tracking.md`](../../guides/workaround-tracking.md)；超期未关闭升级 P1。
+3. 详细规则见 [`docs/process/workaround-tracking.md`](../../process/workaround-tracking.md)；超期未关闭升级 P1。
 
 ## 11. 当前在用的项目级登记表
 
@@ -163,8 +163,8 @@
 | Portfolio 缺陷登记主表 | [defect-register.md](defect-register.md) |
 | 项目级登记模板 | [defect-register-template.md](defect-register-template.md) |
 | Waiver 政策 | [waiver-policy.md](waiver-policy.md) |
-| GitHub Labels 策略 | [../../guides/label-strategy.md](../../guides/label-strategy.md) |
-| Workaround 追踪 | [../../guides/workaround-tracking.md](../../guides/workaround-tracking.md) |
+| GitHub Labels 策略 | [../../process/label-strategy.md](../../process/label-strategy.md) |
+| Workaround 追踪 | [../../process/workaround-tracking.md](../../process/workaround-tracking.md) |
 | Postmortem 归档 | [../postmortems/README.md](../postmortems/README.md) |
 | 5 阶段开发流程 | [../../dev-process-checklist.md](../../dev-process-checklist.md) |
 | 文档治理规范 | [../../ARCHITECTURE.md](../../ARCHITECTURE.md) |

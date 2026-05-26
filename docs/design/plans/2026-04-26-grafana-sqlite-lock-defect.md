@@ -22,7 +22,7 @@
 | `performance-testing-platform/docs/qa/defect-register.md` | 项目级缺陷登记表，新增并关闭 `DEF-009` |
 | `docs/project-management/defect-tracking/defect-register.md` | Portfolio 级入口与最近更新时间 |
 | `performance-testing-platform/docs/project-management/postmortems/RCA-2026-04-26-grafana-sqlite-lock.md` | `DEF-009` 关闭后的 RCA 文档 |
-| `docs/superpowers/plans/2026-04-26-grafana-sqlite-lock-defect.md` | 当前实施计划 |
+| `do../design/plans/2026-04-26-grafana-sqlite-lock-defect.md` | 当前实施计划 |
 
 ## 目标缺陷
 
