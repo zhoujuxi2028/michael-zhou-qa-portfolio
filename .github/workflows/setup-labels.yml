@@ -1,0 +1,69 @@
+name: Setup Project Labels
+
+on:
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  create-proj-labels:
+    runs-on: ubuntu-latest
+    name: Create proj:xxx Labels
+    steps:
+      - name: Create proj:xxx labels for all sub-projects
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const labels = [
+              { name: 'proj:performance',  color: '0052cc', description: 'Performance Testing Platform (k6 + JMeter)' },
+              { name: 'proj:playwright',   color: '7057ff', description: 'Playwright Cross-browser E2E Demo' },
+              { name: 'proj:api-testing',  color: '0075ca', description: 'API Testing Demo (Newman + Postman)' },
+              { name: 'proj:selenium',     color: 'f9a03f', description: 'Selenium Browser Automation Demo' },
+              { name: 'proj:cypress-e2e',  color: '5319e7', description: 'Cypress E2E (IWSVA)' },
+              { name: 'proj:security',     color: 'd73a4a', description: 'Security Testing Demo (OWASP ZAP)' },
+              { name: 'proj:k8s',          color: '006b75', description: 'K8S Auto Testing Platform (HPA + Chaos)' },
+              { name: 'proj:sid-iam',      color: '1d76db', description: 'SID IAM + Data Platform Testing' },
+              { name: 'proj:microservice', color: '0e8a16', description: 'Microservice Testing Platform (5-layer)' },
+              { name: 'proj:cicd',         color: 'c5def5', description: 'CICD DevOps Infrastructure Demo' },
+              { name: 'proj:ai-testing',   color: 'e4e669', description: 'AI-Powered Testing Platform' },
+            ];
+
+            let created = 0, updated = 0, failed = 0;
+
+            for (const label of labels) {
+              try {
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label.name,
+                  color: label.color,
+                  description: label.description,
+                });
+                console.log(`✅ Created: ${label.name}`);
+                created++;
+              } catch (err) {
+                if (err.status === 422) {
+                  // Label already exists — update it to sync color/description
+                  await github.rest.issues.updateLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: label.name,
+                    color: label.color,
+                    description: label.description,
+                  });
+                  console.log(`🔄 Updated: ${label.name}`);
+                  updated++;
+                } else {
+                  console.error(`❌ Failed: ${label.name} — ${err.message}`);
+                  failed++;
+                }
+              }
+            }
+
+            console.log(`\nSummary: ${created} created, ${updated} updated, ${failed} failed`);
+            if (failed > 0) {
+              throw new Error(`${failed} label(s) failed to create/update`);
+            }

@@ -173,6 +173,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `repo-meta-ci.yml` | repository root | PR 级轻量 lint（docs / workflow / JSON / shell / Markdown links） |
 | `claude.yml` | repository | Claude Code 助手触发入口 |
 | `claude-code-review.yml` | repository | Claude Code PR review |
+| `setup-labels.yml` | repository | 手动触发：一键创建/更新 11 个 `proj:xxx` labels |
 
 ### CI Job Naming Convention
 
