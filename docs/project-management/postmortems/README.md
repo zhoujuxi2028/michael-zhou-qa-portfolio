@@ -13,6 +13,7 @@
 | [postmortem-2026-Q2-issue-187-repo-meta-broken-markdown-link.md](postmortem-2026-Q2-issue-187-repo-meta-broken-markdown-link.md) | 问题闭环 | Repository Meta CI Markdown 断链 |
 | [postmortem-2026-Q2-issue-202-205-k6-smoke.md](postmortem-2026-Q2-issue-202-205-k6-smoke.md) | 专项 RCA | k6 smoke baseline 启动稳健性（#202–#205） |
 | [postmortem-issue-68.md](postmortem-issue-68.md) | 问题闭环 | workaround 到期追踪机制缺失 |
+| [RCA-2026-05-26-PDEF-004-label-strategy-broken-link.md](RCA-2026-05-26-PDEF-004-label-strategy-broken-link.md) | 专项 RCA | label-strategy 文档断链导致 Repository Meta CI 失败 |
 
 ## 2. 企业级归档与治理规则
 
