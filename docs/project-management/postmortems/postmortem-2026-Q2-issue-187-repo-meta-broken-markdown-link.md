@@ -10,7 +10,7 @@
 ## 1. 事件摘要
 
 PR #187 更新文档后触发 `Repository Meta CI`。  
-workflow 在 Markdown 链接检查阶段失败，原因是 `docs/guides/label-strategy.md` 指向了一个不存在的相对路径。
+workflow 在 Markdown 链接检查阶段失败，原因是 `docs/process/label-strategy.md` 指向了一个不存在的相对路径。
 
 ---
 
@@ -49,7 +49,7 @@ workflow 在 Markdown 链接检查阶段失败，原因是 `docs/guides/label-st
 
 ### 深层原因
 
-- 文档位于 `docs/guides/`，目标文件位于 `performance-testing-platform/docs/qa/reports/`
+- 文档位于 `docs/process/`，目标文件位于 `performance-testing-platform/docs/qa/reports/`
 - 编辑时把跨项目引用误写成了 `docs/` 目录内引用
 - 变更前缺少对该具体链接的即时本地校验
 

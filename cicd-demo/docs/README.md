@@ -1,66 +1,81 @@
 # Documentation Directory
 
-This directory contains all project documentation organized by purpose.
+This directory contains all project documentation organised by purpose.
 
 ## Directory Structure
 
 ```
 docs/
-├── guides/           # User guides and tutorials
-├── analysis/         # Analysis reports and test results
-├── fixes/            # Bug fixes and troubleshooting records
-└── README.md         # This file
+├── README.md                        # This file
+├── architecture/                    # System design and technical specs
+├── guides/                          # How-to guides, quickstart, troubleshooting
+├── reference/                       # Conceptual reference and scenario cards
+├── project-management/              # Analysis, WBS, phase completions, issues
+│   └── phases/                      # Per-phase completion reports
+└── fixes/                           # Bug fix logs and audit records
 ```
 
-## Guides (`guides/`)
+## architecture/
 
-**Purpose**: Step-by-step guides and reference documentation
+System design documents and infrastructure specs.
 
-- `CI-CD-GUIDE.md` - Comprehensive guide for CI/CD pipeline setup and integration
-- `TROUBLESHOOTING.md` - Common issues and solutions for the project
+| File | Description |
+|------|-------------|
+| `ARCHITECTURE.md` | Overall system architecture |
+| `PHASE-1.2-TERRAFORM-DESIGN.md` | Terraform infrastructure design |
 
-**When to add**: Create new guides when documenting workflows, setup procedures, or best practices.
+## guides/
 
-## Analysis (`analysis/`)
+Step-by-step guides for setup, verification, and troubleshooting.
 
-**Purpose**: Analysis reports, test results, and project assessments
+| File | Description |
+|------|-------------|
+| `CI-CD-GUIDE.md` | CI/CD pipeline setup and integration guide |
+| `QUICKSTART.md` | Quick start for new contributors |
+| `FAQ-GUIDE.md` | Frequently asked questions |
+| `TROUBLESHOOTING.md` | Common issues and solutions |
+| `MANUAL-VERIFICATION-GUIDE.md` | Manual verification procedures |
+| `VERIFICATION-GUIDE.md` | Automated verification guide |
+| `GITHUB-ACTIONS-VERIFICATION.md` | GitHub Actions-specific verification |
 
-- `CICD-COMPLETE-ANALYSIS.md` - Complete analysis of CI/CD implementation
-- `REGRESSION-TEST-RESULT.md` - Regression test execution results
+## reference/
 
-**When to add**: Add analysis documents when performing system reviews, test assessments, or technical investigations.
+Conceptual reference and QA scenario cards — use these when designing or reviewing pipelines.
 
-## Fixes (`fixes/`)
+| File | Description |
+|------|-------------|
+| `QA-CICD-SCENARIOS.md` | QA scenario cards across the full CI/CD lifecycle |
+| `AZURE-VS-GITHUB-ACTIONS.md` | Comparison of Azure Pipelines and GitHub Actions |
+| `ERROR-CLASSIFICATION.md` | Error taxonomy and classification guide |
 
-**Purpose**: Historical records of bugs, fixes, and troubleshooting sessions
+## project-management/
 
-- `BUGFIX-SUMMARY.md` - Summary of bug fixes applied
-- `BUG-LIST.md` - List of identified bugs and their status
-- `README-DOCKER-FIXES.md` - Docker-related fixes documentation
-- `dependency-tree-fixed.txt` - Dependency resolution records
-- `fix-summary.txt` - Quick reference for fixes
-- `npm-audit-results.txt` - Security audit results
+Analysis reports, WBS, and project records.
 
-**When to add**: Document bug fixes, security patches, and troubleshooting sessions for future reference.
+| File | Description |
+|------|-------------|
+| `WBS.md` | Work breakdown structure |
+| `CICD-COMPLETE-ANALYSIS.md` | Full CI/CD implementation analysis |
+| `REGRESSION-TEST-RESULT.md` | Regression test execution results |
+| `VIDEO-QUALITY-ISSUE.md` | Video quality issue record |
+| `phases/` | Per-phase completion reports (PHASE-1.4 through PHASE-2-3) |
 
-## Document Naming Conventions
+## fixes/
 
-- Use kebab-case for file names: `my-guide-name.md`
-- Use descriptive names that indicate content: `docker-setup-guide.md` not `guide.md`
-- Add date prefix for time-sensitive reports: `2026-02-21-performance-analysis.md`
-- Use `.md` for markdown, `.txt` for plain text logs
+Historical records of bugs, fixes, and security audit outputs.
 
-## Organization Guidelines
+| File | Description |
+|------|-------------|
+| `BUG-LIST.md` | Identified bugs and their status |
+| `BUGFIX-SUMMARY.md` | Summary of applied fixes |
+| `BUG-FIX-LOG-2026-02-21.md` | Dated fix log |
+| `README-DOCKER-FIXES.md` | Docker-specific fixes |
+| `npm-audit-results.txt` | npm security audit output |
+| `dependency-tree-fixed.txt` | Dependency resolution record |
+| `fix-summary.txt` | Quick-reference fix notes |
 
-1. **Keep root directory clean**: Only essential project files (configs, package.json, README) should be in root
-2. **Separate by purpose**: Guides vs Analysis vs Fixes have different lifecycles
-3. **Archive old documents**: Move outdated docs to an `archive/` subdirectory
-4. **Update references**: When moving documents, update any links in other files
+## Conventions
 
-## Quick Links
-
-From project root:
-- View guides: `ls -1 docs/guides/`
-- View analysis: `ls -1 docs/analysis/`
-- View fixes: `ls -1 docs/fixes/`
-- Search all docs: `grep -r "search-term" docs/`
+- File names: ALL-CAPS with hyphens (`MY-GUIDE.md`)
+- Time-sensitive reports: date prefix (`2026-02-21-report.md`)
+- Plain text logs: `.txt`; all documentation: `.md`

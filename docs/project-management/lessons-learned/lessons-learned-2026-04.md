@@ -229,8 +229,8 @@ This session demonstrated the power of:
 - **Issue #87 (Security):** `/performance-testing-platform/src/app.js` + helmet config
 - **Issue #77 (Docs):** `/performance-testing-platform/docs/architecture/architecture.md` + line numbers
 - **Issue #91 (PoC):** `/performance-testing-platform/docs/project-management/phase6-poc-validation.md`
-- **Issue #74 (Chore):** `/docs/guides/pre-commit-hook-coverage.md`
-- **Issue #73 (Chore):** `/docs/guides/ci-workflow-verification-checklist.md`
+- **Issue #74 (Chore):** `/docs/process/pre-commit-hook-coverage.md`
+- **Issue #73 (Chore):** `/docs/process/ci-workflow-verification-checklist.md`
 
 **Wiki:** https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/wiki
 

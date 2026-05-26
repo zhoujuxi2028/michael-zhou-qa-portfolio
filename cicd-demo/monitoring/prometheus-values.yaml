@@ -174,6 +174,23 @@ prometheus-node-exporter:
   enabled: true
 
 
+# Prometheus Pushgateway — 接收 CI/CD 流水线推送的 job 指标
+# 面试要点：Pushgateway 是短生命周期 job（如 CI 构建）向 Prometheus 暴露指标的标准模式
+# 启用后流水线可通过 scripts/push-metrics.sh 推送构建时长、测试通过率等数据
+prometheus-pushgateway:
+  enabled: true
+  service:
+    type: ClusterIP
+    port: 9091
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"
+
+
 # Namespace configuration
 namespaceOverride: monitoring
 

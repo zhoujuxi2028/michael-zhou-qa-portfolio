@@ -87,10 +87,10 @@ Pure HTML/CSS/JS dashboard showing: total runs, pass rate, average duration, lat
 
 ## Related Documentation
 
-- Error codes & prevention: [ERROR-CLASSIFICATION.md](./ERROR-CLASSIFICATION.md)
-- Troubleshooting: [TROUBLESHOOTING.md](./guides/TROUBLESHOOTING.md)
-- CI/CD architecture: [CI-CD-GUIDE.md](./guides/CI-CD-GUIDE.md)
-- Interview preparation: [FAQ-GUIDE.md](./guides/FAQ-GUIDE.md)
+- Error codes & prevention: [ERROR-CLASSIFICATION.md](../../reference/ERROR-CLASSIFICATION.md)
+- Troubleshooting: [TROUBLESHOOTING.md](../../guides/TROUBLESHOOTING.md)
+- CI/CD architecture: [CI-CD-GUIDE.md](../../guides/CI-CD-GUIDE.md)
+- Interview preparation: [FAQ-GUIDE.md](../../guides/FAQ-GUIDE.md)
 
 ---
 

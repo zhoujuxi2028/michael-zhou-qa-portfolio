@@ -343,7 +343,7 @@
 | [#68](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/68) | workaround 到期机制 | P1 | ✅ Done (2026-04-21，规则文档落地；GitHub `workaround` label 已创建) |
 | [#69](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/69) | k6 setup tag 隔离 + 模板 | P2 | ✅ Done (2026-04-04，脚本与模板已补齐) |
 | [#70](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/70) | JMeter dry-run 验证 | P2 | ✅ Done (2026-04-04，`jmeter:dryrun` 已落地) |
-| [#71](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/71) | 第三方 action 季度巡检 | P3 | ✅ Done (2026-04-21, `docs/guides/third-party-action-audit.md`) |
+| [#71](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/71) | 第三方 action 季度巡检 | P3 | ✅ Done (2026-04-21, `docs/process/third-party-action-audit.md`) |
 | [#72](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/72) | Newman 断言数量验证 | P1 | ✅ Done (2026-04-04，CI 已显式校验断言数量) |
 | [#73](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/73) | CI trigger 路径验证 checklist | P2 | ✅ Done (2026-04-14，checklist 已补充) |
 | [#74](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/74) | pre-commit hook 补全 | P2 | ✅ Done (2026-04-14，hook 覆盖已完善) |

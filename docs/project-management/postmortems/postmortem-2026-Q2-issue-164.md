@@ -94,7 +94,7 @@ permissions:
 
 | 措施 | 类型 | 负责人 | 状态 |
 |------|------|--------|------|
-| 更新 `docs/guides/third-party-action-audit.md`，在 action 清单中记录 `claude-code-action` 所需权限 | 文档 | zhoujuxi2028 | ✅ 本次修复同步 |
+| 更新 `docs/process/third-party-action-audit.md`，在 action 清单中记录 `claude-code-action` 所需权限 | 文档 | zhoujuxi2028 | ✅ 本次修复同步 |
 | 在 `docs/CLAUDE.md` 的 "Common Pitfalls" 表格中增加一行：引入第三方 action 时须对照其 required permissions | 流程 | zhoujuxi2028 | ✅ 本次修复同步 |
 | 在下次季度 action 审计（ISS-071 checklist）中将"权限对照"列入必查项 | 流程 | zhoujuxi2028 | 📅 下次审计时 |
 

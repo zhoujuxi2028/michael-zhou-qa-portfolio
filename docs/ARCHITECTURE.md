@@ -10,13 +10,17 @@
 | `docs/ARCHITECTURE.md` | 文档治理规范、职责分工、命名约定 | `ARCHITECTURE.md` (本文) | 文档架构的 SSOT |
 | `docs/dev-process-checklist.md` | 5 阶段开发流程检查清单 | 官方 | 阶段规则、交付物 |
 | `docs/GIT-COMMIT-CONVENTION.md` | Git 提交规范 | 官方 | 统一 commit 规则 |
-| `docs/guides/` | 操作指南、环境搭建、最佳实践 | 各文件 | 面向执行与落地 |
+| `docs/process/` | 操作指南、环境搭建、最佳实践 | 各文件 | 面向执行与落地 |
 | `docs/project-management/` | 项目管理归档 | 各文件 | 需求、计划、事后分析等管理记录 |
 | `docs/project-management/defect-tracking/` | Portfolio 缺陷/Waiver 跟踪系统（SSOT） | 各文件 | 制度、登记表、Waiver 政策；项目级登记表入口 |
 | `docs/project-management/postmortems/` | Portfolio 级 postmortem / RCA 归档 | 各文件 | 时间序列沉淀，不放操作指南 |
+| `docs/project-management/lessons-learned/` | 阶段性经验总结 | 各文件 | 按时间归档，不放操作 SOP |
 | `docs/reports/` | 实施总结、验证记录、专项报告 | 各文件 | 输出结果，不放流程规范 |
-| `docs/learning/` | 学习模块、阶段报告、学习资产 | 各文件 | 面向学习沉淀 |
-| `docs/superpowers/` | AI 辅助 specs / plans | 各文件 | 按主题或时间戳归档 |
+| `docs/learning/` | 学习模块、阶段报告、学习资产 | 各文件 | 面向学习沉淀；阶段内容在 `phase2/` 子目录 |
+| `docs/design/` | AI 辅助 specs / plans | 各文件 | 按主题或时间戳归档 |
+| `docs/QUALITY-METRICS.md` | KPI 质量度量看板 | `QUALITY-METRICS.md` | 每周更新，数据来源为 defect-register 和 postmortems |
+| `docs/SLA.md` | 服务级别协议（缺陷、文档、CI/CD） | `SLA.md` | 各流程 SLA 的唯一权威来源 |
+| `docs/INCIDENT-ESCALATION.md` | 事故升级矩阵与 On-call 流程 | `INCIDENT-ESCALATION.md` | P0-P3 升级路径的唯一权威来源 |
 | 各项目 `README.md` | 项目级文档入口 | 各项目维护 | 优先于其他项目文档 |
 | 各项目 `CLAUDE.md` | 项目级配置、命令、规则 | 各项目维护 | 项目独立维护 |
 
@@ -37,7 +41,7 @@
    - ✓ 确定唯一职责后，在对应目录中维护
 
 4. **隐含的职责重叠**
-   - ✗ `docs/guides/X.md` 和 `docs/how-to/X.md` 记录相同内容
+   - ✗ `docs/process/X.md` 和 `docs/how-to/X.md` 记录相同内容
    - ✓ 统一为一个位置，建立清晰的链接
 
 5. **根目录堆积归档文档**
@@ -136,6 +140,6 @@ PR reviewer 必须检查：
 
 ---
 
-**最后更新**: 2026-04-22
+**最后更新**: 2026-05-25
 **维护人**: Copilot + Team
 **权威性**: ✅ 架构规范，所有文档工作必须遵循
