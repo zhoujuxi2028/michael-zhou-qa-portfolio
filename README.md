@@ -118,6 +118,8 @@ Test automation, performance testing, and DevOps demonstration projects.
 | `sid-iam-ci.yml` | sid-iam-testing-platform | Push/PR, manual | Code quality + unit tests + integration (138 tests) |
 | `microservice-ci.yml` | microservice-testing-platform | Push/PR | Lint → unit → contract → integration → E2E (101 tests) |
 | `performance-ci.yml` | performance-testing-platform | Push/PR | Lint → unit tests → k6 + JMeter smoke gate |
+| `nightly-soak.yml` | performance-testing-platform | Nightly / weekly, manual | Performance / Nightly: soak-short daily + capacity weekly |
+| `ai-testing-ci.yml` | ai-testing-platform | Push/PR, manual | AI Testing CI: code quality + unit tests (43 tests, 91% coverage) |
 | `setup-labels.yml` | repository | Manual (`workflow_dispatch`) | 一键创建/更新 11 个 `proj:xxx` labels |
 | `repo-meta-ci.yml` | repository root | Push/PR, manual | docs/workflow/JSON/shell/Markdown links 轻量校验 + workflow 文档同步检查 |
 

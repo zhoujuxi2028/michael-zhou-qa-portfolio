@@ -170,18 +170,19 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 
 | Workflow | Project | Purpose |
 |----------|---------|---------|
+| `ai-testing-ci.yml` | ai-testing-platform | AI Testing CI: code quality + unit tests (43 tests, 91% coverage) |
 | `api-testing-ci.yml` | api-testing-demo | Validate collections → Newman tests (280+ assertions) |
 | `cicd-demo-pr.yml` | cicd-demo | PR Gate: lint + unit/contract tests + Docker build + quick security scan |
 | `cicd-demo-deploy.yml` | cicd-demo | Deploy Pipeline: Helm package + SBOM → staging (auto) → smoke test → production (manual approval) |
 | `cicd-demo-terraform.yml` | cicd-demo | Terraform CI: fmt-check + validate + Trivy IaC security scan + tf-gate |
-| `k8s-ci.yml` | k8s-auto-testing-platform | K8S CI (code quality, unit tests, integration) |
-| `performance-ci.yml` | performance-testing-platform | Lint → unit tests → k6 + JMeter smoke gate |
-| `nightly-soak.yml` | performance-testing-platform | Scheduled: nightly soak-short + weekly capacity test, artifact retention 30 days |
-| `security-tests.yml` | security-testing-demo | Security tests (DVWA, Juice Shop, ZAP, OWASP Top 10) |
-| `sid-iam-ci.yml` | sid-iam-testing-platform | SID IAM CI (code quality, unit tests, integration) |
-| `docker-tests.yml` | cicd-demo | Docker-based nightly regression tests |
-| `codeql-analysis.yml` | repository (JS+Python) | CodeQL 代码语义漏洞扫描 (XSS, SQLi, path traversal) |
-| `security-scan.yml` | cicd-demo | Security scanning (Trivy, npm audit, SARIF) |
+| `k8s-ci.yml` | k8s-auto-testing-platform | K8S Testing CI: code quality, unit tests, integration |
+| `performance-ci.yml` | performance-testing-platform | Performance Testing CI: lint → unit tests → k6 + JMeter smoke gate |
+| `nightly-soak.yml` | performance-testing-platform | Performance / Nightly: soak-short daily + capacity weekly, artifact retention 30 days |
+| `security-tests.yml` | security-testing-demo | Security / Tests: DVWA, Juice Shop, ZAP, OWASP Top 10 |
+| `sid-iam-ci.yml` | sid-iam-testing-platform | SID IAM CI: code quality, unit tests, integration |
+| `docker-tests.yml` | cicd-demo | CICD Demo / Docker Nightly: Cypress + Newman in containers |
+| `codeql-analysis.yml` | repository (JS+Python) | CodeQL Analysis: 代码语义漏洞扫描 (XSS, SQLi, path traversal) |
+| `security-scan.yml` | cicd-demo | Security / Scan: Trivy fs + Docker + IaC + npm audit → SARIF |
 | `repo-meta-ci.yml` | repository root | PR 级轻量 lint（docs / workflow / JSON / shell / Markdown links） |
 | `claude.yml` | repository | Claude Code 助手触发入口 |
 | `claude-code-review.yml` | repository | Claude Code PR review |
@@ -201,6 +202,16 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 ```bash
 bash scripts/check-markdown-links.sh   # 检查变更的 .md 文件相对路径
 ```
+
+### 变更 `.github/workflows/*.yml` 时
+
+```bash
+git diff --name-only origin/main...HEAD > /tmp/changed-files.txt
+bash scripts/check-workflow-doc-sync.sh /tmp/changed-files.txt
+rm /tmp/changed-files.txt
+```
+
+> pre-push hook 已自动执行此检查（PDEF-006 修复后）。手动运行用于本地提前验证。
 
 ### Python Projects
 
