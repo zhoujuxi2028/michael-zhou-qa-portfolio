@@ -93,6 +93,23 @@ if [ -x "$GUARD" ] && [ -n "$GUARD_HEAD" ]; then
     fi
 fi
 
+# --- Markdown 断链检查（所有变更的 .md 文件）---
+MD_LINK_SCRIPT="$REPO_ROOT/scripts/check-markdown-links.sh"
+if [ -x "$MD_LINK_SCRIPT" ] && [ -n "$GUARD_HEAD" ] && [ -n "$GUARD_BASE" ]; then
+    MD_LIST=$(git diff --name-only "${GUARD_BASE}..${GUARD_HEAD}" 2>/dev/null | grep '\.md$' || true)
+    if [ -n "$MD_LIST" ]; then
+        # shellcheck disable=SC2086
+        if ! "$MD_LINK_SCRIPT" $MD_LIST; then
+            echo ""
+            echo "✖ Markdown 断链 — 请修正相对路径后重新 push"
+            echo "   绕过（不推荐）：git push --no-verify"
+            exit 1
+        fi
+    else
+        echo "→ Markdown links: no .md changes, skip"
+    fi
+fi
+
 # 本次 push 未涉及 performance-testing-platform，跳过质量门控
 if [ "$PERF_CHANGED" -eq 0 ]; then
     exit 0
