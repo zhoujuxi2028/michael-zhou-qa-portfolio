@@ -62,6 +62,5 @@ All 8 phases, 80/80 WBS tasks complete (100%).
 
 ## Related Documentation
 
-- Interview prep: [INTERVIEW-GUIDE.md](./INTERVIEW-GUIDE.md)
-- Quick start: [QUICKSTART.md](./QUICKSTART.md)
-- Architecture: [ARCHITECTURE.md](./ARCHITECTURE.md)
+- Quick start: [QUICKSTART.md](../../guides/QUICKSTART.md)
+- Architecture: [ARCHITECTURE.md](../../architecture/ARCHITECTURE.md)

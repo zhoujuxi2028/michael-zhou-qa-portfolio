@@ -295,7 +295,7 @@ Expected: 输出实际 `issue=<number>`，后续步骤统一使用该 `ISSUE_NUM
 把 `docs/project-management/defect-tracking/defect-register.md` 的 `performance-testing-platform` 行改成：
 
 ```markdown
-| performance-testing-platform | [defect-register.md](../../../performance-testing-platform/docs/qa/defect-register.md) | 5（DEF-005、DEF-006、DEF-007、DEF-008、DEF-009） | 2026-04-26 |
+| performance-testing-platform | [defect-register.md](../../../performance-testing-platform/docs/qa/defects/register.md) | 5（DEF-005、DEF-006、DEF-007、DEF-008、DEF-009） | 2026-04-26 |
 ```
 
 - [ ] **Step 4: 校验文档更新**
@@ -427,7 +427,7 @@ printf 'code_commit=%s\n' "$CODE_COMMIT"
 并把 Portfolio 主表入口行更新为：
 
 ```markdown
-| performance-testing-platform | [defect-register.md](../../../performance-testing-platform/docs/qa/defect-register.md) | 4（DEF-005、DEF-006、DEF-007、DEF-008） | 2026-04-26 |
+| performance-testing-platform | [defect-register.md](../../../performance-testing-platform/docs/qa/defects/register.md) | 4（DEF-005、DEF-006、DEF-007、DEF-008） | 2026-04-26 |
 ```
 
 - [ ] **Step 5: 关闭 GitHub Issue 并提交文档**
