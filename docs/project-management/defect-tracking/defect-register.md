@@ -53,6 +53,7 @@
 | PDEF-001 | N/A | `defect-register.md` 指向 `performance-testing-platform/docs/qa/defect-register.md` 的 Markdown 链接断链（真实路径为 `docs/qa/defects/register.md`），导致 `Repository Meta CI / lint` 在 PR #248（run #26346106861）报红 | 仓库级 / docs 治理 | P2 | 2026-05-23 | 修正链接 + 补充 RCA | PR (本次) / [RCA](../postmortems/RCA-2026-05-23-PDEF-001-broken-markdown-link.md) |
 | PDEF-002 | N/A | `cicd-demo-pr.yml` 的 `pr-gate` 汇总 job 继承 workflow 级 `defaults.run.working-directory: cicd-demo`，但该 job 不 checkout 仓库，导致 `An error occurred trying to start process '/usr/bin/bash' with working directory '.../cicd-demo'. No such file or directory`，在 PR #249（run #26346396345）`CICD Demo / PR Gate` 报红 | cicd-demo / CI | P2 | 2026-05-24 | 在 `pr-gate` job 内显式设置 `defaults.run.working-directory: .` 覆盖 workflow 级默认；补充 RCA | PR #249 / [RCA](../postmortems/RCA-2026-05-24-PDEF-002-cicd-pr-gate-working-dir.md) |
 | PDEF-003 | N/A | PR #262（`copilot/feat-add-pr-pipeline`）head commit `8d3d124` subject `docs(readme): align workflow table with cicd-demo PR/Deploy pipelines (#242)` 长度 76 > 72，`Commit Guard / Conventional Commits (subject rules)` 在 run #26380345263 / job #77648244381 报红；Cloud Agent 经 `report_progress` 提交时绕过 Husky `pre-push`，原本部署的 `scripts/check-commit-guard.sh` 防线失效 | 仓库级 / CI + 流程 | P2 | 2026-05-25 | 在根 `CLAUDE.md` Git Workflow 章节固化 Agent commit subject ≤ 72 字符与字符数自查规则；附 RCA。修复 commit 自身需仓库维护者 squash-merge 或本地 force-push（Agent 受 report_progress patch-id 去重限制无法重写） | PR #262 / [RCA](../postmortems/RCA-2026-05-25-PDEF-003-commit-subject-length.md) |
+| PDEF-004 | N/A | `docs/guides/label-strategy.md` 指向 `performance-testing-platform/docs/qa/reports/phase6-stage4-verification-report.md` 的 Markdown 链接断链（真实路径为 `docs/qa/reports/execution/phase6-stage4-verification-report.md`），导致 PR #269 在 `Repository Meta CI / lint`（run #26424617666，job #77785667644）报红 | 仓库级 / docs 治理 | P2 | 2026-05-26 | 修正链接到 `reports/execution` 实际路径；登记缺陷并补充 RCA | PR #269 / [RCA](../postmortems/RCA-2026-05-26-PDEF-004-label-strategy-broken-link.md) |
 
 ---
 
@@ -90,6 +91,7 @@
 
 | 日期 | 变更内容 | 操作人 |
 |------|----------|--------|
+| 2026-05-26 | 登记并关闭 `PDEF-004`：`docs/guides/label-strategy.md` 指向 `phase6-stage4-verification-report.md` 的路径缺少 `execution/` 目录，导致 PR #269 的 `Repository Meta CI / lint`（run #26424617666，job #77785667644）失败；已修复链接并补充 RCA | QA |
 | 2026-05-25 | 同步 GitHub Issue #259（DEF-019 覆盖率回归）、#260（DEF-022 commit subject 违规）至 perf-platform 项目级登记表：均已通过 PR #257 merge 修复，按缺陷生命周期搬迁至 Closed 区并补齐 Issue 反链；perf-platform 活跃数 10 → 9 | QA |
 | 2026-05-25 | 登记并关闭 `PDEF-003`（PR #262 head commit subject 长度 76 > 72，`Commit Guard` 在 run #26380345263 报红；Cloud Agent `report_progress` 路径绕过 Husky `pre-push`）；在根 `CLAUDE.md` Git Workflow 章节增加 Agent commit subject 长度自查规则，附 RCA | QA |
 | 2026-05-24 | DEF-022 状态修订：Agent 已尝试 `git filter-branch` 重写违规 subject，但受 `report_progress` 自动 rebase（patch-id 去重）影响无法 force-push；建议仓库维护者改 PR #257 base → `feature/performance-testing`（1 步解锁），或本地 force-push 重写后的历史 | QA |
