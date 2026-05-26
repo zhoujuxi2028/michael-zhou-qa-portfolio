@@ -1,4 +1,4 @@
-name: Docker-Based Tests (Production-Grade)
+name: CICD Demo / Docker Nightly
 
 # Trigger Configuration:
 # This workflow is triggered by:

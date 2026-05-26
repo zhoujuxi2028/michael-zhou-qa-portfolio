@@ -1,4 +1,4 @@
-name: Security Tests
+name: Security / Tests
 
 on:
   push:
