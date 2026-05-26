@@ -14,6 +14,7 @@
 - [ ] CI green (all required status checks pass before merge)
 - [ ] 增量覆盖率不下降（相对目标分支基线）
 - [ ] 失败已分类（代码缺陷/环境波动/数据问题/依赖问题）
+- [ ] 文档改动已校验相对链接可达性（无 Broken Markdown links）
 
 ## Checklist
 
