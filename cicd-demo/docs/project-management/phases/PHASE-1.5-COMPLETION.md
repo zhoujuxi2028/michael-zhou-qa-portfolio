@@ -60,8 +60,7 @@ kubectl get applications -n argocd -o wide
 
 ## Related Documentation
 
-- GitOps details: [gitops/README.md](../gitops/README.md)
-- Interview prep: [INTERVIEW-GUIDE.md](./INTERVIEW-GUIDE.md)
+- GitOps details: [gitops/README.md](../../../gitops/README.md)
 
 ---
 

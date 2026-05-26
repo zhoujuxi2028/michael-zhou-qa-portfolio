@@ -2,7 +2,7 @@
 
 > **目的:** 规范缺陷豁免（Waiver）的适用范围、审批流程、有效期管理与到期升级机制  
 > **范围:** Portfolio 全部子项目  
-> **关联制度:** [Defect Tracking README](README.md) | [Workaround 追踪](../../guides/workaround-tracking.md)
+> **关联制度:** [Defect Tracking README](README.md) | [Workaround 追踪](../../process/workaround-tracking.md)
 
 ---
 
@@ -69,7 +69,7 @@ Reporter 申请 Waiver
 
 | 类型 | 默认有效期 | 到期动作 |
 |------|------------|----------|
-| 短期 workaround | 5 天 | 升级为 P1，进入修复 backlog（详见 [workaround-tracking.md](../../guides/workaround-tracking.md)） |
+| 短期 workaround | 5 天 | 升级为 P1，进入修复 backlog（详见 [workaround-tracking.md](../../process/workaround-tracking.md)） |
 | 阶段性 Waiver | 至下一个 Phase / Sprint 合并前 | 重新评审：续期、修复、或升级 |
 | 长期 Waiver | 至下一个季度复盘 | 季度复盘强制重新评审 |
 
