@@ -151,10 +151,10 @@ echo "$branch" | grep -qE "^(main|feature/|fix/|docs/|copilot/|hotfix/)"
 - 修复 PR：[#276](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/276)（BATS whitelist）/ [#277](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/277)（pre-push hook）
 - GitHub Issue：[#278](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/278)
 - 项目级缺陷登记：[`docs/qa/defects/register.md` DEF-023](../../qa/defects/register.md)
-- Portfolio 缺陷登记：[`docs/project-management/defect-tracking/defect-register.md`](../../../../../docs/project-management/defect-tracking/defect-register.md)
+- Portfolio 缺陷登记：[`docs/project-management/defect-tracking/defect-register.md`](../../../../docs/project-management/defect-tracking/defect-register.md)
 - 历史同类 RCA：[RCA-2026-04-24-bats-ci-detached-head-merge-commit.md](RCA-2026-04-24-bats-ci-detached-head-merge-commit.md)
 - BATS 文件：[`tests/unit/scripts/stage4-selftest-fast.bats`](../../../tests/unit/scripts/stage4-selftest-fast.bats)
-- pre-push hook：[`.husky/pre-push`](../../../../../.husky/pre-push)
+- pre-push hook：[`.husky/pre-push`](../../../../.husky/pre-push)
 
 ---
 
