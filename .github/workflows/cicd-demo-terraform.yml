@@ -84,7 +84,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Trivy IaC scan (Terraform — HIGH/CRITICAL gate)
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'config'
           scan-ref: 'cicd-demo/terraform'
