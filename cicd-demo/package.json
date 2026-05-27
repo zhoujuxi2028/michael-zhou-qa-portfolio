@@ -43,7 +43,7 @@
   "author": "Michael Zhou <michael_zhou@trendmicro.com>",
   "license": "MIT",
   "devDependencies": {
-    "cypress": "^13.6.0",
+    "cypress": "^15.16.0",
     "eslint": "^8.55.0",
     "eslint-plugin-cypress": "^2.15.1",
     "husky": "^9.1.7",
