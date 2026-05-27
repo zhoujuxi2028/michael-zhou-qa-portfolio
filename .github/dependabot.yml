@@ -1,0 +1,179 @@
+version: 2
+updates:
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+    commit-message:
+      prefix: "chore(actions)"
+
+  # npm — root
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+    commit-message:
+      prefix: "chore(root)"
+
+  # npm — cicd-demo
+  - package-ecosystem: "npm"
+    directory: "/cicd-demo"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "cicd"
+    commit-message:
+      prefix: "chore(cicd-demo)"
+
+  # npm — playwright-demo
+  - package-ecosystem: "npm"
+    directory: "/playwright-demo"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "playwright"
+    commit-message:
+      prefix: "chore(playwright-demo)"
+
+  # npm — microservice-testing-platform
+  - package-ecosystem: "npm"
+    directory: "/microservice-testing-platform"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "microservice"
+    commit-message:
+      prefix: "chore(microservice)"
+
+  # npm — performance-testing-platform
+  - package-ecosystem: "npm"
+    directory: "/performance-testing-platform"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "performance-testing"
+    commit-message:
+      prefix: "chore(perf)"
+
+  # npm — api-testing-demo
+  - package-ecosystem: "npm"
+    directory: "/api-testing-demo"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "api-testing"
+    commit-message:
+      prefix: "chore(api-testing)"
+
+  # npm — iwsva-cypress-e2e
+  - package-ecosystem: "npm"
+    directory: "/iwsva-cypress-e2e"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "cypress-e2e"
+    commit-message:
+      prefix: "chore(cypress)"
+
+  # Terraform — cicd-demo
+  - package-ecosystem: "terraform"
+    directory: "/cicd-demo/terraform"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "cicd"
+    commit-message:
+      prefix: "chore(terraform)"
+
+  # Docker — cicd-demo
+  - package-ecosystem: "docker"
+    directory: "/cicd-demo"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "cicd"
+    commit-message:
+      prefix: "chore(docker-cicd)"
+
+  # Docker — k8s-auto-testing-platform
+  - package-ecosystem: "docker"
+    directory: "/k8s-auto-testing-platform/app"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "k8s"
+    commit-message:
+      prefix: "chore(docker-k8s)"
+
+  # Docker — microservice inventory-service
+  - package-ecosystem: "docker"
+    directory: "/microservice-testing-platform/services/inventory-service"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "microservice"
+    commit-message:
+      prefix: "chore(docker-microservice)"
+
+  # Docker — microservice order-service
+  - package-ecosystem: "docker"
+    directory: "/microservice-testing-platform/services/order-service"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "microservice"
+    commit-message:
+      prefix: "chore(docker-microservice)"
+
+  # Docker — microservice payment-service
+  - package-ecosystem: "docker"
+    directory: "/microservice-testing-platform/services/payment-service"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "microservice"
+    commit-message:
+      prefix: "chore(docker-microservice)"
+
+  # Docker — performance-testing-platform
+  - package-ecosystem: "docker"
+    directory: "/performance-testing-platform"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "performance-testing"
+    commit-message:
+      prefix: "chore(docker-perf)"
