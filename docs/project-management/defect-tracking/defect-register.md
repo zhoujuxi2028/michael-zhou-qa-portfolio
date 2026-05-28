@@ -96,6 +96,7 @@
 | 日期 | 变更内容 | 操作人 |
 |------|----------|--------|
 | 2026-05-28 | 补录并关闭 `PDEF-006`：pre-push hook 缺失 workflow-doc-sync 检查；`dd7f164c`（PR #292）已修复 | QA |
+| 2026-05-28 | PDEF-007 追踪：PR #298 二次 CI 报红（run #26556529998）—— 第一次 `@dependabot rebase` 发生在 PR #334 合并（04:28Z）**之前**，分支未获取 README 修复；已触发第二次 rebase，待分支更新后 CI 重跑 | QA |
 | 2026-05-28 | 登记并关闭 `PDEF-007`：历史遗漏 workflow 文件未登记，Dependabot PR #298 触发 CI lint 报红；系统性修复：`check-workflow-doc-sync.sh` 新增 `--all` 全量审计；`repo-meta-ci.yml` 增加全量扫描步骤；补录 5 个 workflow 文档；附 RCA | QA |
 | 2026-05-26 | 登记并关闭 `PDEF-005`：DEF-023 RCA 文件 2 处路径多 1 层 `../`（outside repo）；`defects/register.md` RCA 反链少 1 层；3 处断链导致 PR #276 `Repository Meta CI / lint`（run #26445816667）报红；修正路径后关闭 | QA |
 | 2026-05-26 | 登记 `DEF-023`（[#278](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/278)）：perf-platform `stage4-selftest-fast.bats:144` 分支白名单缺 `docs/`，PR #276 CI 红灯（run #26438598385 / job #77827370629）；Fix in review（PR #276）；pre-push 改进 PR #277；活跃数 9 → 10 | QA |
