@@ -122,6 +122,9 @@ Test automation, performance testing, and DevOps demonstration projects.
 | `ai-testing-ci.yml` | ai-testing-platform | Push/PR, manual | AI Testing CI: code quality + unit tests (43 tests, 91% coverage) |
 | `setup-labels.yml` | repository | Manual (`workflow_dispatch`) | 一键创建/更新 11 个 `proj:xxx` labels |
 | `repo-meta-ci.yml` | repository root | Push/PR, manual | docs/workflow/JSON/shell/Markdown links 轻量校验 + workflow 文档同步检查 |
+| `api-testing-ci.yml` | api-testing-demo | Push/PR | Validate Postman collections → Newman tests (280+ assertions) |
+| `codeql-analysis.yml` | repository (JS+Python) | Push/PR, weekly | CodeQL 代码语义漏洞扫描 (XSS, SQLi, path traversal) |
+| `commit-guard.yml` | repository | PR opened/updated | Commit Guard: Conventional Commits 格式校验 + secret 泄漏扫描 CI 兜底 |
 | `claude.yml` | repository | Issue/PR comment | Claude Code 助手触发入口 |
 | `claude-code-review.yml` | repository | PR opened/updated | Claude Code 自动 PR review |
 | `copilot-setup-steps.yml` | repository | Push/PR to workflow file, manual | 预热 Node.js/Python 依赖缓存供 Copilot 使用 |
