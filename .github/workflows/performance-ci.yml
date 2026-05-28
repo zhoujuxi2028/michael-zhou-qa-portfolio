@@ -133,7 +133,7 @@ jobs:
           node-version: '18'
           working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
