@@ -171,7 +171,7 @@ jobs:
         run: npm audit --omit=dev --audit-level=moderate
 
       - name: Trivy fs scan (HIGH/CRITICAL gate)
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
           scan-ref: cicd-demo
