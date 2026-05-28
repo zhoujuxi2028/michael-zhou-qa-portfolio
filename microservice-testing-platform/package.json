@@ -21,7 +21,7 @@
     "docker:test": "docker compose up -d && npm run test:e2e && docker compose down"
   },
   "devDependencies": {
-    "ajv": "^8.18.0",
+    "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^10.1.8",
