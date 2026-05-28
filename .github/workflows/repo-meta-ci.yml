@@ -110,8 +110,13 @@ jobs:
           print(f"Markdown links OK: {len(markdown_files)} file(s)")
           PY
 
-      - name: Check workflow docs sync
+      - name: Check workflow docs sync (changed files)
         shell: bash
         run: |
           chmod +x scripts/check-workflow-doc-sync.sh
           bash scripts/check-workflow-doc-sync.sh changed-files.txt
+
+      - name: Check workflow docs sync (full audit)
+        shell: bash
+        run: |
+          bash scripts/check-workflow-doc-sync.sh --all
