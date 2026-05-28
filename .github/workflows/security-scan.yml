@@ -117,7 +117,7 @@ jobs:
       # fast, comprehensive, and integrates seamlessly with GitHub Security tab via
       # SARIF format."
       - name: Run Trivy vulnerability scanner (filesystem)
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'fs'
           scan-ref: 'cicd-demo'
@@ -190,7 +190,7 @@ jobs:
       # For Node.js images, it analyzes package-lock.json. This catches vulnerabilities
       # in base images (e.g., Alpine Linux) and our application dependencies."
       - name: Run Trivy vulnerability scanner (Docker image)
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'image'
           image-ref: ${{ matrix.image.tag }}
@@ -237,7 +237,7 @@ jobs:
       # for misconfigurations and security issues. This includes insecure defaults,
       # missing security controls, and compliance violations (CIS benchmarks)."
       - name: Run Trivy IaC scanner
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'config'
           scan-ref: 'cicd-demo'
@@ -284,7 +284,7 @@ jobs:
       # This is separate from the reporting jobs above (which use exit-code: 0) so we can
       # still collect full scan artifacts even when the gate triggers."
       - name: Run Trivy Quality Gate (filesystem - CRITICAL only)
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'fs'
           scan-ref: 'cicd-demo'
@@ -294,7 +294,7 @@ jobs:
           trivyignores: 'cicd-demo/.trivyignore'
 
       - name: Run Trivy Quality Gate (IaC - CRITICAL only)
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'config'
           scan-ref: 'cicd-demo'
