@@ -187,6 +187,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `claude.yml` | repository | Claude Code 助手触发入口 |
 | `claude-code-review.yml` | repository | Claude Code PR review |
 | `setup-labels.yml` | repository | 手动触发：一键创建/更新 11 个 `proj:xxx` labels |
+| `copilot-setup-steps.yml` | repository | 预热 Node.js/Python 依赖缓存供 Copilot 使用 |
 
 ### CI Job Naming Convention
 

@@ -122,6 +122,9 @@ Test automation, performance testing, and DevOps demonstration projects.
 | `ai-testing-ci.yml` | ai-testing-platform | Push/PR, manual | AI Testing CI: code quality + unit tests (43 tests, 91% coverage) |
 | `setup-labels.yml` | repository | Manual (`workflow_dispatch`) | 一键创建/更新 11 个 `proj:xxx` labels |
 | `repo-meta-ci.yml` | repository root | Push/PR, manual | docs/workflow/JSON/shell/Markdown links 轻量校验 + workflow 文档同步检查 |
+| `claude.yml` | repository | Issue/PR comment | Claude Code 助手触发入口 |
+| `claude-code-review.yml` | repository | PR opened/updated | Claude Code 自动 PR review |
+| `copilot-setup-steps.yml` | repository | Push/PR to workflow file, manual | 预热 Node.js/Python 依赖缓存供 Copilot 使用 |
 
 > **PR → Merge → Deploy 端到端流程**：`cicd-demo` 演示了完整的 CI/CD 闭环 — PR 触发并行的 lint/unit-tests/build/security-scan 四个 job 经 `pr-gate` 聚合，合并到 `main` 后自动触发 `build-and-package` → `deploy-staging`（自动）→ `deploy-production`（手动审批）。详见 [cicd-demo/README.md#pr--merge--deploy-流程](./cicd-demo/README.md#pr--merge--deploy-流程) 的 ASCII / Mermaid 流程图与 Branch Protection 配置说明。
 
