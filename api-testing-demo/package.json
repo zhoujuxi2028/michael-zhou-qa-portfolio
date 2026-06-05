@@ -39,7 +39,7 @@
     "newman-reporter-htmlextra": "^1.23.1",
     "husky": "^9.0.0",
     "@commitlint/cli": "^21.0.1",
-    "lint-staged": "^17.0.5",
+    "lint-staged": "^17.0.7",
     "@commitlint/config-conventional": "^21.0.1"
   },
   "engines": {
