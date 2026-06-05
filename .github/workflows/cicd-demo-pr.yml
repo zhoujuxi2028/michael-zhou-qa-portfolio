@@ -132,7 +132,7 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Build Newman Docker image (PR validation)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: cicd-demo
           file: cicd-demo/Dockerfile.newman
