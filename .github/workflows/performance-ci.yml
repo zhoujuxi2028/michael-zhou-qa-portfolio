@@ -290,7 +290,7 @@ jobs:
         # marker: <!-- perf-baseline-comment --> (与 trend 评论解耦)
         # 设计依据: docs/devops/phase7-gap-remediation-design.md §3.3
         if: always() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
@@ -379,7 +379,7 @@ jobs:
         # Sticky comment：每次推送更新同一条评论（通过 marker 识别）。
         # 仅在 PR 事件且 trend.md 存在时执行；fork PR 因为缺少 pull-requests:write 权限会跳过。
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
