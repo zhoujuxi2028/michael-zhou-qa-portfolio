@@ -61,7 +61,7 @@
     "bats": "^1.13.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^10.1.8",
-    "jest": "^29.7.0",
+    "jest": "^30.4.2",
     "prettier": "^3.8.3",
     "supertest": "^7.2.2"
   },
