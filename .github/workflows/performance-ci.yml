@@ -89,7 +89,7 @@ jobs:
           working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
       - name: Install bats-core
-        uses: bats-core/bats-action@3.0.0
+        uses: bats-core/bats-action@4.0.0
         with:
           bats-version: 1.10.0
           support-path: ${{ runner.temp }}/bats-support
@@ -113,7 +113,7 @@ jobs:
           working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
       - name: Install bats-core
-        uses: bats-core/bats-action@3.0.0
+        uses: bats-core/bats-action@4.0.0
         with:
           bats-version: 1.10.0
       - name: Run integration BATS shell tests
