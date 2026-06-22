@@ -31,7 +31,7 @@
     "supertest": "^7.2.2"
   },
   "dependencies": {
-    "better-sqlite3": "^12.10.0",
+    "better-sqlite3": "^12.11.1",
     "cors": "^2.8.5",
     "express": "^5.2.1",
     "ioredis": "^5.11.1",
