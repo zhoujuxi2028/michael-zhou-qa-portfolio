@@ -36,6 +36,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 |---------|-------------|------------|
 | [playwright-demo](./playwright-demo/) | Cross-Browser E2E Testing (38 tests) | Playwright, TypeScript, axe-core |
 | [selenium-demo](./selenium-demo/) | Browser Automation | Selenium, Python, Allure |
+| [robot-framework-demo](./robot-framework-demo/) | Parallel Testing (9 tests) | Robot Framework, Pabot, Selenium Grid, Rebot |
 | [iwsva-cypress-e2e](./iwsva-cypress-e2e/) | IWSVA E2E Testing (77 tests) | Cypress, JavaScript |
 | [api-testing-demo](./api-testing-demo/) | API Testing (280+ assertions) | Newman, Postman, json-server |
 
