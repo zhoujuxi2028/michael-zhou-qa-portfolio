@@ -12,6 +12,9 @@ on:
       - 'robot-framework-demo/**'
       - '.github/workflows/robot-framework-ci.yml'
 
+permissions:
+  contents: read
+
 jobs:
   unit-tests:
     name: Robot Framework / Pabot Parallel Tests
