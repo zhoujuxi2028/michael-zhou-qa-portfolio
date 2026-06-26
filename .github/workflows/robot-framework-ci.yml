@@ -1,0 +1,101 @@
+name: Robot Framework CI
+
+on:
+  push:
+    branches: [main, 'feature/robot-framework*', 'copilot/pabot*']
+    paths:
+      - 'robot-framework-demo/**'
+      - '.github/workflows/robot-framework-ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'robot-framework-demo/**'
+      - '.github/workflows/robot-framework-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    name: Robot Framework / Pabot Parallel Tests
+    runs-on: ubuntu-latest
+
+    services:
+      selenium-hub:
+        image: selenium/hub:4.21.0
+        ports:
+          - 4444:4444
+      chrome-node:
+        image: selenium/node-chrome:4.21.0
+        env:
+          SE_EVENT_BUS_HOST: selenium-hub
+          SE_EVENT_BUS_PUBLISH_PORT: 4442
+          SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+          SE_NODE_MAX_SESSIONS: 3
+        options: >-
+          --shm-size 2g
+      firefox-node:
+        image: selenium/node-firefox:4.21.0
+        env:
+          SE_EVENT_BUS_HOST: selenium-hub
+          SE_EVENT_BUS_PUBLISH_PORT: 4442
+          SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+          SE_NODE_MAX_SESSIONS: 3
+        options: >-
+          --shm-size 2g
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: robot-framework-demo/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          cd robot-framework-demo
+          pip install -r requirements.txt
+
+      - name: Wait for Selenium Grid
+        run: |
+          echo "等待 Selenium Grid 启动..."
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:4444/wd/hub/status | grep -q '"ready":true'; then
+              echo "Selenium Grid 就绪"
+              exit 0
+            fi
+            echo "  等待中... ($i/30)"
+            sleep 2
+          done
+          echo "错误: Selenium Grid 启动超时"
+          exit 1
+
+      - name: Run tests with Pabot (parallel)
+        run: |
+          cd robot-framework-demo
+          pabot --processes 2 \
+            --outputdir results \
+            --variable SELENIUM_GRID:http://localhost:4444/wd/hub \
+            --include smoke \
+            tests/
+
+      - name: Merge reports with Rebot
+        if: always()
+        run: |
+          cd robot-framework-demo
+          rebot --outputdir results/merged \
+            --name "CI 并行测试合并报告" \
+            --merge \
+            results/output.xml || true
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: robot-results
+          path: robot-framework-demo/results/
+          retention-days: 14
