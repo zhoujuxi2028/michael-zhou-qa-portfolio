@@ -50,7 +50,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Interview Talking Point:
       # "We cache node_modules to speed up CI. The cache key includes package-lock.json
@@ -109,7 +109,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Interview Talking Point:
       # "Trivy is an open-source vulnerability scanner from Aqua Security. It scans
@@ -167,7 +167,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -230,7 +230,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Interview Talking Point:
       # "Trivy can scan Infrastructure as Code (Terraform, K8s manifests, Dockerfiles)
@@ -277,7 +277,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Interview Talking Point:
       # "This job enforces a hard Quality Gate: CRITICAL vulnerabilities fail the pipeline.
