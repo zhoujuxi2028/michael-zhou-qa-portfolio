@@ -67,7 +67,14 @@
       "Bash(pkill -f \"npm start\")",
       "Bash(tee /tmp/k6-smoke-migration.log)",
       "Bash(jq --version)",
-      "Bash(GH_REPO=zhoujuxi2028/michael-zhou-qa-portfolio gh issue *)"
+      "Bash(GH_REPO=zhoujuxi2028/michael-zhou-qa-portfolio gh issue *)",
+      "Bash(/Users/michaelzhou/Documents/github/Cloud-Monitoring-Platform/reference/.venv/bin/python *)",
+      "Bash(md5 /Users/michaelzhou/Downloads/设备信息-2026-06-05-电信平台type03.xlsx \"/Users/michaelzhou/Documents/github/Cloud-Monitoring-Platform/reference/data/华东地区/output/设备信息-2026-06-05-电信平台type03.xlsx\")",
+      "Bash(mkdir -p /Users/michaelzhou/Documents/github/Cloud-Monitoring-Platform/reference/reports/pdf /Users/michaelzhou/Documents/github/Cloud-Monitoring-Platform/reference/data/政策 /Users/michaelzhou/Documents/github/Cloud-Monitoring-Platform/docs/superpowers/plans/pdf)",
+      "Bash(rm -v /Users/michaelzhou/Downloads/设备信息-2026-06-05-电信平台type03.xlsx)",
+      "Bash(mv -v /Users/michaelzhou/Downloads/迷路长沙的设备-misclassified-2026-06-05.pdf /Users/michaelzhou/Documents/github/Cloud-Monitoring-Platform/reference/reports/pdf/)",
+      "Bash(mv -v /Users/michaelzhou/Downloads/奇怪的宁波设备-866094052431836-field-check-2026-06-05.pdf /Users/michaelzhou/Documents/github/Cloud-Monitoring-Platform/reference/reports/pdf/)",
+      "Bash(mv -v /Users/michaelzhou/Downloads/设备信息-1810801133.xlsx /Users/michaelzhou/Documents/github/Cloud-Monitoring-Platform/reference/data/exports/)"
     ]
   },
   "hooks": {
