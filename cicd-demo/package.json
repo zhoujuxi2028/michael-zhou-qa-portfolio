@@ -44,7 +44,7 @@
   "license": "MIT",
   "devDependencies": {
     "cypress": "^15.17.0",
-    "eslint": "^8.55.0",
+    "eslint": "^10.6.0",
     "eslint-plugin-cypress": "^2.15.1",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.8",
