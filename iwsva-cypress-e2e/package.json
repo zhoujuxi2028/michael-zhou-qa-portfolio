@@ -22,7 +22,7 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
-    "cypress": "^15.17.0"
+    "cypress": "^15.18.0"
   },
   "dependencies": {
     "ini": "^7.0.0",
