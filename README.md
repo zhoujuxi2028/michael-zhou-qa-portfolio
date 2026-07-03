@@ -116,6 +116,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 | `security-tests.yml` | security-testing-demo | Push/PR, weekly, manual | DVWA + Juice Shop + ZAP + dependency scan |
 | `k8s-ci.yml` | k8s-auto-testing-platform | Push/PR, manual | Code quality + unit tests + K8S integration |
 | `playwright-tests.yml` | playwright-demo | Push/PR to main | Cross-browser E2E (Chromium, Firefox, WebKit) |
+| `robot-framework-ci.yml` | robot-framework-demo | Push/PR | Pabot parallel + Selenium Grid + Rebot merge (9 tests) |
 | `sid-iam-ci.yml` | sid-iam-testing-platform | Push/PR, manual | Code quality + unit tests + integration (138 tests) |
 | `microservice-ci.yml` | microservice-testing-platform | Push/PR | Lint → unit → contract → integration → E2E (101 tests) |
 | `performance-ci.yml` | performance-testing-platform | Push/PR | Lint → unit tests → k6 + JMeter smoke gate |
