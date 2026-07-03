@@ -63,15 +63,48 @@ jobs:
       - name: Wait for Selenium Grid
         run: |
           echo "等待 Selenium Grid 启动..."
-          for i in $(seq 1 30); do
-            if curl -s http://localhost:4444/wd/hub/status | grep -q '"ready":true'; then
-              echo "Selenium Grid 就绪"
-              exit 0
+          max_attempts=60
+          attempt=0
+          while [ $attempt -lt $max_attempts ]; do
+            attempt=$((attempt + 1))
+            # 尝试连接到 Selenium Grid Hub
+            response=$(curl -s --max-time 5 --connect-timeout 2 \
+              -w "\n%{http_code}" \
+              http://localhost:4444/wd/hub/status 2>/dev/null || echo "")
+            
+            if [ -z "$response" ]; then
+              echo "尝试 $attempt/$max_attempts: 连接超时"
+              sleep 1
+              continue
             fi
-            echo "  等待中... ($i/30)"
-            sleep 2
+            
+            http_code=$(echo "$response" | tail -n 1)
+            body=$(echo "$response" | head -n -1)
+            
+            # 检查 HTTP 状态码
+            if [ "$http_code" = "200" ]; then
+              # 检查响应是否包含 ready 字段
+              if echo "$body" | grep -q '"ready"\s*:\s*true'; then
+                echo "✓ Selenium Grid 就绪 (尝试 $attempt)"
+                exit 0
+              elif echo "$body" | grep -q '"ready"\s*:\s*false'; then
+                echo "尝试 $attempt/$max_attempts: Selenium Grid 未就绪"
+              else
+                echo "尝试 $attempt/$max_attempts: 收到响应但无 ready 字段"
+              fi
+            else
+              echo "尝试 $attempt/$max_attempts: HTTP $http_code"
+            fi
+            
+            if [ $attempt -lt $max_attempts ]; then
+              sleep 1
+            fi
           done
-          echo "错误: Selenium Grid 启动超时"
+          
+          echo "错误: Selenium Grid 启动超时 (已等待 ${max_attempts} 秒)"
+          echo ""
+          echo "调试信息:"
+          curl -v http://localhost:4444/wd/hub/status 2>&1 || echo "无法连接到 http://localhost:4444"
           exit 1
 
       - name: Run tests with Pabot (parallel)
