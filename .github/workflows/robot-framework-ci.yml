@@ -65,37 +65,47 @@ jobs:
           echo "等待 Selenium Grid 启动..."
           max_attempts=60
           attempt=0
+          
+          # 函数：检查 Grid 就绪状态
+          check_grid_ready() {
+            local endpoints=(
+              "http://localhost:4444/wd/hub/status"
+              "http://localhost:4444/status"
+              "http://localhost:4444/grid/api/hub/health"
+            )
+            
+            for endpoint in "${endpoints[@]}"; do
+              response=$(curl -s --max-time 3 --connect-timeout 2 \
+                -w "\n%{http_code}" \
+                "$endpoint" 2>/dev/null || echo "")
+              
+              if [ -z "$response" ]; then
+                continue
+              fi
+              
+              http_code=$(echo "$response" | tail -n 1)
+              body=$(echo "$response" | head -n -1)
+              
+              # 检查 HTTP 状态码
+              if [ "$http_code" = "200" ]; then
+                # 检查响应是否包含 ready 字段（各种格式）
+                if echo "$body" | grep -qE '"ready"\s*:\s*true|"status"\s*:\s*"UP"|"value"\s*:\s*true'; then
+                  return 0
+                fi
+              fi
+            done
+            return 1
+          }
+          
           while [ $attempt -lt $max_attempts ]; do
             attempt=$((attempt + 1))
-            # 尝试连接到 Selenium Grid Hub
-            response=$(curl -s --max-time 5 --connect-timeout 2 \
-              -w "\n%{http_code}" \
-              http://localhost:4444/wd/hub/status 2>/dev/null || echo "")
             
-            if [ -z "$response" ]; then
-              echo "尝试 $attempt/$max_attempts: 连接超时"
-              sleep 1
-              continue
+            if check_grid_ready; then
+              echo "✓ Selenium Grid 就绪 (尝试 $attempt)"
+              exit 0
             fi
             
-            http_code=$(echo "$response" | tail -n 1)
-            body=$(echo "$response" | head -n -1)
-            
-            # 检查 HTTP 状态码
-            if [ "$http_code" = "200" ]; then
-              # 检查响应是否包含 ready 字段
-              if echo "$body" | grep -q '"ready"\s*:\s*true'; then
-                echo "✓ Selenium Grid 就绪 (尝试 $attempt)"
-                exit 0
-              elif echo "$body" | grep -q '"ready"\s*:\s*false'; then
-                echo "尝试 $attempt/$max_attempts: Selenium Grid 未就绪"
-              else
-                echo "尝试 $attempt/$max_attempts: 收到响应但无 ready 字段"
-              fi
-            else
-              echo "尝试 $attempt/$max_attempts: HTTP $http_code"
-            fi
-            
+            echo "尝试 $attempt/$max_attempts: 等待 Selenium Grid..."
             if [ $attempt -lt $max_attempts ]; then
               sleep 1
             fi
@@ -104,7 +114,10 @@ jobs:
           echo "错误: Selenium Grid 启动超时 (已等待 ${max_attempts} 秒)"
           echo ""
           echo "调试信息:"
-          curl -v http://localhost:4444/wd/hub/status 2>&1 || echo "无法连接到 http://localhost:4444"
+          echo "尝试连接到各个端点:"
+          curl -v http://localhost:4444/wd/hub/status 2>&1 | head -20 || echo "  /wd/hub/status: 连接失败"
+          curl -v http://localhost:4444/status 2>&1 | head -20 || echo "  /status: 连接失败"
+          curl -v http://localhost:4444/grid/api/hub/health 2>&1 | head -20 || echo "  /grid/api/hub/health: 连接失败"
           exit 1
 
       - name: Run tests with Pabot (parallel)
