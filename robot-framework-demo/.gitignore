@@ -1,0 +1,24 @@
+# 测试结果
+results/
+outputs/
+output.xml
+log.html
+report.html
+
+# Python
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Pabot
+.pabot/
+pabot_results/
