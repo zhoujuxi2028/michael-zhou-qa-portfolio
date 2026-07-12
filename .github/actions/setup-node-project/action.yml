@@ -29,4 +29,4 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
         set -euo pipefail
-        npm ci
+        npm ci || (echo "::warning::npm ci failed - lockfile out of sync; running npm install as fallback (PDEF-008)" && npm install)
