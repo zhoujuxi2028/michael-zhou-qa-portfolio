@@ -170,7 +170,8 @@ Dependabot PR CI 报红时，按以下流程排查，**不要直接关闭**：
 
 | 步骤 | 操作 |
 |------|------|
-| 1. 判断报错类型 | breaking change（ESLint major 等）→ 关闭并备注；文档/检查缺口 → 修复后继续 |
+| 1. 判断报错类型 | breaking change（ESLint major 等）→ 关闭并备注；lockfile 同步错误 → 进入步骤 1a；文档/检查缺口 → 修复后继续 |
+| 1a. 修复 lockfile | `npm ci` 报 `Missing from lock file`（PDEF-008）→ 在 Dependabot 分支上运行 `npm install --package-lock-only` 重新生成 lockfile，commit 并 push |
 | 2. 触发 rebase | PR 评论 `@dependabot rebase`，等待分支更新（通常 1-5 分钟） |
 | 3. **确认 rebase 包含最新 main** | `git log origin/<dependabot-branch> -1` 的父提交应晚于你的修复合并时间 |
 | 4. 若 rebase 早于修复 | 再次评论 `@dependabot rebase`（时间竞态，见 PDEF-007 RCA） |
@@ -186,6 +187,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 |----------|---------|---------|
 | `ai-testing-ci.yml` | ai-testing-platform | AI Testing CI: code quality + unit tests (43 tests, 91% coverage) |
 | `api-testing-ci.yml` | api-testing-demo | Validate collections → Newman tests (280+ assertions) |
+| `robot-framework-ci.yml` | robot-framework-demo | Robot Framework / Pabot parallel + Selenium Grid + Rebot merge (9 tests) |
 | `cicd-demo-pr.yml` | cicd-demo | PR Gate: lint + unit/contract tests + Docker build + quick security scan |
 | `cicd-demo-deploy.yml` | cicd-demo | Deploy Pipeline: Helm package + SBOM → staging (auto) → smoke test → production (manual approval) |
 | `cicd-demo-terraform.yml` | cicd-demo | Terraform CI: fmt-check + validate + Trivy IaC security scan + tf-gate |

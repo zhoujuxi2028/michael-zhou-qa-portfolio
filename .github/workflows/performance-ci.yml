@@ -30,7 +30,7 @@ jobs:
     name: Performance Testing / Code Quality
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     # 优化 #2：lint 不再阻塞测试 job，与 lint 并行运行；最终由 performance-gate 汇总
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
@@ -79,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     # 优化 #2：与 lint 并行
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           # 9.2 conventional commits 检查需要近期提交历史；50 已足够（替代旧 fetch-depth: 0）
           fetch-depth: 50
@@ -89,7 +89,7 @@ jobs:
           working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
       - name: Install bats-core
-        uses: bats-core/bats-action@3.0.0
+        uses: bats-core/bats-action@4.0.0
         with:
           bats-version: 1.10.0
           support-path: ${{ runner.temp }}/bats-support
@@ -104,7 +104,7 @@ jobs:
     runs-on: ubuntu-latest
     # 优化 #2：与 lint 并行；不被下游 smoke/jmeter job 依赖，因此天然不阻塞性能闸门关键路径
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 50
       - uses: ./.github/actions/setup-node-project
@@ -113,7 +113,7 @@ jobs:
           working-directory: performance-testing-platform
           cache-dependency-path: performance-testing-platform/package-lock.json
       - name: Install bats-core
-        uses: bats-core/bats-action@3.0.0
+        uses: bats-core/bats-action@4.0.0
         with:
           bats-version: 1.10.0
       - name: Run integration BATS shell tests
@@ -127,7 +127,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [unit-tests, shell-tests-fast]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
@@ -139,7 +139,7 @@ jobs:
           java-version: '17'
       - name: Cache JMeter
         id: cache-jmeter
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: performance-testing-platform/apache-jmeter-5.6.3
           key: jmeter-5.6.3
@@ -204,7 +204,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [unit-tests, shell-tests-fast]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
@@ -242,7 +242,7 @@ jobs:
       actions: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
@@ -356,7 +356,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
