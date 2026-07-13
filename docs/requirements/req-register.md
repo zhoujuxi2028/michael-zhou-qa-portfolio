@@ -33,6 +33,13 @@
 | PREQ-006 | — | Portfolio 级需求管理系统：README + 台账 + 模板 + RTM | 仓库级 / QA 体系 | DEMO | P1 | 2026-05-26 | In Development | — |
 | PREQ-007 | — | CI/CD workflow 设计文档覆盖所有 workflow（`docs/ci-cd/workflow-design.md`） | 仓库级 / 文档 | DEMO | P2 | 2026-05-26 | Verified | — |
 | PREQ-008 | — | 缺陷管理系统覆盖：台账 + Waiver 政策 + Flaky 分级 + 依赖风险 SLA | 仓库级 / QA 体系 | DEMO | P1 | 2026-05-26 | Verified | — |
+| PREQ-009 | [#428](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/428) | README/CLAUDE.md 引用 3 个不存在的 workflow | 仓库级 / 文档 | BUG | P1 | 2026-07-13 | Open | — |
+| PREQ-010 | [#429](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/429) | repo-meta-ci.yml 无 path filter，每次 PR 都跑 | 仓库级 / CI 规范 | NFR | P1 | 2026-07-13 | Open | — |
+| PREQ-011 | [#430](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/430) | CLAUDE.md 分支状态表全部过期（9 分支已合并） | 仓库级 / 文档 | BUG | P2 | 2026-07-13 | Open | — |
+| PREQ-012 | [#431](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/431) | commit-guard.yml 无 path filter | 仓库级 / CI 规范 | NFR | P2 | 2026-07-13 | Open | — |
+| PREQ-013 | [#432](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/432) | codeql-analysis.yml 30min 超时 + 无缓存 | 仓库级 / 安全 | NFR | P1 | 2026-07-13 | Open | — |
+| PREQ-014 | [#433](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/433) | Dependabot 缺少 Python 生态（7 个 pip） | 仓库级 / 安全 | NFR | P1 | 2026-07-13 | Open | — |
+| PREQ-015 | [#434](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/434) | claude-code-review.yml 已禁用 3 个月 | 仓库级 / CI 维护 | CHR | P2 | 2026-07-13 | Open | — |
 
 ---
 
@@ -84,3 +91,4 @@
 | 日期 | 操作 | 内容 | 操作人 |
 |------|------|------|--------|
 | 2026-05-26 | 初始化 | 创建 Portfolio 需求台账，录入 PREQ-001 ~ PREQ-008 | Michael Zhou |
+| 2026-07-13 | 新增 | 仓库优化审计：录入 PREQ-009 ~ PREQ-015（对应 Issues #428-#434） | Michael Zhou |
