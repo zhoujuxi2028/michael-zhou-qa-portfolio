@@ -5,7 +5,7 @@
 #   bash scripts/run_pabot.sh [选项]
 #
 # 选项:
-#   --processes N    并行进程数 (默认: 2)
+#   --processes N    并行进程数 (默认: 4)
 #   --include TAG    只运行指定标签的用例
 #   --grid URL       Selenium Grid 地址 (默认: http://localhost:4444/wd/hub)
 
@@ -15,7 +15,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # 默认参数
-PROCESSES=2
+PROCESSES=4
 GRID_URL="http://localhost:4444/wd/hub"
 INCLUDE_TAG=""
 OUTPUT_DIR="$PROJECT_DIR/results"
@@ -44,6 +44,7 @@ mkdir -p "$OUTPUT_DIR"
 
 # 构建 Pabot 命令
 PABOT_CMD="pabot --processes $PROCESSES"
+PABOT_CMD="$PABOT_CMD --pabotlib"
 PABOT_CMD="$PABOT_CMD --outputdir $OUTPUT_DIR"
 PABOT_CMD="$PABOT_CMD --variable SELENIUM_GRID:$GRID_URL"
 

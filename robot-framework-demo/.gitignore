@@ -22,3 +22,7 @@ Thumbs.db
 # Pabot
 .pabot/
 pabot_results/
+.pabotsuitenames
+
+# 日常报告不提交，仅手动保存的 milestone 例外
+docs/qa/reports/milestone-*/

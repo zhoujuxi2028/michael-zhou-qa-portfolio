@@ -427,6 +427,8 @@ flowchart TD
 > 💡 **设计取舍**：`pr-gate` 通过 `needs: [lint, unit-tests, build, security-scan]` 聚合所有子 job，任何一个失败则 gate 失败。**只配置 `CICD Demo / PR Gate` 一项必需 check 即可**，避免新增/重命名子 job 时需要同步更新 branch protection（参考 CLAUDE.md "CI Job Naming Convention" 段对历史 required check 漂移的教训）。
 >
 > 如希望在 PR UI 中并排显示各子 job 状态以便排错，可将其他 4 项也加入必需 checks 列表（功能等价，仅 UI 表达不同）。
+>
+> ⚠️ **注意 `pr-gate` 与 `defaults.run.working-directory`（PDEF-002）**：`cicd-demo-pr.yml` 在 workflow 顶层设置了 `defaults.run.working-directory: cicd-demo`，但 `pr-gate` job **不执行 checkout**，因此不存在 `cicd-demo/` 目录。若 `pr-gate` 直接继承该默认值，其 `run:` step 会因目录不存在而报错。为此，`pr-gate` 在 job 内显式覆盖 `defaults.run.working-directory: .`。如需复制或修改该 workflow，请确保新增的无 checkout job 也同样显式覆盖。
 
 **本地验证 Checklist**（提 PR 前确认）：
 
