@@ -178,10 +178,151 @@ tests/test_script_generator/      ← 本地：script_gen、positive_spec、nega
 
 ## 4. 设计决策
 
+## 2.4 LLMEvaluator
+
+**职责**：基于 DeepEval 对 LLM 输出进行质量评测、幻觉检测、安全红队攻击和偏差分析
+
+**数据流**：
+```
+LLM Input/Output Pair
+   ↓ LLMEvaluator.evaluate()
+   ├─ QualityEvaluator       → GEval, AnswerRelevancy, ContextualPrecision
+   ├─ HallucinationEvaluator → Faithfulness, Hallucination
+   ├─ SecurityEvaluator      → GEval(PromptInjection), injection pattern scan
+   └─ BiasEvaluator          → Bias, Toxicity
+   ↓ _aggregate()
+   └─ EvaluationReport (scores, thresholds, pass/fail per metric)
+```
+
+**关键数据类**：
+```python
+@dataclass
+class LLMIO:
+    input: str                     # LLM 输入 prompt
+    actual_output: str             # LLM 实际输出
+    expected_output: str | None    # 期望输出（可选）
+    context: list[str] | None      # 参考上下文（可选）
+
+@dataclass
+class MetricResult:
+    name: str                      # 指标名称（e.g. "g_eval_correctness"）
+    score: float                   # 0-1 评分
+    threshold: float               # 通过阈值
+    passed: bool                   # score >= threshold
+    reason: str                    # LLM 评估理由摘要
+
+@dataclass
+class EvaluationReport:
+    io: LLMIO
+    results: list[MetricResult]
+    overall_pass: bool             # 所有指标通过
+    summary: str                   # 汇总评估描述
+```
+
+**模块接口**：
+```python
+class BaseLLMEvaluator(ABC):
+    """所有评估器的基类，封装 DeepEval metrics"""
+
+    def __init__(self, model: str = "gpt-4o-mini"):
+        self.model = model
+
+    @abstractmethod
+    def evaluate(self, io: LLMIO) -> list[MetricResult]:
+        ...
+
+
+class QualityEvaluator(BaseLLMEvaluator):
+    """响应质量评估：G-Eval + AnswerRelevancy + ContextualPrecision
+
+    FR-LLM-001 ~ FR-LLM-004
+    """
+
+    def evaluate(self, io: LLMIO) -> list[MetricResult]:
+        ...
+
+
+class HallucinationEvaluator(BaseLLMEvaluator):
+    """幻觉检测：Faithfulness + Hallucination
+
+    FR-LLM-005 ~ FR-LLM-006
+    """
+
+    def evaluate(self, io: LLMIO) -> list[MetricResult]:
+        ...
+
+
+class SecurityEvaluator(BaseLLMEvaluator):
+    """安全红队：Prompt injection detection + adversarial generation
+
+    FR-LLM-007 ~ FR-LLM-009
+    """
+
+    def evaluate(self, io: LLMIO) -> list[MetricResult]:
+        ...
+
+
+class BiasEvaluator(BaseLLMEvaluator):
+    """偏差检测：Bias + Toxicity
+
+    FR-LLM-010 ~ FR-LLM-011
+    """
+
+    def evaluate(self, io: LLMIO) -> list[MetricResult]:
+        ...
+```
+
+**DeepEval 指标映射**：
+| 评估器 | DeepEval 指标 | MR 名称 | 阈值 |
+|--------|-------------|---------|------|
+| Quality | `GEval(criteria=correctness)` | `g_eval_correctness` | ≥ 0.5 |
+| Quality | `AnswerRelevancyMetric` | `answer_relevancy` | ≥ 0.7 |
+| Quality | `ContextualPrecisionMetric` | `contextual_precision` | ≥ 0.5 |
+| Hallucination | `FaithfulnessMetric` | `faithfulness` | ≥ 0.7 |
+| Hallucination | `HallucinationMetric` | `hallucination` | ≤ 0.3 |
+| Security | `GEval(criteria=prompt_injection)` | `prompt_injection` | ≥ 0.5 |
+| Security | 正则注入模式扫描 | `injection_pattern` | 匹配数=0 |
+| Bias | `BiasMetric` | `bias` | ≤ 0.3 |
+| Bias | `ToxicityMetric` | `toxicity` | ≤ 0.3 |
+
+---
+
+## 3. 测试架构
+
+### Fixture 层级 (更新)
+
+```
+tests/conftest.py                         ← 根级：generator, predictor, script_gen, metrics, specs
+tests/test_case_generator/conftest.py     ← 本地：generator
+tests/test_defect_predictor/conftest.py   ← 本地：predictor, high_risk, low_risk
+tests/test_script_generator/conftest.py   ← 本地：script_gen, positive_spec, negative_spec
+tests/test_llm_evaluator/conftest.py      ← 本地：llm_io samples, evaluators (★ NEW)
+```
+
+### 测试标记 (更新)
+
+| 标记 | 用途 |
+|------|------|
+| `@pytest.mark.generation` | TestCaseGenerator 测试 |
+| `@pytest.mark.prediction` | DefectPredictor 测试 |
+| `@pytest.mark.script_gen` | ScriptGenerator 测试 |
+| `@pytest.mark.llm` | LLMEvaluator 测试（CI 默认排除） |
+| `@pytest.mark.llm_quality` | 质量评测子类 |
+| `@pytest.mark.llm_hallucination` | 幻觉检测子类 |
+| `@pytest.mark.llm_security` | 安全红队子类 |
+| `@pytest.mark.llm_bias` | 偏差检测子类 |
+| `@pytest.mark.P0/P1/P2` | 测试优先级 |
+
+---
+
+## 4. 设计决策
+
 | 决策 | 选择 | 理由 |
 |------|------|------|
-| AI 后端 | 规则引擎 | 零依赖、完全可测试、CI 友好 |
-| 数据模型 | Python dataclass | 轻量、类型安全、无 ORM 开销 |
-| 生成方式 | 字符串模板 | 输出可预测，便于验证 |
+| AI 后端（三大引擎） | 规则引擎 | 零依赖、完全可测试、CI 友好 |
+| LLM 评测引擎 | DeepEval 4.x | Python-native，一站式覆盖所有评测维度 |
+| 模型 | gpt-4o-mini | 低成本、高可访问性 |
+| CI 策略 | 双模式：`-m "not llm"` | 无 API Key 时仍可验证非 LLM 模块 |
+| 数据模型 | Python dataclass | 与现有项目模式一致 |
 | 测试框架 | Pytest | 与 portfolio 其他 Python 项目一致 |
-| 优先级模型 | 规则优先 | 安全相关强制 P0，符合 QA 最佳实践 |
+| 注入检测 | GEval + 正则模式双重验证 | LLM 调用可用时 GEval 更准确，正则作为 fallback |

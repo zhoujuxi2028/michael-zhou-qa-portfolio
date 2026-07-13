@@ -46,8 +46,8 @@ jobs:
           cache: pip
           cache-dependency-path: ai-testing-platform/requirements.txt
       - run: pip install -r requirements.txt
-      - name: Run all 43 tests with coverage
-        run: pytest tests/ -v --cov=src --cov-report=xml --cov-report=term-missing
+      - name: Run all tests with coverage (skip LLM-dependent)
+        run: pytest tests/ -v -m "not llm" --cov=src --cov-report=xml --cov-report=term-missing
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v7
@@ -74,5 +74,7 @@ jobs:
         run: pytest tests/test_defect_predictor/ -v -m "prediction" --tb=short
       - name: ScriptGenerator tests
         run: pytest tests/test_script_generator/ -v -m "script_gen" --tb=short
+      - name: LLMEvaluator unit tests
+        run: pytest tests/test_llm_evaluator/ -v -m "not llm" --tb=short
       - name: P0 critical tests
         run: pytest tests/ -v -m P0 --tb=short -q
