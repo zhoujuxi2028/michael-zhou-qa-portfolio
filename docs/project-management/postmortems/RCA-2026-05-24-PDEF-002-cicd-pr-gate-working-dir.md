@@ -93,9 +93,9 @@ pr-gate:
 
 | 编号 | 行动 | 负责人 | 截止 | 状态 |
 |------|------|--------|------|------|
-| PA-1 | 在 `docs/process/` 新增 CI lint 提示：workflow 级 `defaults.run.working-directory` 若设置，需检查每个 job 是否会被影响（尤其是无 checkout 的汇总 job） | QA Lead | 2026-06-15 | 🟡 待办 |
-| PA-2 | 评审现有其他 workflow（`repo-meta-ci.yml`、`security-scan.yml` 等）是否存在相同隐患 | QA Lead | 2026-06-15 | 🟡 待办 |
-| PA-3 | 在 `cicd-demo/README.md` "Required Check" 章节加注：`pr-gate` job 不 checkout，配置时需保证其 `working-directory` 可达 | Owner | 2026-06-01 | 🟡 待办 |
+| PA-1 | 在 `docs/process/` 新增 CI lint 提示：workflow 级 `defaults.run.working-directory` 若设置，需检查每个 job 是否会被影响（尤其是无 checkout 的汇总 job） | QA Lead | 2026-06-15 | ✅ 2026-07-13 完成 |
+| PA-2 | 评审现有其他 workflow（`repo-meta-ci.yml`、`security-scan.yml` 等）是否存在相同隐患 | QA Lead | 2026-06-15 | ✅ 2026-07-13 完成 — 零问题，所有无 checkout job 均已显式覆盖 |
+| PA-3 | 在 `cicd-demo/README.md` "Required Check" 章节加注：`pr-gate` job 不 checkout，配置时需保证其 `working-directory` 可达 | Owner | 2026-06-01 | ✅ 2026-07-13 完成 |
 
 ---
 
@@ -121,5 +121,5 @@ pr-gate:
 
 ---
 
-**最后更新**: 2026-05-24
+**最后更新**: 2026-07-13
 **作者**: QA Lead (Copilot Agent)

@@ -2,16 +2,18 @@
 
 基于 **Pabot 并行执行 + Selenium Grid 分布式 + Rebot 报告合并** 的 Robot Framework 测试演示项目。
 
+> **Version**: robot-framework-demo/v1.0.0-pabot-grid-rebot (2026-07-13, 9/9 PASS)
+
 ## 技术栈
 
 | 组件 | 版本 | 用途 |
 |------|------|------|
-| Robot Framework | 7.2 | 关键字驱动测试框架 |
-| Pabot | 2.18.0 | 并行测试执行引擎 |
-| SeleniumLibrary | 6.6.1 | Selenium WebDriver 封装 |
+| Robot Framework | 7.4 | 关键字驱动测试框架 |
+| Pabot | 5.2 | 并行测试执行引擎 |
+| SeleniumLibrary | 6.9 | Selenium WebDriver 封装 |
 | Selenium Grid 4 | 4.21.0 | 分布式浏览器节点管理 |
 | Rebot | (内置) | 测试结果合并与报告生成 |
-| Docker Compose | 3.8 | Grid 环境编排 |
+| Docker Compose | v2 | Grid 环境编排（macOS 可用 OrbStack 替代 Docker Desktop） |
 
 ## 架构概述
 
@@ -53,6 +55,7 @@ pip install -r requirements.txt
 ### 2. 启动 Selenium Grid
 
 ```bash
+# 确保 OrbStack 或 Docker Desktop 已启动
 docker-compose up -d
 # 等待 Grid 就绪
 curl -s http://localhost:4444/wd/hub/status | python3 -m json.tool
@@ -61,14 +64,14 @@ curl -s http://localhost:4444/wd/hub/status | python3 -m json.tool
 ### 3. 运行测试
 
 ```bash
-# 使用 Pabot 并行执行（2 进程）
-pabot --processes 2 \
+# 使用 Pabot 并行执行（4 进程，test-level 分配）
+pabot --processes 4 --pabotlib \
   --outputdir results \
   --variable SELENIUM_GRID:http://localhost:4444/wd/hub \
   tests/
 
 # 或使用脚本
-bash scripts/run_pabot.sh --processes 2
+bash scripts/run_pabot.sh --processes 4
 
 # 仅运行 smoke 标签用例
 bash scripts/run_pabot.sh --include smoke
@@ -102,7 +105,9 @@ robot-framework-demo/
 │   └── run_rebot_merge.sh      # Rebot 报告合并
 ├── results/                    # 测试结果（gitignore）
 ├── docker-compose.yml          # Selenium Grid 编排
-├── requirements.txt            # Python 依赖
+├── requirements.txt            # Python 依赖（>= 版本约束，兼容 Python 3.14）
+├── docs/                       # 设计文档
+│   └── architecture/DESIGN.md  # 架构设计 + 设计决策 + 优化记录
 └── README.md                   # 本文件
 ```
 
@@ -111,7 +116,7 @@ robot-framework-demo/
 GitHub Actions workflow: `.github/workflows/robot-framework-ci.yml`
 
 - 自动启动 Selenium Grid (Hub + Chrome + Firefox)
-- Pabot 并行执行 smoke 测试
+- Pabot 并行执行 smoke 测试（CI 2 进程）
 - Rebot 合并报告并上传 artifact
 
 ## 测试用例统计
@@ -134,6 +139,17 @@ GitHub Actions workflow: `.github/workflows/robot-framework-ci.yml`
 | Rebot 合并 | ✅ Robot Framework 内置，无额外依赖 |
 | Chrome/Firefox 双浏览器 | ✅ 官方 Docker 镜像支持 |
 | 测试报告归档 | ✅ `upload-artifact` 保存 HTML 报告 |
+
+### 🔧 本地环境
+
+本机使用 **OrbStack**（macOS Docker Desktop 替代品），使用方法与 Docker 完全相同：
+
+```bash
+# 先确认 OrbStack 已启动
+ls /Users/michaelzhou/.orbstack/run/docker.sock
+# 再执行 docker-compose 命令
+docker-compose up -d
+```
 
 ### ⚠️ 注意事项
 

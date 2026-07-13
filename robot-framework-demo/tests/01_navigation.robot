@@ -23,5 +23,5 @@ TC-NAV-003: 验证页面文本内容
     [Documentation]    验证页面包含预期文本内容
     [Tags]    regression    navigation    P1
     Open Browser To Grid    https://example.com
-    Page Should Contain    This domain is for use in illustrative examples
+    Page Should Contain    This domain is for use in documentation examples
     [Teardown]    Close Browser Safely

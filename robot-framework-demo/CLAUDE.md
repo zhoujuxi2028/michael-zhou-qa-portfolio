@@ -7,11 +7,15 @@ cd robot-framework-demo
 source venv/bin/activate
 pip install -r requirements.txt
 
+# 确保 OrbStack / Docker Desktop 已启动
 # 启动 Selenium Grid
 docker-compose up -d
 
-# Pabot 并行执行
-pabot --processes 2 --outputdir results --variable SELENIUM_GRID:http://localhost:4444/wd/hub tests/
+# Pabot 并行执行（4 进程，pabotlib 动态分配）
+pabot --processes 4 --pabotlib --outputdir results --variable SELENIUM_GRID:http://localhost:4444/wd/hub tests/
+
+# 或使用脚本（默认 4 进程）
+bash scripts/run_pabot.sh
 
 # 单独运行 (非并行)
 robot --outputdir results --variable SELENIUM_GRID:http://localhost:4444/wd/hub tests/
@@ -23,9 +27,13 @@ rebot --outputdir results/merged --merge results/output.xml
 docker-compose down
 ```
 
+## 设计文档
+
+详细设计决策、架构图、优化记录见 `docs/architecture/DESIGN.md`。
+
 ## Branch
 
-- 开发分支: `feature/robot-framework-demo` 或 `copilot/pabot-selenium-grid-rebot`
+- 开发分支: 已合并至 `main`
 - 主分支: `main`
 
 ## 技术路线
