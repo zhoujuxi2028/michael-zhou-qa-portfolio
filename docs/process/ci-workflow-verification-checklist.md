@@ -93,6 +93,7 @@ GitHub → Actions → [Workflow Name] → Run workflow
 | **分支名称硬编码** | Develop 分支上无法触发 | 使用 `${{ github.ref_name }}` |
 | **缓存版本过旧** | 本地测试通过，CI 失败 | 清除 GitHub Actions 缓存 |
 | **secrets 缺失** | 环境变量为空 | 检查 repo settings → Secrets |
+| **`defaults.run.working-directory` 继承** | 汇总/聚合 job（不 checkout）启动报 `No such file or directory` | 见 §6 专用检查项 |
 
 ### 4. 验证模板
 
@@ -138,6 +139,45 @@ bash scripts/check-workflow-doc-sync.sh changed-files.txt
 ```
 
 用途：当 `.github/workflows/*.yml` 变更时，自动校验根 `README.md` 与 `CLAUDE.md` 是否同步了 workflow 名称。
+
+### 6. `defaults.run.working-directory` 检查
+
+**风险描述**：workflow 顶层声明 `defaults.run.working-directory: <subdir>` 后，所有 job 的 `run:` step 都默认在该子目录执行。但**不执行 `actions/checkout` 的 job 不存在该子目录**，会导致 bash 进程因 `No such file or directory` 而启动失败（PDEF-002）。
+
+**检查流程**：
+
+1. workflow 是否有顶层 `defaults.run.working-directory`？
+   - 无 → 安全，无需检查
+   - 有 → 进入下一步
+
+2. 列出所有 job，标记每个 job 是否执行 `actions/checkout@`
+
+3. 对每个**不 checkout 的 job**，确认其显式覆盖了 `defaults.run.working-directory`：
+   ```yaml
+   # ✅ 推荐：job-level 覆盖
+   some-gate-job:
+     defaults:
+       run:
+         working-directory: .
+     steps:
+       - run: echo "OK"
+   
+   # ✅ 也可用 step-level 覆盖
+   some-gate-job:
+     steps:
+       - run: echo "OK"
+         working-directory: .
+   ```
+
+4. 若发现未覆盖的 job，修复方案：
+   - 在 job 内添加 `defaults.run.working-directory: .`
+   - `.` 等效于 `$GITHUB_WORKSPACE`（仓库根），runner 始终自动创建
+
+**不推荐的方案**：
+- ❌ 让无 checkout job 执行 `actions/checkout`（浪费 ~10s）
+- ❌ 删除 workflow 级 `defaults.run.working-directory`（其他 job 需重复声明）
+
+**参考案例**：PDEF-002（`cicd-demo-pr.yml` 的 `pr-gate` job），修复记录见 `RCA-2026-05-24-PDEF-002-cicd-pr-gate-working-dir.md`。
 
 ## Integration with Dev Process
 

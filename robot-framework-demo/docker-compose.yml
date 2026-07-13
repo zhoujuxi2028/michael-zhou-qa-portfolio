@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   selenium-hub:
     image: selenium/hub:4.21.0
@@ -10,6 +8,8 @@ services:
       - GRID_MAX_SESSION=6
       - GRID_BROWSER_TIMEOUT=60
       - GRID_TIMEOUT=120
+      - no_proxy=localhost,127.0.0.1,example.com,selenium-hub
+      - NO_PROXY=localhost,127.0.0.1,example.com,selenium-hub
 
   chrome-node:
     image: selenium/node-chrome:4.21.0
@@ -22,6 +22,8 @@ services:
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
       - SE_NODE_MAX_SESSIONS=3
       - TZ=Asia/Shanghai
+      - no_proxy=localhost,127.0.0.1,example.com,selenium-hub
+      - NO_PROXY=localhost,127.0.0.1,example.com,selenium-hub
     deploy:
       replicas: 2
 
@@ -36,5 +38,7 @@ services:
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
       - SE_NODE_MAX_SESSIONS=3
       - TZ=Asia/Shanghai
+      - no_proxy=localhost,127.0.0.1,example.com,selenium-hub
+      - NO_PROXY=localhost,127.0.0.1,example.com,selenium-hub
     deploy:
       replicas: 2

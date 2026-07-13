@@ -58,6 +58,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | 功能测试 | `api-testing-demo/` — API testing (280+ assertions) | Newman, Postman, json-server | `api-testing-demo/CLAUDE.md` |
 | 功能测试 | `playwright-demo/` — Cross-browser E2E (38 tests) | Playwright, TypeScript, axe-core | `playwright-demo/CLAUDE.md` |
 | 功能测试 | `selenium-demo/` — Browser automation | Selenium, Python, Allure | `selenium-demo/CLAUDE.md` |
+| 功能测试 | `robot-framework-demo/` — Pabot + Selenium Grid + Rebot (9 tests) | Robot Framework, Pabot, Selenium Grid | `robot-framework-demo/CLAUDE.md` |
 | 安全测试 | `security-testing-demo/` — Security (~182 tests, OWASP Top 10) | Pytest, OWASP ZAP, Nessus, SQLMap | `security-testing-demo/CLAUDE.md` |
 | 平台测试 | `sid-iam-testing-platform/` — IAM + Data + AI Agent (163 tests) | Python, Pytest, FastAPI, networkx | `sid-iam-testing-platform/CLAUDE.md` |
 | 平台测试 | `microservice-testing-platform/` — Microservice (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 | `microservice-testing-platform/CLAUDE.md` |
@@ -157,7 +158,7 @@ python3 -m venv venv && source venv/bin/activate
 | `feature/api-testing` | API testing enhancements | In development |
 | `feature/k8s-testing` | K8S testing features | In development |
 | `feature/selenium` | Selenium automation | In development |
-| `feature/robot-framework-demo` | Robot Framework demo | In development |
+| `feature/robot-framework-demo` | Robot Framework demo | Merged to main |
 | `fix/api-testing-defects` | API testing bug fixes | In development |
 | `feature/sid-iam-testing` | SID IAM + Data Platform + AI Agent testing (138 tests) | In development |
 | `feature/microservice-testing` | Microservice testing platform (101 tests, 5 layers) | In development |
