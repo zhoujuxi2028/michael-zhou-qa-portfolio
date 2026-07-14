@@ -20,6 +20,7 @@
 | RSK-LLM-004 | **OpenAI 速率限制**: gpt-4o-mini 免费层有 RPM/TPM 限制 | 🟢 LOW | 环境 | 低 | 低 | 每次运行 ≤ 40 个 LLM 调用，分布式测试间隔 | 监控 |
 | RSK-LLM-005 | **gpt-4o-mini 评测质量不稳定**: 小模型可能对复杂评测（bias/toxicity）结果不准确 | 🟢 LOW | 技术 | 低 | 中 | 可配置 `model` 参数切换 gpt-4o；FR-LLM 阈值按指标独立设置 | 监控 |
 | RSK-LLM-006 | **prompt injection 指标缺失**: DeepEval 无内置 injection 指标，需通过 GEval + 正则 fallback | 🟡 MEDIUM | 技术 | 中 | 中 | GEval 自定义 criteria + 正则注入模式表双重检测 | ✅ 已处理 |
+| RSK-LLM-007 | **DeepSeek 兼容性**: 非 OpenAI 模型在某些 DeepEval 指标可能行为不同 | 🟢 LOW | 技术 | 低 | 中 | PoC 已验证 GPTModel 构造 + 指标配置均正常；如遇兼容问题可切换 gpt-4o-mini | 监控 |
 
 ---
 

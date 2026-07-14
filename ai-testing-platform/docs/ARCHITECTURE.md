@@ -224,8 +224,17 @@ class EvaluationReport:
 class BaseLLMEvaluator(ABC):
     """所有评估器的基类，封装 DeepEval metrics"""
 
-    def __init__(self, model: str = "gpt-4o-mini"):
-        self.model = model
+    def __init__(self, model: str | GPTModel = "deepseek-chat",
+                 api_key: str | None = None,
+                 base_url: str | None = None):
+        if isinstance(model, GPTModel):
+            self.model = model
+        else:
+            self.model = GPTModel(
+                model=model,
+                api_key=api_key or os.getenv("OPENAI_API_KEY"),
+                base_url=base_url or os.getenv("OPENAI_BASE_URL"),
+            )
 
     @abstractmethod
     def evaluate(self, io: LLMIO) -> list[MetricResult]:
@@ -321,7 +330,7 @@ tests/test_llm_evaluator/conftest.py      ← 本地：llm_io samples, evaluator
 |------|------|------|
 | AI 后端（三大引擎） | 规则引擎 | 零依赖、完全可测试、CI 友好 |
 | LLM 评测引擎 | DeepEval 4.x | Python-native，一站式覆盖所有评测维度 |
-| 模型 | gpt-4o-mini | 低成本、高可访问性 |
+| 模型 | deepseek-chat / gpt-4o-mini | 支持 OpenAI 兼容 API，通过 `.env` 配置切换 |
 | CI 策略 | 双模式：`-m "not llm"` | 无 API Key 时仍可验证非 LLM 模块 |
 | 数据模型 | Python dataclass | 与现有项目模式一致 |
 | 测试框架 | Pytest | 与 portfolio 其他 Python 项目一致 |

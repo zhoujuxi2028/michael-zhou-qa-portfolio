@@ -10,8 +10,11 @@
 ## 2. 运行策略
 
 ```bash
-# 本地全量运行（需设置 OPENAI_API_KEY）
-source venv/bin/activate && export OPENAI_API_KEY=sk-...
+# 本地全量运行（需设置 API Key）
+source venv/bin/activate
+export OPENAI_API_KEY=sk-...           # DeepSeek / OpenAI key
+export OPENAI_BASE_URL=https://api.deepseek.com   # DeepSeek
+export LLM_MODEL=deepseek-chat
 pytest tests/ -v
 
 # CI 运行（跳过 LLM 依赖测试）
@@ -124,5 +127,6 @@ LLMIO(
 |------|------|
 | API Key 不可用 → 24 个 LLM 测试跳过 | CI 默认 `-m "not llm"`，跳过不影响 pipeline |
 | LLM 输出非确定性 → flaky 测试 | 阈值断言（score ≥ 0.5）而非精确匹配；记录 LLM 的 reason |
-| gpt-4o-mini 速率限制 | 单次运行 ≤ 40 个测试，每个测试 1-2 次 LLM 调用，远低于限频 |
+| gpt-4o-mini / deepseek-chat 速率限制 | 单次运行 ≤ 40 个测试，每个测试 1-2 次 LLM 调用，远低于限频 |
+| DeepSeek 兼容性 | PoC 已验证；DeepEval GPTModel 支持自定义 base_url 和 api_key |
 | DeepEval 版本升级 API 变化 | `requirements.txt` 锁定 `deepeval==4.1.0` |
