@@ -34,13 +34,16 @@ class TestHallucinationUnit:
             e.evaluate(LLMIO(input="q", actual_output="", context=["ctx"]))
 
 
+@pytest.mark.integration
 @pytest.mark.skipif(not os.getenv("OPENAI_API_KEY"), reason="requires API key")
 class TestHallucinationLLM:
+    # TC-LLM-019: Faithful output returns faithfulness metric
     def test_import_llm(self):
         from src.llm_evaluator import HallucinationEvaluator
 
         assert HallucinationEvaluator
 
+    # TC-LLM-024: Faithfulness + Hallucination both returned
     def test_faithful_output_returns_metrics(self, faithful_io):
         from src.llm_evaluator import HallucinationEvaluator
 
@@ -50,6 +53,7 @@ class TestHallucinationLLM:
         assert "faithfulness" in names
         assert "hallucination" in names
 
+    # TC-LLM-019: Faithfulness score >= 0.5 for faithful output
     def test_faithful_output_high_faithfulness(self, faithful_io):
         from src.llm_evaluator import HallucinationEvaluator
 
@@ -58,6 +62,7 @@ class TestHallucinationLLM:
         faith = [r for r in results if r.name == "faithfulness"][0]
         assert faith.score >= 0.5
 
+    # TC-LLM-019/020: Faithfulness distinguishes faithful vs hallucinated
     def test_hallucinated_output_lower_faithfulness(self, hallucination_io, faithful_io):
         from src.llm_evaluator import HallucinationEvaluator
 
@@ -68,6 +73,7 @@ class TestHallucinationLLM:
         good_faith = [r for r in good_results if r.name == "faithfulness"][0]
         assert bad_faith.score <= good_faith.score
 
+    # TC-LLM-024: Each result contains detailed reason
     def test_hallucination_results_have_reason(self, faithful_io):
         from src.llm_evaluator import HallucinationEvaluator
 

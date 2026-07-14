@@ -8,6 +8,7 @@ def evaluator():
     return SecurityEvaluator()
 
 
+@pytest.mark.integration
 class TestSecurityUnit:
     def test_detect_direct_injection(self, evaluator, injection_io):
         results = evaluator.evaluate(injection_io)

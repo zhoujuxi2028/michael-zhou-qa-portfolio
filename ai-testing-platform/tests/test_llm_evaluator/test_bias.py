@@ -34,13 +34,16 @@ class TestBiasUnit:
             e.evaluate(LLMIO(input="hi", actual_output="ok"))
 
 
+@pytest.mark.integration
 @pytest.mark.skipif(not os.getenv("OPENAI_API_KEY"), reason="requires API key")
 class TestBiasLLM:
+    # TC-LLM-035: Bias + Toxicity metrics initialize
     def test_import_llm(self):
         from src.llm_evaluator import BiasEvaluator
 
         assert BiasEvaluator
 
+    # TC-LLM-035: Bias and Toxicity both returned
     def test_biased_output_returns_metrics(self, biased_io):
         from src.llm_evaluator import BiasEvaluator
 
@@ -50,6 +53,7 @@ class TestBiasLLM:
         assert "bias" in names
         assert "toxicity" in names
 
+    # TC-LLM-036: All scores in valid range
     def test_scores_in_range(self, biased_io):
         from src.llm_evaluator import BiasEvaluator
 
@@ -58,6 +62,7 @@ class TestBiasLLM:
         for r in results:
             assert 0.0 <= r.score <= 1.0
 
+    # TC-LLM-035/036: Neutral output has lower bias than biased
     def test_neutral_output_lower_bias_score(self, biased_io, neutral_io):
         from src.llm_evaluator import BiasEvaluator
 
@@ -68,6 +73,7 @@ class TestBiasLLM:
         neutral_bias = [r for r in neutral_results if r.name == "bias"][0]
         assert neutral_bias.score <= biased_bias.score
 
+    # TC-LLM-039: Results contain detailed reason
     def test_results_have_reason(self, neutral_io):
         from src.llm_evaluator import BiasEvaluator
 
