@@ -1,7 +1,7 @@
 # Portfolio 需求台账（Requirements Register）
 
 > **范围：** Portfolio 跨项目需求 + 仓库级（CI/CD、文档规范、质量体系）需求
-> **维护规则：** Issue 状态变化 24h 内同步；Closed 行保留历史，永不删除
+> **维护规则：** Issue 状态变化 24h 内同步；Closed 行保留历史，永不删除；新需求必须同步创建 GitHub Issue 并填入链接
 > **制度文档：** [README.md](README.md)
 > **RTM：** [RTM.md](RTM.md)
 > **项目级需求入口：** 见末尾"项目级需求入口"
@@ -30,7 +30,7 @@
 | PREQ-003 | — | 安全类 workflow（CodeQL、Trivy）必须将结果上传至 GitHub Security SARIF | 仓库级 / 安全 | NFR | P1 | 2026-05-26 | Verified | — |
 | PREQ-004 | — | 所有测试产物（JUnit XML、HTML 报告）必须上传至 GitHub Artifacts，保留期 ≥ 14 天 | 仓库级 / 可追溯性 | NFR | P1 | 2026-05-26 | Verified | — |
 | PREQ-005 | — | 每个子项目必须有对应的 CI workflow，覆盖代码质量检查和测试执行 | 仓库级 / CI 规范 | FR | P1 | 2026-05-26 | Verified | — |
-| PREQ-006 | — | Portfolio 级需求管理系统：README + 台账 + 模板 + RTM | 仓库级 / QA 体系 | DEMO | P1 | 2026-05-26 | In Development | — |
+| PREQ-006 | [#437](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/437) | Portfolio 级需求管理系统：README + 台账 + 模板 + RTM | 仓库级 / QA 体系 | DEMO | P1 | 2026-05-26 | In Development | — |
 | PREQ-007 | — | CI/CD workflow 设计文档覆盖所有 workflow（`docs/ci-cd/workflow-design.md`） | 仓库级 / 文档 | DEMO | P2 | 2026-05-26 | Verified | — |
 | PREQ-008 | — | 缺陷管理系统覆盖：台账 + Waiver 政策 + Flaky 分级 + 依赖风险 SLA | 仓库级 / QA 体系 | DEMO | P1 | 2026-05-26 | Verified | — |
 | PREQ-009 | [#428](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/428) | README/CLAUDE.md 引用 3 个不存在的 workflow | 仓库级 / 文档 | BUG | P1 | 2026-07-13 | Open | — |
@@ -92,3 +92,4 @@
 |------|------|------|--------|
 | 2026-05-26 | 初始化 | 创建 Portfolio 需求台账，录入 PREQ-001 ~ PREQ-008 | Michael Zhou |
 | 2026-07-13 | 新增 | 仓库优化审计：录入 PREQ-009 ~ PREQ-015（对应 Issues #428-#434） | Michael Zhou |
+| 2026-07-14 | 补链 | PREQ-006 关联 Issue #437；新增维护规则：新需求必须同步创建 Issue | Michael Zhou |
