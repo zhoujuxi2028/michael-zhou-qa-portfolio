@@ -32,10 +32,11 @@ class HallucinationEvaluator(BaseLLMEvaluator):
 
         hallucination = HallucinationMetric(model=model)
         hallucination.measure(test_case)
+        score = hallucination.score if hallucination.score is not None else 0.0
         results.append(
             MetricResult(
                 name="hallucination",
-                score=hallucination.score if hallucination.score is not None else 0.0,
+                score=score,
                 threshold=0.3,
                 reason=hallucination.reason or "",
             )

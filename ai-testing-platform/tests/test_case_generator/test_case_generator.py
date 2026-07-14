@@ -48,18 +48,24 @@ class TestCaseGeneratorFromRequirement:
 
         security_cases = [tc for tc in test_cases if tc.test_type == TestType.SECURITY]
         assert len(security_cases) > 0, "Should generate security test cases"
-        assert all(tc.priority == Priority.P0 for tc in security_cases), "Security tests must be P0"
+        assert all(tc.priority == Priority.P0 for tc in security_cases), (
+            "Security tests must be P0"
+        )
 
     @pytest.mark.P1
     def test_generate_boundary_test_cases(self, generator):
         """TC-GEN-004: 当需求包含数值限制时生成边界测试用例"""
         logger.info("TC-GEN-004: Testing boundary test case generation")
-        req = "Username must be between 3 and 50 characters. Maximum 100 items per page."
+        req = (
+            "Username must be between 3 and 50 characters. Maximum 100 items per page."
+        )
 
         test_cases = generator.generate_from_requirement(req, module="user")
 
         boundary_cases = [tc for tc in test_cases if tc.test_type == TestType.BOUNDARY]
-        assert len(boundary_cases) > 0, "Should generate boundary test cases for numeric limits"
+        assert len(boundary_cases) > 0, (
+            "Should generate boundary test cases for numeric limits"
+        )
 
     @pytest.mark.P0
     def test_empty_requirement_raises_error(self, generator):
@@ -141,7 +147,9 @@ class TestCaseGeneratorFromDiff:
     @pytest.mark.P1
     def test_generate_from_diff_no_functions_creates_regression(self, generator):
         """TC-GEN-011: 无新增函数的 diff 应生成通用回归用例"""
-        logger.info("TC-GEN-011: Testing fallback regression case for diff without functions")
+        logger.info(
+            "TC-GEN-011: Testing fallback regression case for diff without functions"
+        )
         diff = "--- a/config.py\n+++ b/config.py\n-TIMEOUT = 30\n+TIMEOUT = 60"
 
         test_cases = generator.generate_from_diff(diff, module="config")

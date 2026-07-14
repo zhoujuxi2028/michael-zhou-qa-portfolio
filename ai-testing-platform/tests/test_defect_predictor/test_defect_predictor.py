@@ -61,8 +61,13 @@ class TestModuleRiskAnalysis:
         assert report.risk_level in RiskLevel
         assert 0 <= report.risk_score <= 100
         assert isinstance(report.factors, dict)
-        assert all(k in report.factors for k in ("complexity", "churn", "coverage_gap", "bug_history", "size"))
-        assert isinstance(report.recommendations, list) and len(report.recommendations) > 0
+        assert all(
+            k in report.factors
+            for k in ("complexity", "churn", "coverage_gap", "bug_history", "size")
+        )
+        assert (
+            isinstance(report.recommendations, list) and len(report.recommendations) > 0
+        )
         assert report.predicted_defects >= 0
 
     @pytest.mark.P1
@@ -74,7 +79,10 @@ class TestModuleRiskAnalysis:
         assert len(report.recommendations) > 1
         # 应至少包含覆盖率或复杂度改进建议
         all_recs = " ".join(report.recommendations).lower()
-        assert any(kw in all_recs for kw in ("refactor", "coverage", "review", "root cause", "freeze"))
+        assert any(
+            kw in all_recs
+            for kw in ("refactor", "coverage", "review", "root cause", "freeze")
+        )
 
     @pytest.mark.P1
     def test_low_risk_module_no_critical_recommendations(self, predictor, low_risk):
@@ -145,11 +153,15 @@ class TestPortfolioAnalysis:
         ranked = predictor.rank_modules_by_risk([low_risk, high_risk])
 
         assert len(ranked) == 2
-        assert ranked[0].risk_score >= ranked[1].risk_score, "Should be sorted descending"
+        assert ranked[0].risk_score >= ranked[1].risk_score, (
+            "Should be sorted descending"
+        )
         assert ranked[0].module_name == high_risk.name
 
     @pytest.mark.P1
-    def test_testing_priority_maps_high_risk_to_p0(self, predictor, high_risk, low_risk):
+    def test_testing_priority_maps_high_risk_to_p0(
+        self, predictor, high_risk, low_risk
+    ):
         """TC-PRD-010: 高风险模块应映射为 P0 测试优先级"""
         logger.info("TC-PRD-010: Testing priority mapping")
         priorities = predictor.get_testing_priority([high_risk, low_risk])
