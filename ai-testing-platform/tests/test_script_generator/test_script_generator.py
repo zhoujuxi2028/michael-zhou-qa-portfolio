@@ -74,9 +74,7 @@ class TestScriptGeneration:
         assert positive_spec.title in script
 
     @pytest.mark.P1
-    def test_generate_test_suite_from_multiple_specs(
-        self, script_gen, positive_spec, negative_spec
-    ):
+    def test_generate_test_suite_from_multiple_specs(self, script_gen, positive_spec, negative_spec):
         """TC-SCR-007: 多个规范应合并生成一个测试套件文件"""
         logger.info("TC-SCR-007: Testing test suite generation")
         suite = script_gen.generate_test_suite([positive_spec, negative_spec])
@@ -150,9 +148,7 @@ class TestScriptValidation:
         assert any("AAA" in issue for issue in result["issues"])
 
     @pytest.mark.P2
-    def test_generation_count_increments(
-        self, script_gen, positive_spec, negative_spec
-    ):
+    def test_generation_count_increments(self, script_gen, positive_spec, negative_spec):
         """TC-SCR-013: 每次生成应增加计数器"""
         logger.info("TC-SCR-013: Testing generation counter")
         initial = script_gen.generated_count

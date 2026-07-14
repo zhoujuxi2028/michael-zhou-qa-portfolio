@@ -182,9 +182,7 @@ class DefectPredictor:
 
         return priorities
 
-    def compare_risk_trend(
-        self, current: ModuleMetrics, previous: ModuleMetrics
-    ) -> dict:
+    def compare_risk_trend(self, current: ModuleMetrics, previous: ModuleMetrics) -> dict:
         """
         比较模块风险趋势（当前 vs 历史快照）
 
@@ -228,9 +226,7 @@ class DefectPredictor:
     def _calculate_factors(self, metrics: ModuleMetrics) -> dict:
         """计算各风险因素的归一化得分 (0-100)"""
         # 圈复杂度：CC 1-30 映射到 0-100（行业阈值 CC>10 为高风险，CC=30 得满分）
-        complexity_score = min(
-            100.0, max(0.0, (metrics.cyclomatic_complexity - 1) / 29 * 100)
-        )
+        complexity_score = min(100.0, max(0.0, (metrics.cyclomatic_complexity - 1) / 29 * 100))
         # 变更频率：每月超过 33 次 = 100 分（3 × churn，上限 100）
         churn_score = min(100.0, metrics.code_churn * 3.0)
         # 覆盖率缺口
@@ -255,9 +251,7 @@ class DefectPredictor:
 
     def _classify_risk(self, score: float) -> RiskLevel:
         """将风险分数映射为风险等级"""
-        for level, threshold in sorted(
-            RISK_THRESHOLDS.items(), key=lambda x: x[1], reverse=True
-        ):
+        for level, threshold in sorted(RISK_THRESHOLDS.items(), key=lambda x: x[1], reverse=True):
             if score >= threshold:
                 return level
         return RiskLevel.MINIMAL
@@ -265,14 +259,10 @@ class DefectPredictor:
     def _estimate_defects(self, risk_score: float, metrics: ModuleMetrics) -> int:
         """估计预测缺陷数（最多 10 个）"""
         base = risk_score / 100 * 5  # 满分风险对应 5 个基础缺陷
-        adjusted = base * (
-            1 + metrics.bug_history * 0.1
-        )  # 每个历史缺陷增加 10%（经验调整因子）
+        adjusted = base * (1 + metrics.bug_history * 0.1)  # 每个历史缺陷增加 10%（经验调整因子）
         return max(0, round(adjusted))
 
-    def _generate_recommendations(
-        self, metrics: ModuleMetrics, factors: dict, risk_level: RiskLevel
-    ) -> list:
+    def _generate_recommendations(self, metrics: ModuleMetrics, factors: dict, risk_level: RiskLevel) -> list:
         """生成针对性改进建议"""
         recs = []
 
@@ -284,14 +274,11 @@ class DefectPredictor:
 
         if factors["churn"] > 60:
             recs.append(
-                f"Code Freeze: High churn ({metrics.code_churn} changes/month). "
-                "Stabilize module before next release."
+                f"Code Freeze: High churn ({metrics.code_churn} changes/month). Stabilize module before next release."
             )
 
         if factors["coverage_gap"] > 30:
-            target_tests = int(
-                (80 - metrics.test_coverage) * metrics.lines_of_code / 100
-            )
+            target_tests = int((80 - metrics.test_coverage) * metrics.lines_of_code / 100)
             recs.append(
                 f"Increase Coverage: Current {metrics.test_coverage:.0f}% → target 80%. "
                 f"Add ~{max(0, target_tests)} lines of tests."
@@ -299,8 +286,7 @@ class DefectPredictor:
 
         if factors["bug_history"] > 40:
             recs.append(
-                f"Root Cause Analysis: {metrics.bug_history} historical bugs. "
-                "Conduct defect clustering session."
+                f"Root Cause Analysis: {metrics.bug_history} historical bugs. Conduct defect clustering session."
             )
 
         if factors["size"] > 50:
@@ -310,13 +296,9 @@ class DefectPredictor:
             )
 
         if risk_level == RiskLevel.HIGH:
-            recs.append(
-                "Priority Review: Schedule mandatory code review before next release."
-            )
+            recs.append("Priority Review: Schedule mandatory code review before next release.")
 
         if not recs:
-            recs.append(
-                "No critical actions required. Maintain current quality practices."
-            )
+            recs.append("No critical actions required. Maintain current quality practices.")
 
         return recs

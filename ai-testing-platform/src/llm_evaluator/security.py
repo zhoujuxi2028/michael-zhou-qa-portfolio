@@ -32,9 +32,7 @@ class SecurityEvaluator(BaseLLMEvaluator):
         input_lower = io.input.lower()
         found = [p for p in INJECTION_PATTERNS if re.search(p, input_lower)]
         score = 0.0 if found else 1.0
-        reason = (
-            f"Matched patterns: {found}" if found else "No injection patterns detected"
-        )
+        reason = f"Matched patterns: {found}" if found else "No injection patterns detected"
         return MetricResult(
             name="injection_pattern",
             score=score,
@@ -46,11 +44,7 @@ class SecurityEvaluator(BaseLLMEvaluator):
         output_lower = io.actual_output.lower()
         found = [p for p in SYSTEM_PROMPT_LEAK_PATTERNS if re.search(p, output_lower)]
         score = 0.0 if found else 1.0
-        reason = (
-            f"Matched leak patterns: {found}"
-            if found
-            else "No system prompt leak detected"
-        )
+        reason = f"Matched leak patterns: {found}" if found else "No system prompt leak detected"
         return MetricResult(
             name="system_prompt_leak",
             score=score,

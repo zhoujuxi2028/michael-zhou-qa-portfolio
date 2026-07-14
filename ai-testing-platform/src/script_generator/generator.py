@@ -220,32 +220,22 @@ class ScriptGenerator:
         fixtures = []
 
         if any(k in spec.inputs for k in ("user_id", "user", "account")):
-            fixtures.append(
-                "user_fixture: Creates and yields a test user, cleanup after test"
-            )
+            fixtures.append("user_fixture: Creates and yields a test user, cleanup after test")
 
         if any(k in spec.inputs for k in ("db", "database", "records")):
-            fixtures.append(
-                "db_session: Provides an isolated in-memory database session"
-            )
+            fixtures.append("db_session: Provides an isolated in-memory database session")
 
         if any(k in spec.inputs for k in ("token", "auth", "session")):
             fixtures.append("auth_token: Generates a valid JWT token for the test user")
 
         if any(k in spec.inputs for k in ("client", "api", "endpoint")):
-            fixtures.append(
-                "api_client: Configured HTTP client with base URL and headers"
-            )
+            fixtures.append("api_client: Configured HTTP client with base URL and headers")
 
         if spec.test_type == "security":
-            fixtures.append(
-                "injection_payloads: Standard list of OWASP injection test strings"
-            )
+            fixtures.append("injection_payloads: Standard list of OWASP injection test strings")
 
         if spec.test_type == "performance":
-            fixtures.append(
-                "perf_timer: Context manager for measuring operation duration"
-            )
+            fixtures.append("perf_timer: Context manager for measuring operation duration")
 
         return fixtures
 
@@ -260,13 +250,9 @@ class ScriptGenerator:
             raise ScriptGeneratorError("module cannot be empty")
         valid_types = {"positive", "negative", "boundary", "security", "performance"}
         if spec.test_type not in valid_types:
-            raise ScriptGeneratorError(
-                f"Invalid test_type '{spec.test_type}'. Must be one of {valid_types}"
-            )
+            raise ScriptGeneratorError(f"Invalid test_type '{spec.test_type}'. Must be one of {valid_types}")
         if spec.priority not in ("P0", "P1", "P2"):
-            raise ScriptGeneratorError(
-                f"Invalid priority '{spec.priority}'. Must be P0, P1, or P2"
-            )
+            raise ScriptGeneratorError(f"Invalid priority '{spec.priority}'. Must be P0, P1, or P2")
 
     def _to_class_name(self, module: str) -> str:
         """将模块名转为 PascalCase 类名"""

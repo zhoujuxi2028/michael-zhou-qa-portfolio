@@ -119,9 +119,7 @@ class TestCaseGenerator:
     def __init__(self):
         self._history: list = []
 
-    def generate_from_requirement(
-        self, requirement_text: str, module: str = "module"
-    ) -> list:
+    def generate_from_requirement(self, requirement_text: str, module: str = "module") -> list:
         """
         从需求文本生成测试用例列表
 
@@ -350,12 +348,8 @@ class TestCaseGenerator:
         """从需求文本提取测试特征关键词"""
         text_lower = text.lower()
 
-        found_crud = {
-            kw: scenarios for kw, scenarios in CRUD_KEYWORDS.items() if kw in text_lower
-        }
-        found_security = {
-            kw: attack for kw, attack in SECURITY_KEYWORDS.items() if kw in text_lower
-        }
+        found_crud = {kw: scenarios for kw, scenarios in CRUD_KEYWORDS.items() if kw in text_lower}
+        found_security = {kw: attack for kw, attack in SECURITY_KEYWORDS.items() if kw in text_lower}
         boundaries = self._extract_boundaries(text)
 
         return {
@@ -396,12 +390,8 @@ class TestCaseGenerator:
     def _determine_priority(self, text: str, keyword: str) -> Priority:
         """根据需求上下文和关键词确定测试优先级"""
         text_lower = text.lower()
-        if keyword in PRIORITY_RULES["P0"] or any(
-            p in text_lower for p in PRIORITY_RULES["P0"]
-        ):
+        if keyword in PRIORITY_RULES["P0"] or any(p in text_lower for p in PRIORITY_RULES["P0"]):
             return Priority.P0
-        if keyword in PRIORITY_RULES["P1"] or any(
-            p in text_lower for p in PRIORITY_RULES["P1"]
-        ):
+        if keyword in PRIORITY_RULES["P1"] or any(p in text_lower for p in PRIORITY_RULES["P1"]):
             return Priority.P1
         return Priority.P2

@@ -36,9 +36,7 @@ class EvaluationReport:
     summary: str = ""
 
     def __post_init__(self):
-        self.overall_pass = (
-            all(r.passed for r in self.results) if self.results else True
-        )
+        self.overall_pass = all(r.passed for r in self.results) if self.results else True
 
     def add_result(self, result: MetricResult):
         self.results.append(result)
@@ -59,8 +57,7 @@ class BaseLLMEvaluator(ABC):
             self._model_instance = self._model or GPTModel(
                 model=os.getenv("LLM_MODEL", "deepseek-chat"),
                 api_key=self._api_key or os.getenv("OPENAI_API_KEY"),
-                base_url=self._base_url
-                or os.getenv("OPENAI_BASE_URL", "https://api.deepseek.com"),
+                base_url=self._base_url or os.getenv("OPENAI_BASE_URL", "https://api.deepseek.com"),
             )
         return self._model_instance
 

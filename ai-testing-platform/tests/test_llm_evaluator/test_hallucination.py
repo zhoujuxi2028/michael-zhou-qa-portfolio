@@ -58,9 +58,7 @@ class TestHallucinationLLM:
         faith = [r for r in results if r.name == "faithfulness"][0]
         assert faith.score >= 0.5
 
-    def test_hallucinated_output_lower_faithfulness(
-        self, hallucination_io, faithful_io
-    ):
+    def test_hallucinated_output_lower_faithfulness(self, hallucination_io, faithful_io):
         from src.llm_evaluator import HallucinationEvaluator
 
         e = HallucinationEvaluator()
