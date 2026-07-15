@@ -12,6 +12,15 @@ exclude = '''
 )/
 '''
 
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = false
+
 [tool.isort]
 profile = "black"
 line_length = 120

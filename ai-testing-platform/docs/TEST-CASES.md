@@ -12,7 +12,12 @@
 | ScriptGenerator | TestScriptGeneration | 10 | 4 | 4 | 2 |
 | ScriptGenerator | TestScriptValidation | 4 | 0 | 2 | 2 |
 | ScriptGenerator | TestFixtureSuggestions | 2 | 0 | 0 | 2 |
-| **合计** | | **43** | **15** | **18** | **10** |
+| LLMEvaluator | TestQuality | 10 | 3 | 4 | 3 |
+| LLMEvaluator | TestHallucination | 8 | 2 | 4 | 2 |
+| LLMEvaluator | TestSecurity | 8 | 3 | 3 | 2 |
+| LLMEvaluator | TestBias | 6 | 2 | 2 | 2 |
+| LLMEvaluator | TestUnitLogic | 8 | 2 | 3 | 3 |
+| **合计** | | **~83** | **~27** | **~34** | **~22** |
 
 ---
 
@@ -108,3 +113,72 @@
 |-------|------|--------|------|
 | TC-SCR-015 | token 输入规范推荐 auth_token fixture | P2 | 推荐 |
 | TC-SCR-016 | security 类型测试推荐 injection_payloads fixture | P2 | 推荐 |
+
+---
+
+## LLMEvaluator 测试用例
+
+### TestUnitLogic（无 LLM 依赖，CI 可运行）
+
+| TC ID | 标题 | 优先级 | 类型 |
+|-------|------|--------|------|
+| TC-LLM-001 | LLMIO 数据类正确初始化 | P0 | 单元 |
+| TC-LLM-002 | LLMIO 缺少 context 时默认 None | P1 | 单元 |
+| TC-LLM-003 | MetricResult 阈值判定逻辑正确 | P0 | 单元 |
+| TC-LLM-004 | EvaluationReport 聚合所有子结果 | P1 | 单元 |
+| TC-LLM-005 | 空 results 列表抛出异常 | P1 | 负向 |
+| TC-LLM-006 | 无效模型名抛出 ValueError | P1 | 负向 |
+| TC-LLM-007 | 同名 metrics 去重 | P2 | 单元 |
+| TC-LLM-008 | SecurityEvaluator 正则 injection 扫描工作 | P2 | 单元 |
+
+### TestQuality（LLM 依赖，标记 `@pytest.mark.llm`）
+
+| TC ID | 标题 | 优先级 | 类型 |
+|-------|------|--------|------|
+| TC-LLM-009 | GEval correctness 正确输出评分 ≥ 0.5 | P0 | LLM |
+| TC-LLM-010 | GEval 错误输出评分 < 0.5 | P0 | LLM |
+| TC-LLM-011 | AnswerRelevancy 相关输出评分 ≥ 0.7 | P0 | LLM |
+| TC-LLM-012 | AnswerRelevancy 不相关输出评分 < 0.7 | P0 | LLM |
+| TC-LLM-013 | ContextualPrecision 上下文精确性评分 | P1 | LLM |
+| TC-LLM-014 | 各指标返回完整 MetricResult（含 reason） | P1 | LLM |
+| TC-LLM-015 | 多指标聚合生成 EvaluationReport | P1 | LLM |
+| TC-LLM-016 | QualityEvaluator 配置阈值可调 | P2 | LLM |
+| TC-LLM-017 | 混合输入（中英文）处理正常 | P2 | LLM |
+| TC-LLM-018 | 空输入返回 FAIL（score=0） | P2 | 负向 |
+
+### TestHallucination（LLM 依赖，标记 `@pytest.mark.llm`）
+
+| TC ID | 标题 | 优先级 | 类型 |
+|-------|------|--------|------|
+| TC-LLM-019 | Faithfulness 忠实输出评分 ≥ 0.7 | P0 | LLM |
+| TC-LLM-020 | Faithfulness 矛盾输出评分 < 0.7 | P0 | LLM |
+| TC-LLM-021 | Hallucination 指标阈值判定（≤ 0.3） | P1 | LLM |
+| TC-LLM-022 | 无 context 时 Faithfulness 默认低分 | P1 | LLM |
+| TC-LLM-023 | 部分正确输出的 Faithfulness 评分在 0.3-0.7 之间 | P1 | LLM |
+| TC-LLM-024 | HallucinationEvaluator 报告包含原因分析 | P1 | LLM |
+| TC-LLM-025 | 多轮对话幻觉检测（每个 turn 独立评分） | P2 | LLM |
+| TC-LLM-026 | 长文本（>2000 token）幻觉检测不超时 | P2 | LLM |
+
+### TestSecurity（LLM 依赖 + 单元混合）
+
+| TC ID | 标题 | 优先级 | 类型 |
+|-------|------|--------|------|
+| TC-LLM-027 | GEval 检测直接 prompt injection | P0 | LLM |
+| TC-LLM-028 | GEval 检测间接 prompt injection（上下文注入） | P0 | LLM |
+| TC-LLM-029 | 正则模式扫描捕获已知 injection 模式 | P0 | 单元 |
+| TC-LLM-030 | 正则模式正常输入零误报 | P0 | 单元 |
+| TC-LLM-031 | GEval 与正则双重验证结果一致 | P1 | LLM |
+| TC-LLM-032 | 对抗性测试输入生成有效 | P1 | LLM |
+| TC-LLM-033 | jailbreak 尝试（角色扮演）被检测 | P1 | LLM |
+| TC-LLM-034 | 速率限制防护检测 | P2 | LLM |
+
+### TestBias（LLM 依赖）
+
+| TC ID | 标题 | 优先级 | 类型 |
+|-------|------|--------|------|
+| TC-LLM-035 | BiasMetric 检测性别偏差输出（score ≤ 0.3） | P0 | LLM |
+| TC-LLM-036 | BiasMetric 中性输出正常（score > 0.3） | P0 | LLM |
+| TC-LLM-037 | ToxicityMetric 检测有害输出（score ≤ 0.3） | P1 | LLM |
+| TC-LLM-038 | ToxicityMetric 正常输出通过 | P1 | LLM |
+| TC-LLM-039 | BiasEvaluator 报告包含偏差类型分类 | P1 | LLM |
+| TC-LLM-040 | 无偏输出不产生误报（≥ 0.7 pass） | P2 | LLM |
