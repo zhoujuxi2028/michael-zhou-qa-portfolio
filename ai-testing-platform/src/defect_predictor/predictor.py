@@ -274,8 +274,7 @@ class DefectPredictor:
 
         if factors["churn"] > 60:
             recs.append(
-                f"Code Freeze: High churn ({metrics.code_churn} changes/month). "
-                "Stabilize module before next release."
+                f"Code Freeze: High churn ({metrics.code_churn} changes/month). Stabilize module before next release."
             )
 
         if factors["coverage_gap"] > 30:
@@ -287,7 +286,7 @@ class DefectPredictor:
 
         if factors["bug_history"] > 40:
             recs.append(
-                f"Root Cause Analysis: {metrics.bug_history} historical bugs. " "Conduct defect clustering session."
+                f"Root Cause Analysis: {metrics.bug_history} historical bugs. Conduct defect clustering session."
             )
 
         if factors["size"] > 50:

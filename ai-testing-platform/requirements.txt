@@ -4,7 +4,11 @@ pytest-cov==4.1.0
 pytest-html==4.1.1
 pytest-xdist==3.5.0
 
+# LLM Evaluation
+deepeval==4.1.0
+
 # Code Quality
+ruff==0.15.21
 black==26.3.1
 flake8==7.0.0
 isort==5.13.2
