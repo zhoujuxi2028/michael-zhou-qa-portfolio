@@ -26,7 +26,11 @@
 
 | Defect ID | GitHub Issue | 标题摘要 | 项目 / 范围 | 严重度 | Blocking? | 发现日期 | 状态 | 关联 Waiver | 关联 RCA / Postmortem |
 |-----------|--------------|----------|-------------|--------|-----------|----------|------|-------------|------------------------|
-| _(暂无 Portfolio 级活跃缺陷)_ | | | | | | | | | |
+| PDEF-010 | [#428](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/428) | README/CLAUDE.md 引用 3 个不存在的 workflow | 仓库级 / 文档 | P1 | ❌ | 2026-07-13 | Triaged | — | — |
+| PDEF-011 | [#429](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/429) | repo-meta-ci.yml 无 path filter，每次 PR 都跑 | 仓库级 / CI 规范 | P1 | ❌ | 2026-07-13 | Triaged | — | — |
+| PDEF-012 | [#430](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/430) | CLAUDE.md 分支状态表全部过期（9 分支已合并） | 仓库级 / 文档 | P2 | ❌ | 2026-07-13 | Triaged | — | — |
+| PDEF-013 | [#432](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/432) | codeql-analysis.yml 30min 超时 + 无缓存 | 仓库级 / 安全 | P1 | ❌ | 2026-07-13 | Triaged | — | — |
+| PDEF-014 | [#434](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/434) | claude-code-review.yml 已禁用 3 个月（死代码） | 仓库级 / CI 维护 | P2 | ❌ | 2026-07-13 | Triaged | — | — |
 
 > 已存在的项目级活跃缺陷请见对应项目登记表（见第 6 节"项目级登记入口"）。
 >
@@ -103,6 +107,7 @@
 | 2026-05-28 | 登记并关闭 `PDEF-007`：历史遗漏 workflow 文件未登记，Dependabot PR #298 触发 CI lint 报红；系统性修复：`check-workflow-doc-sync.sh` 新增 `--all` 全量审计；`repo-meta-ci.yml` 增加全量扫描步骤；补录 5 个 workflow 文档；附 RCA | QA |
 | 2026-07-12 | 登记并关闭 `PDEF-008`：Dependabot PR #407 lockfile 由 npm 11 生成但与 CI npm 10 不兼容，`npm ci` 报 `conventional-commits-parser@6.4.0 Missing from lock file`；用 npm 10 重新生成 lockfile 修复 | QA |
 | 2026-07-12 | 登记并关闭 `PDEF-009`：`robot-framework-demo` Selenium Grid 容器继承宿主机 HTTP_PROXY，`127.0.0.1:7890` 在容器内不可达导致浏览器 9 用例全红；在 `docker-compose.yml` 中添加 `no_proxy` 覆盖修复 | QA |
+| 2026-07-15 | 新增 PDEF-010~014（从 req-register PREQ-009/010/011/013/015 迁移而来，对应 Issues #428/#429/#430/#432/#434）；状态：Triaged | QA |
 | 2026-05-26 | 登记并关闭 `PDEF-005`：DEF-023 RCA 文件 2 处路径多 1 层 `../`（outside repo）；`defects/register.md` RCA 反链少 1 层；3 处断链导致 PR #276 `Repository Meta CI / lint`（run #26445816667）报红；修正路径后关闭 | QA |
 | 2026-05-26 | 登记 `DEF-023`（[#278](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/278)）：perf-platform `stage4-selftest-fast.bats:144` 分支白名单缺 `docs/`，PR #276 CI 红灯（run #26438598385 / job #77827370629）；Fix in review（PR #276）；pre-push 改进 PR #277；活跃数 9 → 10 | QA |
 | 2026-05-26 | 登记并关闭 `PDEF-004`：`docs/guides/label-strategy.md` 指向 `phase6-stage4-verification-report.md` 的路径缺少 `execution/` 目录，导致 PR #269 的 `Repository Meta CI / lint`（run #26429424413，job #77799391938）失败；已修复链接并补充 RCA | QA |
