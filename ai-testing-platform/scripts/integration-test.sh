@@ -8,11 +8,21 @@ echo "=== LLM Evaluator Integration Tests ==="
 echo "Project: $PROJECT_DIR"
 echo ""
 
+# ---- Load .env if present ----
+ENV_FILE="$PROJECT_DIR/.env"
+if [ -f "$ENV_FILE" ] && [ -z "${OPENAI_API_KEY:-}" ]; then
+    set -a
+    source "$ENV_FILE"
+    set +a
+fi
+
 # ---- Prerequisite Check ----
 if [ -z "${OPENAI_API_KEY:-}" ]; then
     echo "ERROR: OPENAI_API_KEY not set."
-    echo "Usage: export OPENAI_API_KEY=sk-xxx"
-    echo "       bash scripts/integration-test.sh"
+    echo "Create ai-testing-platform/.env with:"
+    echo "  OPENAI_API_KEY=sk-xxx"
+    echo "  OPENAI_BASE_URL=https://api.deepseek.com"
+    echo "  LLM_MODEL=deepseek-chat"
     exit 1
 fi
 echo "✓ API key configured: ${OPENAI_API_KEY:0:8}..."
