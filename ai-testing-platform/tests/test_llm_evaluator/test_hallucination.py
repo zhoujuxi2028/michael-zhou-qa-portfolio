@@ -6,27 +6,31 @@ from src.llm_evaluator import LLMIO, LLMEvaluatorError
 
 
 class TestHallucinationUnit:
-    def test_import_hallucination_evaluator(self):
+    def test_import_hallucination_evaluator(self, monkeypatch):
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         from src.llm_evaluator import HallucinationEvaluator
 
         e = HallucinationEvaluator()
         assert e is not None
 
-    def test_evaluate_raises_without_api_key(self, faithful_io):
+    def test_evaluate_raises_without_api_key(self, faithful_io, monkeypatch):
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         from src.llm_evaluator import HallucinationEvaluator
 
         e = HallucinationEvaluator()
         with pytest.raises(LLMEvaluatorError, match="OPENAI_API_KEY not set"):
             e.evaluate(faithful_io)
 
-    def test_evaluate_raises_without_context(self):
+    def test_evaluate_raises_without_context(self, monkeypatch):
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         from src.llm_evaluator import HallucinationEvaluator
 
         e = HallucinationEvaluator()
         with pytest.raises(LLMEvaluatorError, match="OPENAI_API_KEY not set"):
             e.evaluate(LLMIO(input="q", actual_output="a"))
 
-    def test_evaluate_raises_on_empty_output(self):
+    def test_evaluate_raises_on_empty_output(self, monkeypatch):
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         from src.llm_evaluator import HallucinationEvaluator
 
         e = HallucinationEvaluator()

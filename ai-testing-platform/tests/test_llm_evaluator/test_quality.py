@@ -6,20 +6,23 @@ from src.llm_evaluator import LLMIO, LLMEvaluatorError
 
 
 class TestQualityUnit:
-    def test_import_quality_evaluator(self):
+    def test_import_quality_evaluator(self, monkeypatch):
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         from src.llm_evaluator import QualityEvaluator
 
         evaluator = QualityEvaluator()
         assert evaluator is not None
 
-    def test_evaluate_raises_without_api_key(self, sample_llm_io):
+    def test_evaluate_raises_without_api_key(self, sample_llm_io, monkeypatch):
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         from src.llm_evaluator import QualityEvaluator
 
         evaluator = QualityEvaluator()
         with pytest.raises(LLMEvaluatorError, match="OPENAI_API_KEY not set"):
             evaluator.evaluate(sample_llm_io)
 
-    def test_evaluate_raises_on_empty_input(self):
+    def test_evaluate_raises_on_empty_input(self, monkeypatch):
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         from src.llm_evaluator import QualityEvaluator
 
         evaluator = QualityEvaluator()
