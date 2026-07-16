@@ -92,7 +92,7 @@
 | microservice-testing-platform | _(按需初始化)_ | — | — |
 | cicd-demo | _(按需初始化)_ | — | — |
 | ai-testing-platform | _(按需初始化)_ | — | — |
-| Cloud-Monitoring-Platform | [defect-register.md](../../../Cloud-Monitoring-Platform/docs/qa/defect-register.md) | 1（CMP-DEF-001） | 2026-07-09 |
+| Cloud-Monitoring-Platform | [defect-register.md](https://github.com/zhoujuxi2028/Cloud-Monitoring-Platform/blob/main/docs/qa/defect-register.md) | 1（CMP-DEF-001） | 2026-07-09 |
 
 > 初始化步骤详见 [README.md §11](README.md#11-当前在用的项目级登记表)。
 
