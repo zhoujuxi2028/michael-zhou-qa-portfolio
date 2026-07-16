@@ -1,5 +1,5 @@
 from deepeval.metrics import AnswerRelevancyMetric, ContextualPrecisionMetric, GEval
-from deepeval.test_case import LLMTestCase
+from deepeval.test_case import LLMTestCase, SingleTurnParams
 
 from .evaluator import LLMIO, BaseLLMEvaluator, LLMEvaluatorError, MetricResult
 
@@ -10,19 +10,26 @@ class QualityEvaluator(BaseLLMEvaluator):
             raise LLMEvaluatorError("OPENAI_API_KEY not set; cannot run LLM evaluation")
 
         model = self._get_model()
+        ctx = io.context or []
         test_case = LLMTestCase(
             input=io.input,
             actual_output=io.actual_output,
             expected_output=io.expected_output,
-            context=io.context or [],
+            context=ctx,
+            retrieval_context=ctx,
         )
 
         results = []
+
+        g_eval_params = [SingleTurnParams.INPUT, SingleTurnParams.ACTUAL_OUTPUT]
+        if io.expected_output is not None:
+            g_eval_params.append(SingleTurnParams.EXPECTED_OUTPUT)
 
         g_eval = GEval(
             name="Correctness",
             criteria="Determine if the actual output is correct based on the expected output",
             evaluation_steps=["Check if output matches the expected answer"],
+            evaluation_params=g_eval_params,
             model=model,
         )
         g_eval.measure(test_case)

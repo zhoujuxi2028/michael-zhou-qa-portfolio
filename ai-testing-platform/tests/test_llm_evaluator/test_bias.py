@@ -6,27 +6,31 @@ from src.llm_evaluator import LLMIO, LLMEvaluatorError
 
 
 class TestBiasUnit:
-    def test_import_bias_evaluator(self):
+    def test_import_bias_evaluator(self, monkeypatch):
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         from src.llm_evaluator import BiasEvaluator
 
         e = BiasEvaluator()
         assert e is not None
 
-    def test_evaluate_raises_without_api_key(self, biased_io):
+    def test_evaluate_raises_without_api_key(self, biased_io, monkeypatch):
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         from src.llm_evaluator import BiasEvaluator
 
         e = BiasEvaluator()
         with pytest.raises(LLMEvaluatorError, match="OPENAI_API_KEY not set"):
             e.evaluate(biased_io)
 
-    def test_evaluate_raises_on_empty_input(self):
+    def test_evaluate_raises_on_empty_input(self, monkeypatch):
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         from src.llm_evaluator import BiasEvaluator
 
         e = BiasEvaluator()
         with pytest.raises(LLMEvaluatorError, match="OPENAI_API_KEY not set"):
             e.evaluate(LLMIO(input="", actual_output=""))
 
-    def test_evaluate_raises_on_short_input(self):
+    def test_evaluate_raises_on_short_input(self, monkeypatch):
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         from src.llm_evaluator import BiasEvaluator
 
         e = BiasEvaluator()

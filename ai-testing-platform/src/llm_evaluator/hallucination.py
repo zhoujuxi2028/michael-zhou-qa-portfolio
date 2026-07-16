@@ -10,11 +10,13 @@ class HallucinationEvaluator(BaseLLMEvaluator):
             raise LLMEvaluatorError("OPENAI_API_KEY not set; cannot run LLM evaluation")
 
         model = self._get_model()
+        ctx = io.context or []
         test_case = LLMTestCase(
             input=io.input,
             actual_output=io.actual_output,
             expected_output=io.expected_output,
-            context=io.context or [],
+            context=ctx,
+            retrieval_context=ctx,
         )
 
         results = []
