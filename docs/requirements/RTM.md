@@ -97,13 +97,13 @@
 
 | 需求编号 | 需求描述 | 优先级 | Issue | 状态 | 测试用例 | Workflow | 备注 |
 |----------|----------|--------|-------|------|----------|----------|------|
-| NFR-PORT-001 | README/CLAUDE.md workflow 引用必须与实际文件一致 | P1 | [#428](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/428) | ❌ 未实现 | — | — | 3个 workflow 不存在 |
-| NFR-PORT-002 | CI workflow 必须配置 path filter，避免无关变更触发 | P1 | [#429](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/429) | ❌ 未实现 | — | repo-meta-ci.yml | 见 PREQ-001 扩展 |
-| NFR-PORT-003 | CLAUDE.md 分支/状态信息必须与 git 实际状态一致 | P2 | [#430](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/430) | ❌ 未实现 | — | — | 9个已合并分支仍列在表中 |
-| NFR-PORT-004 | commit-guard.yml 应过滤纯文档变更 | P2 | [#431](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/431) | ❌ 未实现 | — | commit-guard.yml | — |
-| NFR-PORT-005 | CodeQL 分析应配置合理超时和缓存策略 | P1 | [#432](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/432) | ❌ 未实现 | — | codeql-analysis.yml | 当前 30min 无缓存 |
-| NFR-PORT-006 | Dependabot 必须覆盖所有生态（含 Python pip） | P1 | [#433](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/433) | ❌ 未实现 | — | dependabot.yml | 7个 requirements.txt 未覆盖 |
-| NFR-PORT-007 | 禁用的 workflow 应及时清理或重新启用 | P2 | [#434](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/434) | ❌ 未实现 | — | claude-code-review.yml | 禁用 >3个月 |
+| NFR-PORT-001 | README/CLAUDE.md workflow 引用必须与实际文件一致 | P1 | [#428](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/428) | ❌ 未实现 | — | — | PDEF-010；3个 workflow 不存在 |
+| NFR-PORT-002 | CI workflow 必须配置 path filter，避免无关变更触发 | P1 | [#429](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/429) | ❌ 未实现 | — | repo-meta-ci.yml | PDEF-011；见 PREQ-001 扩展 |
+| NFR-PORT-003 | CLAUDE.md 分支/状态信息必须与 git 实际状态一致 | P2 | [#430](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/430) | ❌ 未实现 | — | — | PDEF-012；9个已合并分支仍列在表中 |
+| NFR-PORT-004 | commit-guard.yml 应过滤纯文档变更 | P2 | [#431](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/431) | ❌ 未实现 | — | commit-guard.yml | PREQ-012 |
+| NFR-PORT-005 | CodeQL 分析应配置合理超时和缓存策略 | P1 | [#432](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/432) | ❌ 未实现 | — | codeql-analysis.yml | PDEF-013；当前 30min 无缓存 |
+| NFR-PORT-006 | Dependabot 必须覆盖所有生态（含 Python pip） | P1 | [#433](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/433) | ❌ 未实现 | — | dependabot.yml | PREQ-014；7个 requirements.txt 未覆盖 |
+| NFR-PORT-007 | 禁用的 workflow 应及时清理或重新启用 | P2 | [#434](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/434) | ❌ 未实现 | — | claude-code-review.yml | PDEF-014；禁用 >3个月 |
 
 ---
 
@@ -163,6 +163,7 @@
 | 版本 | 日期 | 变更内容 | 变更人 |
 |------|------|----------|--------|
 | v1.0 | 2026-05-24 | 初版创建，覆盖 Phase 1 完整需求及 Issue #242 缺口分析 | Michael Zhou |
+| v1.1 | 2026-07-15 | NFR-PORT-001/002/003/005/007 备注列追加关联 PDEF-ID（缺陷迁出 req-register 后的追溯修正） | Michael Zhou |
 
 ---
 
