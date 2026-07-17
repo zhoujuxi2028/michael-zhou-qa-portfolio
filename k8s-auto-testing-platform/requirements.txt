@@ -16,7 +16,7 @@ requests==2.31.0
 locust==2.20.0
 
 # YAML Processing
-pyyaml==6.0.1
+pyyaml==6.0.3
 
 # Web Framework (for test app)
 fastapi==0.109.0
