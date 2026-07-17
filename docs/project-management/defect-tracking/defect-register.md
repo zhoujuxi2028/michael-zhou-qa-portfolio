@@ -26,11 +26,8 @@
 
 | Defect ID | GitHub Issue | 标题摘要 | 项目 / 范围 | 严重度 | Blocking? | 发现日期 | 状态 | 关联 Waiver | 关联 RCA / Postmortem |
 |-----------|--------------|----------|-------------|--------|-----------|----------|------|-------------|------------------------|
-| PDEF-010 | [#428](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/428) | README/CLAUDE.md 引用 3 个不存在的 workflow | 仓库级 / 文档 | P1 | ❌ | 2026-07-13 | Triaged | — | — |
-| PDEF-011 | [#429](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/429) | repo-meta-ci.yml 无 path filter，每次 PR 都跑 | 仓库级 / CI 规范 | P1 | ❌ | 2026-07-13 | Triaged | — | — |
-| PDEF-012 | [#430](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/430) | CLAUDE.md 分支状态表全部过期（9 分支已合并） | 仓库级 / 文档 | P2 | ❌ | 2026-07-13 | Triaged | — | — |
-| PDEF-013 | [#432](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/432) | codeql-analysis.yml 30min 超时 + 无缓存 | 仓库级 / 安全 | P1 | ❌ | 2026-07-13 | Triaged | — | — |
-| PDEF-014 | [#434](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/434) | claude-code-review.yml 已禁用 3 个月（死代码） | 仓库级 / CI 维护 | P2 | ❌ | 2026-07-13 | Triaged | — | — |
+| PDEF-015 | [#431](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/431) | commit-guard.yml 无 path filter，文档 PR 也触发 | 仓库级 / CI 规范 | P2 | ❌ | 2026-07-13 | Fixed | — | — |
+| PDEF-016 | [#433](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/433) | Dependabot 缺少 Python 生态覆盖（7 个 requirements.txt） | 仓库级 / 依赖管理 | P1 | ❌ | 2026-07-13 | Fixed | — | — |
 
 > 已存在的项目级活跃缺陷请见对应项目登记表（见第 6 节"项目级登记入口"）。
 >
@@ -64,6 +61,11 @@
 | PDEF-007 | N/A | `claude-code-review.yml` / `copilot-setup-steps.yml` 在加入仓库时未在 README.md / CLAUDE.md 登记；PDEF-006 修复的 pre-push 检查仅覆盖**当前 push 新改动的** workflow 文件，无法追溯历史遗漏。Dependabot PR #298（`actions/checkout v4→v6`）触碰这两个文件，CI `repo-meta-ci / lint`（run [#26551798570](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/runs/26551798570) / job [#78215228958](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/runs/26551798570/job/78215228958)）报红；本地无报错原因：本地 push 未改动任何 workflow 文件，hook 检测列表为空直接跳过 | 仓库级 / docs 治理 | P2 | 2026-05-28 | 在 README.md 补录 `claude-code-review.yml`、`copilot-setup-steps.yml`、`claude.yml`；CLAUDE.md 补录 `copilot-setup-steps.yml`；已合并至 main via PR #333（commit `c69199d1`） | PR #333 / [RCA](../postmortems/RCA-2026-05-28-PDEF-007-workflow-doc-historical-gap.md) |
 | PDEF-008 | N/A | Dependabot PR #407（`@commitlint/cli 21.1.0→21.2.0`）：lockfile 由 npm 11 生成但与 CI npm 10 不兼容，`npm ci` 报 `conventional-commits-parser@6.4.0 Missing from lock file`；升级 `@commitlint/parse` 到 21.2.0 后，`conventional-commits-parser` 从 6.4.0→7.0.1，但 `git-raw-commits` 的 optional peer dep 仍引用 6.4.0，该版本从 lockfile 被移除，npm 11 未校验到但 npm 10 严格校验 | api-testing-demo / CI + Dependabot | P2 | 2026-07-12 | lockfile 用 npm 10 重新生成补回 `conventional-commits-parser@6.4.0`；CI node-version 18→22；engines.node >=18→>=22 | PR #407 commit `05d40c87`+`3ee5e0d1` |
 | PDEF-009 | N/A | `robot-framework-demo` docker-compose 启动的 Selenium Grid 容器继承宿主机 `HTTP_PROXY=http://127.0.0.1:7890`，但容器内 `127.0.0.1` 指向容器自身而非宿主机，导致 Chrome/Firefox 访问 `https://example.com` 时 `ERR_PROXY_CONNECTION_FAILED`；9 tests 全红 | robot-framework-demo / 环境设计 | P2 | 2026-07-12 | 在 `docker-compose.yml` 各 service 中显式添加 `no_proxy` / `NO_PROXY` 覆盖，将 `example.com` 加入直连白名单 | `docker-compose.yml` |
+| PDEF-010 | [#428](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/428) | README/CLAUDE.md 引用 3 个不存在的 workflow | 仓库级 / 文档 | P1 | 2026-07-16 | 删除 README 中 `playwright-tests.yml`/`microservice-ci.yml`/`claude.yml` 行；删除 CLAUDE.md 中 `claude.yml`/`claude-code-review.yml` 行 | 本 PR |
+| PDEF-011 | [#429](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/429) | repo-meta-ci.yml 无 path filter，每次 PR 都跑 | 仓库级 / CI 规范 | P1 | 2026-07-16 | 添加 `paths:` 限制到 md/yml/json/sh/.github 文件类型 | 本 PR |
+| PDEF-012 | [#430](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/430) | CLAUDE.md 分支状态表全部过期（9 分支已合并） | 仓库级 / 文档 | P2 | 2026-07-16 | 删除整个 Feature Branches 表格，替换为简短 summary | 本 PR |
+| PDEF-013 | [#432](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/432) | codeql-analysis.yml 30min 超时 + 无缓存 | 仓库级 / 安全 | P1 | 2026-07-16 | 超时 30→15min；添加 paths-ignore（node_modules/venv/min.js/map/package-lock）；添加 pip 缓存 | 本 PR |
+| PDEF-014 | [#434](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/434) | claude-code-review.yml 已禁用 3 个月（死代码） | 仓库级 / CI 维护 | P2 | 2026-07-16 | 删除 `.github/workflows/claude-code-review.yml` | 本 PR |
 
 ---
 
@@ -108,6 +110,7 @@
 | 2026-07-12 | 登记并关闭 `PDEF-008`：Dependabot PR #407 lockfile 由 npm 11 生成但与 CI npm 10 不兼容，`npm ci` 报 `conventional-commits-parser@6.4.0 Missing from lock file`；用 npm 10 重新生成 lockfile 修复 | QA |
 | 2026-07-12 | 登记并关闭 `PDEF-009`：`robot-framework-demo` Selenium Grid 容器继承宿主机 HTTP_PROXY，`127.0.0.1:7890` 在容器内不可达导致浏览器 9 用例全红；在 `docker-compose.yml` 中添加 `no_proxy` 覆盖修复 | QA |
 | 2026-07-15 | 新增 PDEF-010~014（从 req-register PREQ-009/010/011/013/015 迁移而来，对应 Issues #428/#429/#430/#432/#434）；状态：Triaged | QA |
+| 2026-07-16 | 关闭 PDEF-010~014：修复批量 PR（fix/batch-h1-h7-defects）；新增 PDEF-015（#431 commit-guard.yml path filter）、PDEF-016（#433 Dependabot Python 覆盖）；状态：Fixed | QA |
 | 2026-05-26 | 登记并关闭 `PDEF-005`：DEF-023 RCA 文件 2 处路径多 1 层 `../`（outside repo）；`defects/register.md` RCA 反链少 1 层；3 处断链导致 PR #276 `Repository Meta CI / lint`（run #26445816667）报红；修正路径后关闭 | QA |
 | 2026-05-26 | 登记 `DEF-023`（[#278](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/278)）：perf-platform `stage4-selftest-fast.bats:144` 分支白名单缺 `docs/`，PR #276 CI 红灯（run #26438598385 / job #77827370629）；Fix in review（PR #276）；pre-push 改进 PR #277；活跃数 9 → 10 | QA |
 | 2026-05-26 | 登记并关闭 `PDEF-004`：`docs/guides/label-strategy.md` 指向 `phase6-stage4-verification-report.md` 的路径缺少 `execution/` 目录，导致 PR #269 的 `Repository Meta CI / lint`（run #26429424413，job #77799391938）失败；已修复链接并补充 RCA | QA |

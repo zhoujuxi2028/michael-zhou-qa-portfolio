@@ -3,8 +3,22 @@ name: Repository Meta CI
 on:
   pull_request:
     branches: [main]
+    paths:
+      - '**/*.md'
+      - '**/*.yml'
+      - '**/*.yaml'
+      - '**/*.json'
+      - '**/*.sh'
+      - '.github/**'
   push:
     branches: [main]
+    paths:
+      - '**/*.md'
+      - '**/*.yml'
+      - '**/*.yaml'
+      - '**/*.json'
+      - '**/*.sh'
+      - '.github/**'
   workflow_dispatch:
 
 concurrency:

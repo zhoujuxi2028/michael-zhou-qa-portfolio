@@ -12,12 +12,24 @@ on:
       - '**/*.js'
       - '**/*.py'
       - '.github/workflows/codeql-analysis.yml'
+    paths-ignore:
+      - '**/node_modules/**'
+      - '**/venv/**'
+      - '**/*.min.js'
+      - '**/*.map'
+      - '**/package-lock.json'
   pull_request:
     branches: [main]
     paths:
       - '**/*.js'
       - '**/*.py'
       - '.github/workflows/codeql-analysis.yml'
+    paths-ignore:
+      - '**/node_modules/**'
+      - '**/venv/**'
+      - '**/*.min.js'
+      - '**/*.map'
+      - '**/package-lock.json'
   schedule:
     # 每周一 04:00 UTC 定期扫描，检测新披露的漏洞模式
     - cron: '0 4 * * 1'
@@ -36,7 +48,7 @@ jobs:
   analyze:
     name: CodeQL / ${{ matrix.language }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
 
     strategy:
       fail-fast: false
@@ -46,6 +58,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+
+      - name: Cache pip/npm (Python analysis)
+        if: matrix.language == 'python'
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: codeql-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: codeql-pip-
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4

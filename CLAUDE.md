@@ -151,19 +151,7 @@ python3 -m venv venv && source venv/bin/activate
 
 ### Feature Branches
 
-| Branch | Description | Status |
-|--------|-------------|--------|
-| `feature/devops-platform` | DevOps platform with Helm, ArgoCD | Merged to main |
-| `feature/security-testing` | Security testing with ZAP/Nessus (170 tests, OWASP Top 10 2021) | Ready to merge |
-| `feature/api-testing` | API testing enhancements | In development |
-| `feature/k8s-testing` | K8S testing features | In development |
-| `feature/selenium` | Selenium automation | In development |
-| `feature/robot-framework-demo` | Robot Framework demo | Merged to main |
-| `fix/api-testing-defects` | API testing bug fixes | In development |
-| `feature/sid-iam-testing` | SID IAM + Data Platform + AI Agent testing (138 tests) | In development |
-| `feature/microservice-testing` | Microservice testing platform (101 tests, 5 layers) | In development |
-| `feature/performance-testing` | Performance testing platform (k6 + JMeter dual-engine, Phase 1-5 done) | In development |
-| `copilot/ai-powered-testing-platform-research` | AI Testing Platform (43 tests, 91% coverage) | In development |
+所有已合并分支均已从 `main` 发出并合回，当前无活跃 feature 分支。
 
 ### Dependabot PR 处理规则（防 PDEF-007 复发）
 
@@ -202,8 +190,6 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `security-scan.yml` | cicd-demo | Security / Scan: Trivy fs + Docker + IaC + npm audit → SARIF |
 | `repo-meta-ci.yml` | repository root | PR 级轻量 lint（docs / workflow / JSON / shell / Markdown links） |
 | `commit-guard.yml` | repository | Conventional Commits 格式校验 + secret scan CI 兜底（绕过 pre-push hook 时的安全网） |
-| `claude.yml` | repository | Claude Code 助手触发入口 |
-| `claude-code-review.yml` | repository | Claude Code PR review |
 | `setup-labels.yml` | repository | 手动触发：一键创建/更新 11 个 `proj:xxx` labels |
 | `copilot-setup-steps.yml` | repository | 预热 Node.js/Python 依赖缓存供 Copilot 使用 |
 
