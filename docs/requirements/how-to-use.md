@@ -108,6 +108,23 @@
 
 ---
 
+---
+
+## Issue ↔ 需求同步规范
+
+需求台账（`req-register.md`）与 GitHub Issue 之间必须保持双向可追溯：
+
+| 事件 | 操作 | 时限 |
+|------|------|------|
+| 创建 Issue | 在 `req-register.md` 新增一行，填写 REQ-ID + Issue 链接 | 24h |
+| Issue 状态变更 | 同步更新台账状态列（Proposed / Refined / In Development / Verified / Closed） | 24h |
+| PR 合并 | 如果 PR 关联需求，更新台账状态并补充关联 PR 编号 | 合并后 24h |
+| 季度审计 | 扫描所有 Open Issue → 台账中是否有对应行，缺失则补录 | 每季度末 |
+
+**示例**：Issue #437（PREQ-006）状态为 In Development → 台账对应行状态为 In Development。
+
+---
+
 ## 常见问题
 
 **Q：每个需求都要建 GitHub Issue 吗？**

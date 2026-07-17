@@ -35,6 +35,8 @@
 | PREQ-008 | — | 缺陷管理系统覆盖：台账 + Waiver 政策 + Flaky 分级 + 依赖风险 SLA | 仓库级 / QA 体系 | DEMO | P1 | 2026-05-26 | Verified | — |
 | PREQ-012 | [#431](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/431) | commit-guard.yml 无 path filter | 仓库级 / CI 规范 | NFR | P2 | 2026-07-13 | Refined | — |
 | PREQ-014 | [#433](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/433) | Dependabot 缺少 Python 生态（7 个 pip） | 仓库级 / 安全 | NFR | P1 | 2026-07-13 | Refined | — |
+| PREQ-016 | [#42](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/42) | Alibaba Cloud ECS + K3s 真实部署 | cicd-demo | FR | P2 | 2026-07-17 | Proposed | — |
+| PREQ-017 | [#18](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/18) | Mobile Testing Demo (Appium/Detox) | 新项目 | FR | P2 | 2026-07-17 | Proposed | — |
 
 ---
 
@@ -70,14 +72,17 @@
 
 | 项目 | 需求文档位置 | 当前活跃数 | 关联 RTM | 最近更新 |
 |------|------------|-----------|---------|---------|
-| cicd-demo | [RTM.md](RTM.md)（含 cicd-demo 全量需求）| 24（FR: 16 / NFR: 8） | [RTM.md](RTM.md) | 2026-05-24 |
-| performance-testing-platform | _(按需初始化，复制 [模板](req-template.md))_ | — | — | — |
-| api-testing-demo | _(按需初始化)_ | — | — | — |
-| k8s-auto-testing-platform | _(按需初始化)_ | — | — | — |
-| security-testing-demo | _(按需初始化)_ | — | — | — |
-| sid-iam-testing-platform | _(按需初始化)_ | — | — | — |
-| microservice-testing-platform | _(按需初始化)_ | — | — | — |
-| ai-testing-platform | _(按需初始化)_ | — | — | — |
+| cicd-demo | [REQUIREMENTS.md](../../cicd-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
+| performance-testing-platform | [requirements.md](../../performance-testing-platform/docs/project-management/requirements.md) | — | — | 2026-07-17 |
+| api-testing-demo | [REQUIREMENTS.md](../../api-testing-demo/docs/project-management/REQUIREMENTS.md) | — | — | 2026-07-17 |
+| k8s-auto-testing-platform | [REQUIREMENTS.md](../../k8s-auto-testing-platform/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
+| security-testing-demo | [REQUIREMENTS.md](../../security-testing-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
+| sid-iam-testing-platform | [REQUIREMENTS.md](../../sid-iam-testing-platform/docs/project-management/REQUIREMENTS.md) | — | — | 2026-07-17 |
+| microservice-testing-platform | [requirements.md](../../microservice-testing-platform/docs/project-management/requirements.md) | — | — | 2026-07-17 |
+| ai-testing-platform | [REQUIREMENTS.md](../../ai-testing-platform/docs/REQUIREMENTS.md) | — | — | 2026-07-17 |
+| playwright-demo | [REQUIREMENTS.md](../../playwright-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
+| selenium-demo | [REQUIREMENTS.md](../../selenium-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
+| robot-framework-demo | [REQUIREMENTS.md](../../robot-framework-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
 
 ---
 
@@ -86,6 +91,7 @@
 | 日期 | 操作 | 内容 | 操作人 |
 |------|------|------|--------|
 | 2026-05-26 | 初始化 | 创建 Portfolio 需求台账，录入 PREQ-001 ~ PREQ-008 | Michael Zhou |
+| 2026-07-17 | 新增 | 录入 PREQ-016 (#42)、PREQ-017 (#18)；更新项目入口表指向 11 个项目实际文档路径 | Michael Zhou |
 | 2026-07-13 | 新增 | 仓库优化审计：录入 PREQ-009 ~ PREQ-015（对应 Issues #428-#434） | Michael Zhou |
 | 2026-07-14 | 补链 | PREQ-006 关联 Issue #437；新增维护规则：新需求必须同步创建 Issue | Michael Zhou |
 | 2026-07-15 | 修正 | 移除 PREQ-009/010/011/013/015（属于缺陷，已移至 defect-register 分配 PDEF-010~014）；PREQ-012/014 状态 → Refined | Michael Zhou |
