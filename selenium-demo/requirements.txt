@@ -1,6 +1,6 @@
 # ==================== Selenium WebDriver ====================
 selenium==4.16.0
-webdriver-manager==4.0.1
+webdriver-manager==4.1.2
 
 # ==================== Test Framework ====================
 pytest==7.4.3
