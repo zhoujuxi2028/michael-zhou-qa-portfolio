@@ -61,7 +61,7 @@ jobs:
 
       - name: Cache pip/npm (Python analysis)
         if: matrix.language == 'python'
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/pip
           key: codeql-pip-${{ hashFiles('**/requirements.txt') }}

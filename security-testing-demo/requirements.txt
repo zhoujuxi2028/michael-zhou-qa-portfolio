@@ -9,7 +9,7 @@ pytest-html>=4.1.0
 pytest-cov>=4.1.0
 
 # HTTP Requests
-requests>=2.31.0
+requests>=2.34.2
 
 # Report Generation
 jinja2>=3.1.0
@@ -21,7 +21,7 @@ python-dotenv>=1.2.2
 colorlog>=6.7.0
 
 # Data Validation
-jsonschema>=4.20.0
+jsonschema>=4.26.0
 
 # Nessus API Client
 pyTenable>=26.6.1

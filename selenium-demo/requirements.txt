@@ -1,10 +1,10 @@
 # ==================== Selenium WebDriver ====================
 selenium==4.16.0
-webdriver-manager==4.0.1
+webdriver-manager==4.1.2
 
 # ==================== Test Framework ====================
 pytest==7.4.3
-pytest-html==4.1.1
+pytest-html==4.2.0
 pytest-rerunfailures==13.0
 pytest-timeout==2.2.0
 pytest-xdist==3.5.0  # Parallel execution
@@ -14,7 +14,7 @@ allure-pytest==2.13.2
 pytest-json-report==1.5.0
 
 # ==================== SSH & Backend ====================
-paramiko==3.4.0
+paramiko==5.0.0
 
 # ==================== Logging & Utilities ====================
 colorlog==6.8.0
