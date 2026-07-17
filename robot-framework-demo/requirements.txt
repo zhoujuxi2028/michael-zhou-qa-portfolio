@@ -1,4 +1,4 @@
-robotframework>=7.2
+robotframework>=7.4.2
 robotframework-seleniumlibrary>=6.8
 robotframework-pabot>=2.18
 robotframework-requests>=0.9.7
