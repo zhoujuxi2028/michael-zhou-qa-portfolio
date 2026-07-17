@@ -52,7 +52,7 @@
 
 **Main Branch**: `main` (Default)
 
-**Feature Branches**: See CLAUDE.md for active development branches
+**Feature Branches**: 当前无活跃 feature 分支（均已合并到 main）
 
 **Key Technologies**: 
 - Testing: Pytest, Jest, Cypress, Playwright, Selenium, k6, JMeter

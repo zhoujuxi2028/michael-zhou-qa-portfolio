@@ -177,3 +177,87 @@ updates:
       - "performance-testing"
     commit-message:
       prefix: "chore(docker-perf)"
+
+  # pip — ai-testing-platform
+  - package-ecosystem: "pip"
+    directory: "/ai-testing-platform"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "ai-testing"
+    commit-message:
+      prefix: "chore(ai-testing)"
+
+  # pip — k8s-auto-testing-platform (root)
+  - package-ecosystem: "pip"
+    directory: "/k8s-auto-testing-platform"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "k8s"
+    commit-message:
+      prefix: "chore(k8s)"
+
+  # pip — k8s-auto-testing-platform (app)
+  - package-ecosystem: "pip"
+    directory: "/k8s-auto-testing-platform/app"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "k8s"
+    commit-message:
+      prefix: "chore(k8s)"
+
+  # pip — robot-framework-demo
+  - package-ecosystem: "pip"
+    directory: "/robot-framework-demo"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "robot-framework"
+    commit-message:
+      prefix: "chore(robot)"
+
+  # pip — security-testing-demo
+  - package-ecosystem: "pip"
+    directory: "/security-testing-demo"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "security-testing"
+    commit-message:
+      prefix: "chore(security)"
+
+  # pip — selenium-demo
+  - package-ecosystem: "pip"
+    directory: "/selenium-demo"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "selenium"
+    commit-message:
+      prefix: "chore(selenium)"
+
+  # pip — sid-iam-testing-platform
+  - package-ecosystem: "pip"
+    directory: "/sid-iam-testing-platform"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+      - "sid-iam"
+    commit-message:
+      prefix: "chore(sid-iam)"
