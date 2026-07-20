@@ -10,7 +10,7 @@ pytest-html==4.1.1
 pytest-xdist==3.5.0
 
 # HTTP Requests
-requests==2.31.0
+requests==2.34.2
 
 # Load Testing
 locust==2.20.0
