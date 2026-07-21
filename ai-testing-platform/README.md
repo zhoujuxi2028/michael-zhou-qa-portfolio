@@ -139,6 +139,21 @@ pytest tests/test_script_generator/ -v  # 脚本生成 (16)
 pytest tests/ --cov=src --cov-report=html
 ```
 
+### 从需求文档生成测试用例
+
+```bash
+# 使用内置登录页需求文档生成测试用例
+python scripts/generate_test_cases.py
+# → 控制台输出测试用例列表
+# → 结果写入 docs/qa/generated-login-test-cases.json
+```
+
+**自定义需求文档：**
+
+1. 在 `docs/requirements/` 下新建 Markdown 需求文件
+2. 修改 `scripts/generate_test_cases.py` 中的 `req_file` 和 `module` 变量
+3. 重新运行脚本
+
 ---
 
 ## 项目结构
@@ -164,7 +179,14 @@ ai-testing-platform/
 │   ├── REQUIREMENTS.md             # 功能需求
 │   ├── FEASIBILITY.md              # 可行性分析
 │   ├── ARCHITECTURE.md             # 架构设计
-│   └── TEST-CASES.md               # 测试用例目录
+│   ├── TEST-CASES.md               # 测试用例目录
+│   ├── requirements/
+│   │   └── LOGIN-REQUIREMENTS.md  # 登录页面需求文档（示例）
+│   └── qa/
+│       └── generated-login-test-cases.json  # 自动生成的测试用例（示例输出）
+├── scripts/
+│   ├── integration-test.sh         # LLM 集成测试入口
+│   └── generate_test_cases.py      # 需求文档 → 测试用例生成脚本
 ├── pytest.ini
 ├── pyproject.toml
 ├── requirements.txt
@@ -191,6 +213,7 @@ ai-testing-platform/
 - [可行性分析](docs/FEASIBILITY.md) — 技术方案对比与风险评估
 - [架构设计](docs/ARCHITECTURE.md) — 引擎设计、数据模型、测试架构
 - [测试用例目录](docs/TEST-CASES.md) — 43 个测试用例详细定义
+- [登录页面需求文档](docs/requirements/LOGIN-REQUIREMENTS.md) — 登录/忘记密码功能需求（生成示例）
 
 ---
 

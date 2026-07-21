@@ -158,6 +158,29 @@ class TestCaseGeneratorFromDiff:
 
 
 @pytest.mark.generation
+class TestBoundaryFromMarkdownTable:
+    @pytest.mark.P1
+    def test_extract_boundary_from_markdown_table(self, generator):
+        """TC-GEN-015 (DEF-AI-001): Markdown 表格格式的边界条件应被正确提取"""
+        req = "| 用户名最大长度 | 256 字符 |\n| 密码最大长度 | 128 字符 |\n| 密码最小长度 | 8 字符 |\n"
+
+        test_cases = generator.generate_from_requirement(req, module="login")
+
+        boundary_cases = [tc for tc in test_cases if tc.test_type == TestType.BOUNDARY]
+        assert len(boundary_cases) >= 3, f"应从 Markdown 表格提取至少 3 个边界用例，实际得到 {len(boundary_cases)}"
+
+    @pytest.mark.P1
+    def test_boundary_from_mixed_format(self, generator):
+        """TC-GEN-016 (DEF-AI-001): 混合格式（纯文本+表格）均能提取边界条件"""
+        req = "Username max length is 50 characters.\n| 密码最大长度 | 128 字符 |\n"
+
+        test_cases = generator.generate_from_requirement(req, module="login")
+
+        boundary_cases = [tc for tc in test_cases if tc.test_type == TestType.BOUNDARY]
+        assert len(boundary_cases) >= 2, f"纯文本 + 表格格式应各产生 1 个边界用例，实际得到 {len(boundary_cases)}"
+
+
+@pytest.mark.generation
 class TestCoverageAnalysis:
     @pytest.mark.P1
     def test_analyze_coverage_returns_stats(self, generator):
