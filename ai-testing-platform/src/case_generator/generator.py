@@ -362,6 +362,7 @@ class TestCaseGenerator:
         """提取边界条件（数值限制、最大/最小值）"""
         boundaries: list = []
 
+        # 纯文本格式：256 characters
         numbers = re.findall(
             r"(\d+)\s*(characters?|items?|users?|requests?|seconds?|bytes?|MB|GB)",
             text,
@@ -375,6 +376,24 @@ class TestCaseGenerator:
                     "expected": f"System enforces {num} {unit} boundary correctly",
                 }
             )
+
+        # Markdown 表格格式：| 256 字符 | 或 | 256 characters |
+        seen = {(num, unit) for num, unit in numbers}
+        table_numbers = re.findall(
+            r"\|\s*(\d+)\s*(字符|字节|个|秒|characters?|items?|bytes?|seconds?)\s*\|",
+            text,
+            re.IGNORECASE,
+        )
+        for num, unit in table_numbers:
+            if (num, unit) not in seen:
+                seen.add((num, unit))
+                boundaries.append(
+                    {
+                        "type": "numeric",
+                        "description": f"{num} {unit} limit",
+                        "expected": f"System enforces {num} {unit} boundary correctly",
+                    }
+                )
 
         if re.search(r"\b(max|maximum|minimum|min|limit)\b", text, re.IGNORECASE):
             boundaries.append(
