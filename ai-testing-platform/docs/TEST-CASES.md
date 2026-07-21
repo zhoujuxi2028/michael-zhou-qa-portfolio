@@ -6,6 +6,7 @@
 |------|--------|--------|----|----|-----|
 | TestCaseGenerator | TestCaseGeneratorFromRequirement | 9 | 3 | 4 | 2 |
 | TestCaseGenerator | TestCaseGeneratorFromDiff | 3 | 2 | 1 | 0 |
+| TestCaseGenerator | TestBoundaryFromMarkdownTable | 2 | 0 | 2 | 0 |
 | TestCaseGenerator | TestCoverageAnalysis | 2 | 0 | 1 | 1 |
 | DefectPredictor | TestModuleRiskAnalysis | 7 | 4 | 3 | 0 |
 | DefectPredictor | TestPortfolioAnalysis | 6 | 2 | 3 | 1 |
@@ -17,7 +18,7 @@
 | LLMEvaluator | TestSecurity | 8 | 3 | 3 | 2 |
 | LLMEvaluator | TestBias | 6 | 2 | 2 | 2 |
 | LLMEvaluator | TestUnitLogic | 8 | 2 | 3 | 3 |
-| **合计** | | **~83** | **~27** | **~34** | **~22** |
+| **合计** | | **~85** | **~27** | **~36** | **~22** |
 
 ---
 
@@ -44,6 +45,15 @@
 | TC-GEN-010 | 从含新函数的 diff 生成回归测试（正向+负向） | P0 | 功能 |
 | TC-GEN-011 | 无新增函数的 diff 生成通用回归用例 | P1 | 功能 |
 | TC-GEN-012 | 空 diff 文本抛出 GeneratorError | P0 | 负向 |
+
+### TestBoundaryFromMarkdownTable
+
+> 对应缺陷：DEF-AI-001
+
+| TC ID | 标题 | 优先级 | 类型 |
+|-------|------|--------|------|
+| TC-GEN-015 | Markdown 表格格式边界条件应被正确提取 | P1 | 边界 |
+| TC-GEN-016 | 混合格式（纯文本+表格）均能提取边界条件 | P1 | 边界 |
 
 ### TestCoverageAnalysis
 

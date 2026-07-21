@@ -1,0 +1,169 @@
+[
+  {
+    "tc_id": "TC-LOGIN-LOGIN-001",
+    "title": "Login: valid credentials return auth token",
+    "description": "Verify that login valid credentials return auth token when user performs login",
+    "preconditions": [
+      "System is operational",
+      "User has login permissions"
+    ],
+    "steps": [
+      "Navigate to login login endpoint",
+      "Submit login request with valid data",
+      "Verify response status and body"
+    ],
+    "expected_result": "valid credentials return auth token",
+    "priority": "P0",
+    "test_type": "positive",
+    "tags": [
+      "login",
+      "login"
+    ]
+  },
+  {
+    "tc_id": "TC-LOGIN-LOGIN-002",
+    "title": "Login: invalid credentials rejected with 401",
+    "description": "Verify that login invalid credentials rejected with 401 when user performs login",
+    "preconditions": [
+      "System is operational",
+      "User has login permissions"
+    ],
+    "steps": [
+      "Navigate to login login endpoint",
+      "Submit login request with valid data",
+      "Verify response status and body"
+    ],
+    "expected_result": "invalid credentials rejected with 401",
+    "priority": "P0",
+    "test_type": "negative",
+    "tags": [
+      "login",
+      "login"
+    ]
+  },
+  {
+    "tc_id": "TC-LOGIN-LOGIN-003",
+    "title": "Login: account lockout after repeated failures",
+    "description": "Verify that login account lockout after repeated failures when user performs login",
+    "preconditions": [
+      "System is operational",
+      "User has login permissions"
+    ],
+    "steps": [
+      "Navigate to login login endpoint",
+      "Submit login request with valid data",
+      "Verify response status and body"
+    ],
+    "expected_result": "account lockout after repeated failures",
+    "priority": "P0",
+    "test_type": "negative",
+    "tags": [
+      "login",
+      "login"
+    ]
+  },
+  {
+    "tc_id": "TC-LOGIN-SEC-004",
+    "title": "Security: brute force attack prevention",
+    "description": "Verify login password is protected against brute force attack",
+    "preconditions": [
+      "System is operational",
+      "Attack payloads are prepared"
+    ],
+    "steps": [
+      "Prepare brute force attack payload",
+      "Submit malicious payload to password endpoint",
+      "Verify attack is detected and blocked"
+    ],
+    "expected_result": "brute force attack attempt is detected and blocked with appropriate error",
+    "priority": "P0",
+    "test_type": "security",
+    "tags": [
+      "security",
+      "password",
+      "brute force attack"
+    ]
+  },
+  {
+    "tc_id": "TC-LOGIN-SEC-005",
+    "title": "Security: XSS injection prevention",
+    "description": "Verify login input is protected against XSS injection",
+    "preconditions": [
+      "System is operational",
+      "Attack payloads are prepared"
+    ],
+    "steps": [
+      "Prepare XSS injection payload",
+      "Submit malicious payload to input endpoint",
+      "Verify attack is detected and blocked"
+    ],
+    "expected_result": "XSS injection attempt is detected and blocked with appropriate error",
+    "priority": "P0",
+    "test_type": "security",
+    "tags": [
+      "security",
+      "input",
+      "XSS injection"
+    ]
+  },
+  {
+    "tc_id": "TC-LOGIN-BND-006",
+    "title": "Boundary: 256 字符 limit",
+    "description": "Test boundary condition: 256 字符 limit",
+    "preconditions": [
+      "System is operational"
+    ],
+    "steps": [
+      "Prepare data at boundary: 256 字符 limit",
+      "Submit boundary value",
+      "Verify system behavior at boundary"
+    ],
+    "expected_result": "System enforces 256 字符 boundary correctly",
+    "priority": "P1",
+    "test_type": "boundary",
+    "tags": [
+      "boundary",
+      "numeric"
+    ]
+  },
+  {
+    "tc_id": "TC-LOGIN-BND-007",
+    "title": "Boundary: 128 字符 limit",
+    "description": "Test boundary condition: 128 字符 limit",
+    "preconditions": [
+      "System is operational"
+    ],
+    "steps": [
+      "Prepare data at boundary: 128 字符 limit",
+      "Submit boundary value",
+      "Verify system behavior at boundary"
+    ],
+    "expected_result": "System enforces 128 字符 boundary correctly",
+    "priority": "P1",
+    "test_type": "boundary",
+    "tags": [
+      "boundary",
+      "numeric"
+    ]
+  },
+  {
+    "tc_id": "TC-LOGIN-BND-008",
+    "title": "Boundary: 8 字符 limit",
+    "description": "Test boundary condition: 8 字符 limit",
+    "preconditions": [
+      "System is operational"
+    ],
+    "steps": [
+      "Prepare data at boundary: 8 字符 limit",
+      "Submit boundary value",
+      "Verify system behavior at boundary"
+    ],
+    "expected_result": "System enforces 8 字符 boundary correctly",
+    "priority": "P1",
+    "test_type": "boundary",
+    "tags": [
+      "boundary",
+      "numeric"
+    ]
+  }
+]
