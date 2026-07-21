@@ -11,7 +11,7 @@ uvicorn[standard]==0.27.0
 httpx==0.27.0
 
 # Graph Database (ontology mock)
-networkx==3.2.1
+networkx==3.6.1
 
 # Token & Crypto
 pyjwt[crypto]==2.8.0
