@@ -181,6 +181,59 @@ class TestBoundaryFromMarkdownTable:
 
 
 @pytest.mark.generation
+class TestDBCSKeywordGeneration:
+    @pytest.mark.P1
+    def test_unicode_keyword_generates_unicode_tagged_case(self, generator):
+        """TC-DBCS-001: 含 'unicode' 关键词时生成 tags 含 'unicode' 的用例"""
+        req = "The login form must support unicode character input for international users."
+        test_cases = generator.generate_from_requirement(req, module="login")
+        dbcs_cases = [tc for tc in test_cases if "unicode" in tc.tags]
+        assert len(dbcs_cases) >= 1, f"Expected ≥1 unicode-tagged case, got {len(dbcs_cases)}"
+
+    @pytest.mark.P1
+    def test_chinese_keyword_generates_dbcs_tagged_case(self, generator):
+        """TC-DBCS-002: 含 '中文' 关键词时生成 tags 含 'dbcs' 的用例"""
+        req = "系统支持中文用户名输入，最大长度 50 字符。"
+        test_cases = generator.generate_from_requirement(req, module="login")
+        dbcs_cases = [tc for tc in test_cases if "dbcs" in tc.tags]
+        assert len(dbcs_cases) >= 1, f"Expected ≥1 dbcs-tagged case, got {len(dbcs_cases)}"
+
+    @pytest.mark.P1
+    def test_emoji_keyword_generates_unicode_tagged_case(self, generator):
+        """TC-DBCS-003: 含 'emoji' 关键词时生成 tags 含 'unicode' 的用例"""
+        req = "Profile display name must support emoji characters."
+        test_cases = generator.generate_from_requirement(req, module="profile")
+        dbcs_cases = [tc for tc in test_cases if "unicode" in tc.tags]
+        assert len(dbcs_cases) >= 1, f"Expected ≥1 unicode-tagged case, got {len(dbcs_cases)}"
+
+    @pytest.mark.P1
+    def test_no_dbcs_keyword_generates_no_dbcs_case(self, generator):
+        """TC-DBCS-005: 无 DBCS 关键词时不生成 DBCS 用例"""
+        req = "User can login with valid credentials. Max 50 characters."
+        test_cases = generator.generate_from_requirement(req, module="login")
+        dbcs_cases = [tc for tc in test_cases if "dbcs" in tc.tags or "unicode" in tc.tags]
+        assert len(dbcs_cases) == 0, f"Expected 0 DBCS cases, got {len(dbcs_cases)}"
+
+    @pytest.mark.P1
+    def test_mixed_keywords_generate_both_tag_types(self, generator):
+        """TC-DBCS-006: 混合关键词（'unicode' + '中文'）各自生成对应标签用例"""
+        req = "Support unicode and 中文 input for the login form."
+        test_cases = generator.generate_from_requirement(req, module="login")
+        has_unicode = any("unicode" in tc.tags for tc in test_cases)
+        has_dbcs = any("dbcs" in tc.tags for tc in test_cases)
+        assert has_unicode, "Expected at least one unicode-tagged case"
+        assert has_dbcs, "Expected at least one dbcs-tagged case"
+
+    @pytest.mark.P1
+    def test_fullwidth_keyword_generates_unicode_tagged_case(self, generator):
+        """TC-DBCS-007: 含 '全角' 关键词时生成 tags 含 'unicode' 的用例"""
+        req = "输入框支持全角字符输入，如全角数字和全角标点。"
+        test_cases = generator.generate_from_requirement(req, module="input")
+        dbcs_cases = [tc for tc in test_cases if "unicode" in tc.tags]
+        assert len(dbcs_cases) >= 1, f"Expected ≥1 unicode-tagged case for 全角, got {len(dbcs_cases)}"
+
+
+@pytest.mark.generation
 class TestCoverageAnalysis:
     @pytest.mark.P1
     def test_analyze_coverage_returns_stats(self, generator):

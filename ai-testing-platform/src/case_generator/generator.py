@@ -97,6 +97,35 @@ SECURITY_KEYWORDS = {
     "api": "rate limiting bypass",
 }
 
+# DBCS 字符集测试关键词映射
+DBCS_KEYWORDS = {
+    "unicode": [
+        "unicode character input",
+        "zero-width character input",
+        "surrogate pair character input",
+    ],
+    "dbcs": [
+        "double-byte character input",
+        "DBCS boundary: byte vs char length",
+    ],
+    "多语言": [
+        "multilingual CJK character input",
+        "mixed ASCII+DBCS input",
+    ],
+    "中文": [
+        "Chinese character input",
+        "Chinese+ASCII mixed input",
+    ],
+    "emoji": [
+        "emoji character input",
+        "emoji in boundary value",
+    ],
+    "全角": [
+        "fullwidth character input",
+        "fullwidth+halfwidth mixed input",
+    ],
+}
+
 # 优先级规则
 PRIORITY_RULES = {
     "P0": [
@@ -218,6 +247,27 @@ class TestCaseGenerator:
                 tags=["boundary", boundary["type"]],
             )
             test_cases.append(tc)
+
+        # 生成 DBCS 字符集测试用例
+        for keyword, scenarios in extracted["dbcs_keywords"].items():
+            for scenario in scenarios:
+                tag = "unicode" if keyword in ("unicode", "emoji", "全角") else "dbcs"
+                tc = TestCase(
+                    tc_id=f"TC-{module_upper}-DBCS-{len(test_cases) + 1:03d}",
+                    title=f"DBCS: {scenario}",
+                    description=f"Verify {module} handles {scenario} correctly",
+                    preconditions=["System is operational", "DBCS input data prepared"],
+                    steps=[
+                        f"Prepare {scenario} as input",
+                        "Submit input to system",
+                        "Verify system processes DBCS input without data loss or truncation",
+                    ],
+                    expected_result=f"System correctly processes {scenario}",
+                    priority=Priority.P1,
+                    test_type=TestType.BOUNDARY,
+                    tags=[tag, keyword],
+                )
+                test_cases.append(tc)
 
         self._history.append(
             {
@@ -350,12 +400,14 @@ class TestCaseGenerator:
 
         found_crud = {kw: scenarios for kw, scenarios in CRUD_KEYWORDS.items() if kw in text_lower}
         found_security = {kw: attack for kw, attack in SECURITY_KEYWORDS.items() if kw in text_lower}
+        found_dbcs = {kw: scenarios for kw, scenarios in DBCS_KEYWORDS.items() if kw in text_lower}
         boundaries = self._extract_boundaries(text)
 
         return {
             "crud_keywords": found_crud,
             "security_keywords": found_security,
             "boundary_conditions": boundaries,
+            "dbcs_keywords": found_dbcs,
         }
 
     def _extract_boundaries(self, text: str) -> list:
