@@ -47,7 +47,7 @@
     "eslint": "^8.55.0",
     "eslint-plugin-cypress": "^2.15.1",
     "husky": "^9.1.7",
-    "lint-staged": "^17.0.8",
+    "lint-staged": "^17.1.0",
     "newman": "^6.1.0",
     "newman-reporter-htmlextra": "^1.23.0"
   },
