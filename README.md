@@ -58,7 +58,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [ai-testing-platform](./ai-testing-platform/) | AI-Powered Testing Platform — 智能测试用例生成 + 缺陷预测 + 脚本生成 (43 tests) | Python, Pytest, Rule Engine |
+| [ai-testing-platform](./ai-testing-platform/) | AI-Powered Testing Platform — 智能测试用例生成 + 缺陷预测 + 脚本生成 (72 tests) | Python, Pytest, Rule Engine |
 
 ### DevOps
 
@@ -119,7 +119,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 | `sid-iam-ci.yml` | sid-iam-testing-platform | Push/PR, manual | Code quality + unit tests + integration (138 tests) |
 | `performance-ci.yml` | performance-testing-platform | Push/PR | Lint → unit tests → k6 + JMeter smoke gate |
 | `nightly-soak.yml` | performance-testing-platform | Nightly / weekly, manual | Performance / Nightly: soak-short daily + capacity weekly |
-| `ai-testing-ci.yml` | ai-testing-platform | Push/PR, manual | AI Testing CI: code quality + unit tests (43 tests, 91% coverage) |
+| `ai-testing-ci.yml` | ai-testing-platform | Push/PR, manual | AI Testing CI: code quality + unit tests (72 tests, 82% coverage) |
 | `setup-labels.yml` | repository | Manual (`workflow_dispatch`) | 一键创建/更新 11 个 `proj:xxx` labels |
 | `repo-meta-ci.yml` | repository root | Push/PR, manual | docs/workflow/JSON/shell/Markdown links 轻量校验 + workflow 文档同步检查 |
 | `api-testing-ci.yml` | api-testing-demo | Push/PR | Validate Postman collections → Newman tests (280+ assertions) |
