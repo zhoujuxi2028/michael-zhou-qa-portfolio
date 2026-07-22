@@ -14,6 +14,8 @@
 
 | ID | 风险描述 | 等级 | 类别 | 可能性 | 影响 | 缓解措施 | 状态 |
 |----|---------|------|------|--------|------|---------|------|
+| RSK-DBCS-001 | **需求范围蔓延**: DBCS 支持可能被要求扩展到 `DefectPredictor` / `LLMEvaluator` 等模块 | 🟡 MEDIUM | 范围 | 中 | 中 | requirements.md 明确 scope 仅限 `case_generator`；其他模块需另开 Issue | 监控 |
+| RSK-DBCS-002 | **Unicode 数字误匹配**: `\d` 在某些 Unicode 字符（如阿拉伯数字 ٣）下可能误命中边界正则 | 🟢 LOW | 技术 | 低 | 低 | 使用 `re.ASCII` flag 约束数字匹配范围；测试用例覆盖非 ASCII 数字场景 | 监控 |
 | RSK-LLM-001 | **API Key 在 CI 不可用**: 24 个 LLM 集成测试需要 `OPENAI_API_KEY`，CI 环境无密钥 | 🟡 MEDIUM | 环境 | 高 | 中 | 双模式：`-m "not llm"` 跳过；CI 仅运行 16 个单元测试 | ✅ 已处理 |
 | RSK-LLM-002 | **LLM 输出非确定性**: DeepEval 依赖 GPT 评分，同一输入可能产生波动分 | 🟡 MEDIUM | 技术 | 中 | 中 | 阈值断言（≥ 0.5）而非精确匹配；记录 LLM reason 供审计 | ✅ 已处理 |
 | RSK-LLM-003 | **DeepEval API 变更**: 4.x 版本仍在演进中，5.x 可能 break | 🟡 MEDIUM | 依赖 | 低 | 高 | `requirements.txt` 锁定版本；PoC 已验证 4.1.0 兼容 | ✅ 已处理 |

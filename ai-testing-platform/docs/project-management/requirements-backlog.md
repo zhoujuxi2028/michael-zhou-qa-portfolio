@@ -12,7 +12,7 @@
 
 | ID | 标题 | 模块 | 优先级 | 状态 | 提出日期 |
 |----|------|------|--------|------|----------|
-| REQ-AI-001 | TestCaseGenerator 支持 DBCS 字符集边界测试用例生成 | `case_generator` | Medium | Proposed | 2026-07-19 |
+| REQ-AI-001 | TestCaseGenerator 支持 DBCS 字符集边界测试用例生成 | `case_generator` | Medium | Approved | 2026-07-19 |
 
 ---
 
