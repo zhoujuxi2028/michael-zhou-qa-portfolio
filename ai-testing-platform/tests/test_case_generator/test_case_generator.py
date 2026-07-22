@@ -234,6 +234,17 @@ class TestDBCSKeywordGeneration:
 
 
 @pytest.mark.generation
+class TestDBCSBoundaryExtraction:
+    @pytest.mark.P1
+    def test_byte_vs_char_boundary_generates_dbcs_boundary_case(self, generator):
+        """TC-DBCS-004: 含字节/字符对比描述时生成 dbcs-byte-char 边界用例"""
+        req = "Password field enforces 256字节/128字符 limit for DBCS input."
+        test_cases = generator.generate_from_requirement(req, module="login")
+        dbcs_boundary = [tc for tc in test_cases if tc.test_type == TestType.BOUNDARY and "dbcs-byte-char" in tc.tags]
+        assert len(dbcs_boundary) >= 1, f"Expected ≥1 dbcs-byte-char boundary case, got {len(dbcs_boundary)}"
+
+
+@pytest.mark.generation
 class TestCoverageAnalysis:
     @pytest.mark.P1
     def test_analyze_coverage_returns_stats(self, generator):

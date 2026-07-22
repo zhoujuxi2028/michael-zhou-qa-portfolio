@@ -447,6 +447,21 @@ class TestCaseGenerator:
                     }
                 )
 
+        # DBCS-02：字节 vs 字符长度差异，如 "256字节/128字符" 或 "256 bytes vs 128 characters"
+        byte_char = re.findall(
+            r"(\d+)\s*(字节|bytes?)\s*(?:/|，|,|\s+vs\s+)\s*(\d+)\s*(字符|characters?)",
+            text,
+            re.IGNORECASE,
+        )
+        for b_num, b_unit, c_num, c_unit in byte_char:
+            boundaries.append(
+                {
+                    "type": "dbcs-byte-char",
+                    "description": f"{b_num} {b_unit} vs {c_num} {c_unit} boundary",
+                    "expected": (f"System distinguishes {b_num} {b_unit} limit from {c_num} {c_unit} limit"),
+                }
+            )
+
         if re.search(r"\b(max|maximum|minimum|min|limit)\b", text, re.IGNORECASE):
             boundaries.append(
                 {
