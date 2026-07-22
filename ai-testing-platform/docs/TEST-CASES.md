@@ -7,6 +7,8 @@
 | TestCaseGenerator | TestCaseGeneratorFromRequirement | 9 | 3 | 4 | 2 |
 | TestCaseGenerator | TestCaseGeneratorFromDiff | 3 | 2 | 1 | 0 |
 | TestCaseGenerator | TestBoundaryFromMarkdownTable | 2 | 0 | 2 | 0 |
+| TestCaseGenerator | TestDBCSKeywordGeneration | 6 | 0 | 6 | 0 |
+| TestCaseGenerator | TestDBCSBoundaryExtraction | 1 | 0 | 1 | 0 |
 | TestCaseGenerator | TestCoverageAnalysis | 2 | 0 | 1 | 1 |
 | DefectPredictor | TestModuleRiskAnalysis | 7 | 4 | 3 | 0 |
 | DefectPredictor | TestPortfolioAnalysis | 6 | 2 | 3 | 1 |
@@ -18,7 +20,7 @@
 | LLMEvaluator | TestSecurity | 8 | 3 | 3 | 2 |
 | LLMEvaluator | TestBias | 6 | 2 | 2 | 2 |
 | LLMEvaluator | TestUnitLogic | 8 | 2 | 3 | 3 |
-| **合计** | | **~85** | **~27** | **~36** | **~22** |
+| **合计** | | **~92** | **~27** | **~43** | **~22** |
 
 ---
 
@@ -54,6 +56,27 @@
 |-------|------|--------|------|
 | TC-GEN-015 | Markdown 表格格式边界条件应被正确提取 | P1 | 边界 |
 | TC-GEN-016 | 混合格式（纯文本+表格）均能提取边界条件 | P1 | 边界 |
+
+### TestDBCSKeywordGeneration
+
+> 对应需求：REQ-AI-001 DBCS-01 / DBCS-03 / DBCS-04
+
+| TC ID | 标题 | 优先级 | 类型 |
+|-------|------|--------|------|
+| TC-DBCS-001 | unicode 关键词生成 unicode 标签用例 | P1 | 边界 |
+| TC-DBCS-002 | 中文关键词生成 dbcs 标签用例 | P1 | 边界 |
+| TC-DBCS-003 | emoji 关键词生成 unicode 标签用例 | P1 | 边界 |
+| TC-DBCS-005 | 无 DBCS 关键词时不生成 DBCS 用例 | P1 | 负向 |
+| TC-DBCS-006 | 混合关键词各自生成对应标签 | P1 | 边界 |
+| TC-DBCS-007 | 全角关键词生成 unicode 标签用例 | P1 | 边界 |
+
+### TestDBCSBoundaryExtraction
+
+> 对应需求：REQ-AI-001 DBCS-02
+
+| TC ID | 标题 | 优先级 | 类型 |
+|-------|------|--------|------|
+| TC-DBCS-004 | 字节/字符对比描述生成 dbcs-byte-char 边界用例 | P1 | 边界 |
 
 ### TestCoverageAnalysis
 
