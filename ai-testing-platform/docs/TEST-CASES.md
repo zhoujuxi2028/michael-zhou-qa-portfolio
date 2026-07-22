@@ -11,7 +11,7 @@
 | TestCaseGenerator | TestDBCSBoundaryExtraction | 1 | 0 | 1 | 0 |
 | TestCaseGenerator | TestCoverageAnalysis | 2 | 0 | 1 | 1 |
 | DefectPredictor | TestModuleRiskAnalysis | 7 | 4 | 3 | 0 |
-| DefectPredictor | TestPortfolioAnalysis | 6 | 2 | 3 | 1 |
+| DefectPredictor | TestPortfolioAnalysis | 8 | 2 | 5 | 1 |
 | ScriptGenerator | TestScriptGeneration | 10 | 4 | 4 | 2 |
 | ScriptGenerator | TestScriptValidation | 4 | 0 | 2 | 2 |
 | ScriptGenerator | TestFixtureSuggestions | 2 | 0 | 0 | 2 |
@@ -20,7 +20,7 @@
 | LLMEvaluator | TestSecurity | 8 | 3 | 3 | 2 |
 | LLMEvaluator | TestBias | 6 | 2 | 2 | 2 |
 | LLMEvaluator | TestUnitLogic | 8 | 2 | 3 | 3 |
-| **合计** | | **~92** | **~27** | **~43** | **~22** |
+| **合计** | | **~94** | **~27** | **~45** | **~22** |
 
 ---
 
@@ -111,6 +111,8 @@
 | TC-PRD-011 | 空模块列表抛出 PredictorError | P1 | 负向 |
 | TC-PRD-012 | 风险增加趋势正确检测 | P1 | 趋势分析 |
 | TC-PRD-013 | 模型版本信息可访问 | P2 | 元数据 |
+| TC-PRD-014 | 高依赖数应提升风险评分 | P1 | 功能 |
+| TC-PRD-015 | 长期未修改模块应提升风险评分 | P1 | 功能 |
 
 ---
 
