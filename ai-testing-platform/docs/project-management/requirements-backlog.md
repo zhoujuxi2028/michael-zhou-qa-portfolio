@@ -12,7 +12,49 @@
 
 | ID | 标题 | 模块 | 优先级 | 状态 | 提出日期 |
 |----|------|------|--------|------|----------|
-| REQ-AI-001 | TestCaseGenerator 支持 DBCS 字符集边界测试用例生成 | `case_generator` | Medium | Approved | 2026-07-19 |
+| REQ-AI-001 | TestCaseGenerator 支持 DBCS 字符集边界测试用例生成 | `case_generator` | Medium | Done | 2026-07-19 |
+| REQ-AI-002 | DefectPredictor 激活 dependency_count 和 last_modified_days 因子 | `defect_predictor` | Medium | Approved | 2026-07-22 |
+
+---
+
+## REQ-AI-002 详情
+
+| 属性 | 内容 |
+|------|------|
+| **标题** | DefectPredictor 激活 dependency_count 和 last_modified_days 因子 |
+| **模块** | `src/defect_predictor/predictor.py` |
+| **优先级** | Medium |
+| **状态** | Approved |
+| **提出日期** | 2026-07-22 |
+
+**背景：**
+`ModuleMetrics` 已定义 `dependency_count`（依赖数量）和 `last_modified_days`（距今天数）两个字段，但 `_calculate_factors()` 从未使用它们，导致评分模型不完整。
+
+**需求描述：**
+
+| 新增因子 | 归一化公式 | 满分条件 | 权重 |
+|---------|----------|---------|------|
+| dependency | `min(100, dependency_count × 5)` | 20 个依赖 | 7% |
+| staleness | `min(100, last_modified_days / 3.65)` | 365 天未修改 | 5% |
+
+原有 5 个因子权重同步下调（总和保持 1.0）：
+
+| 因子 | 旧权重 | 新权重 |
+|------|--------|--------|
+| complexity | 25% | 22% |
+| churn | 25% | 22% |
+| coverage_gap | 20% | 18% |
+| bug_history | 20% | 18% |
+| size | 10% | 8% |
+| dependency | — | 7% |
+| staleness | — | 5% |
+
+**验收标准：**
+- `analyze_module()` 返回的 `factors` 包含 `dependency` 和 `staleness` 两个新 key
+- 相同模块 `dependency_count=20` vs `dependency_count=0`，评分差距 ≥ 5 分
+- 相同模块 `last_modified_days=365` vs `last_modified_days=0`，评分差距 ≥ 4 分
+- 所有原有 13 个测试仍 PASS
+- `model_version` 更新为 `"rule-based-v1.1"`
 
 ---
 
