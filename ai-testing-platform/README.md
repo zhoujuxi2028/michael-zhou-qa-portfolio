@@ -23,11 +23,11 @@
 
 | 指标 | 数值 |
 |------|------|
-| 测试用例 | 43 |
+| 测试用例 | 72 |
 | 核心引擎 | 3（TestCaseGenerator / DefectPredictor / ScriptGenerator）|
-| 测试覆盖率 | 91.47% |
+| 测试覆盖率 | 82.50% |
 | 外部依赖 | 零（纯 Python 标准库）|
-| 全部通过 | 43/43 PASSED |
+| 全部通过 | 72/72 PASSED |
 
 ---
 
@@ -45,10 +45,11 @@ gen = TestCaseGenerator()
 # 从需求文本生成
 cases = gen.generate_from_requirement(
     "Users must login with valid credentials. Invalid credentials must be rejected. "
-    "API input validation required to prevent injection.",
+    "API input validation required to prevent injection. "
+    "Support unicode and 中文 character input.",
     module="auth"
 )
-# → 生成登录、安全测试用例，安全类自动设为 P0
+# → 生成登录、安全测试用例（P0）+ DBCS 字符集边界用例（unicode/dbcs tags）
 
 # 从代码变更生成
 diff = "+    def validate_email(self, email):\n+        return '@' in email"
