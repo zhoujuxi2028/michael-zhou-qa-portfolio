@@ -64,7 +64,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | 平台测试 | `microservice-testing-platform/` — Microservice (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 | `microservice-testing-platform/CLAUDE.md` |
 | 性能测试 | `performance-testing-platform/` — k6 + JMeter dual-engine (148 unit + 31 integration + 33 perf) | k6, JMeter, Express, Grafana, InfluxDB | `performance-testing-platform/CLAUDE.md` |
 | 稳定性测试 | `k8s-auto-testing-platform/` — K8S HPA + Chaos (37 tests) | Python, Pytest, Chaos Mesh | `k8s-auto-testing-platform/CLAUDE.md` |
-| **AI 测试** | `ai-testing-platform/` — AI-Powered Testing Platform (43 tests) | Python, Pytest, Rule Engine | `ai-testing-platform/CLAUDE.md` |
+| **AI 测试** | `ai-testing-platform/` — AI-Powered Testing Platform (72 tests) | Python, Pytest, Rule Engine | `ai-testing-platform/CLAUDE.md` |
 
 > **Quick Commands**: 各项目的安装、运行、测试命令详见对应子项目 `CLAUDE.md`。
 
@@ -174,7 +174,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 
 | Workflow | Project | Purpose |
 |----------|---------|---------|
-| `ai-testing-ci.yml` | ai-testing-platform | AI Testing CI: code quality + unit tests (43 tests, 91% coverage) |
+| `ai-testing-ci.yml` | ai-testing-platform | AI Testing CI: code quality + unit tests (72 tests, 82% coverage) |
 | `api-testing-ci.yml` | api-testing-demo | Validate collections → Newman tests (280+ assertions) |
 | `robot-framework-ci.yml` | robot-framework-demo | Robot Framework / Pabot parallel + Selenium Grid + Rebot merge (9 tests) |
 | `cicd-demo-pr.yml` | cicd-demo | PR Gate: lint + unit/contract tests + Docker build + quick security scan |
