@@ -130,18 +130,20 @@ python scripts/generate_test_cases.py
 ### 算法：加权线性模型
 
 ```
-risk_score = complexity×0.25 + churn×0.25 + coverage_gap×0.20 + bug_history×0.20 + size×0.10
+risk_score = complexity×0.22 + churn×0.22 + coverage_gap×0.18 + bug_history×0.18 + size×0.08 + dependency×0.07 + staleness×0.05
 ```
 
-### 五项因子归一化
+### 七项因子归一化
 
 | 因子 | 公式 | 范围 | 权重 |
 |------|------|------|------|
-| complexity | `(CC - 1) / 29 × 100` | CC 1→0分, CC 30→100分 | 25% |
-| churn | `min(100, churn × 3)` | 月变更 ≥33 次 = 100分 | 25% |
-| coverage_gap | `100 - coverage` | 覆盖率 0%→100分, 100%→0分 | 20% |
-| bug_history | `min(100, bugs × 10)` | 10 个缺陷 = 100分 | 20% |
-| size | `min(100, (LOC-100)/900 × 100)` | 100行→0分, 1000行→100分 | 10% |
+| complexity | `(CC - 1) / 29 × 100` | CC 1→0分, CC 30→100分 | 22% |
+| churn | `min(100, churn × 3)` | 月变更 ≥33 次 = 100分 | 22% |
+| coverage_gap | `100 - coverage` | 覆盖率 0%→100分, 100%→0分 | 18% |
+| bug_history | `min(100, bugs × 10)` | 10 个缺陷 = 100分 | 18% |
+| size | `min(100, (LOC-100)/900 × 100)` | 100行→0分, 1000行→100分 | 8% |
+| dependency | `min(100, dependency_count × 5)` | 20 个依赖 = 100分 | 7% |
+| staleness | `min(100, last_modified_days / 3.65)` | 365 天未修改 = 100分 | 5% |
 
 ### 风险等级
 
