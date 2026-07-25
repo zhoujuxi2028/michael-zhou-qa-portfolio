@@ -61,7 +61,10 @@ class TestModuleRiskAnalysis:
         assert report.risk_level in RiskLevel
         assert 0 <= report.risk_score <= 100
         assert isinstance(report.factors, dict)
-        assert all(k in report.factors for k in ("complexity", "churn", "coverage_gap", "bug_history", "size"))
+        assert all(
+            k in report.factors
+            for k in ("complexity", "churn", "coverage_gap", "bug_history", "size", "dependency", "staleness")
+        )
         assert isinstance(report.recommendations, list) and len(report.recommendations) > 0
         assert report.predicted_defects >= 0
 
@@ -197,4 +200,54 @@ class TestPortfolioAnalysis:
     @pytest.mark.P2
     def test_model_version_exposed(self, predictor):
         """TC-PRD-013: 模型版本信息应可访问"""
-        assert predictor.model_version == "rule-based-v1.0"
+        assert predictor.model_version == "rule-based-v1.1"
+
+    @pytest.mark.P1
+    def test_high_dependency_increases_risk_score(self, predictor):
+        """TC-PRD-014: 高依赖数应提升风险评分"""
+        base = ModuleMetrics(
+            name="module_a",
+            cyclomatic_complexity=5.0,
+            lines_of_code=200,
+            code_churn=3,
+            test_coverage=70.0,
+            bug_history=1,
+            dependency_count=0,
+        )
+        high_dep = ModuleMetrics(
+            name="module_a",
+            cyclomatic_complexity=5.0,
+            lines_of_code=200,
+            code_churn=3,
+            test_coverage=70.0,
+            bug_history=1,
+            dependency_count=20,
+        )
+        base_report = predictor.analyze_module(base)
+        high_report = predictor.analyze_module(high_dep)
+        assert high_report.risk_score > base_report.risk_score + 4
+
+    @pytest.mark.P1
+    def test_stale_code_increases_risk_score(self, predictor):
+        """TC-PRD-015: 长期未修改的模块应提升风险评分"""
+        fresh = ModuleMetrics(
+            name="module_b",
+            cyclomatic_complexity=5.0,
+            lines_of_code=200,
+            code_churn=3,
+            test_coverage=70.0,
+            bug_history=1,
+            last_modified_days=0,
+        )
+        stale = ModuleMetrics(
+            name="module_b",
+            cyclomatic_complexity=5.0,
+            lines_of_code=200,
+            code_churn=3,
+            test_coverage=70.0,
+            bug_history=1,
+            last_modified_days=365,
+        )
+        fresh_report = predictor.analyze_module(fresh)
+        stale_report = predictor.analyze_module(stale)
+        assert stale_report.risk_score > fresh_report.risk_score + 3

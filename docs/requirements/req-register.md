@@ -79,7 +79,7 @@
 | security-testing-demo | [REQUIREMENTS.md](../../security-testing-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
 | sid-iam-testing-platform | [REQUIREMENTS.md](../../sid-iam-testing-platform/docs/project-management/REQUIREMENTS.md) | — | — | 2026-07-17 |
 | microservice-testing-platform | [requirements.md](../../microservice-testing-platform/docs/project-management/requirements.md) | — | — | 2026-07-17 |
-| ai-testing-platform | [REQUIREMENTS.md](../../ai-testing-platform/docs/REQUIREMENTS.md) | — | — | 2026-07-17 |
+| ai-testing-platform | [requirements-backlog.md](../../ai-testing-platform/docs/project-management/requirements-backlog.md) | 1 (REQ-AI-003) | — | 2026-07-23 |
 | playwright-demo | [REQUIREMENTS.md](../../playwright-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
 | selenium-demo | [REQUIREMENTS.md](../../selenium-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
 | robot-framework-demo | [REQUIREMENTS.md](../../robot-framework-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
@@ -95,3 +95,4 @@
 | 2026-07-13 | 新增 | 仓库优化审计：录入 PREQ-009 ~ PREQ-015（对应 Issues #428-#434） | Michael Zhou |
 | 2026-07-14 | 补链 | PREQ-006 关联 Issue #437；新增维护规则：新需求必须同步创建 Issue | Michael Zhou |
 | 2026-07-15 | 修正 | 移除 PREQ-009/010/011/013/015（属于缺陷，已移至 defect-register 分配 PDEF-010~014）；PREQ-012/014 状态 → Refined | Michael Zhou |
+| 2026-07-23 | 新增 | ai-testing-platform 录入 REQ-AI-003 (#513)；更新项目入口表文档路径及活跃数 | Michael Zhou |

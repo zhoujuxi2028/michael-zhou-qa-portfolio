@@ -14,11 +14,11 @@ def predictor():
 def high_risk():
     return ModuleMetrics(
         name="checkout",
-        cyclomatic_complexity=22.0,
-        lines_of_code=750,
-        code_churn=28,
-        test_coverage=40.0,
-        bug_history=7,
+        cyclomatic_complexity=28.0,
+        lines_of_code=800,
+        code_churn=30,
+        test_coverage=30.0,
+        bug_history=9,
     )
 
 
