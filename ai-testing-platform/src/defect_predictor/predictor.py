@@ -46,11 +46,13 @@ class RiskReport:
 
 # 风险因素权重（总和 = 1.0）
 RISK_WEIGHTS = {
-    "complexity": 0.25,
-    "churn": 0.25,
-    "coverage_gap": 0.20,
-    "bug_history": 0.20,
-    "size": 0.10,
+    "complexity": 0.22,
+    "churn": 0.22,
+    "coverage_gap": 0.18,
+    "bug_history": 0.18,
+    "size": 0.08,
+    "dependency": 0.07,
+    "staleness": 0.05,
 }
 
 # 风险等级阈值
@@ -67,7 +69,7 @@ class DefectPredictor:
 
     def __init__(self):
         self._cache: dict = {}
-        self._model_version = "rule-based-v1.0"
+        self._model_version = "rule-based-v1.1"
 
     @property
     def model_version(self) -> str:
@@ -235,6 +237,10 @@ class DefectPredictor:
         bug_score = min(100.0, metrics.bug_history * 10.0)
         # 代码规模：100-1000 LOC 映射到 0-100
         size_score = min(100.0, max(0.0, (metrics.lines_of_code - 100) / 900 * 100))
+        # 依赖数：20 个依赖 = 100 分
+        dependency_score = min(100.0, metrics.dependency_count * 5.0)
+        # 代码陈旧度：365 天未修改 ≈ 100 分
+        staleness_score = min(100.0, metrics.last_modified_days / 3.65)
 
         return {
             "complexity": round(complexity_score, 1),
@@ -242,6 +248,8 @@ class DefectPredictor:
             "coverage_gap": round(coverage_gap_score, 1),
             "bug_history": round(bug_score, 1),
             "size": round(size_score, 1),
+            "dependency": round(dependency_score, 1),
+            "staleness": round(staleness_score, 1),
         }
 
     def _calculate_risk_score(self, factors: dict) -> float:
@@ -293,6 +301,18 @@ class DefectPredictor:
             recs.append(
                 f"Module Split: {metrics.lines_of_code} LOC exceeds recommended 500. "
                 "Consider decomposing into cohesive sub-modules."
+            )
+
+        if factors["dependency"] > 50:
+            recs.append(
+                f"Reduce Dependencies: {metrics.dependency_count} dependencies increase coupling risk. "
+                "Target ≤10 direct dependencies."
+            )
+
+        if factors["staleness"] > 50:
+            recs.append(
+                f"Review Stale Code: Module not modified for {metrics.last_modified_days} days. "
+                "Schedule review for potential technical debt."
             )
 
         if risk_level == RiskLevel.HIGH:
