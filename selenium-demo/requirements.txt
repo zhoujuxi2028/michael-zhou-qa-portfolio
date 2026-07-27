@@ -26,7 +26,7 @@ pillow==10.1.0
 
 # ==================== Code Quality ====================
 pytest-cov==7.1.0
-pylint==3.0.3
+pylint==4.0.6
 black==23.12.1
 flake8==7.0.0
 
