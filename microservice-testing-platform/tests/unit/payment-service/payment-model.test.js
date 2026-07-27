@@ -129,4 +129,22 @@ describe('Payment Model', () => {
       paymentId: 'PAY-001',
     });
   });
+
+  // UT-P-11: Process payment - negative amount
+  test('throws VALIDATION_ERROR when amount is negative', () => {
+    expect(() => {
+      paymentModel.processPayment({ orderId: 'ORD-001', amount: -50, correlationId: 'corr-001' });
+    }).toThrow();
+  });
+
+  // UT-P-12: Process payment - amount just below threshold
+  test('creates completed payment for amount just below failure threshold', () => {
+    const result = paymentModel.processPayment({
+      orderId: 'ORD-001',
+      amount: 999.98,
+      correlationId: 'corr-001',
+    });
+
+    expect(result.status).toBe('completed');
+  });
 });

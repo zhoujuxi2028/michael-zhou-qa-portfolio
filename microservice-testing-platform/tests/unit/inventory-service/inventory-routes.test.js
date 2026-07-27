@@ -69,6 +69,24 @@ describe('Inventory Routes', () => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe('VALIDATION_ERROR');
     });
+
+    test('returns 400 for negative quantity', async () => {
+      const res = await request(app)
+        .post('/api/inventory/PROD-001/deduct')
+        .send({ quantity: -1, orderId: 'ORD-001' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('VALIDATION_ERROR');
+    });
+
+    test('returns 404 for non-existent product', async () => {
+      const res = await request(app)
+        .post('/api/inventory/PROD-999/deduct')
+        .send({ quantity: 1, orderId: 'ORD-001' });
+
+      expect(res.status).toBe(404);
+      expect(res.body.error).toBe('PRODUCT_NOT_FOUND');
+    });
   });
 
   describe('POST /api/inventory/:productId/rollback', () => {

@@ -86,6 +86,40 @@ describe('Order Routes', () => {
     });
   });
 
+  describe('GET /api/orders', () => {
+    test('returns 200 for negative page (SQLite treats negative offset as 0)', async () => {
+      const res = await request(app).get('/api/orders?page=-1');
+
+      expect(res.status).toBe(200);
+      expect(res.body.data).toBeDefined();
+    });
+
+    test('returns empty list for zero limit', async () => {
+      const res = await request(app).get('/api/orders?page=1&limit=0');
+
+      expect(res.status).toBe(200);
+      expect(res.body.data).toEqual([]);
+    });
+
+    test('returns 500 for non-numeric page value', async () => {
+      const res = await request(app).get('/api/orders?page=abc');
+
+      // NaN propagates to SQLite LIMIT/OFFSET causing datatype mismatch
+      expect(res.status).toBe(500);
+    });
+  });
+
+  describe('PATCH /api/orders/:id/status', () => {
+    test('returns 404 for non-existent order', async () => {
+      const res = await request(app)
+        .patch('/api/orders/ORD-99999999-999/status')
+        .send({ status: 'confirmed' });
+
+      expect(res.status).toBe(404);
+      expect(res.body.error).toBe('ORDER_NOT_FOUND');
+    });
+  });
+
   describe('GET /health', () => {
     test('returns healthy status', async () => {
       const res = await request(app).get('/health');

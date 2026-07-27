@@ -118,4 +118,45 @@ describe('Order Model', () => {
       orderModel.updateStatus(created.id, ORDER_STATUS.PAID);
     }).toThrow(ERROR_CODES.INVALID_STATUS_TRANSITION);
   });
+
+  // UT-O-11: Update status - non-existent order
+  test('throws ORDER_NOT_FOUND when updating status of non-existent order', () => {
+    expect(() => {
+      orderModel.updateStatus('ORD-99999999-999', ORDER_STATUS.CONFIRMED);
+    }).toThrow(ERROR_CODES.ORDER_NOT_FOUND);
+  });
+
+  // UT-O-12: List - negative page number
+  test('treats negative page offset as no offset, returns all rows', () => {
+    orderModel.create({ productId: 'PROD-001', quantity: 1, unitPrice: 10 });
+    const result = orderModel.list({ page: -1, limit: 10 });
+    // SQLite treats negative OFFSET as 0 (no offset)
+    expect(result.data.length).toBeGreaterThan(0);
+    expect(result.pagination.page).toBe(-1);
+  });
+
+  // UT-O-13: List - zero limit
+  test('returns empty data for zero limit', () => {
+    const result = orderModel.list({ page: 1, limit: 0 });
+    expect(result.data).toEqual([]);
+    expect(result.pagination.limit).toBe(0);
+  });
+
+  // UT-O-14: List - non-numeric page causes SQL error
+  test('throws on non-numeric page value', () => {
+    expect(() => {
+      orderModel.list({ page: 'abc', limit: 10 });
+    }).toThrow();
+  });
+
+  // UT-O-15: Create - extreme values (large quantity * unitPrice)
+  test('handles extreme quantity and unitPrice values', () => {
+    const result = orderModel.create({
+      productId: 'PROD-001',
+      quantity: 999999,
+      unitPrice: 999999.99,
+    });
+    expect(result.total_amount).toBeGreaterThan(0);
+    expect(result.status).toBe(ORDER_STATUS.PENDING);
+  });
 });

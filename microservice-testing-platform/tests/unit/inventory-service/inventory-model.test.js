@@ -118,4 +118,11 @@ describe('Inventory Model', () => {
     expect(result.quantity).toBe(95);
     expect(result.available).toBe(95);
   });
+
+  // UT-I-11: Deduct - non-existent product
+  test('throws PRODUCT_NOT_FOUND when deducting from non-existent product', () => {
+    expect(() => {
+      inventoryModel.deduct('PROD-999', 1, 'ORD-001');
+    }).toThrow(ERROR_CODES.PRODUCT_NOT_FOUND);
+  });
 });
