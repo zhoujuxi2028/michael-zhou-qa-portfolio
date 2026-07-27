@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from pathlib import Path
+
 from src.code_scanner.scanner import CodeScanner, ScanError
 
 
@@ -72,6 +72,7 @@ class TestGitMetrics:
     def test_last_modified_days_from_git_timestamp(self, simple_py, tmp_path):
         scanner = CodeScanner(tmp_path, tmp_path)
         import time
+
         ten_days_ago = str(int(time.time()) - 10 * 86400)
         mock_result = MagicMock(stdout=ten_days_ago, returncode=0)
         with patch("src.code_scanner.scanner.subprocess.run", return_value=mock_result):
@@ -130,6 +131,7 @@ class TestScanOrchestration:
 
     def test_scan_file_returns_module_metrics(self, simple_py, tmp_path):
         from src.defect_predictor.predictor import ModuleMetrics
+
         scanner = CodeScanner(tmp_path, tmp_path)
         with patch("src.code_scanner.scanner.subprocess.run") as mock_run:
             self._patch_git(mock_run)

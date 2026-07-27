@@ -1,5 +1,7 @@
-import pytest
 from pathlib import Path
+
+import pytest
+
 from src.code_scanner.scanner import CodeScanner
 
 
@@ -7,11 +9,7 @@ from src.code_scanner.scanner import CodeScanner
 def simple_py(tmp_path) -> Path:
     f = tmp_path / "simple.py"
     f.write_text(
-        "import os\n"
-        "import sys\n"
-        "\n"
-        "def hello():\n"
-        "    return 42\n",
+        "import os\nimport sys\n\ndef hello():\n    return 42\n",
         encoding="utf-8",
     )
     return f

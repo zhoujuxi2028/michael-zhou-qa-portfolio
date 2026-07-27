@@ -8,7 +8,17 @@ from pathlib import Path
 
 from src.defect_predictor.predictor import ModuleMetrics
 
-EXCLUDE_DIRS = {"venv", "__pycache__", ".git", ".eggs", "node_modules", ".ruff_cache", ".pytest_cache", ".mypy_cache", ".coverage"}
+EXCLUDE_DIRS = {
+    "venv",
+    "__pycache__",
+    ".git",
+    ".eggs",
+    "node_modules",
+    ".ruff_cache",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".coverage",
+}
 
 
 class ScanError(Exception):
@@ -63,6 +73,7 @@ class CodeScanner:
 
     def _get_cyclomatic_complexity(self, source: str) -> float:
         from radon.complexity import cc_visit
+
         try:
             blocks = cc_visit(source)
         except Exception:
@@ -75,7 +86,9 @@ class CodeScanner:
         try:
             result = subprocess.run(
                 ["git", "log", "-1", "--format=%at", "--", str(file_path)],
-                capture_output=True, text=True, cwd=str(self.git_root),
+                capture_output=True,
+                text=True,
+                cwd=str(self.git_root),
                 timeout=10,
             )
             ts = result.stdout.strip()
@@ -91,12 +104,14 @@ class CodeScanner:
         try:
             result = subprocess.run(
                 ["git", "log", "--oneline", "--since=30 days ago", "--", str(file_path)],
-                capture_output=True, text=True, cwd=str(self.git_root),
+                capture_output=True,
+                text=True,
+                cwd=str(self.git_root),
                 timeout=10,
             )
             if result.returncode != 0:
                 return 0
-            return len([l for l in result.stdout.splitlines() if l.strip()])
+            return sum(1 for line in result.stdout.splitlines() if line.strip())
         except (subprocess.TimeoutExpired, FileNotFoundError):
             return 0
 
@@ -104,7 +119,9 @@ class CodeScanner:
         try:
             result = subprocess.run(
                 ["git", "log", "--oneline", "--since=365 days ago", "--", str(file_path)],
-                capture_output=True, text=True, cwd=str(self.git_root),
+                capture_output=True,
+                text=True,
+                cwd=str(self.git_root),
                 timeout=10,
             )
             if result.returncode != 0:
