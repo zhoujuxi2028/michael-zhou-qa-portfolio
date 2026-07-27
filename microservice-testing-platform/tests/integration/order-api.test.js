@@ -122,4 +122,35 @@ describe('Order API Integration', () => {
     const row = db.prepare('SELECT * FROM orders WHERE id = ?').get(res.body.orderId);
     expect(row.status).toBe('cancelled');
   });
+
+  // IT-O-07: Inventory service unavailable (503)
+  test('returns 503 when inventory service is unreachable', async () => {
+    inventoryClient.checkAndDeduct.mockRejectedValueOnce(
+      Object.assign(new Error('Service unavailable'), { code: 'SERVICE_UNAVAILABLE' })
+    );
+
+    const res = await request(app)
+      .post('/api/orders')
+      .send({ productId: 'PROD-001', quantity: 1, unitPrice: 10 });
+
+    expect(res.status).toBe(503);
+    expect(res.body.error).toBe('SERVICE_UNAVAILABLE');
+
+    const row = db.prepare('SELECT * FROM orders WHERE id = ?').get(res.body.orderId);
+    expect(row.status).toBe('cancelled');
+  });
+
+  // IT-O-08: Order list with negative page
+  test('returns all rows when page is negative (SQLite treats negative offset as 0)', async () => {
+    await request(app)
+      .post('/api/orders')
+      .send({ productId: 'PROD-001', quantity: 1, unitPrice: 10 });
+
+    const res = await request(app).get('/api/orders?page=-1');
+
+    expect(res.status).toBe(200);
+    // Negative offset treated as 0 by SQLite → returns all rows
+    expect(res.body.data.length).toBeGreaterThan(0);
+    expect(res.body.pagination.total).toBe(1);
+  });
 });
