@@ -33,3 +33,9 @@
 | ID | 风险描述 | 等级 | 关闭日期 | 关闭原因 |
 |----|---------|------|----------|---------|
 | RSK-LLM-010 | **Python 3.14 兼容性**: DeepEval 可能不支持 Python 3.14 | 🔴 HIGH | 2026-07-13 | PoC 验证通过：`pip install deepeval` + 核心 imports 在 3.14 正常 |
+| RSK-PRD-001 | **权重校准不足**: dependency(7%) 和 staleness(5%) 权重基于经验估计，未用真实项目数据校验 | 🟡 MEDIUM | 2026-07-22 | 权重可配置化；V2.1 计划基于真实项目数据校准 |
+| RSK-PRD-002 | **staleness 误判风险**: 长期稳定模块可能被误判为高风险（stable code ≠ bad code） | 🟢 LOW | 2026-07-22 | staleness 权重仅 5%，影响有限；`staleness > 50` 的建议措辞为"review"而非"强制重构" |
+| RSK-SCN-001 | **venv/依赖库被扫描**: `rglob("*.py")` 可能扫到 venv、\__pycache__、site-packages，导致指标失真 | 🟡 MEDIUM | 2026-07-26 | 默认排除 `venv/`、`__pycache__/`、`.git/`、`.eggs/`、`node_modules/` 目录；可通过 `exclude_dirs` 参数自定义 |
+| RSK-SCN-002 | **非 UTF-8 编码异常**: `read_text(encoding="utf-8")` 在 GBK/ISO 编码文件上抛异常 | 🟢 LOW | 2026-07-26 | catch `UnicodeDecodeError` 后尝试 `encoding="latin-1"` fallback；单个文件失败不阻塞整体扫描 |
+| RSK-SCN-003 | **git 未安装或非 git 仓库**: `subprocess.run` 调用 git 时抛出 `FileNotFoundError` | 🟡 MEDIUM | 2026-07-26 | 捕获 `FileNotFoundError`，git 相关指标优雅降级返回 0；非 git 仓库可运行但 git 指标全为 0 |
+| RSK-SCN-004 | **大型仓库性能**: 每个文件运行 3 次 git subprocess，N 个文件共 3N 次调用，大仓库可能耗时过长 | 🟢 LOW | 2026-07-26 | 首次扫描后缓存 `ModuleMetrics`；文档建议扫描特定目录而非整个仓库 |
