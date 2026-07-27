@@ -23,11 +23,11 @@
 
 | 指标 | 数值 |
 |------|------|
-| 测试用例 | 72 |
-| 核心引擎 | 3（TestCaseGenerator / DefectPredictor / ScriptGenerator）|
+| 测试用例 | 92 |
+| 核心引擎 | 4（TestCaseGenerator / DefectPredictor / ScriptGenerator / CodeScanner）|
 | 测试覆盖率 | 82.50% |
-| 外部依赖 | 零（纯 Python 标准库）|
-| 全部通过 | 72/72 PASSED |
+| 外部依赖 | radon（圈复杂度分析）|
+| 全部通过 | 92/92 PASSED |
 
 ---
 
@@ -166,16 +166,20 @@ ai-testing-platform/
 │   │   └── generator.py           # TestCaseGenerator — 需求文本 → 测试用例
 │   ├── defect_predictor/
 │   │   └── predictor.py           # DefectPredictor — 代码度量 → 风险报告
-│   └── script_generator/
-│       └── generator.py           # ScriptGenerator — 测试规范 → Pytest 脚本
+│   ├── script_generator/
+│   │   └── generator.py           # ScriptGenerator — 测试规范 → Pytest 脚本
+│   └── code_scanner/
+│       └── scanner.py             # CodeScanner — 扫描 .py 文件 → ModuleMetrics
 ├── tests/
 │   ├── conftest.py                 # 根级 fixtures
-│   ├── test_case_generator/        # 14 个测试
+│   ├── test_case_generator/        # 23 个测试
 │   │   └── test_case_generator.py
-│   ├── test_defect_predictor/      # 13 个测试
+│   ├── test_defect_predictor/      # 15 个测试
 │   │   └── test_defect_predictor.py
-│   └── test_script_generator/      # 16 个测试
-│       └── test_script_generator.py
+│   ├── test_script_generator/      # 16 个测试
+│   │   └── test_script_generator.py
+│   └── test_code_scanner/          # 18 个测试
+│       └── test_scanner.py
 ├── docs/
 │   ├── REQUIREMENTS.md             # 功能需求
 │   ├── FEASIBILITY.md              # 可行性分析
@@ -187,7 +191,8 @@ ai-testing-platform/
 │       └── generated-login-test-cases.json  # 自动生成的测试用例（示例输出）
 ├── scripts/
 │   ├── integration-test.sh         # LLM 集成测试入口
-│   └── generate_test_cases.py      # 需求文档 → 测试用例生成脚本
+│   ├── generate_test_cases.py      # 需求文档 → 测试用例生成脚本
+│   └── scan_and_predict.py         # 扫描真实代码 → 缺陷风险排行
 ├── pytest.ini
 ├── pyproject.toml
 ├── requirements.txt
@@ -203,7 +208,8 @@ ai-testing-platform/
 | 语言 | Python 3.9+ |
 | 测试框架 | Pytest, pytest-cov, pytest-html |
 | AI 方法 | 规则引擎、关键词提取、加权评分模型 |
-| 代码质量 | black, flake8, isort |
+| 代码分析 | radon（圈复杂度）、ast（依赖分析）、git subprocess |
+| 代码质量 | black, flake8, isort, ruff |
 | CI/CD | GitHub Actions |
 
 ---
@@ -224,4 +230,4 @@ ai-testing-platform/
 
 ---
 
-*阶段: Phase 3 完成（实现+测试）| License: MIT*
+*阶段: 完成（REQ-AI-001/002/003 全部 Done）| License: MIT*
