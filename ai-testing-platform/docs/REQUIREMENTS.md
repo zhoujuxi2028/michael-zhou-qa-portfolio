@@ -21,6 +21,7 @@
 | FR-GEN-005 | 基于需求上下文自动分配优先级（P0/P1/P2） | P1 |
 | FR-GEN-006 | 对生成的测试用例集进行覆盖率分析，输出类型和优先级分布 | P2 |
 | FR-GEN-007 | 记录历史生成记录（模块、数量、时间戳） | P2 |
+| FR-GEN-008 | 识别 DBCS/Unicode 关键词生成多语言边界测试用例（REQ-AI-001） | P1 |
 
 **输入**：需求文本（自然语言）或 git diff 文本  
 **输出**：`TestCase` 数据类列表（含 tc_id、title、steps、expected_result、priority、test_type）
@@ -36,8 +37,10 @@
 | FR-PRD-005 | 按风险评分对模块排序，生成测试优先级建议（P0/P1/P2） | P1 |
 | FR-PRD-006 | 比较模块风险趋势（当前 vs 历史快照），输出 increasing/stable/decreasing | P1 |
 | FR-PRD-007 | 预测模块预期缺陷数 | P2 |
+| FR-PRD-008 | 激活依赖数（dependency_count）作为风险因子（REQ-AI-002） | P1 |
+| FR-PRD-009 | 激活代码陈旧度（last_modified_days）作为风险因子（REQ-AI-002） | P1 |
 
-**输入**：`ModuleMetrics` 数据类（模块名、圈复杂度、代码行数、变更频率、覆盖率、历史缺陷数）  
+**输入**：`ModuleMetrics` 数据类（模块名、圈复杂度、代码行数、变更频率、覆盖率、历史缺陷数、依赖数、陈旧天数）  
 **输出**：`RiskReport` 数据类（风险等级、风险分、因素分解、建议、预测缺陷数）
 
 ### 2.3 自动化脚本生成 (ScriptGenerator)
@@ -54,6 +57,22 @@
 
 **输入**：`TestSpec` 数据类（tc_id、module、test_type、inputs、expected_output、setup/teardown）  
 **输出**：可直接运行的 Pytest 测试脚本（字符串）
+
+### 2.4 代码度量扫描 (CodeScanner)
+
+| 需求 ID | 描述 | 优先级 |
+|--------|------|--------|
+| FR-SCN-001 | 递归扫描目录下所有 .py 文件自动采集代码度量 | P0 |
+| FR-SCN-002 | 通过 AST 统计代码行数和依赖数 | P0 |
+| FR-SCN-003 | 通过 radon 计算函数平均圈复杂度 | P0 |
+| FR-SCN-004 | 通过 git log 采集代码陈旧度、变更频率和 bug 历史 | P0 |
+| FR-SCN-005 | 非 git 仓库或 git 命令失败时优雅降级 | P1 |
+| FR-SCN-006 | 排除虚拟环境/缓存目录防止指标失真 | P1 |
+| FR-SCN-007 | 非 UTF-8 编码文件使用 latin-1 fallback | P1 |
+| FR-SCN-008 | CLI 脚本一键扫描+预测输出风险排名（REQ-AI-003） | P0 |
+
+**输入**：Python 项目目录路径  
+**输出**：`list[ModuleMetrics]` → `DefectPredictor` → 风险排名表
 
 ---
 
@@ -81,7 +100,9 @@
 
 | 模块 | 测试文件 | 测试数 | 主要场景 |
 |------|---------|--------|---------|
-| TestCaseGenerator | test_case_generator.py | 14 | CRUD 生成、安全生成、边界生成、diff 解析、覆盖率分析 |
-| DefectPredictor | test_defect_predictor.py | 13 | 高/低风险检测、组合分析、趋势对比、输入验证 |
+| TestCaseGenerator | test_case_generator.py | 23 | CRUD/安全/边界生成、DBCS 多语言、diff 解析、覆盖率分析 |
+| DefectPredictor | test_defect_predictor.py | 15 | 高/低风险检测、7 因子验证、组合分析、趋势对比、输入验证 |
 | ScriptGenerator | test_script_generator.py | 16 | 脚本生成、AAA 验证、suite 合并、fixture 推荐 |
-| **合计** | | **43** | |
+| CodeScanner | test_scanner.py | 18 | AST/radon/git 指标采集、编排测试、异常降级 |
+| LLMEvaluator | test_*.py | 33 | 数据类、质量评测、幻觉检测、安全扫描、偏差分析 |
+| **合计** | | **105** | |

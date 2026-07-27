@@ -9,13 +9,17 @@ ai-testing-platform/
 │   │   └── generator.py        # TestCaseGenerator
 │   ├── defect_predictor/       # 缺陷风险预测引擎
 │   │   └── predictor.py        # DefectPredictor
-│   └── script_generator/       # 自动化脚本生成引擎
-│       └── generator.py        # ScriptGenerator
+│   ├── script_generator/       # 自动化脚本生成引擎
+│   │   └── generator.py        # ScriptGenerator
+│   └── code_scanner/           # 代码度量自动采集
+│       └── scanner.py          # CodeScanner
 ├── tests/
 │   ├── conftest.py             # 根级 fixtures
-│   ├── test_case_generator/    # TestCaseGenerator 测试 (14)
-│   ├── test_defect_predictor/  # DefectPredictor 测试 (13)
-│   └── test_script_generator/  # ScriptGenerator 测试 (16)
+│   ├── test_case_generator/    # TestCaseGenerator 测试 (23)
+│   ├── test_defect_predictor/  # DefectPredictor 测试 (15)
+│   ├── test_script_generator/  # ScriptGenerator 测试 (16)
+│   ├── test_code_scanner/      # CodeScanner 测试 (18)
+│   └── test_llm_evaluator/    # LLMEvaluator 测试 (33)
 └── docs/
     ├── REQUIREMENTS.md
     ├── FEASIBILITY.md
@@ -37,6 +41,7 @@ ai-testing-platform/
    ↓ _extract_features()
    ├─ CRUD 关键词 → 功能测试用例 (positive/negative)
    ├─ 安全关键词 → 安全测试用例 (security, P0)
+   ├─ DBCS 关键词 → 多语言测试用例 (boundary, P1)  ← REQ-AI-001
    └─ 边界条件   → 边界测试用例 (boundary, P1)
    ↓ _determine_priority()
    └─ list[TestCase]
@@ -70,18 +75,21 @@ class TestCase:
 
 **职责**：基于代码度量指标量化模块缺陷风险
 
-**算法**：加权线性风险模型
+**算法**：加权线性风险模型（7 因子，REQ-AI-002）
 ```
 risk_score = Σ(factor_score × weight)
 
 因素评分（均归一化至 0-100）：
 - complexity_score = (CC - 1) / 29 × 100
-- churn_score      = churn × 3     (上限 100)
+- churn_score      = churn × 3       (上限 100)
 - coverage_gap     = 100 - coverage
 - bug_score        = bug_history × 10 (上限 100)
 - size_score       = (LOC - 100) / 900 × 100
+- dependency_score = dep_count × 5   (上限 100)  ← REQ-AI-002
+- staleness_score  = days / 3.65     (上限 100)  ← REQ-AI-002
 
-权重：complexity=25%, churn=25%, coverage_gap=20%, bug_history=20%, size=10%
+权重：complexity=22%, churn=22%, coverage_gap=18%, bug_history=18%,
+      size=8%, dependency=7%, staleness=5%
 ```
 
 **风险等级阈值**：
@@ -102,6 +110,8 @@ class ModuleMetrics:
     code_churn: int               # 近 30 天变更次数
     test_coverage: float          # 0-100
     bug_history: int              # 历史缺陷数
+    dependency_count: int = 0     # 依赖数量      ← REQ-AI-002
+    last_modified_days: int = 0   # 最后修改天数   ← REQ-AI-002
 
 @dataclass
 class RiskReport:
@@ -154,15 +164,47 @@ class Test{ModuleName}:
 
 ---
 
+### 2.4 CodeScanner ← REQ-AI-003
+
+**职责**：自动扫描真实 Python 文件，采集 `ModuleMetrics` 驱动 `DefectPredictor`
+
+**数据流**：
+```
+目录路径
+   ↓ scan()
+   ├─ rglob("*.py") → [file_path, ...]
+   └─ scan_file(file_path)
+       ├─ _count_lines(source)          → lines_of_code      (ast)
+       ├─ _count_dependencies(source)   → dependency_count   (ast)
+       ├─ _get_cyclomatic_complexity()  → cyclomatic_complexity (radon)
+       ├─ _get_last_modified_days()     → last_modified_days (git log)
+       ├─ _get_code_churn()             → code_churn         (git log --since)
+       └─ _get_bug_history()            → bug_history        (git log grep)
+   ↓ list[ModuleMetrics]
+   → DefectPredictor.rank_modules_by_risk()
+   → RiskReport[]
+```
+
+**异常处理**：
+- Git 命令失败 → 对应指标返回 0（优雅降级）
+- UnicodeDecodeError → fallback `latin-1` 编码
+- 排除目录：`venv/`, `__pycache__/`, `.git/`, `.eggs/`, `node_modules/`
+
+**CLI**：`python scripts/scan_and_predict.py --path src/`
+
+---
+
 ## 3. 测试架构
 
 ### Fixture 层级
 
 ```
-tests/conftest.py                 ← 根级：generator、predictor、script_gen、sample metrics
-tests/test_case_generator/        ← 本地：generator
-tests/test_defect_predictor/      ← 本地：predictor、high_risk、low_risk
-tests/test_script_generator/      ← 本地：script_gen、positive_spec、negative_spec
+tests/conftest.py                         ← 根级：generator, predictor, script_gen, metrics, specs
+tests/test_case_generator/conftest.py     ← 本地：generator
+tests/test_defect_predictor/conftest.py   ← 本地：predictor, high_risk, low_risk
+tests/test_script_generator/conftest.py   ← 本地：script_gen, positive_spec, negative_spec
+tests/test_llm_evaluator/conftest.py      ← 本地：llm_io samples, evaluators
+tests/test_code_scanner/conftest.py       ← 本地：scanner, simple_py             ← REQ-AI-003
 ```
 
 ### 测试标记
@@ -172,6 +214,8 @@ tests/test_script_generator/      ← 本地：script_gen、positive_spec、nega
 | `@pytest.mark.generation` | TestCaseGenerator 测试 |
 | `@pytest.mark.prediction` | DefectPredictor 测试 |
 | `@pytest.mark.script_gen` | ScriptGenerator 测试 |
+| `@pytest.mark.llm` | LLMEvaluator 测试（CI 默认排除） |
+| `@pytest.mark.scanner` | CodeScanner 测试 ← REQ-AI-003 |
 | `@pytest.mark.P0/P1/P2` | 测试优先级 |
 
 ---
