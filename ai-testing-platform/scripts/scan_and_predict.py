@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""Scan a Python project and print a DefectPredictor risk ranking.
+
+Usage:
+    python scripts/scan_and_predict.py --path src/
+"""
+
 import argparse
 import sys
 from pathlib import Path
