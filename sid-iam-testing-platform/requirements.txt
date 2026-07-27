@@ -28,7 +28,7 @@ python-dotenv==1.2.2
 pyyaml==6.0.1
 
 # Code Quality
-black==23.12.1
+black==26.5.1
 flake8==7.0.0
 pylint==4.0.6
 isort==5.13.2
