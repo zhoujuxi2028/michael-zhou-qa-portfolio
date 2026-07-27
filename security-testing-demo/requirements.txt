@@ -1,7 +1,7 @@
 # Security Testing Dependencies
 
 # ZAP API Client
-python-owasp-zap-v2.4>=0.0.21
+python-owasp-zap-v2.4>=0.1.0
 
 # Testing Framework
 pytest>=9.1.1
