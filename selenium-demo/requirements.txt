@@ -21,7 +21,7 @@ colorlog==6.11.0
 python-dotenv==1.2.2
 
 # ==================== Video Recording ====================
-opencv-python==4.8.1.78
+opencv-python==5.0.0.93
 pillow==10.1.0
 
 # ==================== Code Quality ====================
