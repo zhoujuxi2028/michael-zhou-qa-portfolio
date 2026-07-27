@@ -28,7 +28,7 @@ pillow==10.1.0
 pytest-cov==7.1.0
 pylint==3.0.3
 black==23.12.1
-flake8==7.0.0
+flake8==7.3.0
 
 # ==================== Data Handling ====================
 pyyaml==6.0.3
