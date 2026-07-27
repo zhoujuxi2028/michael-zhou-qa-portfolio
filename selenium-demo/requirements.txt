@@ -22,7 +22,7 @@ python-dotenv==1.2.2
 
 # ==================== Video Recording ====================
 opencv-python==5.0.0.93
-pillow==10.1.0
+pillow==12.3.0
 
 # ==================== Code Quality ====================
 pytest-cov==7.1.0
