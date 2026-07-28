@@ -23,7 +23,7 @@ router.get('/:productId', (req, res) => {
 
 router.post('/:productId/deduct', (req, res, next) => {
   const { quantity, orderId } = req.body;
-  if (!quantity || !orderId) {
+  if (typeof quantity !== 'number' || !quantity || !orderId) {
     return res.status(400).json({
       error: ERROR_CODES.VALIDATION_ERROR,
       message: 'quantity and orderId are required',
