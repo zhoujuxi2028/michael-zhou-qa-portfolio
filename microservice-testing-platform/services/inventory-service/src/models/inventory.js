@@ -19,7 +19,7 @@ function getByProductId(productId) {
 function deduct(productId, quantity, orderId) {
   const db = getDb();
 
-  if (!quantity || quantity <= 0) {
+  if (typeof quantity !== 'number' || !quantity || quantity <= 0) {
     const err = new Error(ERROR_CODES.VALIDATION_ERROR);
     err.code = ERROR_CODES.VALIDATION_ERROR;
     throw err;
