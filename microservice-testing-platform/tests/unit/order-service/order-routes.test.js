@@ -101,11 +101,11 @@ describe('Order Routes', () => {
       expect(res.body.data).toEqual([]);
     });
 
-    test('returns 500 for non-numeric page value', async () => {
+    test('defaults to page 1 for non-numeric page value', async () => {
       const res = await request(app).get('/api/orders?page=abc');
 
-      // NaN propagates to SQLite LIMIT/OFFSET causing datatype mismatch
-      expect(res.status).toBe(500);
+      expect(res.status).toBe(200);
+      expect(res.body.pagination.page).toBe(1);
     });
   });
 
