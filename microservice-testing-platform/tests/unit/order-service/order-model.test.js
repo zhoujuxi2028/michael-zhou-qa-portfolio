@@ -127,26 +127,21 @@ describe('Order Model', () => {
   });
 
   // UT-O-12: List - negative page number
-  test('treats negative page offset as no offset, returns all rows', () => {
-    orderModel.create({ productId: 'PROD-001', quantity: 1, unitPrice: 10 });
+  test('defaults to page 1 for negative page value', () => {
     const result = orderModel.list({ page: -1, limit: 10 });
-    // SQLite treats negative OFFSET as 0 (no offset)
-    expect(result.data.length).toBeGreaterThan(0);
-    expect(result.pagination.page).toBe(-1);
+    expect(result.pagination.page).toBe(1);
   });
 
   // UT-O-13: List - zero limit
-  test('returns empty data for zero limit', () => {
+  test('defaults to limit 10 for zero limit value', () => {
     const result = orderModel.list({ page: 1, limit: 0 });
-    expect(result.data).toEqual([]);
-    expect(result.pagination.limit).toBe(0);
+    expect(result.pagination.limit).toBe(10);
   });
 
-  // UT-O-14: List - non-numeric page causes SQL error
-  test('throws on non-numeric page value', () => {
-    expect(() => {
-      orderModel.list({ page: 'abc', limit: 10 });
-    }).toThrow();
+  // UT-O-14: List - non-numeric page
+  test('defaults to page 1 for non-numeric page value', () => {
+    const result = orderModel.list({ page: 'abc', limit: 10 });
+    expect(result.pagination.page).toBe(1);
   });
 
   // UT-O-15: Create - extreme values (large quantity * unitPrice)
