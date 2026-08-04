@@ -4,9 +4,9 @@
 kubernetes==28.1.0
 
 # Testing Framework
-pytest==7.4.3
+pytest==9.1.1
 pytest-cov==7.1.0
-pytest-html==4.1.1
+pytest-html==4.2.0
 pytest-xdist==3.8.0
 
 # HTTP Requests
@@ -19,17 +19,17 @@ locust==2.20.0
 pyyaml==6.0.3
 
 # Web Framework (for test app)
-fastapi==0.109.0
-uvicorn[standard]==0.51.0
+fastapi==0.141.1
+uvicorn[standard]==0.52.0
 
 # Metrics and Monitoring
-prometheus-client==0.19.0
+prometheus-client==0.26.0
 
 # Utilities
 python-dotenv==1.2.2
-click==8.1.7
+click==8.4.2
 
 # Code Quality
 black==26.5.1
 flake8==7.0.0
-pylint==3.0.3
+pylint==4.0.6

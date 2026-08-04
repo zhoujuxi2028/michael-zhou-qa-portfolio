@@ -16,7 +16,7 @@ function generateId() {
 function processPayment({ orderId, amount, correlationId }) {
   const db = getDb();
 
-  if (!amount || amount <= 0) {
+  if (typeof amount !== 'number' || !amount || amount <= 0) {
     const err = new Error(ERROR_CODES.VALIDATION_ERROR);
     err.code = ERROR_CODES.VALIDATION_ERROR;
     throw err;

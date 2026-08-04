@@ -1,34 +1,34 @@
 # ==================== Selenium WebDriver ====================
-selenium==4.16.0
+selenium==4.46.0
 webdriver-manager==4.1.2
 
 # ==================== Test Framework ====================
 pytest==9.1.1
 pytest-html==4.2.0
 pytest-rerunfailures==16.4
-pytest-timeout==2.2.0
+pytest-timeout==2.4.0
 pytest-xdist==3.8.0  # Parallel execution
 
 # ==================== Test Reporting ====================
-allure-pytest==2.13.2
+allure-pytest==2.16.0
 pytest-json-report==1.5.0
 
 # ==================== SSH & Backend ====================
 paramiko==5.0.0
 
 # ==================== Logging & Utilities ====================
-colorlog==6.11.0
+colorlog==6.12.0
 python-dotenv==1.2.2
 
 # ==================== Video Recording ====================
-opencv-python==4.8.1.78
-pillow==10.1.0
+opencv-python==5.0.0.93
+pillow==12.3.0
 
 # ==================== Code Quality ====================
 pytest-cov==7.1.0
-pylint==3.0.3
-black==23.12.1
-flake8==7.0.0
+pylint==4.0.6
+black==26.5.1
+flake8==7.3.0
 
 # ==================== Data Handling ====================
 pyyaml==6.0.3

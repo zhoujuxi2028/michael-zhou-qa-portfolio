@@ -22,12 +22,12 @@ function create({ productId, quantity, unitPrice }) {
     err.code = ERROR_CODES.VALIDATION_ERROR;
     throw err;
   }
-  if (!quantity || quantity <= 0) {
+  if (typeof quantity !== 'number' || !quantity || quantity <= 0) {
     const err = new Error(ERROR_CODES.VALIDATION_ERROR);
     err.code = ERROR_CODES.VALIDATION_ERROR;
     throw err;
   }
-  if (!unitPrice || unitPrice <= 0) {
+  if (typeof unitPrice !== 'number' || !unitPrice || unitPrice <= 0) {
     const err = new Error(ERROR_CODES.VALIDATION_ERROR);
     err.code = ERROR_CODES.VALIDATION_ERROR;
     throw err;
@@ -50,6 +50,8 @@ function getById(id) {
 
 function list({ status, page = 1, limit = 10 } = {}) {
   const db = getDb();
+  page = Math.max(1, parseInt(page, 10) || 1);
+  limit = Math.max(1, parseInt(limit, 10) || 10);
   const offset = (page - 1) * limit;
 
   let query = 'SELECT * FROM orders';

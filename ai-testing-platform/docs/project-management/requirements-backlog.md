@@ -14,7 +14,7 @@
 |----|------|------|--------|------|----------|
 | REQ-AI-001 | TestCaseGenerator 支持 DBCS 字符集边界测试用例生成 | `case_generator` | Medium | Done | 2026-07-19 |
 | REQ-AI-002 | DefectPredictor 激活 dependency_count 和 last_modified_days 因子 | `defect_predictor` | Medium | Done | 2026-07-22 |
-| REQ-AI-003 | DefectPredictor 真实代码扫描器（自动采集 ModuleMetrics） | `code_scanner` | Medium | Proposed | 2026-07-23 |
+| REQ-AI-003 | DefectPredictor 真实代码扫描器（自动采集 ModuleMetrics） | `code_scanner` | Medium | Done | 2026-07-23 |
 
 ---
 
@@ -105,7 +105,7 @@
 | **标题** | TestCaseGenerator 支持 DBCS 字符集边界测试用例生成 |
 | **模块** | `src/case_generator/generator.py` |
 | **优先级** | Medium |
-| **状态** | Proposed |
+| **状态** | Done |
 | **提出日期** | 2026-07-19 |
 
 **背景：**
