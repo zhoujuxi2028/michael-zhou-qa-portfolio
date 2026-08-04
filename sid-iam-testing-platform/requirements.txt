@@ -18,7 +18,7 @@ pyjwt[crypto]==2.13.0
 cryptography==49.0.0
 
 # HTTP
-requests==2.31.0
+requests==2.34.2
 
 # Contract Testing
 jsonschema==4.26.0
