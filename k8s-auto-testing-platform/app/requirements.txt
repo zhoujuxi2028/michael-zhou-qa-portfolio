@@ -1,6 +1,6 @@
 # Test Application Dependencies
 
-fastapi==0.140.0
+fastapi==0.141.1
 uvicorn[standard]==0.52.0
 psutil==7.2.2
 requests==2.34.2
