@@ -13,7 +13,7 @@ pytest-xdist==3.8.0
 requests==2.34.2
 
 # Load Testing
-locust==2.20.0
+locust==2.46.3
 
 # YAML Processing
 pyyaml==6.0.3
