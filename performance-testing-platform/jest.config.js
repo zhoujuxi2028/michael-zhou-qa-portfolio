@@ -5,10 +5,11 @@ module.exports = {
   collectCoverageFrom: ['src/**/*.js', '!src/server.js'],
   coverageDirectory: 'coverage',
   coverageReporters: ['json', 'json-summary', 'lcov', 'text'],
-  // Cap workers at 50% of CPUs: several "unit" suites spawn bash/node/python3
-  // subprocesses (server-sh, preflight-check, integration-test-phase7-soak, lock).
-  // Default (ncpu-1) saturates CPU → subprocess timeouts and jest-worker IPC crashes.
-  maxWorkers: '50%',
+  // better-sqlite3 v13 native addon crashes during Jest teardown on Linux (exit 139).
+  // forceExit skips teardown to avoid the segfault.
+  forceExit: true,
+  // Must run serially: better-sqlite3 v13 WAL cleanup crashes parallel workers.
+  maxWorkers: 1,
   // 阈值对齐 phase7-cicd.md §7.3.2 PERF-CI-COV-FR-003
   // (statements ≥80%, branches ≥70%, functions ≥80%, lines ≥80%)
   // 详见 docs/devops/phase7-gap-remediation-design.md §3.1
