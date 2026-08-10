@@ -43,6 +43,7 @@
 | DEF-020   | [PR #255](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/255) | Portfolio 缺陷登记主表链接断链：feature 分支指向旧路径 `docs/qa/defect-register.md` | P2 / Medium | ❌ Non-blocking    | 2026-05-24 | ✅ Fixed         | —           | main 已修复（PDEF-001），feature 分支需合并 main 或手动修正为 `docs/qa/defects/register.md` |
 | DEF-021   | [PR #255](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/255) | `stage4-defect-waiver-register.md` 引用不存在的 `stage4-gate-template.md`   | P3 / Low    | ❌ Non-blocking    | 2026-05-24 | ✅ Fixed         | —           | 修复：更正为 `gates/stage4-template.md`（实际路径） |
 | DEF-023   | [#278](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/278) / [PR #276](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/276) | BATS 9.1 分支白名单缺少 `docs/` 前缀，PR #276 CI 红灯 | P2 / Medium | ✅ Blocking (PR)  | 2026-05-26 | 🟡 Fix in review | —           | `stage4-selftest-fast.bats:144` pattern 未含 `docs/`；修复：加入 `docs/`；pre-push 改进见 PR #277；[RCA](../../project-management/postmortems/RCA-2026-05-26-DEF-023-bats-branch-whitelist.md) |
+| DEF-024   | [#586](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/586) / [PR #585](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/585) | `better-sqlite3` v13 在 Ubuntu 24.04 触发 SIGSEGV，CI 持续红灯 | P1 / High | ✅ Blocking (CI)  | 2026-08-10 | ✅ Fixed         | —           | PR #561 将 v12→v13，Linux native binary 在 Ubuntu 24.04 (glibc 2.39) 崩溃；macOS 本地不复现；修复：降回 `12.11.1`（精确锁定）；防护：`scripts/test-linux.sh` + CLAUDE.md native 依赖规则 |
 
 ---
 
@@ -90,6 +91,7 @@
 
 | 日期       | 变更内容                                                                                                                                | 操作人 |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 2026-08-10 | 登记并关闭 `DEF-024`（#586 / PR #585）：`better-sqlite3` v13 在 Ubuntu 24.04 触发 SIGSEGV；降回 v12.11.1（精确锁定），添加 `scripts/test-linux.sh`，补充 CLAUDE.md native 依赖检查规则 | QA     |
 | 2026-05-26 | 登记 `DEF-023`（PR #276）：BATS 9.1 分支白名单缺 `docs/` 前缀，导致 CI 红灯；修复 `stage4-selftest-fast.bats` 第 144 行 pattern，加入 `docs/` | QA     |
 | 2026-05-25 | 同步 Issue #259 / #260 至 DEF-019 / DEF-022：根因均已在 main 修复（PR #257 已 merge），按生命周期搬迁至 Closed 区并补齐 Issue 反链；活跃数 11 → 9 | QA     |
 | 2026-05-24 | 登记 `DEF-019`（PR #255 覆盖率回归，P1）、`DEF-020`（Portfolio 登记表断链，P2）、`DEF-021`（stage4 register 断链，P3）；DEF-019 已修复，DEF-017 回退为 Deferred | QA     |

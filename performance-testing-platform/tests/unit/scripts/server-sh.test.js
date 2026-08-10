@@ -47,6 +47,16 @@ function forceCleanup() {
   } catch {
     // ignore
   }
+  // Remove WAL files left by kill -9: better-sqlite3 v13 on Linux crashes during
+  // WAL recovery when a previous server was hard-killed before it could checkpoint.
+  const dbDir = path.join(__dirname, '../../../data');
+  for (const f of ['perf.db', 'perf.db-wal', 'perf.db-shm']) {
+    try {
+      fs.unlinkSync(path.join(dbDir, f));
+    } catch {
+      /* file may not exist */
+    }
+  }
 }
 
 beforeEach(() => {

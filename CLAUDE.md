@@ -168,6 +168,19 @@ Dependabot PR CI 报红时，按以下流程排查，**不要直接关闭**：
 
 > ⚠️ `@dependabot rebase` 是**异步**操作，完成时间不可控。修复合并后若 PR 仍报错，先检查分支父提交时间戳，再决定是否需要二次 rebase。
 
+### Native 依赖升级额外检查（防 DEF-024 复发）
+
+含 native 二进制的包（`better-sqlite3`、`canvas`、`bcrypt`、`sharp` 等）在 macOS 本地测试通过 ≠ Linux CI 安全。
+
+| 步骤 | 操作 |
+|------|------|
+| 识别 native 依赖 | 检查 `package.json` 中是否含 `.node` binding 或 `node-pre-gyp` |
+| 本地 Linux 验证 | 运行 `bash scripts/test-linux.sh`（Docker + Ubuntu 24.04 + Node.js 18） |
+| 版本固定 | native 依赖使用精确版本（无 `^`），例：`"better-sqlite3": "12.11.1"` |
+| CI 全绿才合并 | Dependabot native 包 PR 必须 **Performance Testing / Unit Tests** 全绿才能合并 |
+
+> **DEF-024 教训**：PR #561 将 `better-sqlite3` 从 v12 升至 v13，Linux 二进制在 Ubuntu 24.04 触发 SIGSEGV，macOS 本地无法复现。修复：降回 v12 并精确锁定；`scripts/test-linux.sh` 用于本地预验证。
+
 ## GitHub Actions
 
 All workflows are in root `.github/workflows/` (GitHub ignores subdirectory workflows).
