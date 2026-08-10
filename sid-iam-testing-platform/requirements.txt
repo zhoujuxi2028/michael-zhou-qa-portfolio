@@ -7,7 +7,7 @@ allure-pytest==2.16.0
 
 # Web Framework (SSO mock service)
 fastapi==0.141.1
-uvicorn[standard]==0.52.0
+uvicorn[standard]==0.52.1
 httpx==0.28.1
 
 # Graph Database (ontology mock)
