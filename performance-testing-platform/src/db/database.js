@@ -14,7 +14,8 @@ function getDbPath() {
 function getDatabase() {
   if (!db) {
     db = new Database(getDbPath());
-    db.pragma('journal_mode = WAL');
+    // WAL mode removed: better-sqlite3 v13 crashes on Linux (Ubuntu 24.04) when
+    // setting WAL on first DB access. DELETE mode is sufficient for this demo server.
     initSchema();
     seedData();
   }
