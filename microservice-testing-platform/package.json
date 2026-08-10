@@ -34,7 +34,7 @@
     "better-sqlite3": "^13.0.2",
     "cors": "^2.8.5",
     "express": "^5.2.1",
-    "ioredis": "^5.11.1",
+    "ioredis": "^6.0.0",
     "prom-client": "^15.1.0",
     "uuid": "^14.0.1",
     "winston": "^3.11.0"
