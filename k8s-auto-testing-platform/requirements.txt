@@ -20,7 +20,7 @@ pyyaml==6.0.3
 
 # Web Framework (for test app)
 fastapi==0.141.1
-uvicorn[standard]==0.52.1
+uvicorn[standard]==0.52.3
 
 # Metrics and Monitoring
 prometheus-client==0.26.0
