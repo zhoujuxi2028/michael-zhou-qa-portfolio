@@ -24,7 +24,7 @@ requests==2.34.2
 jsonschema==4.26.0
 
 # Config & Utils
-python-dotenv==1.2.2
+python-dotenv==1.2.3
 pyyaml==6.0.3
 
 # Code Quality
