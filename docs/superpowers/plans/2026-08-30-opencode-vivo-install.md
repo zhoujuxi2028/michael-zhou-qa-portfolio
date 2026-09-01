@@ -12,9 +12,9 @@
 
 ## 前置条件检查
 
-- [ ] Vivo 手机已开启「允许安装未知来源应用」
-- [ ] 手机存储空间 ≥ 4 GB 可用
-- [ ] 已连接 WiFi（安装过程需下载约 500 MB）
+- [x] Vivo 手机已开启「允许安装未知来源应用」
+- [x] 手机存储空间 ≥ 4 GB 可用
+- [x] 已连接 WiFi（安装过程需下载约 500 MB）
 - [ ] 已准备好 Anthropic API Key
 
 ---
@@ -26,17 +26,17 @@
 **Files:**
 - 无代码文件，操作在手机端执行
 
-- [ ] **Step 1: 下载 Termux APK**
+- [x] **Step 1: 下载 Termux APK**
 
   浏览器访问：`https://github.com/termux/termux-app/releases/latest`
 
   下载文件：`termux-app_v0.118.x+github-debug_arm64-v8a.apk`（选 arm64-v8a）
 
-- [ ] **Step 2: 安装 APK**
+- [x] **Step 2: 安装 APK**
 
   文件管理器找到下载的 APK → 点击安装 → 允许安装
 
-- [ ] **Step 3: 验证 Termux 可启动**
+- [x] **Step 3: 验证 Termux 可启动**
 
   打开 Termux → 看到 `$` 提示符即成功
 
@@ -52,7 +52,7 @@
 
 **目标：** 换源、更新包、授权存储
 
-- [ ] **Step 1: 换清华镜像源（加速国内下载）**
+- [x] **Step 1: 换清华镜像源（加速国内下载）**
 
   ```bash
   termux-change-repo
@@ -60,7 +60,7 @@
 
   选择：`Mirror group` → `Mirrors in China` → `TUNA (清华大学)`
 
-- [ ] **Step 2: 更新所有包**
+- [x] **Step 2: 更新所有包**
 
   ```bash
   pkg update && pkg upgrade -y
@@ -68,13 +68,13 @@
 
   预期：更新完成，无报错
 
-- [ ] **Step 3: 安装必要工具**
+- [x] **Step 3: 安装必要工具**
 
   ```bash
   pkg install proot-distro wget curl -y
   ```
 
-- [ ] **Step 4: 处理 Vivo OriginOS 后台限制**
+- [x] **Step 4: 处理 Vivo OriginOS 后台限制**
 
   手机系统设置 → 应用管理 → Termux：
   - 电池优化 → 不限制
