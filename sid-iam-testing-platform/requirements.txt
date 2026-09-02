@@ -31,4 +31,4 @@ pyyaml==6.0.3
 black==26.5.1
 flake8==7.3.0
 pylint==4.0.7
-isort==5.13.2
+isort==9.0.1
