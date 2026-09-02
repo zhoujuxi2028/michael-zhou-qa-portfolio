@@ -5,7 +5,7 @@ pytest-html==4.2.0
 pytest-xdist==3.8.0
 
 # LLM Evaluation
-deepeval==4.1.9
+deepeval==4.2.0
 
 # Code Analysis
 radon==6.0.1
