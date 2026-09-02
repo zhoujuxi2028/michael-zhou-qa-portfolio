@@ -15,7 +15,7 @@ networkx==3.6.1
 
 # Token & Crypto
 pyjwt[crypto]==2.13.0
-cryptography==50.0.0
+cryptography==50.0.1
 
 # HTTP
 requests==2.34.2
