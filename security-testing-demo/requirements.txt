@@ -27,4 +27,4 @@ jsonschema>=4.26.0
 pyTenable>=26.8.1
 
 # OpenVAS/GVM Client
-python-gvm>=27.7.0
+python-gvm>=27.8.0
