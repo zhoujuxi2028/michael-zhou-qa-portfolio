@@ -1,0 +1,2 @@
+hello from data.txt
+这是文件内容，供 agent 读取。
