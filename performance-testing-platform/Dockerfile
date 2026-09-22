@@ -1,4 +1,4 @@
-FROM node:20
+FROM node:25
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy ALL_PROXY all_proxy \
