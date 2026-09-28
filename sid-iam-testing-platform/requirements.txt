@@ -3,7 +3,7 @@ pytest==9.1.1
 pytest-cov==7.1.0
 pytest-html==4.2.0
 pytest-xdist==3.8.0
-allure-pytest==2.16.0
+allure-pytest==2.16.1
 
 # Web Framework (SSO mock service)
 fastapi==0.141.1
