@@ -208,8 +208,6 @@ async def memory_load_endpoint(size_mb: int = 100):
     Args:
         size_mb: Memory size in MB (default 100)
     """
-    global memory_data
-
     SCALING_EVENTS.labels(event_type="memory_load_started").inc()
     logger.info(f"Allocating {size_mb}MB of memory")
 
@@ -236,8 +234,6 @@ async def memory_load_endpoint(size_mb: int = 100):
 @app.get("/memory-release")
 async def memory_release():
     """Release allocated memory"""
-    global memory_data
-
     count = len(memory_data)
     memory_data.clear()
 
