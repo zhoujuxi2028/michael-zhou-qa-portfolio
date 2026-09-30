@@ -10,7 +10,7 @@ pytest-timeout==2.4.0
 pytest-xdist==3.8.0  # Parallel execution
 
 # ==================== Test Reporting ====================
-allure-pytest==2.16.0
+allure-pytest==2.16.1
 pytest-json-report==1.5.0
 
 # ==================== SSH & Backend ====================
