@@ -50,7 +50,7 @@
     "globals": "^17.11.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.5.1",
-    "newman": "^6.1.0",
+    "newman": "^6.2.3",
     "newman-reporter-htmlextra": "^1.23.0"
   },
   "lint-staged": {
