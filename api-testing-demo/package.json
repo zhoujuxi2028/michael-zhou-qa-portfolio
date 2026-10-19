@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "json-server": "^0.17.4",
-    "newman": "^6.1.0",
+    "newman": "^6.2.3",
     "newman-reporter-htmlextra": "^1.23.1",
     "husky": "^9.0.0",
     "@commitlint/cli": "^21.2.3",
