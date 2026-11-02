@@ -47,7 +47,7 @@
     "cypress": "^16.1.0",
     "eslint": "^10.11.0",
     "eslint-plugin-cypress": "^7.0.2",
-    "globals": "^17.11.0",
+    "globals": "^17.13.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.5.1",
     "newman": "^6.1.0",
