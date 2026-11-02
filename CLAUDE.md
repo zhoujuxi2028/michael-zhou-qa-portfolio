@@ -65,6 +65,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | 性能测试 | `performance-testing-platform/` — k6 + JMeter dual-engine (148 unit + 31 integration + 33 perf) | k6, JMeter, Express, Grafana, InfluxDB | `performance-testing-platform/CLAUDE.md` |
 | 稳定性测试 | `k8s-auto-testing-platform/` — K8S HPA + Chaos (37 tests) | Python, Pytest, Chaos Mesh | `k8s-auto-testing-platform/CLAUDE.md` |
 | **AI 测试** | `ai-testing-platform/` — AI-Powered Testing Platform (92 tests) | Python, Pytest, Rule Engine | `ai-testing-platform/CLAUDE.md` |
+| AI 测试 | `llm-agent-tutorial/` — LLM Agent Engineering Tutorial | Python, Anthropic API | `llm-agent-tutorial/CLAUDE.md` |
 
 > **Quick Commands**: 各项目的安装、运行、测试命令详见对应子项目 `CLAUDE.md`。
 
