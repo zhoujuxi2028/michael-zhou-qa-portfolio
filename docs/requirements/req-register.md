@@ -37,6 +37,7 @@
 | PREQ-014 | [#433](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/433) | Dependabot 缺少 Python 生态（7 个 pip） | 仓库级 / 安全 | NFR | P1 | 2026-07-13 | Refined | — |
 | PREQ-016 | [#42](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/42) | Alibaba Cloud ECS + K3s 真实部署 | cicd-demo | FR | P2 | 2026-07-17 | Proposed | — |
 | PREQ-017 | [#18](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/18) | Mobile Testing Demo (Appium/Detox) | 新项目 | FR | P2 | 2026-07-17 | Proposed | — |
+| PREQ-018 | [#813](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/813) | 为 dependabot.yml 添加 groups 聚合配置，减少每周 PR 数量 | 仓库级 / 依赖管理 | NFR | P2 | 2026-11-02 | Proposed | — |
 
 ---
 
@@ -96,3 +97,4 @@
 | 2026-07-14 | 补链 | PREQ-006 关联 Issue #437；新增维护规则：新需求必须同步创建 Issue | Michael Zhou |
 | 2026-07-15 | 修正 | 移除 PREQ-009/010/011/013/015（属于缺陷，已移至 defect-register 分配 PDEF-010~014）；PREQ-012/014 状态 → Refined | Michael Zhou |
 | 2026-07-23 | 新增 | ai-testing-platform 录入 REQ-AI-003 (#513)；更新项目入口表文档路径及活跃数 | Michael Zhou |
+| 2026-11-02 | 新增 | 录入 PREQ-018 (#813)：为 dependabot.yml 添加 groups 聚合，减少每周 PR 数量 | Michael Zhou |
