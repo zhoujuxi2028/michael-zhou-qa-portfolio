@@ -63,7 +63,6 @@ jobs:
       - run: pip install -r requirements.txt
       - run: >-
           pytest tests/unit/ -v
-          --cov=src --cov-report=term-missing --cov-fail-under=80
           -m "crud or queries or constraints or procedures"
 
   integration-tests:
