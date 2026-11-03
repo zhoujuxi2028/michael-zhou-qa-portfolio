@@ -4,14 +4,12 @@ pytestmark = pytest.mark.queries
 
 
 def test_join_inventory_with_warehouse(cur):
-    cur.execute(
-        """
+    cur.execute("""
         SELECT i.sku, w.name, i.qty
         FROM inventory i
         JOIN warehouses w ON w.id = i.warehouse_id
         WHERE i.sku = 'ANC-X1'
-        """
-    )
+        """)
     row = cur.fetchone()
     assert row is not None
     assert row[0] == "ANC-X1"
@@ -27,15 +25,13 @@ def test_reorder_alert_below_safety_stock(cur):
 
 
 def test_total_inventory_qty_per_zone(cur):
-    cur.execute(
-        """
+    cur.execute("""
         SELECT w.zone, SUM(i.qty) AS total_qty
         FROM inventory i
         JOIN warehouses w ON w.id = i.warehouse_id
         GROUP BY w.zone
         ORDER BY w.zone
-        """
-    )
+        """)
     rows = {r[0]: r[1] for r in cur.fetchall()}
     assert rows["A"] == 230  # ANC-X1(200) + USB-HUB(30)
     assert rows["B"] == 105  # KBD-MX(100) + MSE-PRO(5)
@@ -43,28 +39,24 @@ def test_total_inventory_qty_per_zone(cur):
 
 
 def test_window_function_rank_by_qty(cur):
-    cur.execute(
-        """
+    cur.execute("""
         SELECT sku, qty,
                RANK() OVER (ORDER BY qty DESC) AS qty_rank
         FROM inventory
-        """
-    )
+        """)
     rows = cur.fetchall()
     assert rows[0][0] == "ANC-X1"
     assert rows[0][2] == 1
 
 
 def test_subquery_warehouses_with_low_stock(cur):
-    cur.execute(
-        """
+    cur.execute("""
         SELECT DISTINCT w.name
         FROM warehouses w
         WHERE w.id IN (
             SELECT warehouse_id FROM inventory WHERE qty < safety_stock
         )
         ORDER BY w.name
-        """
-    )
+        """)
     names = [r[0] for r in cur.fetchall()]
     assert len(names) >= 1

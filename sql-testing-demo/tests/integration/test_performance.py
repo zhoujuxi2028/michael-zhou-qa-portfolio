@@ -1,4 +1,5 @@
 import time
+
 import pytest
 
 pytestmark = pytest.mark.performance
@@ -25,14 +26,12 @@ def test_reorder_alert_query_under_50ms(cur):
 
 def test_join_inventory_warehouses_under_20ms(cur):
     start = time.perf_counter()
-    cur.execute(
-        """
+    cur.execute("""
         SELECT i.sku, w.name, i.qty
         FROM inventory i
         JOIN warehouses w ON w.id = i.warehouse_id
         ORDER BY i.sku
-        """
-    )
+        """)
     cur.fetchall()
     elapsed_ms = (time.perf_counter() - start) * 1000
     assert elapsed_ms < 20, f"Join query took {elapsed_ms:.1f}ms (limit 20ms)"
