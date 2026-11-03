@@ -38,6 +38,7 @@
 | PREQ-016 | [#42](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/42) | Alibaba Cloud ECS + K3s 真实部署 | cicd-demo | FR | P2 | 2026-07-17 | Proposed | — |
 | PREQ-017 | [#18](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/18) | Mobile Testing Demo (Appium/Detox) | 新项目 | FR | P2 | 2026-07-17 | Proposed | — |
 | PREQ-018 | [#813](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/813) | 为 dependabot.yml 添加 groups 聚合配置，减少每周 PR 数量 | 仓库级 / 依赖管理 | NFR | P2 | 2026-11-02 | Proposed | — |
+| PREQ-019 | [#828](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/828) | 新建 sql-testing-demo：SQL + PL/pgSQL 测试，PostgreSQL + testcontainers | sql-testing-demo | FR | P1 | 2026-11-03 | In Development | — |
 
 ---
 
@@ -84,6 +85,7 @@
 | playwright-demo | [REQUIREMENTS.md](../../playwright-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
 | selenium-demo | [REQUIREMENTS.md](../../selenium-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
 | robot-framework-demo | [REQUIREMENTS.md](../../robot-framework-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
+| sql-testing-demo | [requirements.md](../../sql-testing-demo/docs/project-management/requirements.md) | 10 (SQL-01~10) | — | 2026-11-03 |
 
 ---
 
@@ -98,3 +100,4 @@
 | 2026-07-15 | 修正 | 移除 PREQ-009/010/011/013/015（属于缺陷，已移至 defect-register 分配 PDEF-010~014）；PREQ-012/014 状态 → Refined | Michael Zhou |
 | 2026-07-23 | 新增 | ai-testing-platform 录入 REQ-AI-003 (#513)；更新项目入口表文档路径及活跃数 | Michael Zhou |
 | 2026-11-02 | 新增 | 录入 PREQ-018 (#813)：为 dependabot.yml 添加 groups 聚合，减少每周 PR 数量 | Michael Zhou |
+| 2026-11-03 | 新增 | 录入 PREQ-019 (#828)：新建 sql-testing-demo，SQL + PL/pgSQL 测试项目 | Michael Zhou |
