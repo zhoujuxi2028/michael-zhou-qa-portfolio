@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 为 .github/dependabot.yml 的全部 24 个 updates 条目添加 groups 配置，将每个条目内的多包升级聚合为 minor-and-patch 和 major 两类 PR，预计将每周 PR 数从 ~53 降至 ~24
+**Goal:** 为 .github/dependabot.yml 的全部 22 个 updates 条目添加 groups 配置，将每个条目内的多包升级聚合为 routine-updates 和 major-updates 两类 PR，预计将每周 PR 数从 ~53 降至 ~22
 
 **Architecture:** 纯配置变更，不涉及代码逻辑。在每个 updates 条目内添加 groups 块，按 update-type 分组：minor-and-patch 合并为一个 PR，major 升级单独一个 PR。安全更新不受影响，始终独立创建。
 
@@ -14,16 +14,19 @@
 
 **Issue #813** — 为 dependabot.yml 添加 groups 聚合配置，减少每周 PR 数量。
 
-当前状态：24 个 updates 条目，每周产生约 53 个 PR，review 和合并开销大。
+当前状态：**22 个** updates 条目（github-actions×1, npm×7, terraform×1, docker×6, pip×7），每周产生约 53 个 PR，review 和合并开销大。
+
+> ⚠️ Issue #813 原文写"24个条目"有误，实际 dependabot.yml 经核实为 22 个条目。
 
 **技术约束（可行性分析结论）**：
 
-- `groups` 只作用于**单个 updates 条目内部**（同目录同 ecosystem 的多包 → 1 个 PR）
-- 无法跨目录合并，24 个条目是 PR 数量的理论下限
+- `groups` **只作用于单个 updates 条目内部**（相同目录 + 相同 ecosystem 的多个包 → 合并为 1 个 PR）
+- **无法跨目录或跨 ecosystem 合并**，22 个条目是每周 PR 数量的理论下限
 - 安全更新（security updates）始终单独创建 PR，不受 groups 影响
-- 分组策略：`minor-and-patch` 一组（低风险批量合并），`major` 单独一组（需人工 review）
+- 分组策略：`routine-updates`（minor+patch，低风险批量合并），`major-updates`（需人工 review）
+- docker 条目每个目录通常只有 1 个镜像，groups 对单包条目无聚合效果，但统一添加保持配置一致性
 
-**预期效果**：每个条目内的多个包升级聚合为最多 2 个 PR（minor+patch / major），将每周 ~53 个 PR 降至约 ~24 个。
+**预期效果**：每个条目内的多包升级聚合为最多 2 个 PR（routine / major），将每周 ~53 个 PR 降至约 ~22 个。
 
 ---
 
@@ -49,7 +52,7 @@
 
   ## 当前架构
 
-  `.github/dependabot.yml` 包含 24 个 updates 条目：
+  `.github/dependabot.yml` 包含 **22 个** updates 条目：
 
   | Ecosystem       | 条目数 | 目录                                                                  |
   |-----------------|--------|-----------------------------------------------------------------------|
@@ -57,16 +60,17 @@
   | npm             | 7      | /, /cicd-demo, /playwright-demo, /microservice-testing-platform,      |
   |                 |        | /performance-testing-platform, /api-testing-demo, /iwsva-cypress-e2e |
   | terraform       | 1      | /cicd-demo/terraform                                                  |
-  | docker          | 5      | /cicd-demo, /k8s-auto-testing-platform/app,                          |
+  | docker          | 6      | /cicd-demo, /k8s-auto-testing-platform/app,                          |
   |                 |        | /microservice-testing-platform/services/inventory-service,            |
   |                 |        | /microservice-testing-platform/services/order-service,                |
   |                 |        | /microservice-testing-platform/services/payment-service,              |
   |                 |        | /performance-testing-platform                                         |
-  | pip             | 8      | /ai-testing-platform, /k8s-auto-testing-platform,                    |
+  | pip             | 7      | /ai-testing-platform, /k8s-auto-testing-platform,                    |
   |                 |        | /k8s-auto-testing-platform/app, /robot-framework-demo,               |
   |                 |        | /security-testing-demo, /selenium-demo, /sid-iam-testing-platform    |
+  | **合计**        | **22** |                                                                       |
 
-  每次 Dependabot 扫描，24 个条目各自独立产生 PR，无聚合，导致每周约 53 个 PR。
+  每次 Dependabot 扫描，22 个条目各自独立产生 PR，无聚合，导致每周约 53 个 PR。
 
   ## 目标架构
 
@@ -81,11 +85,12 @@
 
   - `groups` 仅作用于同一 updates 条目内部（相同目录 + 相同 ecosystem）
   - 跨目录、跨 ecosystem 的合并不受支持
-  - 24 个条目是每周 PR 数量的理论下限
+  - 22 个条目是每周 PR 数量的理论下限
+  - docker 条目单镜像场景下 groups 无实际聚合效果，但统一添加保持配置一致性
 
   ## 预期效果
 
-  每个条目内的多包升级从 N 个 PR 降为最多 2 个（minor+patch 和 major），全局每周 PR 从 ~53 降至 ~24。
+  每个条目内的多包升级从 N 个 PR 降为最多 2 个（routine 和 major），全局每周 PR 从 ~53 降至 ~22。
   ```
 
 - [ ] **Step 2: 创建 `docs/qa/test-plan.md`**
@@ -124,20 +129,31 @@
   ### TC-03: 条目数量验证
 
   - **命令:** `grep -c "package-ecosystem" .github/dependabot.yml`
-  - **预期输出:** `24`
-  - **通过标准:** 条目数量未减少，覆盖范围不变
+  - **预期输出:** `22`
+  - **通过标准:** 条目数量未减少，覆盖范围完整
 
-  ### TC-04: groups 字段覆盖率验证
+  ### TC-04: groups 语义结构验证（优先于 grep）
 
-  - **命令:** `grep -c "minor-and-patch" .github/dependabot.yml`
-  - **预期输出:** `24`
-  - **通过标准:** 所有 24 个条目均已添加 groups 配置
+  - **命令:**
+    ```bash
+    python3 -c "
+    import yaml
+    data = yaml.safe_load(open('.github/dependabot.yml'))
+    entries_with_groups = [u for u in data['updates'] if 'groups' in u]
+    print(f'{len(entries_with_groups)} / {len(data[\"updates\"])} entries have groups configured')
+    assert len(entries_with_groups) == len(data['updates']), 'Missing groups!'
+    print('All entries covered.')
+    "
+    ```
+  - **预期输出:** `22 / 22 entries have groups configured` + `All entries covered.`
+  - **通过标准:** 所有 22 个条目均已在正确层级添加 groups（语义验证，非字符串匹配）
 
   ### TC-05: Dependabot 实际行为观测（人工）
 
   - **方式:** 合并 PR 后，等待下一次 Dependabot 每周扫描（周一）
   - **观测指标:** 创建的 PR 数量是否显著减少
-  - **通过标准:** 每次扫描 PR 数量 ≤ 24（含 major 组 PR）
+  - **通过标准:** 每次扫描 PR 数量 ≤ 22（含 major-updates 组 PR）
+  - **注意:** 若 PR 数量降幅不明显，检查是否因 docker 单镜像条目占比高（docker 6个条目对 groups 无实际聚合效果）
 
   ## 回滚计划
 
@@ -163,7 +179,8 @@
   | R-002 | major 组 PR 积压，人工 review 滞后                    | 中   | 低   | major 组 PR 较少，滞后可接受；必要时将 major 设为忽略 |
   | R-003 | YAML 语法错误导致 dependabot.yml 整体失效             | 低   | 高   | PR 合并前运行 yamllint + python yaml 双重语法验证      |
   | R-004 | 安全更新被 groups 抑制（误解）                         | 低   | 高   | Dependabot 安全更新机制独立于 groups，不受影响         |
-  | R-005 | 条目覆盖不完整（少于 24 个条目添加 groups）           | 中   | 低   | grep 验证 minor-and-patch 出现次数 = 24               |
+  | R-005 | 条目覆盖不完整（少于 22 个条目添加 groups）           | 中   | 低   | Python 语义验证：检查所有 updates 条目均含 groups 字段 |
+  | R-006 | docker 单镜像条目 groups 无聚合效果，PR 降幅不及预期  | 中   | 低   | 合并后观测 2 个周期（2周）实际 PR 数量；基线 ~53，目标 ~22 |
 
   ## 不在范围内的风险
 
@@ -191,7 +208,7 @@
 
 ---
 
-### Task 2: 添加 groups 到 github-actions + npm 条目（共 8 个）
+### Task 2: 添加 groups 到 github-actions + npm 条目（共 8 个：1+7）
 
 **目的**：为 1 个 github-actions 条目和 7 个 npm 条目添加 groups 聚合配置。
 
@@ -202,11 +219,11 @@
 
 ```yaml
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
 ```
@@ -233,11 +250,11 @@
     commit-message:
       prefix: "chore(actions)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -257,11 +274,11 @@
     commit-message:
       prefix: "chore(root)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -282,11 +299,11 @@
     commit-message:
       prefix: "chore(cicd-demo)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -307,11 +324,11 @@
     commit-message:
       prefix: "chore(playwright-demo)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -332,11 +349,11 @@
     commit-message:
       prefix: "chore(microservice)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -357,11 +374,11 @@
     commit-message:
       prefix: "chore(perf)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -382,11 +399,11 @@
     commit-message:
       prefix: "chore(api-testing)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -407,11 +424,11 @@
     commit-message:
       prefix: "chore(cypress)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -431,9 +448,9 @@
 
 ---
 
-### Task 3: 添加 groups 到 docker + terraform 条目（共 6 个）
+### Task 3: 添加 groups 到 terraform + docker 条目（共 7 个：1+6）
 
-**目的**：为 1 个 terraform 条目和 5 个 docker 条目添加 groups 聚合配置（注意：docker 条目每个目录通常只有 1 个 Dockerfile，groups 对单包条目无聚合效果，但统一添加以保持配置一致性，并为未来多镜像场景预备）。
+**目的**：为 1 个 terraform 条目和 6 个 docker 条目添加 groups 配置。注意：docker 条目每目录通常只有 1 个镜像，groups 对单包条目无实际聚合效果，但统一添加保持配置一致性，并为未来多镜像场景预备。
 
 **Files:**
 - Modify: `.github/dependabot.yml`
@@ -454,11 +471,11 @@
     commit-message:
       prefix: "chore(terraform)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -479,11 +496,11 @@
     commit-message:
       prefix: "chore(docker-cicd)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -504,11 +521,11 @@
     commit-message:
       prefix: "chore(docker-k8s)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -529,11 +546,11 @@
     commit-message:
       prefix: "chore(docker-microservice)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -554,11 +571,11 @@
     commit-message:
       prefix: "chore(docker-microservice)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -579,11 +596,11 @@
     commit-message:
       prefix: "chore(docker-microservice)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -604,11 +621,11 @@
     commit-message:
       prefix: "chore(docker-perf)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -617,20 +634,25 @@
 
   ```bash
   python3 -c "import yaml; yaml.safe_load(open('.github/dependabot.yml')); print('OK')"
-  grep -c "minor-and-patch" .github/dependabot.yml
+  python3 -c "
+  import yaml
+  data = yaml.safe_load(open('.github/dependabot.yml'))
+  n = sum(1 for u in data['updates'] if 'groups' in u)
+  print(f'{n} entries have groups')
+  "
   ```
 
   预期输出：
   ```
   OK
-  14
+  15 entries have groups
   ```
 
 ---
 
-### Task 4: 添加 groups 到 pip 条目（共 8 个）
+### Task 4: 添加 groups 到 pip 条目（共 7 个）
 
-**目的**：为所有 8 个 pip 条目添加 groups 聚合配置，完成对全部 24 个 updates 条目的覆盖。
+**目的**：为全部 7 个 pip 条目添加 groups 配置，完成对 22 个 updates 条目的全覆盖。
 
 **Files:**
 - Modify: `.github/dependabot.yml`
@@ -651,11 +673,11 @@
     commit-message:
       prefix: "chore(ai-testing)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -676,11 +698,11 @@
     commit-message:
       prefix: "chore(k8s)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -701,11 +723,11 @@
     commit-message:
       prefix: "chore(k8s)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -726,11 +748,11 @@
     commit-message:
       prefix: "chore(robot)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -751,11 +773,11 @@
     commit-message:
       prefix: "chore(security)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -776,11 +798,11 @@
     commit-message:
       prefix: "chore(selenium)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
@@ -801,38 +823,32 @@
     commit-message:
       prefix: "chore(sid-iam)"
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
   ```
 
-- [ ] **Step 8: 为 `pip @ /microservice-testing-platform` 添加 groups**（第 24 条，若存在）
+- [ ] **Step 8: 阶段性验证（Task 4 完成后）**
 
-  如 dependabot.yml 中存在此条目，修改后完整条目：
-  ```yaml
-  # pip — microservice-testing-platform
-  - package-ecosystem: "pip"
-    directory: "/microservice-testing-platform"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-    labels:
-      - "enhancement"
-      - "microservice"
-    commit-message:
-      prefix: "chore(microservice)"
-    groups:
-      minor-and-patch:
-        update-types:
-          - "minor"
-          - "patch"
-      major:
-        update-types:
-          - "major"
+  ```bash
+  python3 -c "
+  import yaml
+  data = yaml.safe_load(open('.github/dependabot.yml'))
+  entries_with_groups = [u for u in data['updates'] if 'groups' in u]
+  print(f'{len(entries_with_groups)} / {len(data[\"updates\"])} entries have groups configured')
+  assert len(entries_with_groups) == len(data['updates']), 'Missing groups on some entries!'
+  print('All entries covered.')
+  "
+  ```
+
+  预期输出：
+  ```
+  22 / 22 entries have groups configured
+  All entries covered.
   ```
 
 ---
@@ -875,23 +891,33 @@
 
   预期输出：
   ```
-  24
+  22
   ```
 
   确认条目数量未减少，覆盖范围完整。
 
-- [ ] **Step 4: groups 覆盖率验证**
+- [ ] **Step 4: groups 语义结构验证（关键）**
 
   ```bash
-  grep -c "minor-and-patch" .github/dependabot.yml
+  python3 -c "
+  import yaml
+  data = yaml.safe_load(open('.github/dependabot.yml'))
+  entries_with_groups = [u for u in data['updates'] if 'groups' in u]
+  total = len(data['updates'])
+  covered = len(entries_with_groups)
+  print(f'{covered} / {total} entries have groups configured')
+  assert covered == total, f'Missing groups on {total - covered} entries!'
+  print('All entries covered. Verification PASSED.')
+  "
   ```
 
   预期输出：
   ```
-  24
+  22 / 22 entries have groups configured
+  All entries covered. Verification PASSED.
   ```
 
-  确认全部 24 个条目均已添加 groups 配置。若数量不足，检查遗漏的条目并补充。
+  此验证为语义级检查（groups 字段确实存在于每个条目中），优于 grep 字符串匹配。
 
 - [ ] **Step 5: 通过 gh API 验证文件更新已提交**
 
@@ -906,11 +932,11 @@
 
   ```bash
   git add .github/dependabot.yml docs/architecture/architecture.md docs/qa/test-plan.md docs/project-management/risks.md
-  git commit -m "chore: add dependabot groups config for all 24 entries (issue #813)
+  git commit -m "chore: add dependabot groups config for all 22 entries (issue #813)
 
-  - Add groups with minor-and-patch and major update-types to all 24 updates entries
-  - Cover github-actions (1), npm (7), terraform (1), docker (5), pip (8) entries
-  - Expected weekly PR reduction: ~53 -> ~24
+  - Add groups with routine-updates and major-updates to all 22 updates entries
+  - Cover github-actions (1), npm (7), terraform (1), docker (6), pip (7) entries
+  - Expected weekly PR reduction: ~53 -> ~22
   - Add supporting docs: architecture.md, test-plan.md, risks.md"
   ```
 
@@ -919,23 +945,23 @@
   ```bash
   git push origin HEAD
   gh pr create \
-    --title "chore: add dependabot groups config to all 24 entries (closes #813)" \
+    --title "chore: add dependabot groups config to all 22 entries (closes #813)" \
     --body "## Summary
 
-  Adds \`groups\` configuration to all 24 \`.github/dependabot.yml\` update entries to reduce weekly PR count.
+  Adds \`groups\` configuration to all 22 \`.github/dependabot.yml\` update entries to reduce weekly PR count.
 
   ## Changes
 
-  - Added \`minor-and-patch\` and \`major\` groups to all 24 updates entries
-  - Ecosystems covered: github-actions (1), npm (7), terraform (1), docker (5), pip (8) entries
+  - Added \`routine-updates\` (minor+patch) and \`major-updates\` groups to all 22 updates entries
+  - Ecosystems covered: github-actions (1), npm (7), terraform (1), docker (6), pip (7) entries
   - Added supporting documentation: architecture.md, test-plan.md, risks.md
 
   ## Expected Impact
 
   | Metric | Before | After |
   |--------|--------|-------|
-  | Updates entries | 24 | 24 (unchanged) |
-  | Estimated weekly PRs | ~53 | ~24 |
+  | Updates entries | 22 | 22 (unchanged) |
+  | Estimated weekly PRs | ~53 | ~22 |
   | Security update behavior | Independent | Independent (unchanged) |
 
   ## Technical Notes
@@ -943,13 +969,14 @@
   - \`groups\` applies within a single updates entry only (same directory + ecosystem)
   - Cross-directory merging is not supported by Dependabot
   - Security updates are always created as separate PRs, unaffected by groups config
-  - 24 entries remain the theoretical minimum for weekly PR count
+  - 22 entries are the theoretical minimum for weekly PR count
+  - docker entries (6) have single images per directory — groups adds no PR reduction there, but is added for consistency
 
   ## Verification
 
-  - [ ] YAML syntax validated with \`python3 -c yaml.safe_load()\`
-  - [ ] 24 entries confirmed with \`grep -c package-ecosystem\`
-  - [ ] 24 groups confirmed with \`grep -c minor-and-patch\`
+  - [ ] YAML syntax validated: \`python3 -c \"import yaml; yaml.safe_load(open('.github/dependabot.yml'))\"\`
+  - [ ] 22 entries confirmed: \`grep -c package-ecosystem .github/dependabot.yml\`
+  - [ ] Semantic groups coverage: Python assertion all 22 entries contain groups field
 
   Closes #813" \
     --label "enhancement"
@@ -977,21 +1004,22 @@
 
 ```yaml
     groups:
-      minor-and-patch:
+      routine-updates:
         update-types:
           - "minor"
           - "patch"
-      major:
+      major-updates:
         update-types:
           - "major"
 ```
 
 **说明：**
 
-- `minor-and-patch` 组：将同一条目内所有 minor 和 patch 版本升级合并为 1 个 PR，降低 review 开销
-- `major` 组：将同一条目内所有 major 版本升级合并为 1 个 PR，需人工审查破坏性变更
+- `routine-updates` 组：将同一条目内所有 minor 和 patch 版本升级合并为 1 个 PR，降低 review 开销
+- `major-updates` 组：将同一条目内所有 major 版本升级合并为 1 个 PR，需人工审查破坏性变更
 - 安全更新（CVE 修复）：始终由 Dependabot 单独创建 PR，与 groups 配置无关
-- 分组名称（`minor-and-patch`、`major`）可自定义，但需在同一条目内唯一
+- 分组名称（`routine-updates`、`major-updates`）可自定义，但需在同一条目内唯一
+- ⚠️ `update-types` 字段只接受 `"patch"` / `"minor"` / `"major"` 三个独立字符串值；分组名是用户自定义标识符，不要与这三个值混淆
 
 ---
 
