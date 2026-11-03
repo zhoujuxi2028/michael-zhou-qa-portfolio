@@ -60,6 +60,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | 功能测试 | `selenium-demo/` — Browser automation | Selenium, Python, Allure | `selenium-demo/CLAUDE.md` |
 | 功能测试 | `robot-framework-demo/` — Pabot + Selenium Grid + Rebot (9 tests) | Robot Framework, Pabot, Selenium Grid | `robot-framework-demo/CLAUDE.md` |
 | 安全测试 | `security-testing-demo/` — Security (~182 tests, OWASP Top 10) | Pytest, OWASP ZAP, Nessus, SQLMap | `security-testing-demo/CLAUDE.md` |
+| 数据库测试 | `sql-testing-demo/` — SQL & PL/pgSQL (32 tests: CRUD + queries + constraints + procedures + transactions) | PostgreSQL, psycopg3, testcontainers, pytest | — |
 | 平台测试 | `sid-iam-testing-platform/` — IAM + Data + AI Agent (163 tests) | Python, Pytest, FastAPI, networkx | `sid-iam-testing-platform/CLAUDE.md` |
 | 平台测试 | `microservice-testing-platform/` — Microservice (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 | `microservice-testing-platform/CLAUDE.md` |
 | 性能测试 | `performance-testing-platform/` — k6 + JMeter dual-engine (148 unit + 31 integration + 33 perf) | k6, JMeter, Express, Grafana, InfluxDB | `performance-testing-platform/CLAUDE.md` |
