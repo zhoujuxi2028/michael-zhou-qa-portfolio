@@ -124,6 +124,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 | `setup-labels.yml` | repository | Manual (`workflow_dispatch`) | 一键创建/更新 11 个 `proj:xxx` labels |
 | `repo-meta-ci.yml` | repository root | Push/PR, manual | docs/workflow/JSON/shell/Markdown links 轻量校验 + workflow 文档同步检查 |
 | `api-testing-ci.yml` | api-testing-demo | Push/PR | Validate Postman collections → Newman tests (280+ assertions) |
+| `sql-testing-demo-ci.yml` | sql-testing-demo | Push/PR, manual | SQL testing demo: Ruff formatting + PostgreSQL unit/integration tests |
 | `codeql-analysis.yml` | repository (JS+Python) | Push/PR, weekly | CodeQL 代码语义漏洞扫描 (XSS, SQLi, path traversal) |
 | `commit-guard.yml` | repository | PR opened/updated | Commit Guard: Conventional Commits 格式校验 + secret 泄漏扫描 CI 兜底 |
 
