@@ -1,5 +1,5 @@
-import pytest
 import psycopg
+import pytest
 
 pytestmark = pytest.mark.transactions
 

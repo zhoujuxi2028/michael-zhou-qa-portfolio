@@ -1,7 +1,8 @@
 import os
-import pytest
-import psycopg
 from pathlib import Path
+
+import psycopg
+import pytest
 
 # OrbStack socket for local development
 os.environ.setdefault(

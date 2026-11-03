@@ -31,13 +31,11 @@ def test_sp_fulfill_order_deducts_inventory(cur):
 
 def test_sp_fulfill_order_writes_movement(cur):
     cur.execute("CALL sp_fulfill_order(%s, %s, %s, %s)", (1, "ANC-X1", 1, 5))
-    cur.execute(
-        """
+    cur.execute("""
         SELECT qty FROM stock_movements
         WHERE sku='ANC-X1' AND order_id=1 AND movement_type='outbound'
         ORDER BY id DESC LIMIT 1
-        """
-    )
+        """)
     assert cur.fetchone()[0] == 5
 
 
