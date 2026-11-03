@@ -206,6 +206,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `repo-meta-ci.yml` | repository root | PR 级轻量 lint（docs / workflow / JSON / shell / Markdown links） |
 | `commit-guard.yml` | repository | Conventional Commits 格式校验 + secret scan CI 兜底（绕过 pre-push hook 时的安全网） |
 | `setup-labels.yml` | repository | 手动触发：一键创建/更新 11 个 `proj:xxx` labels |
+| `sql-testing-demo-ci.yml` | sql-testing-demo | SQL Testing Demo CI: ruff format → unit tests → integration tests (32 tests) |
 | `copilot-setup-steps.yml` | repository | 预热 Node.js/Python 依赖缓存供 Copilot 使用 |
 
 ### CI Job Naming Convention
