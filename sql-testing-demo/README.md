@@ -1,106 +1,136 @@
 # sql-testing-demo
 
-SQL & PL/pgSQL testing demo using pytest + PostgreSQL (via testcontainers + OrbStack).
+使用 pytest + PostgreSQL（testcontainers + OrbStack）进行 SQL 与 PL/pgSQL 测试的演示项目。
 
-> **Portfolio context:** Demonstrates SQL testing skills aligned to enterprise WMS roles (e.g., DSV Senior IT Specialist #114361). Covers CRUD validation, complex queries, stored procedures, query performance analysis, and WMS-style reporting queries.
+> **Portfolio 说明**：本项目展示与企业级 WMS 岗位（如 DSV Senior IT Specialist #114361）直接对应的 SQL 测试能力，覆盖 CRUD 校验、复杂查询、存储过程、查询性能分析和仓储报表查询。
 
-## Business Context — FastWare WMS Scenario
-
-**FastWare** is a fictional third-party logistics (3PL) company (modelled after real-world 3PL providers such as DSV). FastWare manages a warehouse for multiple retail clients. Warehouse operators handle inbound receipts, inventory checks, outbound order fulfilment, and daily inventory reports.
-
-**Core business flow:**
-
-```
-Supplier → [Inbound Receipt] → Inventory Update → [Customer Order] → Pick & Ship → Inventory Report
-```
-
-**Test story-line (maps directly to SQL-01 ~ SQL-09):**
-
-| Story Step | What happens | Requirement |
-|-----------|-------------|-------------|
-| 1. New SKU arrives | Headset "ANC-X1" x 200 units received into Zone A, Bin 03 | SQL-03 CRUD |
-| 2. Stock check | Find all SKUs below safety-stock threshold (reorder alert) | SQL-04 Complex queries |
-| 3. Order fulfilment | `sp_fulfill_order(order_id)` deducts inventory and writes movement log | SQL-05 Procedures |
-| 4. Slow query fix | Date-range query on 1M-row movement table: 1 200 ms → 8 ms after index | SQL-06 Performance |
-| 5. Insufficient stock | Fulfil order when stock = 0 → full transaction rollback, no dirty write | SQL-08 Transactions |
-| 6. Monthly report | Per-SKU inbound/outbound summary report for the billing period | SQL-09 Reports |
+[English Version](./README.en.md)
 
 ---
 
-## Tech Stack
+## 业务背景 — FastWare WMS 场景
 
-| Tool | Version | Purpose |
-|------|---------|---------|
-| Python | 3.14 | Test runner language |
-| pytest | ≥ 8.0 | Test framework |
-| psycopg (v3) | ≥ 3.3 | PostgreSQL driver |
-| testcontainers | ≥ 4.15 | Auto-manage PostgreSQL container |
-| PostgreSQL | 16-alpine | Database under test |
-| OrbStack | — | Docker runtime (macOS) |
+**FastWare** 是一家虚构的第三方物流（3PL）公司（参考 DSV 等真实 3PL 服务商）。FastWare 为多个零售客户管理仓库，仓库操作员负责入库收货、库存查询、出库发货和日常库存报表。
 
-## Quick Start
+**核心业务流程：**
+
+```
+供应商 → [入库收货] → 库存更新 → [客户订单] → 拣货发货 → 库存报表
+```
+
+**测试故事线（直接映射到 SQL-01 ~ SQL-09）：**
+
+| 场景步骤 | 发生了什么 | 对应需求 |
+|---------|-----------|---------|
+| 1. 新 SKU 入库 | 耳机 "ANC-X1" 200 件入库到 Zone A Bin 03 | SQL-03 CRUD |
+| 2. 库存检查 | 查找所有低于安全库存阈值的 SKU（补货预警） | SQL-04 复杂查询 |
+| 3. 订单履行 | `sp_fulfill_order` 扣减库存并写入出库流水 | SQL-05 存储过程 |
+| 4. 慢查询优化 | 百万行流水表日期范围查询：1200ms → 8ms（加索引后）| SQL-06 性能 |
+| 5. 库存不足 | 库存为 0 时发货 → 整个事务回滚，无脏写 | SQL-08 事务 |
+| 6. 月度报表 | 按 SKU 汇总计费周期内的进出库数量 | SQL-09 报表 |
+
+---
+
+## 技术栈
+
+| 工具 | 版本 | 用途 |
+|------|------|------|
+| Python | 3.14 | 测试运行语言 |
+| pytest | ≥ 8.0 | 测试框架 |
+| psycopg（v3） | ≥ 3.3 | PostgreSQL 驱动 |
+| testcontainers | ≥ 4.15 | 自动管理 PostgreSQL 容器 |
+| PostgreSQL | 16-alpine | 被测数据库 |
+| OrbStack | — | Docker 运行时（macOS） |
+
+---
+
+## 快速开始
 
 ```bash
-# 1. Activate venv
+# 1. 激活虚拟环境
 source /Users/michaelzhou/Documents/github/venv/bin/activate
 
-# 2. Install dependencies
+# 2. 安装依赖
 pip install -r requirements.txt
 
-# 3. Run all tests (OrbStack must be running)
+# 3. 运行全部测试（需先启动 OrbStack）
 pytest tests/ -v
 
-# 4. Run with coverage
+# 4. 带覆盖率运行
 pytest tests/ -v --cov=src --cov-report=term-missing
 ```
 
-## Project Structure
+---
+
+## 项目结构
 
 ```
 sql-testing-demo/
 ├── src/
-│   ├── schema.sql          # WMS schema: warehouses / inventory / orders / stock_movements
-│   ├── seed.sql            # FastWare sample data (zones, SKUs, initial stock)
-│   └── procedures.sql      # PL/pgSQL: sp_fulfill_order, sp_receive_stock, fn_check_stock
+│   ├── schema.sql          # WMS 表结构：warehouses / inventory / orders / stock_movements
+│   ├── seed.sql            # FastWare 样本数据（仓区、SKU、初始库存）
+│   └── procedures.sql      # PL/pgSQL：sp_fulfill_order、sp_receive_stock、fn_check_stock
 ├── tests/
-│   ├── conftest.py               # pytest fixtures — PostgreSQL container lifecycle
+│   ├── conftest.py               # pytest fixture — PostgreSQL 容器生命周期管理
 │   ├── unit/
-│   │   ├── test_crud.py          # SQL-03: CRUD (ANC-X1 inbound receipt)
-│   │   ├── test_queries.py       # SQL-04: JOIN / window functions / reorder alert
-│   │   ├── test_procedures.py    # SQL-05: sp_fulfill_order / sp_receive_stock
-│   │   ├── test_constraints.py   # SQL-07: FK, unique, NOT NULL violations
-│   │   └── test_transactions.py  # SQL-08: rollback on insufficient stock
+│   │   ├── test_smoke.py         # 连接、种子数据、存储过程加载
+│   │   ├── test_crud.py          # SQL-03：CRUD（ANC-X1 入库）
+│   │   ├── test_queries.py       # SQL-04：JOIN / 窗口函数 / 补货预警
+│   │   ├── test_procedures.py    # SQL-05：sp_fulfill_order / sp_receive_stock
+│   │   └── test_constraints.py   # SQL-07：FK、唯一约束、NOT NULL 违反
 │   └── integration/
-│       ├── test_performance.py   # SQL-06: EXPLAIN ANALYZE, index before/after
-│       └── test_reports.py       # SQL-09: monthly inbound/outbound summary
+│       ├── test_transactions.py  # SQL-08：库存不足时事务回滚
+│       ├── test_performance.py   # SQL-06：查询延迟 SLA 断言
+│       └── test_reports.py       # SQL-09：跨表统计报表
 ├── docs/
-│   ├── architecture/architecture.md
+│   ├── architecture/architecture.md   # 架构设计
 │   ├── project-management/
-│   │   ├── requirements.md       # SQL-01 ~ SQL-10 detailed requirements
-│   │   └── risks.md              # R-01 ~ R-04 risk register
-│   └── qa/test-plan.md
+│   │   ├── requirements.md            # SQL-01 ~ SQL-10 详细需求
+│   │   └── risks.md                   # R-01 ~ R-04 风险登记册
+│   └── qa/test-plan.md                # 测试计划（TC-01 ~ TC-09）
 ├── requirements.txt
 ├── pytest.ini
-├── CLAUDE.md
-└── README.md
+├── README.md               # 本文件（中文）
+├── README.en.md            # English version
+└── CLAUDE.md
 ```
 
-## Database Schema (FastWare WMS)
+---
 
-| Table | Key Columns | Description |
-|-------|------------|-------------|
-| `warehouses` | id, name, zone, capacity | Warehouse zones (A, B, C) |
-| `inventory` | id, sku, warehouse_id, qty, safety_stock | Current stock level per SKU per zone |
-| `orders` | id, client_id, status, created_at | Outbound customer orders |
-| `stock_movements` | id, sku, order_id, movement_type, qty, moved_at | Full inbound/outbound audit log |
+## 数据库 Schema（FastWare WMS）
 
-## JD Alignment (DSV Senior IT Specialist #114361)
+| 表 | 关键字段 | 说明 |
+|----|---------|------|
+| `warehouses` | id, name, zone, capacity | 仓库分区（A、B、C） |
+| `inventory` | id, sku, warehouse_id, qty, safety_stock | 每个 SKU 在每个仓区的当前库存 |
+| `orders` | id, client_id, status, created_at | 客户出库订单 |
+| `stock_movements` | id, sku, order_id, movement_type, qty, moved_at | 完整的进出库审计日志 |
 
-| JD Requirement | Demo Coverage |
-|---------------|---------------|
-| Good SQL command language | CRUD, JOIN, aggregation, window functions (`test_crud.py`, `test_queries.py`) |
-| PL/SQL queries + tuning | PL/pgSQL stored procedures + EXPLAIN ANALYZE index optimisation (`test_procedures.py`, `test_performance.py`) |
-| Regression testing for warehouse flows | Full test suite re-run on every commit (CI workflow) |
-| Develop test plans and scenarios | `docs/qa/test-plan.md` with TC-01 ~ TC-09 |
-| 4-eyes principle / validation | PR review + CI gate before merge |
-| Version / source control | Git + conventional commits + PR workflow |
+---
+
+## 测试覆盖
+
+| 文件 | 类型 | 数量 | 测试点 |
+|------|------|------|--------|
+| test_smoke.py | 单元 | 3 | 数据库连接、种子数据、存储过程加载 |
+| test_crud.py | 单元 | 4 | INSERT / SELECT / UPDATE / DELETE |
+| test_queries.py | 单元 | 5 | JOIN、GROUP BY、窗口函数、子查询、补货预警 |
+| test_constraints.py | 单元 | 4 | FK 违反、NOT NULL、唯一约束、CHECK 约束 |
+| test_procedures.py | 单元 | 6 | sp_receive_stock、sp_fulfill_order、fn_check_stock |
+| test_transactions.py | 集成 | 3 | 事务原子性、错误回滚、约束不破坏状态 |
+| test_performance.py | 集成 | 3 | 查询延迟 SLA：查询 <10ms、JOIN <20ms、扫描 <50ms |
+| test_reports.py | 集成 | 4 | 分区汇总、补货报表、流水统计、库存排名 |
+| **合计** | | **32** | |
+
+---
+
+## JD 对齐（DSV Senior IT Specialist #114361）
+
+| JD 要求 | Demo 覆盖 |
+|---------|----------|
+| 良好的 SQL 命令语言能力 | CRUD、JOIN、聚合、窗口函数（test_crud.py、test_queries.py） |
+| PL/SQL 查询编写与调优 | PL/pgSQL 存储过程 + EXPLAIN ANALYZE 索引优化（test_procedures.py、test_performance.py） |
+| 仓储流程的回归测试 | 每次提交全套测试自动运行（CI workflow） |
+| 制定测试计划和场景 | docs/qa/test-plan.md（TC-01 ~ TC-09） |
+| 四眼原则 / 验收 | PR Review + CI 门控后才能合并 |
+| 版本 / 源代码控制 | Git + Conventional Commits + PR 工作流 |
