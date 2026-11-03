@@ -10,6 +10,14 @@ updates:
       - "enhancement"
     commit-message:
       prefix: "chore(actions)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # npm — root
   - package-ecosystem: "npm"
@@ -21,6 +29,14 @@ updates:
       - "enhancement"
     commit-message:
       prefix: "chore(root)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # npm — cicd-demo
   - package-ecosystem: "npm"
@@ -33,6 +49,14 @@ updates:
       - "cicd"
     commit-message:
       prefix: "chore(cicd-demo)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # npm — playwright-demo
   - package-ecosystem: "npm"
@@ -45,6 +69,14 @@ updates:
       - "playwright"
     commit-message:
       prefix: "chore(playwright-demo)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # npm — microservice-testing-platform
   - package-ecosystem: "npm"
@@ -57,6 +89,14 @@ updates:
       - "microservice"
     commit-message:
       prefix: "chore(microservice)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # npm — performance-testing-platform
   - package-ecosystem: "npm"
@@ -69,6 +109,14 @@ updates:
       - "performance-testing"
     commit-message:
       prefix: "chore(perf)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # npm — api-testing-demo
   - package-ecosystem: "npm"
@@ -81,6 +129,14 @@ updates:
       - "api-testing"
     commit-message:
       prefix: "chore(api-testing)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # npm — iwsva-cypress-e2e
   - package-ecosystem: "npm"
@@ -93,6 +149,14 @@ updates:
       - "cypress-e2e"
     commit-message:
       prefix: "chore(cypress)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # Terraform — cicd-demo
   - package-ecosystem: "terraform"
@@ -105,6 +169,14 @@ updates:
       - "cicd"
     commit-message:
       prefix: "chore(terraform)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # Docker — cicd-demo
   - package-ecosystem: "docker"
@@ -117,6 +189,14 @@ updates:
       - "cicd"
     commit-message:
       prefix: "chore(docker-cicd)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # Docker — k8s-auto-testing-platform
   - package-ecosystem: "docker"
@@ -129,6 +209,14 @@ updates:
       - "k8s"
     commit-message:
       prefix: "chore(docker-k8s)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # Docker — microservice inventory-service
   - package-ecosystem: "docker"
@@ -141,6 +229,14 @@ updates:
       - "microservice"
     commit-message:
       prefix: "chore(docker-microservice)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # Docker — microservice order-service
   - package-ecosystem: "docker"
@@ -153,6 +249,14 @@ updates:
       - "microservice"
     commit-message:
       prefix: "chore(docker-microservice)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # Docker — microservice payment-service
   - package-ecosystem: "docker"
@@ -165,6 +269,14 @@ updates:
       - "microservice"
     commit-message:
       prefix: "chore(docker-microservice)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # Docker — performance-testing-platform
   - package-ecosystem: "docker"
@@ -177,6 +289,14 @@ updates:
       - "performance-testing"
     commit-message:
       prefix: "chore(docker-perf)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # pip — ai-testing-platform
   - package-ecosystem: "pip"
@@ -189,6 +309,14 @@ updates:
       - "ai-testing"
     commit-message:
       prefix: "chore(ai-testing)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # pip — k8s-auto-testing-platform (root)
   - package-ecosystem: "pip"
@@ -201,6 +329,14 @@ updates:
       - "k8s"
     commit-message:
       prefix: "chore(k8s)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # pip — k8s-auto-testing-platform (app)
   - package-ecosystem: "pip"
@@ -213,6 +349,14 @@ updates:
       - "k8s"
     commit-message:
       prefix: "chore(k8s)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # pip — robot-framework-demo
   - package-ecosystem: "pip"
@@ -225,6 +369,14 @@ updates:
       - "robot-framework"
     commit-message:
       prefix: "chore(robot)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # pip — security-testing-demo
   - package-ecosystem: "pip"
@@ -237,6 +389,14 @@ updates:
       - "security-testing"
     commit-message:
       prefix: "chore(security)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # pip — selenium-demo
   - package-ecosystem: "pip"
@@ -249,6 +409,14 @@ updates:
       - "selenium"
     commit-message:
       prefix: "chore(selenium)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
 
   # pip — sid-iam-testing-platform
   - package-ecosystem: "pip"
@@ -261,3 +429,11 @@ updates:
       - "sid-iam"
     commit-message:
       prefix: "chore(sid-iam)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
