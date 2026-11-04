@@ -15,6 +15,7 @@ Open Browser To Grid
     Open Browser    ${url}    ${browser}    remote_url=${SELENIUM_GRID}
     Set Selenium Implicit Wait    ${IMPLICIT_WAIT}
     Set Selenium Speed    0.1s
+    Wait Until Page Contains Element    xpath://body    timeout=${PAGE_LOAD_TIMEOUT}
 
 Close Browser Safely
     Run Keyword And Ignore Error    Close All Browsers
