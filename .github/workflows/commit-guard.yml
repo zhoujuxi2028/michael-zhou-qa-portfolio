@@ -45,6 +45,11 @@ jobs:
           PATTERN='^(feat|fix|docs|style|refactor|test|chore|ci|perf|build|revert)(\([a-z0-9._/-]+\))?!?: .+'
           FAILED=0
           for SHA in $COMMITS; do
+            AUTHOR=$(git log -1 --format=%ae "$SHA")
+            # dependabot[bot] commits use auto-generated subjects outside our convention
+            case "$AUTHOR" in
+              *dependabot*) echo "Skip dependabot commit $SHA"; continue ;;
+            esac
             SUBJECT=$(git log -1 --format=%s "$SHA")
             LEN=${#SUBJECT}
             # 规则 1: 格式
