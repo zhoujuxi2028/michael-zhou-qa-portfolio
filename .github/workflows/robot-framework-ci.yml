@@ -11,6 +11,7 @@ on:
     paths:
       - 'robot-framework-demo/**'
       - '.github/workflows/robot-framework-ci.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
