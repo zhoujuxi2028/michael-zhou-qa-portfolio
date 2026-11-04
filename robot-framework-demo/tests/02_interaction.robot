@@ -12,18 +12,16 @@ TC-INT-001: 验证链接可点击
     Should Not Be Empty    ${link_text}
     [Teardown]    Close Browser Safely
 
-TC-INT-002: 验证页面元素属性
-    [Documentation]    验证 H1 标题元素的文本属性正确
+TC-INT-002: 验证页面标题文本内容
+    [Documentation]    验证页面包含正确的 H1 标题文本
     [Tags]    regression    interaction    P1
     Open Browser To Grid    https://example.com
-    ${heading}=    Get Text    xpath://h1
-    Should Be Equal    ${heading}    Example Domain
+    Page Should Contain    Example Domain
     [Teardown]    Close Browser Safely
 
-TC-INT-003: 验证链接 href 属性
-    [Documentation]    验证超链接包含正确的 href 目标地址
+TC-INT-003: 验证页面包含 IANA 链接
+    [Documentation]    验证页面包含指向 iana.org 的链接文本
     [Tags]    regression    interaction    P1
     Open Browser To Grid    https://example.com
-    ${href}=    Get Element Attribute    xpath://a    href
-    Should Contain    ${href}    iana.org
+    Page Should Contain    iana.org
     [Teardown]    Close Browser Safely

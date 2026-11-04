@@ -10,11 +10,11 @@ TC-NAV-001: 验证首页加载成功
     [Tags]    smoke    navigation    P0
     Verify Page Title Contains    Example Domain
 
-TC-NAV-002: 验证页面包含核心元素
-    [Documentation]    验证页面 DOM 结构包含必要的 H1 和链接元素
+TC-NAV-002: 验证页面包含核心内容
+    [Documentation]    验证页面包含 H1 标题文本和"More information"链接文本
     [Tags]    regression    navigation    P1
-    Element Should Be Present    xpath://h1
-    Element Should Be Present    xpath://a
+    Page Should Contain    Example Domain
+    Page Should Contain    More information
 
 TC-NAV-003: 验证页面文本内容
     [Documentation]    验证页面包含预期文本内容

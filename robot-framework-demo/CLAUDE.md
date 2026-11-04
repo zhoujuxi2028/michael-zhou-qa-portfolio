@@ -61,3 +61,14 @@ docker-compose down
 | cross-browser | 跨浏览器 |
 | P0 | 最高优先级 |
 | P1 | 高优先级 |
+
+## Smoke 测试设计规范（PDEF-020）
+
+CI smoke suite（`--include smoke`）测试第三方外部 URL 时：
+
+| 允许断言 | 禁止断言 |
+|----------|----------|
+| HTTP 响应状态、页面 title（`Get Title`） | `xpath://h1` 等 DOM 内部结构（Element 存在性） |
+| 页面包含特定文本（`Page Should Contain`） | CSS/XPath 选择器断言特定 HTML 元素 |
+
+**原因**：外部 URL 由 CDN 分发，不同数据中心（尤其 Azure CI）返回的 HTML 结构可能与本地不同，导致 DOM 断言在 CI 中不可重复（见 PDEF-020 RCA）。

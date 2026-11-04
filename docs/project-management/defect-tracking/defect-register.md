@@ -28,8 +28,8 @@
 |-----------|--------------|----------|-------------|--------|-----------|----------|------|-------------|------------------------|
 | PDEF-015 | [#431](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/431) | commit-guard.yml 无 path filter，文档 PR 也触发 | 仓库级 / CI 规范 | P2 | ❌ | 2026-07-13 | Fixed | — | — |
 | PDEF-016 | [#433](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/433) | Dependabot 缺少 Python 生态覆盖（7 个 requirements.txt） | 仓库级 / 依赖管理 | P1 | ❌ | 2026-07-13 | Fixed | — | — |
-| PDEF-017 | [#832](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/832) | Commit Guard 未豁免 dependabot[bot]，grouped PR message 超 72 字符导致 CI 阻塞 | 仓库级 / CI 规范 | P2 | ❌ | 2026-11-03 | Open | — | PR #823、#824 |
-| PDEF-018 | [#831](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/831) | CI Python 版本硬编码且分散，无法提前发现依赖的 Python 最低版本要求冲突 | 仓库级 / CI 环境 | P2 | ❌ | 2026-11-03 | Open | — | PR #824（DEF-002）|
+| PDEF-017 | [#832](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/832) | Commit Guard 未豁免 dependabot[bot]，grouped PR message 超 72 字符导致 CI 阻塞 | 仓库级 / CI 规范 | P2 | ❌ | 2026-11-03 | Fixed | — | PR #823、#824 |
+| PDEF-018 | [#831](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/831) | CI Python 版本硬编码且分散，无法提前发现依赖的 Python 最低版本要求冲突 | 仓库级 / CI 环境 | P2 | ❌ | 2026-11-03 | Fixed | — | PR #834 |
 
 > 已存在的项目级活跃缺陷请见对应项目登记表（见第 6 节"项目级登记入口"）。
 >
@@ -68,6 +68,8 @@
 | PDEF-012 | [#430](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/430) | CLAUDE.md 分支状态表全部过期（9 分支已合并） | 仓库级 / 文档 | P2 | 2026-07-16 | 删除整个 Feature Branches 表格，替换为简短 summary | 本 PR |
 | PDEF-013 | [#432](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/432) | codeql-analysis.yml 30min 超时 + 无缓存 | 仓库级 / 安全 | P1 | 2026-07-16 | 超时 30→15min；添加 paths-ignore（node_modules/venv/min.js/map/package-lock）；添加 pip 缓存 | 本 PR |
 | PDEF-014 | [#434](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/434) | claude-code-review.yml 已禁用 3 个月（死代码） | 仓库级 / CI 维护 | P2 | 2026-07-16 | 删除 `.github/workflows/claude-code-review.yml` | 本 PR |
+| PDEF-019 | [#831](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/831) | PR #834 Copilot commit subject 长度 85 > 72（2 个），`Commit Guard` 报红；PDEF-003 / DEF-022 同模式第三次复发；根因：Copilot 推送路径绕过 Husky，文档层规则无法形成约束 | 仓库级 / CI + 流程 | P2 | 2026-11-04 | cherry-pick rebase + amend 重写两个 subject；CLAUDE.md 记录三次复发结论；待评估 GitHub Push Ruleset 服务端校验 | PR #834 / [RCA](../postmortems/RCA-2026-11-04-PDEF-019-copilot-commit-subject-length.md) |
+| PDEF-020 | [#831](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/831) | PR #834 `robot-framework-demo` TC-NAV-002 smoke 测试断言 `example.com` 的 `xpath://h1`，在 Azure CI（westus3）CDN 返回不含 `<h1>` 的响应，导致 5 次 CI run 全部失败；`<title>` 存在（TC-NAV-001 通过）但 `<h1>` 缺失，`readyState == 'complete'` 亦通过，说明是 CDN 内容差异而非加载时机问题 | robot-framework-demo / 测试设计 | P2 | 2026-11-04 | 将 TC-NAV-002 由 `smoke/P0` 降级为 `regression/P1`；确立规范：CI smoke 不得断言第三方外部 URL 的 DOM 内部结构 | PR #834 commit `915e195c` / [RCA](../postmortems/RCA-2026-11-04-PDEF-020-robot-framework-external-url-smoke.md) |
 
 ---
 
@@ -78,6 +80,7 @@
 | 模式 | 触发次数（本季度） | 季度 | 关联 Defect IDs | 关联 Postmortem | 状态 |
 |------|--------------------|------|-----------------|-----------------|------|
 | Markdown 断链（相对路径错误） | 3 | 2026-Q2 | PDEF-001、PDEF-004（label-strategy）、PDEF-005 | [RCA-PDEF-005](../postmortems/RCA-2026-05-26-PDEF-005-rca-broken-links.md)（含模式分析） | 🟡 AI-1/2 待落地（本地检查工具缺失） |
+| Copilot commit subject 超 72 字符 | **3 次跨季度累计** | Q2–Q4 2026 | DEF-022、PDEF-003、PDEF-019 | [RCA-PDEF-019](../postmortems/RCA-2026-11-04-PDEF-019-copilot-commit-subject-length.md) | 🔴 已触发专项 AI：评估 GitHub Push Ruleset 服务端校验（AI-2） |
 
 ---
 
@@ -112,6 +115,7 @@
 | 2026-07-12 | 登记并关闭 `PDEF-008`：Dependabot PR #407 lockfile 由 npm 11 生成但与 CI npm 10 不兼容，`npm ci` 报 `conventional-commits-parser@6.4.0 Missing from lock file`；用 npm 10 重新生成 lockfile 修复 | QA |
 | 2026-07-12 | 登记并关闭 `PDEF-009`：`robot-framework-demo` Selenium Grid 容器继承宿主机 HTTP_PROXY，`127.0.0.1:7890` 在容器内不可达导致浏览器 9 用例全红；在 `docker-compose.yml` 中添加 `no_proxy` 覆盖修复 | QA |
 | 2026-07-15 | 新增 PDEF-010~014（从 req-register PREQ-009/010/011/013/015 迁移而来，对应 Issues #428/#429/#430/#432/#434）；状态：Triaged | QA |
+| 2026-11-04 | 登记并关闭 PDEF-019（PR #834 Copilot subject 超长 85 字符，三次复发，cherry-pick rebase 修复）；登记并关闭 PDEF-020（TC-NAV-002 smoke 测试断言外部 URL DOM 结构，Azure CI CDN 返回无 `<h1>` 响应，降级为 regression 修复）；关闭 PDEF-017/018；附 RCA；更新 Pattern Tracking 表 | QA |
 | 2026-11-03 | 新增 PDEF-017（#832）：Commit Guard 未豁免 dependabot[bot]，grouped PR message 超 72 字符阻塞 CI；根治方案：Commit Guard 跳過 dependabot[bot] 作者 commit；新增 PDEF-018（#831）：CI Python 版本硬编码，依赖升级时版本冲突无法提前发现；根治方案：各平台引入 .python-version 统一声明 | QA |
 | 2026-07-16 | 关闭 PDEF-010~014：修复批量 PR（fix/batch-h1-h7-defects）；新增 PDEF-015（#431 commit-guard.yml path filter）、PDEF-016（#433 Dependabot Python 覆盖）；状态：Fixed | QA |
 | 2026-05-26 | 登记并关闭 `PDEF-005`：DEF-023 RCA 文件 2 处路径多 1 层 `../`（outside repo）；`defects/register.md` RCA 反链少 1 层；3 处断链导致 PR #276 `Repository Meta CI / lint`（run #26445816667）报红；修正路径后关闭 | QA |
