@@ -28,6 +28,8 @@
 |-----------|--------------|----------|-------------|--------|-----------|----------|------|-------------|------------------------|
 | PDEF-015 | [#431](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/431) | commit-guard.yml 无 path filter，文档 PR 也触发 | 仓库级 / CI 规范 | P2 | ❌ | 2026-07-13 | Fixed | — | — |
 | PDEF-016 | [#433](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/433) | Dependabot 缺少 Python 生态覆盖（7 个 requirements.txt） | 仓库级 / 依赖管理 | P1 | ❌ | 2026-07-13 | Fixed | — | — |
+| PDEF-017 | [#832](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/832) | Commit Guard 未豁免 dependabot[bot]，grouped PR message 超 72 字符导致 CI 阻塞 | 仓库级 / CI 规范 | P2 | ❌ | 2026-11-03 | Open | — | PR #823、#824 |
+| PDEF-018 | [#831](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/831) | CI Python 版本硬编码且分散，无法提前发现依赖的 Python 最低版本要求冲突 | 仓库级 / CI 环境 | P2 | ❌ | 2026-11-03 | Open | — | PR #824（DEF-002）|
 
 > 已存在的项目级活跃缺陷请见对应项目登记表（见第 6 节"项目级登记入口"）。
 >
@@ -110,6 +112,7 @@
 | 2026-07-12 | 登记并关闭 `PDEF-008`：Dependabot PR #407 lockfile 由 npm 11 生成但与 CI npm 10 不兼容，`npm ci` 报 `conventional-commits-parser@6.4.0 Missing from lock file`；用 npm 10 重新生成 lockfile 修复 | QA |
 | 2026-07-12 | 登记并关闭 `PDEF-009`：`robot-framework-demo` Selenium Grid 容器继承宿主机 HTTP_PROXY，`127.0.0.1:7890` 在容器内不可达导致浏览器 9 用例全红；在 `docker-compose.yml` 中添加 `no_proxy` 覆盖修复 | QA |
 | 2026-07-15 | 新增 PDEF-010~014（从 req-register PREQ-009/010/011/013/015 迁移而来，对应 Issues #428/#429/#430/#432/#434）；状态：Triaged | QA |
+| 2026-11-03 | 新增 PDEF-017（#832）：Commit Guard 未豁免 dependabot[bot]，grouped PR message 超 72 字符阻塞 CI；根治方案：Commit Guard 跳過 dependabot[bot] 作者 commit；新增 PDEF-018（#831）：CI Python 版本硬编码，依赖升级时版本冲突无法提前发现；根治方案：各平台引入 .python-version 统一声明 | QA |
 | 2026-07-16 | 关闭 PDEF-010~014：修复批量 PR（fix/batch-h1-h7-defects）；新增 PDEF-015（#431 commit-guard.yml path filter）、PDEF-016（#433 Dependabot Python 覆盖）；状态：Fixed | QA |
 | 2026-05-26 | 登记并关闭 `PDEF-005`：DEF-023 RCA 文件 2 处路径多 1 层 `../`（outside repo）；`defects/register.md` RCA 反链少 1 层；3 处断链导致 PR #276 `Repository Meta CI / lint`（run #26445816667）报红；修正路径后关闭 | QA |
 | 2026-05-26 | 登记 `DEF-023`（[#278](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/278)）：perf-platform `stage4-selftest-fast.bats:144` 分支白名单缺 `docs/`，PR #276 CI 红灯（run #26438598385 / job #77827370629）；Fix in review（PR #276）；pre-push 改进 PR #277；活跃数 9 → 10 | QA |
