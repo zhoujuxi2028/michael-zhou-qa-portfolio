@@ -2,13 +2,13 @@
 
 SQL & PL/pgSQL testing demo using pytest + PostgreSQL (via testcontainers + OrbStack).
 
-> **Portfolio context:** Demonstrates SQL testing skills aligned to enterprise WMS roles (e.g., DSV Senior IT Specialist #114361). Covers CRUD validation, complex queries, stored procedures, query performance analysis, and WMS-style reporting queries.
+> **Portfolio context:** Demonstrates SQL testing skills for enterprise WMS roles. Covers CRUD validation, complex queries, stored procedures, query performance analysis, and WMS-style reporting queries.
 
 [中文版](./README.md)
 
 ## Business Context — FastWare WMS Scenario
 
-**FastWare** is a fictional third-party logistics (3PL) company (modelled after real-world 3PL providers such as DSV). FastWare manages a warehouse for multiple retail clients. Warehouse operators handle inbound receipts, inventory checks, outbound order fulfilment, and daily inventory reports.
+**FastWare** is a fictional third-party logistics (3PL) company. FastWare manages a warehouse for multiple retail clients. Warehouse operators handle inbound receipts, inventory checks, outbound order fulfilment, and daily inventory reports.
 
 **Core business flow:**
 
@@ -96,13 +96,3 @@ sql-testing-demo/
 | `orders` | id, client_id, status, created_at | Outbound customer orders |
 | `stock_movements` | id, sku, order_id, movement_type, qty, moved_at | Full inbound/outbound audit log |
 
-## JD Alignment (DSV Senior IT Specialist #114361)
-
-| JD Requirement | Demo Coverage |
-|---------------|---------------|
-| Good SQL command language | CRUD, JOIN, aggregation, window functions (`test_crud.py`, `test_queries.py`) |
-| PL/SQL queries + tuning | PL/pgSQL stored procedures + EXPLAIN ANALYZE index optimisation (`test_procedures.py`, `test_performance.py`) |
-| Regression testing for warehouse flows | Full test suite re-run on every commit (CI workflow) |
-| Develop test plans and scenarios | `docs/qa/test-plan.md` with TC-01 ~ TC-09 |
-| 4-eyes principle / validation | PR review + CI gate before merge |
-| Version / source control | Git + conventional commits + PR workflow |
