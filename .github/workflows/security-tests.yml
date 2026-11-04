@@ -29,9 +29,6 @@ concurrency:
 permissions:
   contents: read
 
-env:
-  PYTHON_VERSION: '3.13'
-
 jobs:
   security-tests:
     runs-on: ubuntu-latest
@@ -56,7 +53,6 @@ jobs:
       - name: Set up project
         uses: ./.github/actions/setup-python-project
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
           cache-dependency-path: 'security-testing-demo/requirements.txt'
           working-directory: security-testing-demo
 
@@ -118,7 +114,6 @@ jobs:
       - name: Set up project
         uses: ./.github/actions/setup-python-project
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
           cache-dependency-path: 'security-testing-demo/requirements.txt'
           working-directory: security-testing-demo
 
@@ -211,7 +206,6 @@ jobs:
       - name: Set up project
         uses: ./.github/actions/setup-python-project
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
           cache-dependency-path: 'security-testing-demo/requirements.txt'
           working-directory: security-testing-demo
           extra-packages: safety

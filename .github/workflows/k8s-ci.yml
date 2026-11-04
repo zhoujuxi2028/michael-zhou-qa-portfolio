@@ -29,9 +29,6 @@ defaults:
   run:
     working-directory: k8s-auto-testing-platform
 
-env:
-  PYTHON_VERSION: '3.11'
-
 jobs:
   code-quality:
     name: K8S Auto Testing / Code Quality
@@ -45,7 +42,6 @@ jobs:
       - name: Set up project
         uses: ./.github/actions/setup-python-project
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
           cache-dependency-path: 'k8s-auto-testing-platform/requirements.txt'
           working-directory: k8s-auto-testing-platform
           extra-packages: flake8 black isort pylint
@@ -93,7 +89,6 @@ jobs:
       - name: Set up project
         uses: ./.github/actions/setup-python-project
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
           cache-dependency-path: 'k8s-auto-testing-platform/requirements.txt'
           working-directory: k8s-auto-testing-platform
           extra-packages: pytest-cov
@@ -185,7 +180,6 @@ jobs:
       - name: Set up project
         uses: ./.github/actions/setup-python-project
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
           cache-dependency-path: 'k8s-auto-testing-platform/requirements.txt'
           working-directory: k8s-auto-testing-platform
 

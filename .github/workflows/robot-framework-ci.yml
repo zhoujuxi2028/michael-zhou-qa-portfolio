@@ -11,6 +11,7 @@ on:
     paths:
       - 'robot-framework-demo/**'
       - '.github/workflows/robot-framework-ci.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -51,7 +52,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version-file: robot-framework-demo/.python-version
           cache: 'pip'
           cache-dependency-path: robot-framework-demo/requirements.txt
 
