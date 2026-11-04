@@ -3,9 +3,9 @@ description: 统一安装 Python、配置 pip cache，并执行项目依赖安�
 
 inputs:
   python-version:
-    description: Python 版本
+    description: Python 版本（留空则自动读取 working-directory/.python-version）
     required: false
-    default: '3.11'
+    default: ''
   cache-dependency-path:
     description: requirements 文件路径
     required: true
@@ -25,10 +25,21 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Validate .python-version exists when python-version not set
+      if: ${{ inputs.python-version == '' }}
+      shell: bash
+      run: |
+        FILE="${{ inputs.working-directory }}/.python-version"
+        if [ ! -f "$FILE" ]; then
+          echo "::error::$FILE not found. Create it or pass python-version explicitly."
+          exit 1
+        fi
+
     - name: Set up Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
-        python-version: ${{ inputs.python-version }}
+        python-version: ${{ inputs.python-version != '' && inputs.python-version || '' }}
+        python-version-file: ${{ inputs.python-version == '' && format('{0}/.python-version', inputs.working-directory) || '' }}
         cache: pip
         cache-dependency-path: ${{ inputs.cache-dependency-path }}
 
