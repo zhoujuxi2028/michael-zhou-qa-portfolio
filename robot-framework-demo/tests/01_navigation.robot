@@ -12,7 +12,7 @@ TC-NAV-001: 验证首页加载成功
 
 TC-NAV-002: 验证页面包含核心元素
     [Documentation]    验证页面 DOM 结构包含必要的 H1 和链接元素
-    [Tags]    smoke    navigation    P0
+    [Tags]    regression    navigation    P1
     Element Should Be Present    xpath://h1
     Element Should Be Present    xpath://a
 
