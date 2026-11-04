@@ -2,7 +2,7 @@
 
 使用 pytest + PostgreSQL（testcontainers + OrbStack）进行 SQL 与 PL/pgSQL 测试的演示项目。
 
-> **Portfolio 说明**：本项目展示与企业级 WMS 岗位（如 DSV Senior IT Specialist #114361）直接对应的 SQL 测试能力，覆盖 CRUD 校验、复杂查询、存储过程、查询性能分析和仓储报表查询。
+> **Portfolio 说明**：本项目展示企业级 WMS 岗位所需的 SQL 测试能力，覆盖 CRUD 校验、复杂查询、存储过程、查询性能分析和仓储报表查询。
 
 [English Version](./README.en.md)
 
@@ -10,7 +10,7 @@
 
 ## 业务背景 — FastWare WMS 场景
 
-**FastWare** 是一家虚构的第三方物流（3PL）公司（参考 DSV 等真实 3PL 服务商）。FastWare 为多个零售客户管理仓库，仓库操作员负责入库收货、库存查询、出库发货和日常库存报表。
+**FastWare** 是一家虚构的第三方物流（3PL）公司。FastWare 为多个零售客户管理仓库，仓库操作员负责入库收货、库存查询、出库发货和日常库存报表。
 
 **核心业务流程：**
 
@@ -122,15 +122,3 @@ sql-testing-demo/
 | test_reports.py | 集成 | 4 | 分区汇总、补货报表、流水统计、库存排名 |
 | **合计** | | **32** | |
 
----
-
-## JD 对齐（DSV Senior IT Specialist #114361）
-
-| JD 要求 | Demo 覆盖 |
-|---------|----------|
-| 良好的 SQL 命令语言能力 | CRUD、JOIN、聚合、窗口函数（test_crud.py、test_queries.py） |
-| PL/SQL 查询编写与调优 | PL/pgSQL 存储过程 + EXPLAIN ANALYZE 索引优化（test_procedures.py、test_performance.py） |
-| 仓储流程的回归测试 | 每次提交全套测试自动运行（CI workflow） |
-| 制定测试计划和场景 | docs/qa/test-plan.md（TC-01 ~ TC-09） |
-| 四眼原则 / 验收 | PR Review + CI 门控后才能合并 |
-| 版本 / 源代码控制 | Git + Conventional Commits + PR 工作流 |
