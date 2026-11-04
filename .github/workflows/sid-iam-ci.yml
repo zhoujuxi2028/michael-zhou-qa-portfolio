@@ -32,7 +32,6 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-python-project
         with:
-          python-version: '3.12'
           working-directory: sid-iam-testing-platform
           cache-dependency-path: sid-iam-testing-platform/requirements.txt
       - run: black --check src/ tests/
@@ -47,7 +46,6 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-python-project
         with:
-          python-version: '3.12'
           working-directory: sid-iam-testing-platform
           cache-dependency-path: sid-iam-testing-platform/requirements.txt
       - name: Run unit tests (exclude integration)
@@ -67,7 +65,6 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-python-project
         with:
-          python-version: '3.12'
           working-directory: sid-iam-testing-platform
           cache-dependency-path: sid-iam-testing-platform/requirements.txt
       - name: Run integration tests
@@ -81,7 +78,6 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-python-project
         with:
-          python-version: '3.12'
           working-directory: sid-iam-testing-platform
           cache-dependency-path: sid-iam-testing-platform/requirements.txt
       - name: Run all 138 tests with coverage
