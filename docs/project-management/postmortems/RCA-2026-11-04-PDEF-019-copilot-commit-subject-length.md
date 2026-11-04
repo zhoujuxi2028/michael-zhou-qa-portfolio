@@ -32,8 +32,17 @@ Copilot 在拟稿 commit subject 时未执行字符数自检。两个 subject �
 | 防线 | 状态 |
 |------|------|
 | `.husky/pre-push` → `check-commit-guard.sh` | ❌ Copilot 经后台路径推送，不触发 Husky |
-| `Commit Guard` CI 兜底 | ✅ 事后拦截（已红灯） |
-| `CLAUDE.md` 明确 ≤72 规则 + 字符预算 | ⚠️ 文档存在，但未对 Copilot 形成强制约束 |
+| `.husky/commit-msg` → 长度检查（`LEN > 72` 立即 fail） | ✅ **本地 git commit 路径有效**（Claude Code 等本地 Agent） |
+| `.husky/pre-push` → `check-commit-guard.sh` | ✅ 本地 push 路径有效 |
+| `Commit Guard` CI 兜底 | ✅ 事后拦截（所有路径均生效） |
+| `CLAUDE.md` 明确 ≤72 规则 + 字符预算 | ✅ 对本地 Agent 有效；对 Copilot 仅文档提示 |
+
+**关键区分**：
+
+| 提交主体 | 路径 | commit-msg hook | 结论 |
+|----------|------|-----------------|------|
+| Claude Code（本地） | `git commit` → hook | ✅ 立即拦截 | **已有完整防线** |
+| Copilot Cloud Agent | `report_progress` API | ❌ 绕过所有 hook | CI 是唯一兜底 |
 
 ### 2.3 与历史缺陷的关系
 
@@ -79,9 +88,9 @@ GitHub Push Rulesets 的 `commit-metadata` 规则（服务端强制校验 commit
 
 | 编号 | 描述 | 责任人 | 截止 | 状态 |
 |------|------|--------|------|------|
-| AI-1 | 在 `CLAUDE.md` 明确标注：同模式已三次复发（DEF-022 / PDEF-003 / PDEF-019），**不能仅靠文档规则防范** | QA Lead | 本次 | ✅ |
-| AI-2 | 评估并落地 GitHub Push Ruleset 服务端 commit subject 长度校验（≤72），彻底消除 Copilot 绕过 Husky 的结构性漏洞 | 仓库维护者 | 下季度 | 🟡 待落地 |
-| AI-3 | Copilot 在拟稿 commit subject 时增加 bash 自验步骤：`SUBJECT="..."; echo "len=${#SUBJECT}"`（已在 CLAUDE.md 记录，需 Copilot 在每次 commit 前执行） | Copilot | 每次提交 | 🟡 流程强化 |
+| AI-1 | 确认 `.husky/commit-msg` 已在 commit 时校验 subject ≤72；本地 Agent（Claude Code）路径已有完整防线 | QA Lead | 2026-11-04 | ✅ 已验证 |
+| AI-2 | 在 `CLAUDE.md` 明确标注：三次复发均来自 Copilot Cloud Agent（服务端路径），本地路径已受 commit-msg hook 保护；Copilot 路径的唯一兜底是 CI | QA Lead | 2026-11-04 | ✅ 已更新本 RCA |
+| AI-3 | Copilot 路径（`report_progress`）的结构性漏洞需 GitHub 平台层支持（Push Ruleset 服务端校验），当前阶段以 CI 兜底为主 | 仓库维护者 | 下季度 | 🟡 待评估 |
 
 ---
 
