@@ -29,10 +29,10 @@ AutoSoft 是一家 Tier-1 供应商，负责车载 IVI（In-Vehicle Infotainment
 | ID | 需求描述 | 类型 | 优先级 | 验收标准 | 状态 |
 |----|---------|------|--------|---------|------|
 | IVI-01 | 软件包（ECU image）管理模块：模拟 IVI/Cluster image 版本、元数据（版本号、目标 ECU、checksum） | FR | P1 | `PackageRegistry` 可注册/查询/删除 image，单元测试覆盖 CRUD | Proposed |
-| IVI-02 | 虚拟设备管理：模拟 ECU target（IVI / Cluster / ADAS），支持 start / stop / status 状态机 | FR | P1 | `VirtualDevice` 状态转换有测试，非法转换抛异常 | Proposed |
+| IVI-02 | 虚拟设备管理：模拟 ECU target（IVI / Cluster / CODRIVER / ADAS），支持 start / stop / status 状态机；CODRIVER 为副驾娱乐屏节点 | FR | P1 | `VirtualDevice` 状态转换有测试，非法转换抛异常，四种 ECU 类型均可实例化 | Proposed |
 | IVI-03 | ECU flashing 流程模拟：upload → verify checksum → flash → confirm，含失败处理与回滚 | FR | P1 | 正常路径和失败路径（checksum 不匹配、flash timeout）各有集成测试 | Proposed |
 | IVI-04 | Smoke 测试套件：设备上电自检（power-on self-test）、基础功能响应（屏幕、音频）、CAN 总线连通性验证（python-can Virtual Bus 收发帧） | FR | P1 | ≥5 条 smoke 用例，执行 < 30s，含 CAN 帧收发断言，CI 必选 | Proposed |
-| IVI-05 | Integration 测试套件：IVI ↔ Cluster 数据同步（python-can + cantools DBC 信号编解码）、媒体状态信号、导航指令、OTA 触发；验证信号值和 arbitration ID 正确 | FR | P1 | ≥8 条集成用例，使用 DBC 文件定义信号，断言解码后字段值与发送值一致 | Proposed |
+| IVI-05 | Integration 测试套件：IVI ↔ Cluster 数据同步、IVI → CoDriver 内容同步（ContentId）、CoDriver 独立播放不干扰主驾、媒体/导航/OTA 信号；python-can + cantools DBC 编解码 | FR | P1 | ≥11 条集成用例（含 3 条 CoDriver 场景），断言解码字段值与发送值一致，节点状态互不干扰 | Proposed |
 | IVI-06 | Regression 测试套件：基于历史已知缺陷的回归用例，含 flaky test 检测标记 | FR | P2 | ≥6 条回归用例，含 `@pytest.mark.regression` 标记，可独立运行 | Proposed |
 | IVI-07 | 日志收集与分析：测试执行日志、设备日志分级（ERROR/WARN/INFO），失败时自动提取 ERROR 行 | FR | P2 | 失败测试自动输出 ERROR 摘要，日志保存到 `logs/` | Proposed |
 | IVI-08 | 测试报告生成：pytest-html 报告 + Allure（可选），包含测试层级、版本信息、执行时间 | FR | P2 | `make report` 生成 HTML 报告到 `reports/` | Proposed |
@@ -84,8 +84,8 @@ AutoSoft 是一家 Tier-1 供应商，负责车载 IVI（In-Vehicle Infotainment
 | pytest-html | HTML 报告 | pip |
 | pytest-xdist | 并行执行 | pip |
 | pytest-cov | 覆盖率 | pip |
-| python-can | CAN 总线模拟（Virtual Bus，跨平台） | pip |
-| cantools | DBC 文件解析，CAN 信号编解码 | pip |
+| python-can | CAN 总线模拟（Virtual Bus，跨平台，3 节点：IVI/Cluster/CoDriver） | pip |
+| cantools | DBC 文件解析，CAN 信号编解码（含 CoDriver_Status / IVI_ContentSync） | pip |
 | black | 代码格式化 | pip |
 | flake8 | Lint | pip |
 | isort | import 排序 | pip |
