@@ -1,0 +1,68 @@
+name: IVI Integration Lab CI
+
+on:
+  push:
+    paths:
+      - "ivi-integration-lab/**"
+      - ".github/workflows/ivi-integration-ci.yml"
+  pull_request:
+    paths:
+      - "ivi-integration-lab/**"
+      - ".github/workflows/ivi-integration-ci.yml"
+
+defaults:
+  run:
+    working-directory: ivi-integration-lab
+
+jobs:
+  test:
+    name: IVI Integration Lab / ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: ivi-integration-lab/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Lint
+        run: |
+          black --check src/ tests/
+          isort --check-only src/ tests/
+          flake8 src/ tests/ --max-line-length=120 --extend-ignore=E203
+
+      - name: Unit tests
+        run: pytest tests/unit/ -v --cov=src --cov-report=xml --cov-fail-under=80
+
+      - name: Smoke tests (quality gate)
+        run: pytest tests/integration/ -m smoke -v
+
+      - name: Integration tests
+        run: pytest tests/integration/ -m integration -v
+
+      - name: Regression tests
+        run: pytest tests/integration/ -m regression -v
+
+      - name: Generate HTML report
+        if: always()
+        run: |
+          mkdir -p reports
+          pytest tests/ --html=reports/report.html --self-contained-html -q
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ivi-test-report-py${{ matrix.python-version }}
+          path: ivi-integration-lab/reports/report.html
+          retention-days: 30

@@ -201,6 +201,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `security-tests.yml` | security-testing-demo | Security / Tests: DVWA, Juice Shop, ZAP, OWASP Top 10 |
 | `sid-iam-ci.yml` | sid-iam-testing-platform | SID IAM CI: code quality, unit tests, integration |
 | `sql-testing-demo-ci.yml` | sql-testing-demo | SQL Testing Demo CI: ruff format → unit tests → integration tests (32 tests) |
+| `ivi-integration-ci.yml` | ivi-integration-lab | IVI Integration Lab CI: lint → unit tests (43) → smoke → integration → regression (65 tests total, Python 3.11/3.12 matrix) |
 | `docker-tests.yml` | cicd-demo | CICD Demo / Docker Nightly: Cypress + Newman in containers |
 | `codeql-analysis.yml` | repository (JS+Python) | CodeQL Analysis: 代码语义漏洞扫描 (XSS, SQLi, path traversal) |
 | `security-scan.yml` | cicd-demo | Security / Scan: Trivy fs + Docker + IaC + npm audit → SARIF |
