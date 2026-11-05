@@ -1,0 +1,30 @@
+VERSION ""
+
+NS_ :
+
+BS_:
+
+BU_: IVI Cluster CoDriver
+
+BO_ 256 IVI_Status: 8 IVI
+ SG_ MediaState : 0|8@1+ (1,0) [0|3] "" Cluster,CoDriver
+ SG_ Volume : 8|8@1+ (1,0) [0|100] "" Cluster
+
+BO_ 257 IVI_Navigation: 8 IVI
+ SG_ NavCommand : 0|8@1+ (1,0) [0|255] "" Cluster
+
+BO_ 258 IVI_OTA: 8 IVI
+ SG_ OTATrigger : 0|1@1+ (1,0) [0|1] "" Cluster
+
+BO_ 259 IVI_ContentSync: 8 IVI
+ SG_ ContentId : 0|16@1+ (1,0) [0|65535] "" CoDriver
+ SG_ SyncEnable : 16|1@1+ (1,0) [0|1] "" CoDriver
+
+BO_ 512 Cluster_Status: 8 Cluster
+ SG_ VehicleSpeed : 0|16@1+ (0.1,0) [0|300] "km/h" IVI
+ SG_ GearPosition : 16|4@1+ (1,0) [0|8] "" IVI
+
+BO_ 768 CoDriver_Playback: 8 CoDriver
+ SG_ PlaybackState : 0|8@1+ (1,0) [0|2] "" IVI
+ SG_ CoVolume : 8|8@1+ (1,0) [0|100] "" IVI
+
