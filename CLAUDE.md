@@ -67,6 +67,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | 稳定性测试 | `k8s-auto-testing-platform/` — K8S HPA + Chaos (37 tests) | Python, Pytest, Chaos Mesh | `k8s-auto-testing-platform/CLAUDE.md` |
 | **AI 测试** | `ai-testing-platform/` — AI-Powered Testing Platform (92 tests) | Python, Pytest, Rule Engine | `ai-testing-platform/CLAUDE.md` |
 | AI 测试 | `llm-agent-tutorial/` — LLM Agent Engineering Tutorial | Python, Anthropic API | `llm-agent-tutorial/CLAUDE.md` |
+| 集成测试 | `ivi-integration-lab/` — IVI 车载集成验证实验室 (65 tests: unit + smoke + integration + regression) | Python, pytest, python-can, cantools | `ivi-integration-lab/CLAUDE.md` |
 
 > **Quick Commands**: 各项目的安装、运行、测试命令详见对应子项目 `CLAUDE.md`。
 
