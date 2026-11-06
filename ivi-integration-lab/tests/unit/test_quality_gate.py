@@ -32,7 +32,7 @@ def test_flaky_rate_exceeds_threshold(gate):
 
 def test_coverage_above_threshold(gate):
     result = gate.check_coverage(85.0)
-    assert result.passed is True
+    assert result.passed is False  # HARNESS-BREAK: intentional CI RED verification
 
 
 def test_coverage_below_threshold(gate):
