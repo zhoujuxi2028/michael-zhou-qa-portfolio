@@ -529,5 +529,5 @@ kubectl delete pod <name> -n k8s-testing
 
 - [面试叙述](INTERVIEW-STORY.md)
 - [Demo 指南](../scripts/DEMO-GUIDE.md)
-- [FAQ](FAQ.md)
-- [架构设计](ARCHITECTURE.md)
+- FAQ
+- 架构设计

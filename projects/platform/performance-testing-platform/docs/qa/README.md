@@ -86,7 +86,7 @@ docs/qa/
 | 文档总览 | [../README.md](../README.md)                                                                               |
 | 架构设计 | [../architecture/architecture.md](../architecture/architecture.md)                                         |
 | 项目管理 | [../project-management/](../project-management/)                                                           |
-| Portfolio 缺陷登记 | [../../../docs/project-management/defect-tracking/README.md](../../../docs/project-management/defect-tracking/README.md) |
+| Portfolio 缺陷登记 | [../../../../../docs/project-management/defect-tracking/README.md](../../../../../docs/project-management/defect-tracking/README.md) |
 
 ---
 

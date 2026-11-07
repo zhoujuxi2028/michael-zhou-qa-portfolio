@@ -122,13 +122,13 @@ Step-by-step learning guides for each phase:
 
 | Guide | Content | Level |
 |-------|---------|-------|
-| [Phase 1: DVWA Security Testing](docs/PHASE1-LEARNING-GUIDE.md) | XSS, SQL Injection, CSRF, Authentication, Security Headers | Beginner |
-| [Phase 2: ZAP Automation](docs/PHASE2-LEARNING-GUIDE.md) | ZAP API, Spider, Scanning, CI/CD Integration | Intermediate |
-| [Phase 3: Burp Suite Manual Testing](docs/PHASE3-LEARNING-GUIDE.md) | Proxy, Repeater, Intruder, Decoder | Intermediate |
-| [Phase 4: Juice Shop API Testing](docs/PHASE4-LEARNING-GUIDE.md) | REST API, JWT, NoSQL Injection, Business Logic | Advanced |
-| [Phase 5: Nessus Essentials](docs/PHASE5-LEARNING-GUIDE.md) | Vulnerability Scanning, CVE, CVSS, Compliance | Intermediate |
-| [Phase 6: OpenVAS](docs/PHASE6-LEARNING-GUIDE.md) | Open Source Scanning, GVM Architecture, NVT | Intermediate |
-| [Phase 7: OWASP Top 10 Complete](docs/PHASE7-LEARNING-GUIDE.md) | SQLMap, Multi-level Tests, Full OWASP Coverage | Advanced |
+| Phase 1: DVWA Security Testing | XSS, SQL Injection, CSRF, Authentication, Security Headers | Beginner |
+| Phase 2: ZAP Automation | ZAP API, Spider, Scanning, CI/CD Integration | Intermediate |
+| Phase 3: Burp Suite Manual Testing | Proxy, Repeater, Intruder, Decoder | Intermediate |
+| Phase 4: Juice Shop API Testing | REST API, JWT, NoSQL Injection, Business Logic | Advanced |
+| Phase 5: Nessus Essentials | Vulnerability Scanning, CVE, CVSS, Compliance | Intermediate |
+| Phase 6: OpenVAS | Open Source Scanning, GVM Architecture, NVT | Intermediate |
+| Phase 7: OWASP Top 10 Complete | SQLMap, Multi-level Tests, Full OWASP Coverage | Advanced |
 
 ## Project Structure
 
@@ -175,7 +175,7 @@ security-testing-demo/
 
 ## CI/CD Integration
 
-The project includes GitHub Actions workflow ([`security-tests.yml`](../.github/workflows/security-tests.yml)) with 5 parallel jobs:
+The project includes GitHub Actions workflow ([`security-tests.yml`](../../../.github/workflows/security-tests.yml)) with 5 parallel jobs:
 
 | Job | Description | Service |
 |-----|-------------|---------|
@@ -222,13 +222,13 @@ Triggers: push to main, PR to main, weekly schedule, manual dispatch.
 
 | 指南 | 内容 | 级别 |
 |------|------|------|
-| [Phase 1: DVWA 安全测试](docs/PHASE1-LEARNING-GUIDE.md) | XSS、SQL 注入、CSRF、认证、安全头 | 入门 |
-| [Phase 2: ZAP 自动化](docs/PHASE2-LEARNING-GUIDE.md) | ZAP API、爬虫、扫描、CI/CD 集成 | 中级 |
-| [Phase 3: Burp Suite 手动测试](docs/PHASE3-LEARNING-GUIDE.md) | Proxy、Repeater、Intruder、Decoder | 中级 |
-| [Phase 4: Juice Shop API 测试](docs/PHASE4-LEARNING-GUIDE.md) | REST API、JWT、NoSQL 注入、业务逻辑 | 高级 |
-| [Phase 5: Nessus Essentials](docs/PHASE5-LEARNING-GUIDE.md) | 漏洞扫描、CVE、CVSS、合规检查 | 中级 |
-| [Phase 6: OpenVAS](docs/PHASE6-LEARNING-GUIDE.md) | 开源扫描、GVM 架构、NVT | 中级 |
-| [Phase 7: OWASP Top 10 完整覆盖](docs/PHASE7-LEARNING-GUIDE.md) | SQLMap、多安全级别测试、完整 OWASP 覆盖 | 高级 |
+| Phase 1: DVWA 安全测试 | XSS、SQL 注入、CSRF、认证、安全头 | 入门 |
+| Phase 2: ZAP 自动化 | ZAP API、爬虫、扫描、CI/CD 集成 | 中级 |
+| Phase 3: Burp Suite 手动测试 | Proxy、Repeater、Intruder、Decoder | 中级 |
+| Phase 4: Juice Shop API 测试 | REST API、JWT、NoSQL 注入、业务逻辑 | 高级 |
+| Phase 5: Nessus Essentials | 漏洞扫描、CVE、CVSS、合规检查 | 中级 |
+| Phase 6: OpenVAS | 开源扫描、GVM 架构、NVT | 中级 |
+| Phase 7: OWASP Top 10 完整覆盖 | SQLMap、多安全级别测试、完整 OWASP 覆盖 | 高级 |
 
 ### 项目亮点
 
@@ -259,4 +259,4 @@ python zap/zap-baseline.py --target http://localhost
 
 ## License
 
-MIT License - See [LICENSE](LICENSE) for details.
+MIT License - See LICENSE for details.

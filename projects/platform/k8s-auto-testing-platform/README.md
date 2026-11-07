@@ -76,7 +76,7 @@ Kubernetes automated testing platform focused on **HPA auto-scaling testing**, *
 
 **6. CI/CD Integration**
 
-GitHub Actions workflow: [`k8s-ci.yml`](../.github/workflows/k8s-ci.yml)
+GitHub Actions workflow: [`k8s-ci.yml`](../../../.github/workflows/k8s-ci.yml)
 
 | Stage | Job | Description |
 |-------|-----|-------------|
@@ -171,25 +171,25 @@ k8s-auto-testing-platform/
 ## Documentation
 
 ### Core Documentation
-- [Architecture](docs/ARCHITECTURE.md) - System design and components
-- [Test Cases](docs/TEST-CASES.md) - Complete test case catalog
-- [Chaos Engineering](docs/CHAOS-ENGINEERING.md) - Chaos testing methodology
-- [Monitoring Guide](docs/MONITORING-GUIDE.md) - Prometheus/Grafana setup
+- Architecture - System design and components
+- Test Cases - Complete test case catalog
+- Chaos Engineering - Chaos testing methodology
+- Monitoring Guide - Prometheus/Grafana setup
 
 ### Technical References
-- [API Documentation](docs/API-DOCUMENTATION.md) - FastAPI endpoints
-- [FAQ](docs/FAQ.md) - Frequently asked questions
-- [Troubleshooting](docs/TROUBLESHOOTING-LOG.md) - Known issues and solutions
+- API Documentation - FastAPI endpoints
+- FAQ - Frequently asked questions
+- Troubleshooting - Known issues and solutions
 
 ### Reports & Analysis
-- [Performance Report](docs/PERFORMANCE-REPORT.md) - Load testing results
-- [Coverage Report](docs/COVERAGE-REPORT.md) - Test coverage analysis
-- [Test Report](docs/TEST-REPORT.md) - Test execution summary
+- Performance Report - Load testing results
+- Coverage Report - Test coverage analysis
+- Test Report - Test execution summary
 
 ### FAQ
 - [Project Story](docs/INTERVIEW-STORY.md) - Project talking points
 - [Technical Q&A](docs/TECHNICAL-QA.md) - Technical deep dive
-- [WBS Guide](docs/WBS-GUIDE.md) - Work breakdown structure
+- WBS Guide - Work breakdown structure
 
 ### Demo Resources
 - [Demo Guide](scripts/DEMO-GUIDE.md) - Live demo walkthrough
@@ -246,7 +246,7 @@ Kubernetes 自动化测试平台，专注于 **HPA 自动扩缩容测试**、**�
 
 **6. CI/CD 集成**
 
-GitHub Actions workflow: [`k8s-ci.yml`](../.github/workflows/k8s-ci.yml)
+GitHub Actions workflow: [`k8s-ci.yml`](../../../.github/workflows/k8s-ci.yml)
 
 | 阶段 | 任务 | 说明 |
 |------|------|------|
@@ -341,25 +341,25 @@ k8s-auto-testing-platform/
 ## 文档
 
 ### 核心文档
-- [架构设计](docs/ARCHITECTURE.md) - 系统设计和组件
-- [测试用例](docs/TEST-CASES.md) - 完整测试用例目录
-- [混沌工程](docs/CHAOS-ENGINEERING.md) - 混沌测试方法论
-- [监控指南](docs/MONITORING-GUIDE.md) - Prometheus/Grafana 设置
+- 架构设计 - 系统设计和组件
+- 测试用例 - 完整测试用例目录
+- 混沌工程 - 混沌测试方法论
+- 监控指南 - Prometheus/Grafana 设置
 
 ### 技术参考
-- [API 文档](docs/API-DOCUMENTATION.md) - FastAPI 端点
-- [常见问题](docs/FAQ.md) - 常见问题解答
-- [故障排除](docs/TROUBLESHOOTING-LOG.md) - 已知问题和解决方案
+- API 文档 - FastAPI 端点
+- 常见问题 - 常见问题解答
+- 故障排除 - 已知问题和解决方案
 
 ### 报告与分析
-- [性能报告](docs/PERFORMANCE-REPORT.md) - 负载测试结果
-- [覆盖率报告](docs/COVERAGE-REPORT.md) - 测试覆盖分析
-- [测试报告](docs/TEST-REPORT.md) - 测试执行摘要
+- 性能报告 - 负载测试结果
+- 覆盖率报告 - 测试覆盖分析
+- 测试报告 - 测试执行摘要
 
 ### 常见问题
 - [项目故事](docs/INTERVIEW-STORY.md) - 项目要点
 - [技术问答](docs/TECHNICAL-QA.md) - 技术深入解析
-- [WBS 指南](docs/WBS-GUIDE.md) - 工作分解结构
+- WBS 指南 - 工作分解结构
 
 ### 演示资源
 - [演示指南](scripts/DEMO-GUIDE.md) - 现场演示流程

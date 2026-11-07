@@ -135,6 +135,6 @@ TOTAL                          915    185    80%
 
 ## 相关文档
 
-- [测试用例目录](TEST-CASES.md)
-- [架构设计](ARCHITECTURE.md)
-- [CI/CD 配置](../.github/workflows/ci.yml)
+- 测试用例目录
+- 架构设计
+- [CI/CD 配置](../../../.github/workflows/k8s-ci.yml)

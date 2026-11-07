@@ -1,7 +1,7 @@
 # security-testing-demo Defect & Waiver Register
 
 > **维护规则:** 每次 Stage Gate 执行 / Issue 状态变化时同步；Issue 关闭后标记 Closed，保留历史行  
-> **制度文档:** [../../../docs/project-management/defect-tracking/README.md](../../../docs/project-management/defect-tracking/README.md)
+> **制度文档:** [../../../../../docs/project-management/defect-tracking/README.md](../../../../../docs/project-management/defect-tracking/README.md)
 
 ---
 

@@ -6,7 +6,7 @@
 > **状态**: ✅ 全部修复已合入 `main`
 > **关联 Issue**: [#192](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/192) · [#193](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/193) · [#194](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/194) · [#195](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/195)
 > **关联 RCA**: [RCA-2026-04-24-issue-192-193-grafana-readiness.md](RCA-2026-04-24-issue-192-193-grafana-readiness.md)
-> **关联 Defect 登记**: [stage4-defect-waiver-register.md](../../qa/stage4-defect-waiver-register.md) DEF-001 ~ DEF-004
+> **关联 Defect 登记**: stage4-defect-waiver-register.md DEF-001 ~ DEF-004
 
 ---
 

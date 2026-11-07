@@ -398,7 +398,7 @@ kubectl logs -l app=k8s-test-app -n k8s-testing --tail=50
 
 ## 相关文档
 
-- [问题排查记录](TROUBLESHOOTING-LOG.md) - 详细的问题解决记录
-- [架构设计](ARCHITECTURE.md) - 系统架构说明
-- [测试用例](TEST-CASES.md) - 完整测试用例列表
-- [监控指南](MONITORING-GUIDE.md) - Prometheus/Grafana 配置
+- 问题排查记录 - 详细的问题解决记录
+- 架构设计 - 系统架构说明
+- 测试用例 - 完整测试用例列表
+- 监控指南 - Prometheus/Grafana 配置

@@ -253,4 +253,4 @@
 - [GitHub 仓库](https://github.com/michael-zhou-qa-portfolio/k8s-auto-testing-platform)
 - [Demo 指南](../scripts/DEMO-GUIDE.md)
 - [技术 Q&A](TECHNICAL-QA.md)
-- [架构文档](ARCHITECTURE.md)
+- 架构文档

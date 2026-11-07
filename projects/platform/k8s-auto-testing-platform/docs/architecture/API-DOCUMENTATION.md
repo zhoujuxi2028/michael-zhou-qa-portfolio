@@ -364,6 +364,6 @@ FastAPI 自动生成 OpenAPI 文档:
 
 ## 相关文档
 
-- [架构设计](ARCHITECTURE.md)
-- [监控指南](MONITORING-GUIDE.md)
-- [测试用例](TEST-CASES.md)
+- 架构设计
+- 监控指南
+- 测试用例

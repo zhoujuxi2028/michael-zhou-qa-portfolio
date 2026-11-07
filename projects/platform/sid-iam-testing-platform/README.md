@@ -192,13 +192,13 @@ sid-iam-testing-platform/
 
 ## 文档
 
-- [需求文档](docs/REQUIREMENTS.md) — 功能与非功能需求
-- [WBS](docs/WBS.md) — 工作分解结构
-- [架构设计](docs/ARCHITECTURE.md) — 分层架构、Mock 服务、Fixture 层级
-- [测试用例目录](docs/TEST-CASES.md) — 138 个用例详细定义
-- [设计决策](docs/DESIGN-DECISIONS.md) — 10 个关键设计决策
-- [测试报告](docs/TEST-REPORT.md) — 138/138 通过，覆盖率 81%
-- [FAQ](docs/FAQ.md) — 常见问题
+- 需求文档 — 功能与非功能需求
+- WBS — 工作分解结构
+- 架构设计 — 分层架构、Mock 服务、Fixture 层级
+- 测试用例目录 — 138 个用例详细定义
+- 设计决策 — 10 个关键设计决策
+- 测试报告 — 138/138 通过，覆盖率 81%
+- FAQ — 常见问题
 
 ---
 

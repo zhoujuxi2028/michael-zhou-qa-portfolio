@@ -1,7 +1,7 @@
 # Performance Testing Platform — Postmortem 归档
 
 > 本目录收录 **performance-testing-platform** 项目内发生的事件复盘、根因分析与问题闭环文档。
-> Portfolio 级复盘请见：[../../../../docs/project-management/postmortems/](../../../../docs/project-management/postmortems/)
+> Portfolio 级复盘请见：[../../../../../../docs/project-management/postmortems/](../../../../../../docs/project-management/postmortems/)
 
 ## 1. 命名约定
 

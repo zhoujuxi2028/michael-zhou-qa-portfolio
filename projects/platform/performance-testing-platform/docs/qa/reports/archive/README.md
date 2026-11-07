@@ -28,5 +28,5 @@
 
 **最终交付物：**
 
-- 📌 [`../phase6-stage4-verification-report.md`](../phase6-stage4-verification-report.md) — 最终验收报告
-- 📌 [`../stage4-selftest-report.md`](../stage4-selftest-report.md) — 自测执行报告
+- 📌 `phase6-stage4-verification-report.md` — 最终验收报告
+- 📌 `stage4-selftest-report.md` — 自测执行报告

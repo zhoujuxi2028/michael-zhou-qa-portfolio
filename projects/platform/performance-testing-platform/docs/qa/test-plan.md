@@ -503,7 +503,7 @@ npm run generate-summary                    # 生成执行摘要报告
 | 架构设计                             | [architecture.md](../architecture/architecture.md)                                           | 系统架构 + 数据流                                                                 |
 | 风险清单                             | [risks.md](../project-management/risks.md)                                                   | 技术风险 + 缓解措施                                                               |
 | 需求文档                             | [requirements.md](../project-management/requirements.md)                                     | Phase 1~7 需求编号                                                                |
-| 开发流程                             | [dev-process-checklist.md](../../../docs/dev-process-checklist.md)                           | 5 阶段流程 + checklist                                                            |
+| 开发流程                             | [dev-process-checklist.md](../../../../../docs/dev-process-checklist.md)                           | 5 阶段流程 + checklist                                                            |
 | **Stage 4 Gate Template**            | [gates/stage4-template.md](gates/stage4-template.md)                                         | 每次 Stage 4 验收的可复用 Gate 模板；含 P0/P1/P2 checklist 与 Gate Decision Rules |
 | **Stage 4 Defect/Waiver Register**   | [defects/register.md](defects/register.md)                                                   | 缺陷与 waiver 统一登记表（活跃 + 历史 + Waiver，单一事实来源）                    |
 | **项目级缺陷登记 (Active)**          | [defects/register.md](defects/register.md)                                                   | 当前活跃 DEF-***；与 Portfolio 缺陷追踪联动                                       |
