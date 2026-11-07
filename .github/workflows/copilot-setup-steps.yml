@@ -26,12 +26,12 @@ jobs:
           cache: npm
           cache-dependency-path: |
             package-lock.json
-            api-testing-demo/package-lock.json
+            projects/functional/api-testing-demo/package-lock.json
             cicd-demo/package-lock.json
-            iwsva-cypress-e2e/package-lock.json
-            microservice-testing-platform/package-lock.json
-            performance-testing-platform/package-lock.json
-            playwright-demo/package-lock.json
+            projects/functional/iwsva-cypress-e2e/package-lock.json
+            projects/platform/microservice-testing-platform/package-lock.json
+            projects/platform/performance-testing-platform/package-lock.json
+            projects/functional/playwright-demo/package-lock.json
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -39,17 +39,17 @@ jobs:
           python-version-file: .python-version
           cache: pip
           cache-dependency-path: |
-            ai-testing-platform/pyproject.toml
-            ai-testing-platform/requirements.txt
-            k8s-auto-testing-platform/app/requirements.txt
-            k8s-auto-testing-platform/pyproject.toml
-            k8s-auto-testing-platform/requirements.txt
-            security-testing-demo/pyproject.toml
-            security-testing-demo/requirements.txt
-            selenium-demo/pyproject.toml
-            selenium-demo/requirements.txt
-            sid-iam-testing-platform/pyproject.toml
-            sid-iam-testing-platform/requirements.txt
+            projects/ai/ai-testing-platform/pyproject.toml
+            projects/ai/ai-testing-platform/requirements.txt
+            projects/platform/k8s-auto-testing-platform/app/requirements.txt
+            projects/platform/k8s-auto-testing-platform/pyproject.toml
+            projects/platform/k8s-auto-testing-platform/requirements.txt
+            projects/security/security-testing-demo/pyproject.toml
+            projects/security/security-testing-demo/requirements.txt
+            projects/functional/selenium-demo/pyproject.toml
+            projects/functional/selenium-demo/requirements.txt
+            projects/platform/sid-iam-testing-platform/pyproject.toml
+            projects/platform/sid-iam-testing-platform/requirements.txt
 
       - name: Show warmed dependency manifests
         shell: bash
