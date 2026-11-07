@@ -41,6 +41,9 @@ where = ["src"]
 
 # ==================== Pytest Configuration ====================
 [tool.pytest.ini_options]
+# Python Path (add src/ to resolve imports after restructure)
+pythonpath = ["src"]
+
 # Test Discovery
 testpaths = ["tests"]
 python_files = "test_*.py"
