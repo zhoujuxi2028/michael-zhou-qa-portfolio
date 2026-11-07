@@ -11,8 +11,8 @@ Welcome to the IWSVA Selenium Tests documentation. This hub provides quick acces
 ## 📋 Test Documentation
 
 **For QA Engineers and Test Writers:**
-- [System Update Test Cases](test-documentation/SYSTEM_UPDATE_TEST_CASES.md) - Complete test case documentation
-- [Test Cases README](test-documentation/README.md) - Test case overview
+- System Update Test Cases - Complete test case documentation
+- Test Cases README - Test case overview
 
 ## 🏗️ Architecture & Implementation
 

@@ -307,7 +307,7 @@ For production deployments, consider:
 - [GitOps/ArgoCD](../gitops/README.md) - GitOps deployment (Phase 1.5)
 - [Monitoring](../monitoring/MONITORING.md) - Prometheus + Grafana (Phase 1.6)
 - [CI/CD Guide](../docs/guides/CI-CD-GUIDE.md) - GitHub Actions integration
-- [WBS](../docs/WBS-SIMPLE.md) - Project work breakdown
+- WBS - Project work breakdown
 
 ## License
 

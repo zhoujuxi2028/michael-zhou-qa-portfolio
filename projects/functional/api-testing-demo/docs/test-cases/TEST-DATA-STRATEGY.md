@@ -525,9 +525,9 @@ pm.test('[Verification] Stock decreased by order quantity', () => {
 
 ## 🔗 Related Documentation
 
-- [ADVANCED-FEATURES.md](./ADVANCED-FEATURES.md) - Complete framework documentation
-- [API-TESTING-GUIDE.md](./API-TESTING-GUIDE.md) - API testing fundamentals
-- [TEST-CASES-EXPERT.md](./TEST-CASES-EXPERT.md) - Test case documentation
+- ADVANCED-FEATURES.md - Complete framework documentation
+- API-TESTING-GUIDE.md - API testing fundamentals
+- TEST-CASES-EXPERT.md - Test case documentation
 
 ---
 

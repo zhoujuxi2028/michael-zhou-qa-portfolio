@@ -9,37 +9,37 @@
   - TC-VERIFY-002: System Information Backend Verification ✅
   - 完整的测试步骤、验证点、执行历史
 
-- **[test-case-metadata.json](./test-case-metadata.json)** - **测试用例结构化元数据** (待创建)
+- **test-case-metadata.json** - **测试用例结构化元数据** (待创建)
   - 机器可读的测试用例元数据
   - 自动化状态、标签、关联需求
   - 用于测试报告生成和追溯
 
 ### 支持文档
 
-- **[traceability-matrix.md](./traceability-matrix.md)** - **需求追溯矩阵** (待创建)
+- **traceability-matrix.md** - **需求追溯矩阵** (待创建)
   - 需求到测试用例的映射
   - 覆盖率统计
   - 风险分析
 
-- **[test-data-dictionary.md](./test-data-dictionary.md)** - **测试数据字典** (待创建)
+- **test-data-dictionary.md** - **测试数据字典** (待创建)
   - 数据字段定义
   - 数据类型和约束
   - 示例值和数据来源
 
-- **[verification-checklist.md](./verification-checklist.md)** - **多层级验证清单** (待创建)
+- **verification-checklist.md** - **多层级验证清单** (待创建)
   - UI/Backend/Log/Business 验证点
   - 不同测试类型的验证要求
   - 验证矩阵
 
 ### 测试计划
 
-- **[Selenium-Test-Plan.md](../test-plans/Selenium-Test-Plan.md)** - **正式测试计划** (待创建)
+- **Selenium-Test-Plan.md** - **正式测试计划** (待创建)
   - 测试概述、范围、策略
   - 测试环境和资源
   - 时间表和交付物
   - 入口和出口标准
 
-- **[Test-Strategy.md](../test-plans/Test-Strategy.md)** - **测试策略** (待创建)
+- **Test-Strategy.md** - **测试策略** (待创建)
   - 测试金字塔
   - 多层级验证策略
   - 自动化策略

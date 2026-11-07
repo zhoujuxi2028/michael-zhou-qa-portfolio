@@ -247,7 +247,7 @@ GECKODRIVER_CACHE_VALID_DAYS = int(os.getenv('GECKODRIVER_CACHE_VALID_DAYS', '7'
 
 ## Related Documentation
 
-- [Installation Guide](../getting-started/installation.md) - Setup instructions
+- Installation Guide - Setup instructions
 - [Design Specification](../architecture/DESIGN_SPECIFICATION.md) - Architecture overview
 - [Enterprise Standards Assessment](../architecture/ENTERPRISE_STANDARDS_ASSESSMENT.md) - Quality standards
 

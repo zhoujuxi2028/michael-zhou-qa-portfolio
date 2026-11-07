@@ -231,9 +231,9 @@ pytest src/tests/ --browser firefox
 ## 📚 相关文档
 
 - **迁移指南**: [MIGRATION.md](MIGRATION.md) - 详细的迁移说明和导入映射
-- **项目说明**: [README.md](README.md) - 项目总体介绍
-- **设计规范**: [DESIGN_SPECIFICATION.md](DESIGN_SPECIFICATION.md) - 架构设计文档
-- **实施总结**: [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) - Phase 1 实施细节
+- **项目说明**: README.md - 项目总体介绍
+- **设计规范**: DESIGN_SPECIFICATION.md - 架构设计文档
+- **实施总结**: IMPLEMENTATION_SUMMARY.md - Phase 1 实施细节
 - **计划文档**: `/home/michael/.claude/plans/humming-soaring-quiche.md` - 详细重构计划
 
 ---
