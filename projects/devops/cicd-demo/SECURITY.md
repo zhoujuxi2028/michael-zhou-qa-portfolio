@@ -99,7 +99,7 @@ As a demonstration project:
 ## Security Resources
 
 - [Security Documentation](security/README.md)
-- [GitHub Security Tab](../../security/code-scanning)
+- GitHub Security Tab (see repository Security tab)
 - [Trivy Documentation](https://aquasecurity.github.io/trivy/)
 - [npm audit Documentation](https://docs.npmjs.com/cli/v9/commands/npm-audit)
 

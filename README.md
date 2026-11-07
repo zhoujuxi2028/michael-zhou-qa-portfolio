@@ -28,52 +28,52 @@ Test automation, performance testing, and DevOps demonstration projects.
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [performance-testing-platform](./performance-testing-platform/) | k6 + JMeter 双引擎 (148 unit + 31 integration + 33 perf) — 容量测试 + JWT 认证压测 + Soak 稳定性 + 基础设施 helpers + 限流熔断 + 崩溃测试 | k6, JMeter, Express, Grafana, InfluxDB |
+| [performance-testing-platform](./projects/platform/performance-testing-platform/) | k6 + JMeter 双引擎 (148 unit + 31 integration + 33 perf) — 容量测试 + JWT 认证压测 + Soak 稳定性 + 基础设施 helpers + 限流熔断 + 崩溃测试 | k6, JMeter, Express, Grafana, InfluxDB |
 
 ### 自动化测试 (Test Automation)
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [playwright-demo](./playwright-demo/) | Cross-Browser E2E Testing (38 tests) | Playwright, TypeScript, axe-core |
-| [selenium-demo](./selenium-demo/) | Browser Automation | Selenium, Python, Allure |
-| [robot-framework-demo](./robot-framework-demo/) | Parallel Testing (9 tests) | Robot Framework, Pabot, Selenium Grid, Rebot |
-| [iwsva-cypress-e2e](./iwsva-cypress-e2e/) | IWSVA E2E Testing (77 tests) | Cypress, JavaScript |
-| [api-testing-demo](./api-testing-demo/) | API Testing (280+ assertions) | Newman, Postman, json-server |
+| [playwright-demo](./projects/functional/playwright-demo/) | Cross-Browser E2E Testing (38 tests) | Playwright, TypeScript, axe-core |
+| [selenium-demo](./projects/functional/selenium-demo/) | Browser Automation | Selenium, Python, Allure |
+| [robot-framework-demo](./projects/functional/robot-framework-demo/) | Parallel Testing (9 tests) | Robot Framework, Pabot, Selenium Grid, Rebot |
+| [iwsva-cypress-e2e](./projects/functional/iwsva-cypress-e2e/) | IWSVA E2E Testing (77 tests) | Cypress, JavaScript |
+| [api-testing-demo](./projects/functional/api-testing-demo/) | API Testing (280+ assertions) | Newman, Postman, json-server |
 
 ### 系统测试 (System Testing)
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [security-testing-demo](./security-testing-demo/) | DAST Security Testing (~182 tests, OWASP Top 10) | OWASP ZAP, Nessus, SQLMap, Pytest |
-| [k8s-auto-testing-platform](./k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests) | Python, Pytest, Chaos Mesh |
-| [sql-testing-demo](./sql-testing-demo/) | SQL & PL/pgSQL Testing — FastWare WMS scenario (32 tests: CRUD + queries + constraints + procedures + transactions) | PostgreSQL, psycopg3, testcontainers, pytest |
-| [ivi-integration-lab](./ivi-integration-lab/) | IVI 车载集成验证实验室 — CAN bus 3节点仿真 + ECU 刷写 + 质量门禁 (65 tests: unit + smoke + integration + regression) | Python, pytest, python-can, cantools |
+| [security-testing-demo](./projects/security/security-testing-demo/) | DAST Security Testing (~182 tests, OWASP Top 10) | OWASP ZAP, Nessus, SQLMap, Pytest |
+| [k8s-auto-testing-platform](./projects/platform/k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests) | Python, Pytest, Chaos Mesh |
+| [sql-testing-demo](./projects/database/sql-testing-demo/) | SQL & PL/pgSQL Testing — FastWare WMS scenario (32 tests: CRUD + queries + constraints + procedures + transactions) | PostgreSQL, psycopg3, testcontainers, pytest |
+| [ivi-integration-lab](./projects/automotive/ivi-integration-lab/) | IVI 车载集成验证实验室 — CAN bus 3节点仿真 + ECU 刷写 + 质量门禁 (65 tests: unit + smoke + integration + regression) | Python, pytest, python-can, cantools |
 
 ### 平台测试 (Platform Testing)
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [sid-iam-testing-platform](./sid-iam-testing-platform/) | IAM + Data + AI Agent Testing (138 tests) | Python, Pytest, FastAPI, networkx |
-| [microservice-testing-platform](./microservice-testing-platform/) | Microservice Testing (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 |
+| [sid-iam-testing-platform](./projects/platform/sid-iam-testing-platform/) | IAM + Data + AI Agent Testing (138 tests) | Python, Pytest, FastAPI, networkx |
+| [microservice-testing-platform](./projects/platform/microservice-testing-platform/) | Microservice Testing (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 |
 
 ### AI 测试 (AI Testing)
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [ai-testing-platform](./ai-testing-platform/) | AI-Powered Testing Platform — 智能测试用例生成 + 缺陷预测 + 脚本生成 + 代码扫描 (92 tests) | Python, Pytest, Rule Engine |
-| [llm-agent-tutorial](./llm-agent-tutorial/) | LLM Agent Engineering Tutorial — Prompt/Context/Harness/Loop 四件套 + function-calling + Reflexion (single-file, zero-dependency) | Python, Anthropic API |
+| [ai-testing-platform](./projects/ai/ai-testing-platform/) | AI-Powered Testing Platform — 智能测试用例生成 + 缺陷预测 + 脚本生成 + 代码扫描 (92 tests) | Python, Pytest, Rule Engine |
+| [llm-agent-tutorial](./projects/ai/llm-agent-tutorial/) | LLM Agent Engineering Tutorial — Prompt/Context/Harness/Loop 四件套 + function-calling + Reflexion (single-file, zero-dependency) | Python, Anthropic API |
 
 ### DevOps
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [cicd-demo](./cicd-demo/) | DevOps Infrastructure Platform (IaC + GitOps + Monitoring) | Terraform, K8S, ArgoCD, Prometheus |
+| [cicd-demo](./projects/devops/cicd-demo/) | DevOps Infrastructure Platform (IaC + GitOps + Monitoring) | Terraform, K8S, ArgoCD, Prometheus |
 
 ---
 
 ## Performance Testing Highlights | 性能测试亮点
 
-### [performance-testing-platform](./performance-testing-platform/) — Capacity Test
+### [performance-testing-platform](./projects/platform/performance-testing-platform/) — Capacity Test
 
 > k6 + JMeter 双引擎 | Express Cluster (多核) | Grafana + InfluxDB 可观测
 
@@ -91,7 +91,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 - Event loop lag p95 随 VUs 线性增长：197ms@3000 → 324ms@6000 → 433ms@6125
 - R20 对照组 (0% 写操作) p95 与混合流量相近 → 排除 SQLite 写锁为瓶颈
 
-> 完整逐轮数据 → [performance-testing-platform/docs/qa/rtm.md](./performance-testing-platform/docs/qa/rtm.md)
+> 完整逐轮数据 → [performance-testing-platform/docs/qa/rtm.md](./projects/platform/performance-testing-platform/docs/qa/rtm.md)
 
 ---
 
@@ -133,7 +133,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 
 | `copilot-setup-steps.yml` | repository | Push/PR to workflow file, manual | 预热 Node.js/Python 依赖缓存供 Copilot 使用 |
 
-> **PR → Merge → Deploy 端到端流程**：`cicd-demo` 演示了完整的 CI/CD 闭环 — PR 触发并行的 lint/unit-tests/build/security-scan 四个 job 经 `pr-gate` 聚合，合并到 `main` 后自动触发 `build-and-package` → `deploy-staging`（自动）→ `deploy-production`（手动审批）。详见 [cicd-demo/README.md#pr--merge--deploy-流程](./cicd-demo/README.md#pr--merge--deploy-流程) 的 ASCII / Mermaid 流程图与 Branch Protection 配置说明。
+> **PR → Merge → Deploy 端到端流程**：`cicd-demo` 演示了完整的 CI/CD 闭环 — PR 触发并行的 lint/unit-tests/build/security-scan 四个 job 经 `pr-gate` 聚合，合并到 `main` 后自动触发 `build-and-package` → `deploy-staging`（自动）→ `deploy-production`（手动审批）。详见 [cicd-demo/README.md#pr--merge--deploy-流程](./projects/devops/cicd-demo/README.md#pr--merge--deploy-流程) 的 ASCII / Mermaid 流程图与 Branch Protection 配置说明。
 
 ---
 

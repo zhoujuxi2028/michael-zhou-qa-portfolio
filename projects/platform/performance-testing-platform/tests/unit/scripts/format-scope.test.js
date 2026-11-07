@@ -4,7 +4,10 @@ const fs = require('fs');
 const path = require('path');
 
 const PACKAGE_JSON = path.join(__dirname, '../../../package.json');
-const PERFORMANCE_CI = path.join(__dirname, '../../../../.github/workflows/performance-ci.yml');
+const PERFORMANCE_CI = path.join(
+  __dirname,
+  '../../../../../../.github/workflows/performance-ci.yml'
+);
 
 function readPackageScripts() {
   return JSON.parse(fs.readFileSync(PACKAGE_JSON, 'utf-8')).scripts;

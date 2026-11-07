@@ -4,12 +4,12 @@ on:
   push:
     branches: [main, 'feature/robot-framework*', 'copilot/pabot*']
     paths:
-      - 'robot-framework-demo/**'
+      - 'projects/functional/robot-framework-demo/**'
       - '.github/workflows/robot-framework-ci.yml'
   pull_request:
     branches: [main]
     paths:
-      - 'robot-framework-demo/**'
+      - 'projects/functional/robot-framework-demo/**'
       - '.github/workflows/robot-framework-ci.yml'
   workflow_dispatch:
 
@@ -52,13 +52,13 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version-file: robot-framework-demo/.python-version
+          python-version-file: projects/functional/robot-framework-demo/.python-version
           cache: 'pip'
-          cache-dependency-path: robot-framework-demo/requirements.txt
+          cache-dependency-path: projects/functional/robot-framework-demo/requirements.txt
 
       - name: Install dependencies
         run: |
-          cd robot-framework-demo
+          cd projects/functional/robot-framework-demo
           pip install -r requirements.txt
 
       - name: Wait for Selenium Grid
@@ -123,7 +123,7 @@ jobs:
 
       - name: Run tests with Pabot (parallel)
         run: |
-          cd robot-framework-demo
+          cd projects/functional/robot-framework-demo
           pabot --processes 2 \
             --outputdir results \
             --variable SELENIUM_GRID:http://localhost:4444/wd/hub \
@@ -133,7 +133,7 @@ jobs:
       - name: Merge reports with Rebot
         if: always()
         run: |
-          cd robot-framework-demo
+          cd projects/functional/robot-framework-demo
           rebot --outputdir results/merged \
             --name "CI 并行测试合并报告" \
             --merge \
@@ -144,5 +144,5 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: robot-results
-          path: robot-framework-demo/results/
+          path: projects/functional/robot-framework-demo/results/
           retention-days: 14

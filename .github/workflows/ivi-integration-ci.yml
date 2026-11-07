@@ -3,16 +3,16 @@ name: IVI Integration Lab CI
 on:
   push:
     paths:
-      - "ivi-integration-lab/**"
+      - "projects/automotive/ivi-integration-lab/**"
       - ".github/workflows/ivi-integration-ci.yml"
   pull_request:
     paths:
-      - "ivi-integration-lab/**"
+      - "projects/automotive/ivi-integration-lab/**"
       - ".github/workflows/ivi-integration-ci.yml"
 
 defaults:
   run:
-    working-directory: ivi-integration-lab
+    working-directory: projects/automotive/ivi-integration-lab
 
 jobs:
   test:
@@ -30,7 +30,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: ivi-integration-lab/requirements.txt
+          cache-dependency-path: projects/automotive/ivi-integration-lab/requirements.txt
 
       - name: Install dependencies
         run: pip install -r requirements.txt
@@ -64,5 +64,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ivi-test-report-py${{ matrix.python-version }}
-          path: ivi-integration-lab/reports/report.html
+          path: projects/automotive/ivi-integration-lab/reports/report.html
           retention-days: 30

@@ -463,7 +463,7 @@ flowchart TD
 | [FAQ-GUIDE.md](docs/guides/FAQ-GUIDE.md) | 35+ Q&A，覆盖 6 个技术领域 |
 | [CI-CD-GUIDE.md](docs/guides/CI-CD-GUIDE.md) | CI/CD 管道搭建与集成 |
 | [TROUBLESHOOTING.md](docs/guides/TROUBLESHOOTING.md) | 故障排查手册 |
-| [Azure vs GitHub Actions](docs/AZURE-VS-GITHUB-ACTIONS.md) | 跨平台 CI/CD 对比 FAQ |
+| Azure vs GitHub Actions | 跨平台 CI/CD 对比 FAQ |
 | [MONITORING.md](monitoring/MONITORING.md) | 监控架构与仪表盘配置 |
 
 ## FAQ
