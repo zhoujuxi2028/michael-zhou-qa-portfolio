@@ -6,7 +6,7 @@ This directory contains all test case documentation for the IWSVA Update module.
 
 ### Main Documentation
 - **[UPDATE_TEST_CASES.md](./UPDATE_TEST_CASES.md)** - Complete test case documentation (77 test cases)
-- **[UPDATE_TEST_CASES.xlsx](./UPDATE_TEST_CASES.xlsx)** - Excel version for reviews and meetings
+- **UPDATE_TEST_CASES.xlsx** - Excel version for reviews and meetings
 - **[test-case-mapping.json](./test-case-mapping.json)** - Test case metadata and automation mapping
 
 ### Supporting Documentation
@@ -104,8 +104,8 @@ Links to related tests
 
 - [Back to Project README](../../README.md)
 - [Test Plans](../test-plans/)
-- [Test Data](../test-data/)
-- [Automation Tests](../../cypress/e2e/iwsva-update/)
+- Test Data
+- Automation Tests
 
 ## 📝 Maintenance
 

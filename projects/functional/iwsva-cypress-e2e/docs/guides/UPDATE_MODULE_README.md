@@ -412,11 +412,11 @@ jobs:
 
 ### Documentation
 
-- [Test Cases (Detailed)](docs/test-cases/UPDATE_TEST_CASES.md)
-- [Test Plan](docs/test-plans/IWSVA-Update-Test-Plan.md)
-- [Test Strategy](docs/test-plans/Test-Strategy.md)
-- [Test Data Dictionary](docs/test-cases/test-data-dictionary.md)
-- [Traceability Matrix](docs/test-cases/traceability-matrix.md)
+- Test Cases (Detailed)
+- Test Plan
+- Test Strategy
+- Test Data Dictionary
+- Traceability Matrix
 
 ### External Links
 

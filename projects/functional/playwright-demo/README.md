@@ -1,6 +1,6 @@
 # Playwright Demo — Cross-Browser Test Automation
 
-Part of [Michael Zhou's QA Portfolio](../README.md). Demonstrates Playwright test automation with TypeScript across Chromium, Firefox, and WebKit.
+Part of [Michael Zhou's QA Portfolio](../../../README.md). Demonstrates Playwright test automation with TypeScript across Chromium, Firefox, and WebKit.
 
 ## Quick Start
 
@@ -201,4 +201,4 @@ A: Playwright auto-waits for elements. CI configures 2 retries. Traces capture o
 
 ---
 
-*Part of the [QA Automation Portfolio](../README.md) — also includes Cypress, Selenium, Postman/Newman, and CI/CD demos.*
+*Part of the [QA Automation Portfolio](../../../README.md) — also includes Cypress, Selenium, Postman/Newman, and CI/CD demos.*

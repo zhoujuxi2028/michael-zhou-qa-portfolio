@@ -799,8 +799,8 @@ Phase 1 of 11 complete
 ## 📚 Related Documentation
 
 ### Internal Documents
-- [Update Module README](../../UPDATE_MODULE_README.md)
-- [Test Cases Quick Guide](../../TEST_CASES_README.md)
+- Update Module README
+- Test Cases Quick Guide
 - [Complete Test Cases](../test-cases/UPDATE_TEST_CASES.md)
 - [Test Plan](../test-plans/IWSVA-Update-Test-Plan.md)
 - [Test Strategy](../test-plans/Test-Strategy.md)

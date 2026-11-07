@@ -346,10 +346,10 @@ Credentials and configuration are stored in `cypress.env.json` (gitignored for s
 - [Test Cases README](docs/guides/TEST_CASES_README.md) - Quick test case reference
 
 #### 📊 Reports & Test Plans
-- [Test Execution Report](docs/reports/TEST_EXECUTION_REPORT.md) - Latest test results
+- Test Execution Report - Latest test results
 - [Test Cases](docs/test-cases/UPDATE_TEST_CASES.md) - All 77 test cases documented
 - [Test Plan](docs/test-plans/IWSVA-Update-Test-Plan.md) - Complete test plan
-- [Work Breakdown Structure](docs/project-planning/WBS.md) - 11-phase project plan
+- Work Breakdown Structure - 11-phase project plan
 
 **Browse all documentation**: [docs/](docs/)
 

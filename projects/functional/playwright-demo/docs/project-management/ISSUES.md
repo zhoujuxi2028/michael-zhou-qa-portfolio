@@ -99,9 +99,9 @@ Running 190 tests using 6 workers
 - ✅ Zero regression
 
 **Documentation**:
-- [BUG-PW-001-QUICK-REF.md](../issues/BUG-PW-001-QUICK-REF.md)
-- [BUG-PW-001-INVESTIGATION.md](../issues/BUG-PW-001-INVESTIGATION.md)
-- [BUG-PW-001-FIX-COMPLETED.md](../issues/BUG-PW-001-FIX-COMPLETED.md)
+- BUG-PW-001-QUICK-REF.md
+- BUG-PW-001-INVESTIGATION.md
+- BUG-PW-001-FIX-COMPLETED.md
 
 ---
 
@@ -165,7 +165,7 @@ All issues resolved when:
 
 - Bug fix log: [BUGFIX_LOG.md](BUGFIX_LOG.md)
 - Configuration: `playwright.config.ts`
-- WBS: [../WBS.md](../WBS.md)
+- WBS: ../WBS.md
 
 ---
 

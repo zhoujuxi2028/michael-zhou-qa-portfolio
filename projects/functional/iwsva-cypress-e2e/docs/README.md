@@ -28,28 +28,28 @@ In-depth technical guides and references:
 **Location:** `docs/reports/`
 
 Project reports, refactoring summaries, and execution results:
-- [Test Report](reports/TEST_REPORT.md) - Test execution results
-- [Test Execution Report](reports/TEST_EXECUTION_REPORT.md) - Detailed execution report
-- [Consolidation Summary](reports/CONSOLIDATION_SUMMARY.md) - Test consolidation summary
-- [Refactoring Summary](reports/REFACTORING_SUMMARY.md) - Code refactoring summary
-- [Refactoring Complete](reports/REFACTORING_COMPLETE.md) - Refactoring completion report
-- [Phase 4 Optimization Summary](reports/PHASE4_OPTIMIZATION_SUMMARY.md) - Phase 4 optimization details
+- Test Report - Test execution results
+- Test Execution Report - Detailed execution report
+- Consolidation Summary - Test consolidation summary
+- Refactoring Summary - Code refactoring summary
+- Refactoring Complete - Refactoring completion report
+- Phase 4 Optimization Summary - Phase 4 optimization details
 
 ### 📝 Test Cases & Plans
 **Location:** `docs/test-cases/` and `docs/test-plans/`
 
 Formal test documentation:
-- [Test Cases](test-cases/UPDATE_TEST_CASES.md) - All 77 test cases documented
+- Test Cases - All 77 test cases documented
 - [Test Case Mapping](test-cases/test-case-mapping.json) - Machine-readable test metadata
 - [Traceability Matrix](test-cases/traceability-matrix.md) - Requirements tracking
-- [Test Plan](test-plans/IWSVA-Update-Test-Plan.md) - Complete test plan
-- [Test Strategy](test-plans/Test-Strategy.md) - High-level strategy
+- Test Plan - Complete test plan
+- Test Strategy - High-level strategy
 
 ### 🏗️ Project Planning
 **Location:** `docs/project-planning/`
 
 Project architecture and planning documents:
-- [Work Breakdown Structure (WBS)](project-planning/WBS.md) - 11-phase project plan
+- Work Breakdown Structure (WBS) - 11-phase project plan
 - Project roadmap and phase documentation
 
 ### 🇨🇳 Chinese Documentation
@@ -122,8 +122,8 @@ Place all Chinese language documentation here.
 
 ### Most Used Documents
 1. [IWSVA Test Guide](guides/IWSVA_TEST_GUIDE.md) - Start here for testing
-2. [Test Cases](test-cases/UPDATE_TEST_CASES.md) - All test cases
-3. [WBS](project-planning/WBS.md) - Project phases
+2. Test Cases - All test cases
+3. WBS - Project phases
 4. [Downgrade Quickstart](quickstart/DOWNGRADE_QUICKSTART.md) - Quick downgrade guide
 
 ### For New Contributors
@@ -133,8 +133,8 @@ Place all Chinese language documentation here.
 
 ### For Test Execution
 1. [Consolidated Tests Quickstart](quickstart/CONSOLIDATED_TESTS_QUICKSTART.md) - Run tests quickly
-2. [Test Execution Report](reports/TEST_EXECUTION_REPORT.md) - Latest results
-3. [Test Cases](test-cases/UPDATE_TEST_CASES.md) - Test specifications
+2. Test Execution Report - Latest results
+3. Test Cases - Test specifications
 
 ---
 

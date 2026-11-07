@@ -374,7 +374,7 @@ All test cases implement multi-level verification:
 
 ### For Test Case Details
 
-📖 **[Complete Test Cases Documentation](docs/test-cases/UPDATE_TEST_CASES.md)**
+📖 **Complete Test Cases Documentation**
 - Detailed test steps
 - Prerequisites
 - Expected results
@@ -382,13 +382,13 @@ All test cases implement multi-level verification:
 
 ### For Test Planning
 
-📋 **[Test Plan](docs/test-plans/IWSVA-Update-Test-Plan.md)**
+📋 **Test Plan**
 - Test scope and approach
 - Schedule and milestones
 - Entry/exit criteria
 - Risk assessment
 
-📋 **[Test Strategy](docs/test-plans/Test-Strategy.md)**
+📋 **Test Strategy**
 - Testing philosophy
 - Test levels and types
 - Automation framework
@@ -396,20 +396,20 @@ All test cases implement multi-level verification:
 
 ### For Test Data
 
-📊 **[Test Data Dictionary](docs/test-cases/test-data-dictionary.md)**
+📊 **Test Data Dictionary**
 - Component metadata
 - Version data
 - File paths and timeouts
 - Error messages
 
-📊 **[Traceability Matrix](docs/test-cases/traceability-matrix.md)**
+📊 **Traceability Matrix**
 - Requirements to test case mapping
 - Coverage analysis
 - Gap identification
 
 ### For Test Execution
 
-✅ **[Verification Checklist](docs/test-cases/verification-checklist.md)**
+✅ **Verification Checklist**
 - UI verification steps
 - Backend verification steps
 - Log verification steps
@@ -505,7 +505,7 @@ npx cypress open
 ### Resources
 
 - [Cypress Documentation](https://docs.cypress.io)
-- [Project Main README](README.md)
+- Project Main README
 - [Update Module Overview](UPDATE_MODULE_README.md)
 
 ---

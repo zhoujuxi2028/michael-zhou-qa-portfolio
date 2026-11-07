@@ -32,8 +32,8 @@ This directory contains test plans and strategy documents for IWSVA Update modul
 ## Quick Links
 
 - [Test Cases Documentation](../test-cases/)
-- [Test Data](../test-data/)
-- [Automation Tests](../../cypress/e2e/iwsva-update/)
+- Test Data
+- Automation Tests
 - [Project README](../../README.md)
 
 ---

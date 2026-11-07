@@ -150,6 +150,6 @@ While all requirements are covered, consider these enhancements:
 
 ## References
 
-- [Requirements Document](../../IWSVA_UPDATE_REQUIREMENTS.md) *(if exists)*
+- Requirements Document *(if exists)*
 - [Test Cases](./UPDATE_TEST_CASES.md)
 - [Test Plan](../test-plans/IWSVA-Update-Test-Plan.md)

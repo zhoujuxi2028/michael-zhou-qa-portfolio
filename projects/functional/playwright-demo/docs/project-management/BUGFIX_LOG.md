@@ -240,8 +240,8 @@ Running 190 tests using 6 workers
 ## 🔗 Related Resources
 
 - **Issue Tracker**: [ISSUES.md](ISSUES.md)
-- **Investigation Report**: [../issues/BUG-PW-001-INVESTIGATION.md](../issues/BUG-PW-001-INVESTIGATION.md)
-- **Quick Reference**: [../issues/BUG-PW-001-QUICK-REF.md](../issues/BUG-PW-001-QUICK-REF.md)
+- **Investigation Report**: ../issues/BUG-PW-001-INVESTIGATION.md
+- **Quick Reference**: ../issues/BUG-PW-001-QUICK-REF.md
 - **Configuration**: `playwright.config.ts`
 
 ---

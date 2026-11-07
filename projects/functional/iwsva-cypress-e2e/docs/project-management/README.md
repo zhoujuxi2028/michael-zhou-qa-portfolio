@@ -121,8 +121,8 @@ This directory contains project planning and management documentation for the IW
 
 ### Project Documentation
 - [WBS (This Directory)](./WBS.md)
-- [Update Module README](../../UPDATE_MODULE_README.md)
-- [Test Cases Quick Guide](../../TEST_CASES_README.md)
+- Update Module README
+- Test Cases Quick Guide
 
 ### Test Documentation
 - [Complete Test Cases](../test-cases/UPDATE_TEST_CASES.md)
