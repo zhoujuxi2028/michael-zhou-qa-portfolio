@@ -9,14 +9,14 @@ name: CICD Demo / Deploy Pipeline
 #   4. deploy-production   — 手动审批部署到 production（GitHub Environment: production）
 #
 # 注意：本流水线在 GitHub Actions runner 内做 dry-run 部署演示（helm template + kubectl --dry-run）
-#       真实集群部署应通过 ArgoCD（见 cicd-demo/gitops/argocd/）或在 self-hosted runner 上配置 KUBECONFIG。
+#       真实集群部署应通过 ArgoCD（见 projects/devops/cicd-demo/gitops/argocd/）或在 self-hosted runner 上配置 KUBECONFIG。
 
 on:
   push:
     branches: [main]
     paths:
-      - 'cicd-demo/**'
-      - '.github/workflows/cicd-demo-deploy.yml'
+      - 'projects/devops/cicd-demo/**'
+      - '.github/workflows/projects/devops/cicd-demo-deploy.yml'
   workflow_dispatch:
     inputs:
       skip_production:
@@ -27,7 +27,7 @@ on:
 
 concurrency:
   # 同一时刻只允许一个部署 pipeline，避免环境抖动；但不取消进行中的部署
-  group: cicd-demo-deploy-${{ github.ref }}
+  group: projects/devops/cicd-demo-deploy-${{ github.ref }}
   cancel-in-progress: false
 
 permissions:
@@ -35,7 +35,7 @@ permissions:
 
 defaults:
   run:
-    working-directory: cicd-demo
+    working-directory: projects/devops/cicd-demo
 
 jobs:
   # ---------------------------------------------------------------------------
@@ -80,7 +80,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: helm-chart
-          path: cicd-demo/dist/*.tgz
+          path: projects/devops/cicd-demo/dist/*.tgz
           retention-days: 30
 
       # -----------------------------------------------------------------------
@@ -90,7 +90,7 @@ jobs:
       - name: Generate SBOM with Syft
         uses: anchore/sbom-action@v0
         with:
-          path: cicd-demo
+          path: projects/devops/cicd-demo
           format: cyclonedx-json
           output-file: sbom.cyclonedx.json
           artifact-name: sbom-cyclonedx
@@ -121,7 +121,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: helm-chart
-          path: cicd-demo/dist
+          path: projects/devops/cicd-demo/dist
 
       - name: Render manifests for staging
         run: |
@@ -149,7 +149,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: staging-manifests
-          path: cicd-demo/rendered/staging.yaml
+          path: projects/devops/cicd-demo/rendered/staging.yaml
           retention-days: 30
 
   # ---------------------------------------------------------------------------
@@ -168,16 +168,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version-file: cicd-demo/.nvmrc
+          node-version-file: projects/devops/cicd-demo/.nvmrc
           cache: npm
-          cache-dependency-path: cicd-demo/package-lock.json
+          cache-dependency-path: projects/devops/cicd-demo/package-lock.json
 
       - name: Install Newman
         run: npm ci
-        working-directory: cicd-demo
+        working-directory: projects/devops/cicd-demo
 
       - name: Run Newman smoke test
-        working-directory: cicd-demo
+        working-directory: projects/devops/cicd-demo
         shell: bash
         run: |
           set -euo pipefail
@@ -195,7 +195,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: staging-smoke-results
-          path: cicd-demo/newman/smoke-junit.xml
+          path: projects/devops/cicd-demo/newman/smoke-junit.xml
           if-no-files-found: ignore
           retention-days: 14
 
@@ -223,7 +223,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: helm-chart
-          path: cicd-demo/dist
+          path: projects/devops/cicd-demo/dist
 
       - name: Render manifests for production
         run: |
@@ -251,7 +251,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: production-manifests
-          path: cicd-demo/rendered/production.yaml
+          path: projects/devops/cicd-demo/rendered/production.yaml
           retention-days: 90
 
   # ---------------------------------------------------------------------------
