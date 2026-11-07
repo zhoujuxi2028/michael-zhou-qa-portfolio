@@ -111,7 +111,7 @@ teardown() {
 
 @test "6.2: CI 中 continue-on-error 须有文档化豁免注释" {
   cd "$PROJECT_ROOT"
-  CI_WF="../.github/workflows/performance-ci.yml"
+  CI_WF="../../../.github/workflows/performance-ci.yml"
   count=$(grep -c "continue-on-error: true" "$CI_WF" 2>/dev/null || echo 0)
   exempted=$(grep -B1 "continue-on-error: true" "$CI_WF" 2>/dev/null | grep -cE "exemption|risks\.md|R-[0-9]+" || echo 0)
   [ "$count" -eq "$exempted" ]
