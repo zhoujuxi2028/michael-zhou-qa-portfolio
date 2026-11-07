@@ -137,4 +137,4 @@ TOTAL                          915    185    80%
 
 - 测试用例目录
 - 架构设计
-- [CI/CD 配置](../../../.github/workflows/k8s-ci.yml)
+- [CI/CD 配置](../../../../../.github/workflows/k8s-ci.yml)
