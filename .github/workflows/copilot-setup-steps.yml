@@ -27,7 +27,7 @@ jobs:
           cache-dependency-path: |
             package-lock.json
             projects/functional/api-testing-demo/package-lock.json
-            cicd-demo/package-lock.json
+            projects/devops/cicd-demo/package-lock.json
             projects/functional/iwsva-cypress-e2e/package-lock.json
             projects/platform/microservice-testing-platform/package-lock.json
             projects/platform/performance-testing-platform/package-lock.json
