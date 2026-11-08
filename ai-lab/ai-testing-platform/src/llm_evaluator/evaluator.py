@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import os
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Optional
 
 from dotenv import load_dotenv
 
@@ -16,8 +17,8 @@ class LLMEvaluatorError(Exception):
 class LLMIO:
     input: str
     actual_output: str
-    expected_output: Optional[str] = None
-    context: Optional[list[str]] = None
+    expected_output: str | None = None
+    context: list[str] | None = None
 
 
 @dataclass

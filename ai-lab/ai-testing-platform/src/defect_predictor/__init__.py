@@ -3,7 +3,7 @@ from .predictor import DefectPredictor, ModuleMetrics, PredictorError, RiskLevel
 __all__ = [
     "DefectPredictor",
     "ModuleMetrics",
-    "RiskReport",
-    "RiskLevel",
     "PredictorError",
+    "RiskLevel",
+    "RiskReport",
 ]

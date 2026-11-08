@@ -1,3 +1,3 @@
 from .generator import ScriptGenerator, ScriptGeneratorError, TestSpec
 
-__all__ = ["ScriptGenerator", "TestSpec", "ScriptGeneratorError"]
+__all__ = ["ScriptGenerator", "ScriptGeneratorError", "TestSpec"]

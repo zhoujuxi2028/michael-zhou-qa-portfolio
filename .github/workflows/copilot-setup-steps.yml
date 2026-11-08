@@ -39,8 +39,8 @@ jobs:
           python-version-file: .python-version
           cache: pip
           cache-dependency-path: |
-            projects/ai/ai-testing-platform/pyproject.toml
-            projects/ai/ai-testing-platform/requirements.txt
+            ai-lab/ai-testing-platform/pyproject.toml
+            ai-lab/ai-testing-platform/requirements.txt
             projects/platform/k8s-auto-testing-platform/app/requirements.txt
             projects/platform/k8s-auto-testing-platform/pyproject.toml
             projects/platform/k8s-auto-testing-platform/requirements.txt

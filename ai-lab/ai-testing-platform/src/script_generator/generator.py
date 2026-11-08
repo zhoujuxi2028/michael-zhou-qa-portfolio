@@ -272,7 +272,7 @@ class ScriptGenerator:
             if isinstance(value, str):
                 lines.append(f'        {key} = "{value}"')
             else:
-                lines.append(f"        {key} = {repr(value)}")
+                lines.append(f"        {key} = {value!r}")
         if not lines:
             lines.append("        # No explicit inputs required")
         return "\n".join(lines)
@@ -296,7 +296,7 @@ class ScriptGenerator:
             elif expected is None:
                 lines.append(f"        assert result['{key}'] is None")
             else:
-                lines.append(f"        assert result['{key}'] == {repr(expected)}")
+                lines.append(f"        assert result['{key}'] == {expected!r}")
         if not lines:
             lines.append("        assert result is not None")
         return "\n".join(lines)
@@ -309,7 +309,7 @@ class ScriptGenerator:
         if any(k in spec.inputs for k in ("db", "database")):
             fixtures.append("db_session")
         if spec.parametrize and spec.inputs:
-            fixtures.append(list(spec.inputs.keys())[0])
+            fixtures.append(next(iter(spec.inputs.keys())))
         return (", " + ", ".join(fixtures)) if fixtures else ""
 
     def _generate_setup_fixture(self, spec: TestSpec) -> str:
@@ -328,5 +328,5 @@ class ScriptGenerator:
         """生成 @pytest.mark.parametrize 装饰器"""
         if not spec.parametrize or not spec.parametrize_values:
             return ""
-        param_name = list(spec.inputs.keys())[0] if spec.inputs else "param"
-        return f'    @pytest.mark.parametrize("{param_name}", {repr(spec.parametrize_values)})\n'
+        param_name = next(iter(spec.inputs.keys())) if spec.inputs else "param"
+        return f'    @pytest.mark.parametrize("{param_name}", {spec.parametrize_values!r})\n'

@@ -26,6 +26,7 @@ from dataclasses import dataclass
 # 五、CONFIG：配置集中管理（命令行参数 > 环境变量 > 默认值）
 # ============================================================
 
+
 @dataclass
 class Config:
     base_url: str = "https://api.deepseek.com/v1"
@@ -45,7 +46,9 @@ CONFIG = Config()
 
 def load_config(args: argparse.Namespace):
     CONFIG.api_key = args.api_key or os.environ.get("OPENAI_API_KEY", "")
-    CONFIG.base_url = args.base_url or os.environ.get("OPENAI_BASE_URL", CONFIG.base_url)
+    CONFIG.base_url = args.base_url or os.environ.get(
+        "OPENAI_BASE_URL", CONFIG.base_url
+    )
     CONFIG.model = args.model or os.environ.get("OPENAI_MODEL", CONFIG.model)
     CONFIG.stream = not args.no_stream
 
@@ -62,6 +65,7 @@ SYSTEM_PROMPT = """你是一个会使用工具的智能助手。
 # ============================================================
 # 二、CONTEXT：记忆 / 对话历史 + 窗口管理
 # ============================================================
+
 
 class Context:
     """消息列表 + 简单的上下文窗口管理。
@@ -112,7 +116,7 @@ _BIN_OPS = {
     ast.Mult: lambda a, b: a * b,
     ast.Div: lambda a, b: a / b,
     ast.Mod: lambda a, b: a % b,
-    ast.Pow: lambda a, b: a ** b,
+    ast.Pow: lambda a, b: a**b,
 }
 _UNARY_OPS = {
     ast.UAdd: lambda a: +a,
@@ -136,7 +140,7 @@ def calculator(expression: str) -> str:
     try:
         tree = ast.parse(expression, mode="eval")
         result = _eval_node(tree)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         return f"错误：{e}"
     return str(result)
 
@@ -146,7 +150,7 @@ def read_file(path: str) -> str:
         with open(path, "r", encoding="utf-8") as f:
             content = f.read()
         return content[:500] + ("..." if len(content) > 500 else "")
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         return f"错误：{e}"
 
 
@@ -154,7 +158,7 @@ def list_files(path: str) -> str:
     try:
         entries = [e for e in sorted(os.listdir(path)) if not e.startswith("__")]
         return "\n".join(entries) if entries else "(空目录)"
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         return f"错误：{e}"
 
 
@@ -235,13 +239,15 @@ def call_llm(messages: list, on_stream=None) -> dict:
 def _call_openai(messages: list, on_stream=None) -> dict:
     """原生 function-calling + 流式 + 重试退避。"""
     base = CONFIG.base_url.rstrip("/")
-    payload = json.dumps({
-        "model": CONFIG.model,
-        "messages": messages,
-        "temperature": 0,
-        "tools": tools_schema_list(),
-        "stream": CONFIG.stream,
-    }).encode()
+    payload = json.dumps(
+        {
+            "model": CONFIG.model,
+            "messages": messages,
+            "temperature": 0,
+            "tools": tools_schema_list(),
+            "stream": CONFIG.stream,
+        }
+    ).encode()
 
     def request():
         req = urllib.request.Request(
@@ -260,13 +266,16 @@ def _call_openai(messages: list, on_stream=None) -> dict:
             resp = request()
             break
         except urllib.error.HTTPError as e:
-            if e.code in (429, 500, 502, 503, 504) and attempt < CONFIG.http_retries - 1:
-                time.sleep(2 ** attempt)
+            if (
+                e.code in (429, 500, 502, 503, 504)
+                and attempt < CONFIG.http_retries - 1
+            ):
+                time.sleep(2**attempt)
                 continue
             raise RuntimeError(f"HTTP {e.code}: {e.read().decode()[:200]}")
         except urllib.error.URLError as e:
             if attempt < CONFIG.http_retries - 1:
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
                 continue
             raise RuntimeError(f"网络错误: {e.reason}")
 
@@ -296,8 +305,13 @@ def _call_openai(messages: list, on_stream=None) -> dict:
         for tc in delta.get("tool_calls") or []:
             idx = tc["index"]
             entry = tool_calls.setdefault(
-                idx, {"id": "", "type": "function",
-                      "function": {"name": "", "arguments": ""}})
+                idx,
+                {
+                    "id": "",
+                    "type": "function",
+                    "function": {"name": "", "arguments": ""},
+                },
+            )
             if tc.get("id"):
                 entry["id"] = tc["id"]
             fn = tc.get("function") or {}
@@ -308,14 +322,21 @@ def _call_openai(messages: list, on_stream=None) -> dict:
 
     content = "".join(content_parts) or None
     tcs = [tool_calls[i] for i in sorted(tool_calls)] if tool_calls else None
-    return {"content": content, "tool_calls": tcs, "streamed": bool(on_stream and content)}
+    return {
+        "content": content,
+        "tool_calls": tcs,
+        "streamed": bool(on_stream and content),
+    }
 
 
 def _mock_tool_call(call_id: str, name: str, arguments: dict) -> dict:
     return {
         "id": call_id,
         "type": "function",
-        "function": {"name": name, "arguments": json.dumps(arguments, ensure_ascii=False)},
+        "function": {
+            "name": name,
+            "arguments": json.dumps(arguments, ensure_ascii=False),
+        },
     }
 
 
@@ -337,17 +358,25 @@ def _call_mock(messages: list) -> dict:
 
     if re.search(r"[0-9][0-9+\-*/().% ]*[+\-*/]", question):
         expr = re.search(r"[0-9+\-*/().% ]+", question).group(0).strip()
-        return {"content": None,
-                "tool_calls": [_mock_tool_call("mock_1", "calculator", {"expression": expr})]}
+        return {
+            "content": None,
+            "tool_calls": [
+                _mock_tool_call("mock_1", "calculator", {"expression": expr})
+            ],
+        }
 
     if re.search(r"读|文件|read|file", question, re.IGNORECASE):
         path = question.split()[-1].strip("。！？. ")
-        return {"content": None,
-                "tool_calls": [_mock_tool_call("mock_1", "read_file", {"path": path})]}
+        return {
+            "content": None,
+            "tool_calls": [_mock_tool_call("mock_1", "read_file", {"path": path})],
+        }
 
     if re.search(r"列|目录|list|dir", question, re.IGNORECASE):
-        return {"content": None,
-                "tool_calls": [_mock_tool_call("mock_1", "list_files", {"path": "."})]}
+        return {
+            "content": None,
+            "tool_calls": [_mock_tool_call("mock_1", "list_files", {"path": "."})],
+        }
 
     return {"content": f"你说的是：{question}", "tool_calls": None}
 
@@ -355,6 +384,7 @@ def _call_mock(messages: list) -> dict:
 # ============================================================
 # 四、LOOP + AGENT：观察 -> 思考 -> 行动 -> 反馈
 # ============================================================
+
 
 class Agent:
     def __init__(self, max_steps: int = 8, max_retries: int = 3, verbose: bool = True):
@@ -378,8 +408,13 @@ class Agent:
             content = resp.get("content")
             tool_calls = resp.get("tool_calls") or []
 
-            self.ctx.append({"role": "assistant", "content": content,
-                             "tool_calls": tool_calls or None})
+            self.ctx.append(
+                {
+                    "role": "assistant",
+                    "content": content,
+                    "tool_calls": tool_calls or None,
+                }
+            )
 
             if content and not tool_calls:
                 if resp.get("streamed"):
@@ -399,15 +434,21 @@ class Agent:
                 if self.verbose:
                     print(f"工具结果: {result}")
 
-                self.ctx.append({"role": "tool", "tool_call_id": tc["id"], "content": result})
+                self.ctx.append(
+                    {"role": "tool", "tool_call_id": tc["id"], "content": result}
+                )
 
                 if result.startswith("错误"):
                     retries += 1
                     if retries >= self.max_retries:
                         if self.verbose:
                             print("（连续失败多次，提示模型放弃）")
-                        self.ctx.append({"role": "user",
-                                         "content": "工具已连续失败多次，请直接向用户说明无法完成该任务。"})
+                        self.ctx.append(
+                            {
+                                "role": "user",
+                                "content": "工具已连续失败多次，请直接向用户说明无法完成该任务。",
+                            }
+                        )
                 else:
                     retries = 0
 
@@ -425,7 +466,7 @@ class Agent:
 DEMO_QUESTIONS = [
     "帮我算一下 (3 + 5) * 7 - 2",
     "读一下 data.txt",
-    "读一下 data.txtt",   # 故意拼错文件名 -> 触发反思重试
+    "读一下 data.txtt",  # 故意拼错文件名 -> 触发反思重试
 ]
 
 

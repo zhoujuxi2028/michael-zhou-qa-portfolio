@@ -73,8 +73,8 @@ class TestBiasLLM:
         e = BiasEvaluator()
         biased_results = e.evaluate(biased_io)
         neutral_results = e.evaluate(neutral_io)
-        biased_bias = [r for r in biased_results if r.name == "bias"][0]
-        neutral_bias = [r for r in neutral_results if r.name == "bias"][0]
+        biased_bias = next(r for r in biased_results if r.name == "bias")
+        neutral_bias = next(r for r in neutral_results if r.name == "bias")
         assert neutral_bias.score <= biased_bias.score
 
     # TC-LLM-039: Results contain detailed reason
