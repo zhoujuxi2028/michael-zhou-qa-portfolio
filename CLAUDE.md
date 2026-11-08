@@ -53,21 +53,21 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 
 | Category | Project | Key Tech | CLAUDE.md |
 |----------|---------|----------|-----------|
-| 功能测试 | `iwsva-cypress-e2e/` — IWSVA E2E (77 tests) | Cypress, Page Objects | `iwsva-cypress-e2e/CLAUDE.md` |
-| DevOps | `cicd-demo/` — DevOps Infrastructure Platform | Terraform, K8S, ArgoCD, Prometheus | `cicd-demo/CLAUDE.md` |
-| 功能测试 | `api-testing-demo/` — API testing (280+ assertions) | Newman, Postman, json-server | `api-testing-demo/CLAUDE.md` |
-| 功能测试 | `playwright-demo/` — Cross-browser E2E (38 tests) | Playwright, TypeScript, axe-core | `playwright-demo/CLAUDE.md` |
-| 功能测试 | `selenium-demo/` — Browser automation | Selenium, Python, Allure | `selenium-demo/CLAUDE.md` |
-| 功能测试 | `robot-framework-demo/` — Pabot + Selenium Grid + Rebot (9 tests) | Robot Framework, Pabot, Selenium Grid | `robot-framework-demo/CLAUDE.md` |
-| 安全测试 | `security-testing-demo/` — Security (~182 tests, OWASP Top 10) | Pytest, OWASP ZAP, Nessus, SQLMap | `security-testing-demo/CLAUDE.md` |
-| 数据库测试 | `sql-testing-demo/` — SQL & PL/pgSQL (32 tests: CRUD + queries + constraints + procedures + transactions) | PostgreSQL, psycopg3, testcontainers, pytest | — |
-| 平台测试 | `sid-iam-testing-platform/` — IAM + Data + AI Agent (163 tests) | Python, Pytest, FastAPI, networkx | `sid-iam-testing-platform/CLAUDE.md` |
-| 平台测试 | `microservice-testing-platform/` — Microservice (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 | `microservice-testing-platform/CLAUDE.md` |
-| 性能测试 | `performance-testing-platform/` — k6 + JMeter dual-engine (148 unit + 31 integration + 33 perf) | k6, JMeter, Express, Grafana, InfluxDB | `performance-testing-platform/CLAUDE.md` |
-| 稳定性测试 | `k8s-auto-testing-platform/` — K8S HPA + Chaos (37 tests) | Python, Pytest, Chaos Mesh | `k8s-auto-testing-platform/CLAUDE.md` |
-| **AI 测试** | `ai-testing-platform/` — AI-Powered Testing Platform (92 tests) | Python, Pytest, Rule Engine | `ai-testing-platform/CLAUDE.md` |
-| AI 测试 | `llm-agent-tutorial/` — LLM Agent Engineering Tutorial | Python, Anthropic API | `llm-agent-tutorial/CLAUDE.md` |
-| 集成测试 | `ivi-integration-lab/` — IVI 车载集成验证实验室 (65 tests: unit + smoke + integration + regression) | Python, pytest, python-can, cantools | `ivi-integration-lab/CLAUDE.md` |
+| 功能测试 | `projects/functional/iwsva-cypress-e2e/` — IWSVA E2E (77 tests) | Cypress, Page Objects | `iwsva-cypress-e2e/CLAUDE.md` |
+| DevOps | `projects/devops/cicd-demo/` — DevOps Infrastructure Platform | Terraform, K8S, ArgoCD, Prometheus | `cicd-demo/CLAUDE.md` |
+| 功能测试 | `projects/functional/api-testing-demo/` — API testing (280+ assertions) | Newman, Postman, json-server | `api-testing-demo/CLAUDE.md` |
+| 功能测试 | `projects/functional/playwright-demo/` — Cross-browser E2E (38 tests) | Playwright, TypeScript, axe-core | `playwright-demo/CLAUDE.md` |
+| 功能测试 | `projects/functional/selenium-demo/` — Browser automation | Selenium, Python, Allure | `selenium-demo/CLAUDE.md` |
+| 功能测试 | `projects/functional/robot-framework-demo/` — Pabot + Selenium Grid + Rebot (9 tests) | Robot Framework, Pabot, Selenium Grid | `robot-framework-demo/CLAUDE.md` |
+| 安全测试 | `projects/security/security-testing-demo/` — Security (~182 tests, OWASP Top 10) | Pytest, OWASP ZAP, Nessus, SQLMap | `security-testing-demo/CLAUDE.md` |
+| 数据库测试 | `projects/database/sql-testing-demo/` — SQL & PL/pgSQL (32 tests: CRUD + queries + constraints + procedures + transactions) | PostgreSQL, psycopg3, testcontainers, pytest | — |
+| 平台测试 | `projects/platform/sid-iam-testing-platform/` — IAM + Data + AI Agent (163 tests) | Python, Pytest, FastAPI, networkx | `sid-iam-testing-platform/CLAUDE.md` |
+| 平台测试 | `projects/platform/microservice-testing-platform/` — Microservice (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 | `microservice-testing-platform/CLAUDE.md` |
+| 性能测试 | `projects/platform/performance-testing-platform/` — k6 + JMeter dual-engine (148 unit + 31 integration + 33 perf) | k6, JMeter, Express, Grafana, InfluxDB | `performance-testing-platform/CLAUDE.md` |
+| 稳定性测试 | `projects/platform/k8s-auto-testing-platform/` — K8S HPA + Chaos (37 tests) | Python, Pytest, Chaos Mesh | `k8s-auto-testing-platform/CLAUDE.md` |
+| **AI 测试** | `projects/ai/ai-testing-platform/` — AI-Powered Testing Platform (92 tests) | Python, Pytest, Rule Engine | `ai-testing-platform/CLAUDE.md` |
+| AI 测试 | `projects/ai/llm-agent-tutorial/` — LLM Agent Engineering Tutorial | Python, Anthropic API | `llm-agent-tutorial/CLAUDE.md` |
+| 集成测试 | `projects/automotive/ivi-integration-lab/` — IVI 车载集成验证实验室 (65 tests: unit + smoke + integration + regression) | Python, pytest, python-can, cantools | `ivi-integration-lab/CLAUDE.md` |
 
 > **Quick Commands**: 各项目的安装、运行、测试命令详见对应子项目 `CLAUDE.md`。
 
@@ -138,11 +138,11 @@ python3 -m venv venv && source venv/bin/activate
    ```
 5. **失败后**：受 `report_progress` patch-id 去重限制，Agent **无法**通过 filter-branch + push 重写已推送的违规 commit；必须由仓库维护者 squash-merge 或本地 force-push。预防优先于补救。
 
-参考：[PDEF-003 RCA](docs/project-management/postmortems/RCA-2026-05-25-PDEF-003-commit-subject-length.md)、[DEF-022](performance-testing-platform/docs/qa/defects/register.md)、[`scripts/check-commit-guard.sh`](scripts/check-commit-guard.sh)
+参考：[PDEF-003 RCA](docs/project-management/postmortems/RCA-2026-05-25-PDEF-003-commit-subject-length.md)、[DEF-022](projects/platform/performance-testing-platform/docs/qa/defects/register.md)、[`scripts/check-commit-guard.sh`](scripts/check-commit-guard.sh)
 
 ### Branch Prefix Convention
 
-已用合法前缀（**新增前缀须同步更新 `performance-testing-platform/tests/unit/scripts/stage4-selftest-fast.bats` 白名单**，参见 DEF-023 RCA）：
+已用合法前缀（**新增前缀须同步更新 `projects/platform/performance-testing-platform/tests/unit/scripts/stage4-selftest-fast.bats` 白名单**，参见 DEF-023 RCA）：
 
 | 前缀 | 用途 |
 |------|------|

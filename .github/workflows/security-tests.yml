@@ -6,14 +6,14 @@ on:
     paths: &security_test_trigger_paths
       - '.github/workflows/security-tests.yml'
       - '.github/actions/setup-python-project/**'
-      - 'security-testing-demo/tests/**'
-      - 'security-testing-demo/scripts/**'
-      - 'security-testing-demo/utils/**'
-      - 'security-testing-demo/docker/**'
-      - 'security-testing-demo/.zap/**'
-      - 'security-testing-demo/zap/**'
-      - 'security-testing-demo/requirements.txt'
-      - 'security-testing-demo/pyproject.toml'
+      - 'projects/security/security-testing-demo/tests/**'
+      - 'projects/security/security-testing-demo/scripts/**'
+      - 'projects/security/security-testing-demo/utils/**'
+      - 'projects/security/security-testing-demo/docker/**'
+      - 'projects/security/security-testing-demo/.zap/**'
+      - 'projects/security/security-testing-demo/zap/**'
+      - 'projects/security/security-testing-demo/requirements.txt'
+      - 'projects/security/security-testing-demo/pyproject.toml'
   pull_request:
     branches: [main]
     paths: *security_test_trigger_paths
@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: security-testing-demo
+        working-directory: projects/security/security-testing-demo
 
     services:
       dvwa:
@@ -53,8 +53,8 @@ jobs:
       - name: Set up project
         uses: ./.github/actions/setup-python-project
         with:
-          cache-dependency-path: 'security-testing-demo/requirements.txt'
-          working-directory: security-testing-demo
+          cache-dependency-path: 'projects/security/security-testing-demo/requirements.txt'
+          working-directory: projects/security/security-testing-demo
 
       - name: Wait for DVWA
         run: |
@@ -89,14 +89,14 @@ jobs:
         with:
           name: security-test-report
           path: |
-            security-testing-demo/reports/test-report.html
-            security-testing-demo/reports/security-tests.xml
+            projects/security/security-testing-demo/reports/test-report.html
+            projects/security/security-testing-demo/reports/security-tests.xml
 
   juice-shop-tests:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: security-testing-demo
+        working-directory: projects/security/security-testing-demo
 
     services:
       juice-shop:
@@ -114,8 +114,8 @@ jobs:
       - name: Set up project
         uses: ./.github/actions/setup-python-project
         with:
-          cache-dependency-path: 'security-testing-demo/requirements.txt'
-          working-directory: security-testing-demo
+          cache-dependency-path: 'projects/security/security-testing-demo/requirements.txt'
+          working-directory: projects/security/security-testing-demo
 
       - name: Wait for Juice Shop
         run: |
@@ -145,8 +145,8 @@ jobs:
         with:
           name: juice-shop-test-report
           path: |
-            security-testing-demo/reports/juice-shop-report.html
-            security-testing-demo/reports/juice-shop-tests.xml
+            projects/security/security-testing-demo/reports/juice-shop-report.html
+            projects/security/security-testing-demo/reports/juice-shop-tests.xml
 
   zap-baseline-scan:
     runs-on: ubuntu-latest
@@ -155,7 +155,7 @@ jobs:
       issues: write
     defaults:
       run:
-        working-directory: security-testing-demo
+        working-directory: projects/security/security-testing-demo
 
     services:
       dvwa:
@@ -182,7 +182,7 @@ jobs:
         uses: zaproxy/action-baseline@v0.15.0
         with:
           target: 'http://localhost:80'
-          rules_file_name: 'security-testing-demo/.zap/rules.tsv'
+          rules_file_name: 'projects/security/security-testing-demo/.zap/rules.tsv'
           cmd_options: '-a'
           allow_issue_writing: false
 
@@ -197,7 +197,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: security-testing-demo
+        working-directory: projects/security/security-testing-demo
 
     steps:
       - name: Checkout code
@@ -206,8 +206,8 @@ jobs:
       - name: Set up project
         uses: ./.github/actions/setup-python-project
         with:
-          cache-dependency-path: 'security-testing-demo/requirements.txt'
-          working-directory: security-testing-demo
+          cache-dependency-path: 'projects/security/security-testing-demo/requirements.txt'
+          working-directory: projects/security/security-testing-demo
           extra-packages: safety
 
       - name: Run dependency vulnerability scan
@@ -225,7 +225,7 @@ jobs:
         if: always()
         with:
           name: dependency-scan-report
-          path: security-testing-demo/reports/dependency-scan.json
+          path: projects/security/security-testing-demo/reports/dependency-scan.json
 
   summary:
     needs: [security-tests, juice-shop-tests, zap-baseline-scan, dependency-scan]
