@@ -27,7 +27,7 @@ permissions:
 
 defaults:
   run:
-    working-directory: projects/devops/cicd-demo
+    working-directory: projects/infra/cicd-demo
 
 jobs:
   docker-tests:
@@ -80,7 +80,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: cypress-screenshots-docker
-          path: projects/devops/cicd-demo/cypress/screenshots/
+          path: projects/infra/cicd-demo/cypress/screenshots/
           if-no-files-found: ignore
           retention-days: 7
 
@@ -89,7 +89,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: cypress-videos-docker
-          path: projects/devops/cicd-demo/cypress/videos/
+          path: projects/infra/cicd-demo/cypress/videos/
           if-no-files-found: ignore
           retention-days: 7
 
@@ -98,7 +98,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: newman-reports-docker
-          path: projects/devops/cicd-demo/newman/
+          path: projects/infra/cicd-demo/newman/
           if-no-files-found: ignore
           retention-days: 30
 
@@ -145,7 +145,7 @@ jobs:
         if: always()
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
-          files: projects/devops/cicd-demo/newman/junit.xml
+          files: projects/infra/cicd-demo/newman/junit.xml
           check_name: Docker Test Results
 
       # Step 7: Cleanup Docker resources

@@ -45,7 +45,6 @@ Test automation, performance testing, and DevOps demonstration projects.
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
 | [security-testing-demo](./projects/security/security-testing-demo/) | DAST Security Testing (~182 tests, OWASP Top 10) | OWASP ZAP, Nessus, SQLMap, Pytest |
-| [k8s-auto-testing-platform](./projects/platform/k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests) | Python, Pytest, Chaos Mesh |
 | [sql-testing-demo](./projects/database/sql-testing-demo/) | SQL & PL/pgSQL Testing — FastWare WMS scenario (32 tests: CRUD + queries + constraints + procedures + transactions) | PostgreSQL, psycopg3, testcontainers, pytest |
 | [ivi-integration-lab](./projects/automotive/ivi-integration-lab/) | IVI 车载集成验证实验室 — CAN bus 3节点仿真 + ECU 刷写 + 质量门禁 (65 tests: unit + smoke + integration + regression) | Python, pytest, python-can, cantools |
 
@@ -56,18 +55,19 @@ Test automation, performance testing, and DevOps demonstration projects.
 | [sid-iam-testing-platform](./projects/platform/sid-iam-testing-platform/) | IAM + Data + AI Agent Testing (138 tests) | Python, Pytest, FastAPI, networkx |
 | [microservice-testing-platform](./projects/platform/microservice-testing-platform/) | Microservice Testing (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 |
 
+### 基础设施 (Infrastructure)
+
+| Project | Description | Tech Stack |
+|---------|-------------|------------|
+| [cicd-demo](./projects/infra/cicd-demo/) | DevOps Infrastructure Platform (IaC + GitOps + Monitoring) | Terraform, K8S, ArgoCD, Prometheus |
+| [k8s-auto-testing-platform](./projects/infra/k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests) | Python, Pytest, Chaos Mesh |
+
 ### AI 测试 (AI Testing)
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [ai-testing-platform](./projects/ai/ai-testing-platform/) | AI-Powered Testing Platform — 智能测试用例生成 + 缺陷预测 + 脚本生成 + 代码扫描 (92 tests) | Python, Pytest, Rule Engine |
-| [llm-agent-tutorial](./projects/ai/llm-agent-tutorial/) | LLM Agent Engineering Tutorial — Prompt/Context/Harness/Loop 四件套 + function-calling + Reflexion (single-file, zero-dependency) | Python, Anthropic API |
-
-### DevOps
-
-| Project | Description | Tech Stack |
-|---------|-------------|------------|
-| [cicd-demo](./projects/devops/cicd-demo/) | DevOps Infrastructure Platform (IaC + GitOps + Monitoring) | Terraform, K8S, ArgoCD, Prometheus |
+| [ai-testing-platform](./ai-lab/ai-testing-platform/) | AI-Powered Testing Platform — 智能测试用例生成 + 缺陷预测 + 脚本生成 + 代码扫描 (92 tests) | Python, Pytest, Rule Engine |
+| [llm-agent-tutorial](./ai-lab/llm-agent-tutorial/) | LLM Agent Engineering Tutorial — Prompt/Context/Harness/Loop 四件套 + function-calling + Reflexion (single-file, zero-dependency) | Python, Anthropic API |
 
 ---
 
@@ -133,7 +133,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 
 | `copilot-setup-steps.yml` | repository | Push/PR to workflow file, manual | 预热 Node.js/Python 依赖缓存供 Copilot 使用 |
 
-> **PR → Merge → Deploy 端到端流程**：`cicd-demo` 演示了完整的 CI/CD 闭环 — PR 触发并行的 lint/unit-tests/build/security-scan 四个 job 经 `pr-gate` 聚合，合并到 `main` 后自动触发 `build-and-package` → `deploy-staging`（自动）→ `deploy-production`（手动审批）。详见 [cicd-demo/README.md#pr--merge--deploy-流程](./projects/devops/cicd-demo/README.md#pr--merge--deploy-流程) 的 ASCII / Mermaid 流程图与 Branch Protection 配置说明。
+> **PR → Merge → Deploy 端到端流程**：`cicd-demo` 演示了完整的 CI/CD 闭环 — PR 触发并行的 lint/unit-tests/build/security-scan 四个 job 经 `pr-gate` 聚合，合并到 `main` 后自动触发 `build-and-package` → `deploy-staging`（自动）→ `deploy-production`（手动审批）。详见 [cicd-demo/README.md#pr--merge--deploy-流程](./projects/infra/cicd-demo/README.md#pr--merge--deploy-流程) 的 ASCII / Mermaid 流程图与 Branch Protection 配置说明。
 
 ---
 

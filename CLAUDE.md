@@ -54,7 +54,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | Category | Project | Key Tech | CLAUDE.md |
 |----------|---------|----------|-----------|
 | 功能测试 | `projects/functional/iwsva-cypress-e2e/` — IWSVA E2E (77 tests) | Cypress, Page Objects | `iwsva-cypress-e2e/CLAUDE.md` |
-| DevOps | `projects/devops/cicd-demo/` — DevOps Infrastructure Platform | Terraform, K8S, ArgoCD, Prometheus | `cicd-demo/CLAUDE.md` |
+| 基础设施 | `projects/infra/cicd-demo/` — DevOps Infrastructure Platform | Terraform, K8S, ArgoCD, Prometheus | `cicd-demo/CLAUDE.md` |
 | 功能测试 | `projects/functional/api-testing-demo/` — API testing (280+ assertions) | Newman, Postman, json-server | `api-testing-demo/CLAUDE.md` |
 | 功能测试 | `projects/functional/playwright-demo/` — Cross-browser E2E (38 tests) | Playwright, TypeScript, axe-core | `playwright-demo/CLAUDE.md` |
 | 功能测试 | `projects/functional/selenium-demo/` — Browser automation | Selenium, Python, Allure | `selenium-demo/CLAUDE.md` |
@@ -64,7 +64,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | 平台测试 | `projects/platform/sid-iam-testing-platform/` — IAM + Data + AI Agent (163 tests) | Python, Pytest, FastAPI, networkx | `sid-iam-testing-platform/CLAUDE.md` |
 | 平台测试 | `projects/platform/microservice-testing-platform/` — Microservice (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 | `microservice-testing-platform/CLAUDE.md` |
 | 性能测试 | `projects/platform/performance-testing-platform/` — k6 + JMeter dual-engine (148 unit + 31 integration + 33 perf) | k6, JMeter, Express, Grafana, InfluxDB | `performance-testing-platform/CLAUDE.md` |
-| 稳定性测试 | `projects/platform/k8s-auto-testing-platform/` — K8S HPA + Chaos (37 tests) | Python, Pytest, Chaos Mesh | `k8s-auto-testing-platform/CLAUDE.md` |
+| 基础设施 | `projects/infra/k8s-auto-testing-platform/` — K8S HPA + Chaos (37 tests) | Python, Pytest, Chaos Mesh | `k8s-auto-testing-platform/CLAUDE.md` |
 | **AI 测试** | `projects/ai/ai-testing-platform/` — AI-Powered Testing Platform (92 tests) | Python, Pytest, Rule Engine | `ai-testing-platform/CLAUDE.md` |
 | AI 测试 | `projects/ai/llm-agent-tutorial/` — LLM Agent Engineering Tutorial | Python, Anthropic API | `llm-agent-tutorial/CLAUDE.md` |
 | 集成测试 | `projects/automotive/ivi-integration-lab/` — IVI 车载集成验证实验室 (65 tests: unit + smoke + integration + regression) | Python, pytest, python-can, cantools | `ivi-integration-lab/CLAUDE.md` |
