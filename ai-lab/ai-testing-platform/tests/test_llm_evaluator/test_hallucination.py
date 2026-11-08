@@ -63,7 +63,7 @@ class TestHallucinationLLM:
 
         e = HallucinationEvaluator()
         results = e.evaluate(faithful_io)
-        faith = [r for r in results if r.name == "faithfulness"][0]
+        faith = next(r for r in results if r.name == "faithfulness")
         assert faith.score >= 0.5
 
     # TC-LLM-019/020: Faithfulness distinguishes faithful vs hallucinated
@@ -73,8 +73,8 @@ class TestHallucinationLLM:
         e = HallucinationEvaluator()
         bad_results = e.evaluate(hallucination_io)
         good_results = e.evaluate(faithful_io)
-        bad_faith = [r for r in bad_results if r.name == "faithfulness"][0]
-        good_faith = [r for r in good_results if r.name == "faithfulness"][0]
+        bad_faith = next(r for r in bad_results if r.name == "faithfulness")
+        good_faith = next(r for r in good_results if r.name == "faithfulness")
         assert bad_faith.score <= good_faith.score
 
     # TC-LLM-024: Each result contains detailed reason
