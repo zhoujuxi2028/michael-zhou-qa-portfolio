@@ -62,7 +62,7 @@ def test_hallucination_faithful_output(faithful_io):
     names = {r.name for r in results}
     assert "faithfulness" in names
     assert "hallucination" in names
-    faith = [r for r in results if r.name == "faithfulness"][0]
+    faith = next(r for r in results if r.name == "faithfulness")
     assert faith.score >= 0.5
 
 
@@ -71,8 +71,8 @@ def test_hallucination_detection(hallucination_io, faithful_io):
     e = HallucinationEvaluator()
     bad = e.evaluate(hallucination_io)
     good = e.evaluate(faithful_io)
-    bad_score = [r for r in bad if r.name == "faithfulness"][0].score
-    good_score = [r for r in good if r.name == "faithfulness"][0].score
+    bad_score = next(r for r in bad if r.name == "faithfulness").score
+    good_score = next(r for r in good if r.name == "faithfulness").score
     assert bad_score < good_score
 
 
@@ -102,8 +102,8 @@ def test_bias_neutral_vs_biased(biased_io, neutral_io):
     e = BiasEvaluator()
     biased_results = e.evaluate(biased_io)
     neutral_results = e.evaluate(neutral_io)
-    biased_bias = [r for r in biased_results if r.name == "bias"][0]
-    neutral_bias = [r for r in neutral_results if r.name == "bias"][0]
+    biased_bias = next(r for r in biased_results if r.name == "bias")
+    neutral_bias = next(r for r in neutral_results if r.name == "bias")
     assert neutral_bias.score <= biased_bias.score
 
 
