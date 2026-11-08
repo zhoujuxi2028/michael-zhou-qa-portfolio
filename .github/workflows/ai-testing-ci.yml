@@ -4,17 +4,17 @@ on:
   workflow_dispatch:
   push:
     branches: [main, "feature/*", "copilot/*"]
-    paths: ['ai-testing-platform/**']
+    paths: ['projects/ai/ai-testing-platform/**']
   pull_request:
     branches: [main]
-    paths: ['ai-testing-platform/**']
+    paths: ['projects/ai/ai-testing-platform/**']
 
 permissions:
   contents: read
 
 defaults:
   run:
-    working-directory: ai-testing-platform
+    working-directory: projects/ai/ai-testing-platform
 
 jobs:
   code-quality:
@@ -25,9 +25,9 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version-file: ai-testing-platform/.python-version
+          python-version-file: projects/ai/ai-testing-platform/.python-version
           cache: pip
-          cache-dependency-path: ai-testing-platform/requirements.txt
+          cache-dependency-path: projects/ai/ai-testing-platform/requirements.txt
       - run: pip install -r requirements.txt
       - run: ruff format --check src/ tests/
       - run: isort --check-only src/ tests/
@@ -42,9 +42,9 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version-file: ai-testing-platform/.python-version
+          python-version-file: projects/ai/ai-testing-platform/.python-version
           cache: pip
-          cache-dependency-path: ai-testing-platform/requirements.txt
+          cache-dependency-path: projects/ai/ai-testing-platform/requirements.txt
       - run: pip install -r requirements.txt
       - name: Run all tests with coverage (skip LLM-dependent)
         run: pytest tests/ -v -m "not llm" --cov=src --cov-report=xml --cov-report=term-missing
@@ -53,7 +53,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: coverage-report
-          path: ai-testing-platform/coverage.xml
+          path: projects/ai/ai-testing-platform/coverage.xml
 
   verify-by-module:
     runs-on: ubuntu-latest
@@ -64,9 +64,9 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version-file: ai-testing-platform/.python-version
+          python-version-file: projects/ai/ai-testing-platform/.python-version
           cache: pip
-          cache-dependency-path: ai-testing-platform/requirements.txt
+          cache-dependency-path: projects/ai/ai-testing-platform/requirements.txt
       - run: pip install -r requirements.txt
       - name: TestCaseGenerator tests
         run: pytest tests/test_case_generator/ -v -m "generation" --tb=short

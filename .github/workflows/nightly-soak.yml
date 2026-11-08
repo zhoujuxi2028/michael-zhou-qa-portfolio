@@ -8,7 +8,7 @@ name: Performance / Nightly
 # Artifact retention: 30 天 (SCHED-04)
 # 并发控制: cancel-in-progress=false,定时任务排队等待 (R-29)
 #
-# 设计依据: performance-testing-platform/docs/devops/phase7-gap-remediation-design.md
+# 设计依据: projects/platform/performance-testing-platform/docs/devops/phase7-gap-remediation-design.md
 
 on:
   schedule:
@@ -34,7 +34,7 @@ permissions:
 
 defaults:
   run:
-    working-directory: performance-testing-platform
+    working-directory: projects/platform/performance-testing-platform
 
 jobs:
   nightly-soak:
@@ -49,8 +49,8 @@ jobs:
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-          working-directory: performance-testing-platform
-          cache-dependency-path: performance-testing-platform/package-lock.json
+          working-directory: projects/platform/performance-testing-platform
+          cache-dependency-path: projects/platform/performance-testing-platform/package-lock.json
       - name: Install k6
         run: |
           curl -sSL https://github.com/grafana/k6/releases/download/v1.7.0/k6-v1.7.0-linux-amd64.tar.gz | tar xz
@@ -80,8 +80,8 @@ jobs:
         with:
           name: nightly-soak-${{ github.run_id }}
           path: |
-            performance-testing-platform/results/
-            performance-testing-platform/reports/k6-soak-short.html
+            projects/platform/performance-testing-platform/results/
+            projects/platform/performance-testing-platform/reports/k6-soak-short.html
           retention-days: 30
 
   weekly-capacity:
@@ -96,8 +96,8 @@ jobs:
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-          working-directory: performance-testing-platform
-          cache-dependency-path: performance-testing-platform/package-lock.json
+          working-directory: projects/platform/performance-testing-platform
+          cache-dependency-path: projects/platform/performance-testing-platform/package-lock.json
       - name: Install k6
         run: |
           curl -sSL https://github.com/grafana/k6/releases/download/v1.7.0/k6-v1.7.0-linux-amd64.tar.gz | tar xz
@@ -127,6 +127,6 @@ jobs:
         with:
           name: weekly-capacity-${{ github.run_id }}
           path: |
-            performance-testing-platform/results/
-            performance-testing-platform/reports/k6-capacity.html
+            projects/platform/performance-testing-platform/results/
+            projects/platform/performance-testing-platform/reports/k6-capacity.html
           retention-days: 30

@@ -2,20 +2,20 @@ name: CICD Demo / Terraform CI
 
 # PR 阶段对 Terraform 代码做格式、语法与安全检查。
 # 分层职责：
-#   cicd-demo-terraform.yml  — Terraform fmt / validate / IaC security（本文件）
-#   cicd-demo-pr.yml         — K8s YAML / Helm / Docker / JS lint（其他资源）
+#   projects/devops/cicd-demo-terraform.yml  — Terraform fmt / validate / IaC security（本文件）
+#   projects/devops/cicd-demo-pr.yml         — K8s YAML / Helm / Docker / JS lint（其他资源）
 #   security-scan.yml        — 深度 Trivy 全量扫描 + SARIF 上传（夜间/合并后）
 
 on:
   pull_request:
     branches: [main]
     paths:
-      - 'cicd-demo/terraform/**'
-      - '.github/workflows/cicd-demo-terraform.yml'
+      - 'projects/devops/cicd-demo/terraform/**'
+      - '.github/workflows/projects/devops/cicd-demo-terraform.yml'
   workflow_dispatch:
 
 concurrency:
-  group: cicd-demo-terraform-${{ github.event.pull_request.number || github.ref }}
+  group: projects/devops/cicd-demo-terraform-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -24,7 +24,7 @@ permissions:
 
 defaults:
   run:
-    working-directory: cicd-demo/terraform
+    working-directory: projects/devops/cicd-demo/terraform
 
 jobs:
   # ---------------------------------------------------------------------------
@@ -87,11 +87,11 @@ jobs:
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'config'
-          scan-ref: 'cicd-demo/terraform'
+          scan-ref: 'projects/devops/cicd-demo/terraform'
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
           format: 'table'
-          trivyignores: 'cicd-demo/.trivyignore'
+          trivyignores: 'projects/devops/cicd-demo/.trivyignore'
 
   # ---------------------------------------------------------------------------
   # Job 4: Terraform Gate —— 汇总闸口（Branch Protection Required Check）

@@ -3,19 +3,19 @@ name: CICD Demo / PR Pipeline
 # PR-触发的快速校验流水线，展示 PR → Merge 工作流。
 # 与 docker-tests.yml（nightly 全量回归）和 security-scan.yml（深度安全扫描）形成分层策略：
 #   PR 阶段：< 5 分钟快速反馈（lint + 构建 + 单元/契约校验 + 轻量安全扫描）
-#   合并后：cicd-demo-deploy.yml 触发部署
+#   合并后：projects/devops/cicd-demo-deploy.yml 触发部署
 #   夜间：完整的 Docker 回归 + 完整 SARIF 扫描
 
 on:
   pull_request:
     branches: [main]
     paths:
-      - 'cicd-demo/**'
-      - '.github/workflows/cicd-demo-pr.yml'
+      - 'projects/devops/cicd-demo/**'
+      - '.github/workflows/projects/devops/cicd-demo-pr.yml'
   workflow_dispatch:
 
 concurrency:
-  group: cicd-demo-pr-${{ github.event.pull_request.number || github.ref }}
+  group: projects/devops/cicd-demo-pr-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -24,7 +24,7 @@ permissions:
 
 defaults:
   run:
-    working-directory: cicd-demo
+    working-directory: projects/devops/cicd-demo
 
 env:
   # PR 流水线不运行 Cypress，跳过 Cypress 二进制下载以加速 npm ci
@@ -45,9 +45,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version-file: cicd-demo/.nvmrc
+          node-version-file: projects/devops/cicd-demo/.nvmrc
           cache: npm
-          cache-dependency-path: cicd-demo/package-lock.json
+          cache-dependency-path: projects/devops/cicd-demo/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -70,9 +70,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version-file: cicd-demo/.nvmrc
+          node-version-file: projects/devops/cicd-demo/.nvmrc
           cache: npm
-          cache-dependency-path: cicd-demo/package-lock.json
+          cache-dependency-path: projects/devops/cicd-demo/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -136,8 +136,8 @@ jobs:
       - name: Build Newman Docker image (PR validation)
         uses: docker/build-push-action@v7
         with:
-          context: cicd-demo
-          file: cicd-demo/Dockerfile.newman
+          context: projects/devops/cicd-demo
+          file: projects/devops/cicd-demo/Dockerfile.newman
           push: false
           load: true
           tags: qa-newman-demo:pr-${{ github.event.pull_request.number || 'manual' }}
@@ -160,9 +160,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version-file: cicd-demo/.nvmrc
+          node-version-file: projects/devops/cicd-demo/.nvmrc
           cache: npm
-          cache-dependency-path: cicd-demo/package-lock.json
+          cache-dependency-path: projects/devops/cicd-demo/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -174,11 +174,11 @@ jobs:
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
-          scan-ref: cicd-demo
+          scan-ref: projects/devops/cicd-demo
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
           ignore-unfixed: true
-          trivyignores: 'cicd-demo/.trivyignore'
+          trivyignores: 'projects/devops/cicd-demo/.trivyignore'
 
   # ---------------------------------------------------------------------------
   # Job 5: Quality Gate —— 测试覆盖量化门控
@@ -196,9 +196,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version-file: cicd-demo/.nvmrc
+          node-version-file: projects/devops/cicd-demo/.nvmrc
           cache: npm
-          cache-dependency-path: cicd-demo/package-lock.json
+          cache-dependency-path: projects/devops/cicd-demo/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -258,7 +258,7 @@ jobs:
     needs: [lint, unit-tests, build, security-scan, quality-gate]
     if: always()
     timeout-minutes: 2
-    # 覆盖 workflow 级 defaults.run.working-directory（=cicd-demo），
+    # 覆盖 workflow 级 defaults.run.working-directory（=projects/devops/cicd-demo），
     # 因为本 job 仅汇总状态、不 checkout 仓库，沿用默认目录会触发
     # "No such file or directory" 的 bash 启动失败（PDEF-002）。
     defaults:
@@ -312,11 +312,11 @@ jobs:
           CI_ENVIRONMENT: ci
         run: |
           set -euo pipefail
-          chmod +x cicd-demo/scripts/push-metrics.sh
+          chmod +x projects/devops/cicd-demo/scripts/push-metrics.sh
           GATE="${{ needs.pr-gate.result }}"
           STATUS="failure"
           [ "$GATE" = "success" ] && STATUS="success"
-          bash cicd-demo/scripts/push-metrics.sh \
+          bash projects/devops/cicd-demo/scripts/push-metrics.sh \
             --job        "pr-pipeline" \
             --status     "$STATUS" \
             --duration   "0" \

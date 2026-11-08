@@ -4,12 +4,12 @@ on:
   push:
     branches: [main, feature/performance-testing]
     paths:
-      - 'performance-testing-platform/**'
+      - 'projects/platform/performance-testing-platform/**'
       - '.github/workflows/performance-ci.yml'
   pull_request:
     branches: [main, feature/performance-testing]
     paths:
-      - 'performance-testing-platform/**'
+      - 'projects/platform/performance-testing-platform/**'
       - '.github/workflows/performance-ci.yml'
   workflow_dispatch:
 
@@ -23,7 +23,7 @@ permissions:
 
 defaults:
   run:
-    working-directory: performance-testing-platform
+    working-directory: projects/platform/performance-testing-platform
 
 jobs:
   performance-lint:
@@ -34,8 +34,8 @@ jobs:
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-          working-directory: performance-testing-platform
-          cache-dependency-path: performance-testing-platform/package-lock.json
+          working-directory: projects/platform/performance-testing-platform
+          cache-dependency-path: projects/platform/performance-testing-platform/package-lock.json
       - name: Code Style (ESLint + Prettier)
         # 合并 lint 与 format:check：两者都执行后再统一退出，避免一项失败遮蔽另一项
         # （GitHub Actions 默认 fail-fast：拆成两个 step 时，前者红灯后者就不再跑，
@@ -62,8 +62,8 @@ jobs:
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-          working-directory: performance-testing-platform
-          cache-dependency-path: performance-testing-platform/package-lock.json
+          working-directory: projects/platform/performance-testing-platform
+          cache-dependency-path: projects/platform/performance-testing-platform/package-lock.json
       # test:coverage 已移除 --runInBand，使用 jest.config.js 配置的 maxWorkers: 50%
       # CI runner 4 核 → 2 worker 并行，预期比单线程提速约 30~40%
       - run: npm run test:coverage
@@ -72,7 +72,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: coverage-report
-          path: performance-testing-platform/coverage/
+          path: projects/platform/performance-testing-platform/coverage/
 
   shell-tests-fast:
     name: Performance Testing / Shell Tests (Fast)
@@ -86,8 +86,8 @@ jobs:
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-          working-directory: performance-testing-platform
-          cache-dependency-path: performance-testing-platform/package-lock.json
+          working-directory: projects/platform/performance-testing-platform
+          cache-dependency-path: projects/platform/performance-testing-platform/package-lock.json
       - name: Install bats-core
         uses: bats-core/bats-action@4.0.0
         with:
@@ -110,8 +110,8 @@ jobs:
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-          working-directory: performance-testing-platform
-          cache-dependency-path: performance-testing-platform/package-lock.json
+          working-directory: projects/platform/performance-testing-platform
+          cache-dependency-path: projects/platform/performance-testing-platform/package-lock.json
       - name: Install bats-core
         uses: bats-core/bats-action@4.0.0
         with:
@@ -131,8 +131,8 @@ jobs:
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-          working-directory: performance-testing-platform
-          cache-dependency-path: performance-testing-platform/package-lock.json
+          working-directory: projects/platform/performance-testing-platform
+          cache-dependency-path: projects/platform/performance-testing-platform/package-lock.json
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
@@ -141,7 +141,7 @@ jobs:
         id: cache-jmeter
         uses: actions/cache@v6
         with:
-          path: performance-testing-platform/apache-jmeter-5.6.3
+          path: projects/platform/performance-testing-platform/apache-jmeter-5.6.3
           key: jmeter-5.6.3
       - name: Download JMeter
         if: steps.cache-jmeter.outputs.cache-hit != 'true'
@@ -197,7 +197,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: jmeter-smoke-results
-          path: performance-testing-platform/results/
+          path: projects/platform/performance-testing-platform/results/
 
   smoke-test:
     name: Performance Testing / k6 Smoke Tests
@@ -208,8 +208,8 @@ jobs:
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-          working-directory: performance-testing-platform
-          cache-dependency-path: performance-testing-platform/package-lock.json
+          working-directory: projects/platform/performance-testing-platform
+          cache-dependency-path: projects/platform/performance-testing-platform/package-lock.json
       - name: Install k6
         run: |
           curl -sSL https://github.com/grafana/k6/releases/download/v1.7.0/k6-v1.7.0-linux-amd64.tar.gz | tar xz
@@ -246,8 +246,8 @@ jobs:
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-          working-directory: performance-testing-platform
-          cache-dependency-path: performance-testing-platform/package-lock.json
+          working-directory: projects/platform/performance-testing-platform
+          cache-dependency-path: projects/platform/performance-testing-platform/package-lock.json
       - name: Download previous baseline artifact (CI-BL-04 first-run handling)
         id: download_baseline
         env:
@@ -283,8 +283,8 @@ jobs:
         with:
           name: baseline-comparison
           path: |
-            performance-testing-platform/reports/baseline.json
-            performance-testing-platform/reports/comparison-result.json
+            projects/platform/performance-testing-platform/reports/baseline.json
+            projects/platform/performance-testing-platform/reports/comparison-result.json
       - name: Comment baseline regression on PR (PERF-CI-BL-FR-002)
         # 仅在 PR 事件且 comparison-result.json 报告 WARNING/FAIL 时发布 sticky 评论。
         # marker: <!-- perf-baseline-comment --> (与 trend 评论解耦)
@@ -294,7 +294,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const resultPath = 'performance-testing-platform/reports/comparison-result.json';
+            const resultPath = 'projects/platform/performance-testing-platform/reports/comparison-result.json';
             if (!fs.existsSync(resultPath)) {
               core.info('No comparison-result.json (first run), skipping baseline PR comment');
               return;
@@ -360,8 +360,8 @@ jobs:
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
-          working-directory: performance-testing-platform
-          cache-dependency-path: performance-testing-platform/package-lock.json
+          working-directory: projects/platform/performance-testing-platform
+          cache-dependency-path: projects/platform/performance-testing-platform/package-lock.json
       - name: Collect trend data + generate trend.md (CI-TREND-01, TREND-01, PERF-CI-BL-FR-007)
         run: |
           mkdir -p reports
@@ -372,8 +372,8 @@ jobs:
         with:
           name: trend-data
           path: |
-            performance-testing-platform/reports/trend.json
-            performance-testing-platform/reports/trend.md
+            projects/platform/performance-testing-platform/reports/trend.json
+            projects/platform/performance-testing-platform/reports/trend.md
           retention-days: 90
       - name: Comment trend on PR (CI-TREND-COMMENT, PERF-CI-BL-FR-008)
         # Sticky comment：每次推送更新同一条评论（通过 marker 识别）。
@@ -383,7 +383,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const reportPath = 'performance-testing-platform/reports/trend.md';
+            const reportPath = 'projects/platform/performance-testing-platform/reports/trend.md';
             if (!fs.existsSync(reportPath)) {
               core.info('No trend.md generated, skipping PR comment');
               return;

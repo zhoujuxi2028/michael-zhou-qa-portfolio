@@ -18,7 +18,7 @@ Full conventions live in `CLAUDE.md` (root) and each project's `CLAUDE.md` / `RE
 | Hook | Does |
 |------|------|
 | `pre-commit` | Secret scan on staged diff (allowlist `.secretsallow`) + lint-staged: `ruff` for `*.py`, `eslint` for `microservice-testing-platform` / `playwright-demo` JS/TS |
-| `pre-push` | Commit Guard + markdown link check (changed `.md`) + workflow-doc sync + perf quality gates when `performance-testing-platform/` changed |
+| `pre-push` | Commit Guard + markdown link check (changed `.md`) + workflow-doc sync + perf quality gates when `projects/platform/performance-testing-platform/` changed |
 
 Workflow doc sync: any change under `.github/workflows/*.yml` must register the exact filename in **both** `README.md` and `CLAUDE.md` (`scripts/check-workflow-doc-sync.sh`). Full list of workflows and naming rules is in `CLAUDE.md`.
 

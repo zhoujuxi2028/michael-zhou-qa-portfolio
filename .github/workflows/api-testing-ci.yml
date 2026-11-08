@@ -4,12 +4,12 @@ on:
   push:
     branches: [main]
     paths:
-      - 'api-testing-demo/**'
+      - 'projects/functional/api-testing-demo/**'
       - '.github/workflows/api-testing-ci.yml'
   pull_request:
     branches: [main]
     paths:
-      - 'api-testing-demo/**'
+      - 'projects/functional/api-testing-demo/**'
       - '.github/workflows/api-testing-ci.yml'
   workflow_dispatch:
 
@@ -22,7 +22,7 @@ permissions:
 
 defaults:
   run:
-    working-directory: api-testing-demo
+    working-directory: projects/functional/api-testing-demo
 
 jobs:
   validate:
@@ -33,8 +33,8 @@ jobs:
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '22'
-          working-directory: api-testing-demo
-          cache-dependency-path: api-testing-demo/package-lock.json
+          working-directory: projects/functional/api-testing-demo
+          cache-dependency-path: projects/functional/api-testing-demo/package-lock.json
       - run: npm run validate
 
   api-tests:
@@ -46,8 +46,8 @@ jobs:
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '22'
-          working-directory: api-testing-demo
-          cache-dependency-path: api-testing-demo/package-lock.json
+          working-directory: projects/functional/api-testing-demo
+          cache-dependency-path: projects/functional/api-testing-demo/package-lock.json
 
       - name: Reset database
         run: git checkout db.json
@@ -90,5 +90,5 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: newman-reports
-          path: api-testing-demo/reports/
+          path: projects/functional/api-testing-demo/reports/
           retention-days: 14

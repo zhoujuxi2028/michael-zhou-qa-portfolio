@@ -4,17 +4,17 @@ on:
   workflow_dispatch:
   push:
     branches: [main, "feat/*", "chore/*", "test/*"]
-    paths: ["sql-testing-demo/**"]
+    paths: ["projects/database/sql-testing-demo/**"]
   pull_request:
     branches: [main]
-    paths: ["sql-testing-demo/**"]
+    paths: ["projects/database/sql-testing-demo/**"]
 
 permissions:
   contents: read
 
 defaults:
   run:
-    working-directory: sql-testing-demo
+    working-directory: projects/database/sql-testing-demo
 
 jobs:
   code-quality:
@@ -23,9 +23,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version-file: sql-testing-demo/.python-version
+          python-version-file: projects/database/sql-testing-demo/.python-version
           cache: pip
-          cache-dependency-path: sql-testing-demo/requirements.txt
+          cache-dependency-path: projects/database/sql-testing-demo/requirements.txt
       - run: pip install -r requirements.txt
       - run: ruff format --check src/ tests/
 
@@ -57,9 +57,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version-file: sql-testing-demo/.python-version
+          python-version-file: projects/database/sql-testing-demo/.python-version
           cache: pip
-          cache-dependency-path: sql-testing-demo/requirements.txt
+          cache-dependency-path: projects/database/sql-testing-demo/requirements.txt
       - run: pip install -r requirements.txt
       - run: >-
           pytest tests/unit/ -v
@@ -93,9 +93,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version-file: sql-testing-demo/.python-version
+          python-version-file: projects/database/sql-testing-demo/.python-version
           cache: pip
-          cache-dependency-path: sql-testing-demo/requirements.txt
+          cache-dependency-path: projects/database/sql-testing-demo/requirements.txt
       - run: pip install -r requirements.txt
       - run: >-
           pytest tests/integration/ -v
