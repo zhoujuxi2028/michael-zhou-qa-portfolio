@@ -17,12 +17,12 @@ on:
   push:
     branches: [main]
     paths:
-      - 'projects/devops/cicd-demo/**'
+      - 'infra/cicd-demo/**'
       - '.github/workflows/security-scan.yml'
   pull_request:
     branches: [main]
     paths:
-      - 'projects/devops/cicd-demo/**'
+      - 'infra/cicd-demo/**'
   schedule:
     - cron: '0 3 * * *'
   workflow_dispatch:
@@ -46,7 +46,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: projects/devops/cicd-demo
+        working-directory: infra/cicd-demo
 
     steps:
       - name: Checkout repository
@@ -61,7 +61,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: 'projects/devops/cicd-demo/package-lock.json'
+          cache-dependency-path: 'infra/cicd-demo/package-lock.json'
 
       - name: Install dependencies
         run: npm ci
@@ -97,8 +97,8 @@ jobs:
         with:
           name: npm-audit-results
           path: |
-            projects/devops/cicd-demo/npm-audit.json
-            projects/devops/cicd-demo/npm-audit-report.md
+            infra/cicd-demo/npm-audit.json
+            infra/cicd-demo/npm-audit-report.md
           retention-days: 30
 
   # Job 2: Trivy filesystem scan - Source code and dependency scanning
@@ -120,7 +120,7 @@ jobs:
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'fs'
-          scan-ref: 'projects/devops/cicd-demo'
+          scan-ref: 'infra/cicd-demo'
           format: 'json'
           output: 'trivy-fs-results.json'
           severity: 'CRITICAL,HIGH,MEDIUM'
@@ -177,7 +177,7 @@ jobs:
       # image that would be deployed. The --load flag loads the image into Docker
       # daemon for scanning, rather than just building to cache."
       - name: Build Docker image (${{ matrix.image.name }})
-        working-directory: projects/devops/cicd-demo
+        working-directory: infra/cicd-demo
         run: |
           docker build \
             -t ${{ matrix.image.tag }} \
@@ -240,7 +240,7 @@ jobs:
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'config'
-          scan-ref: 'projects/devops/cicd-demo'
+          scan-ref: 'infra/cicd-demo'
           format: 'json'
           output: 'trivy-iac-results.json'
           exit-code: '0'
@@ -287,17 +287,17 @@ jobs:
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'fs'
-          scan-ref: 'projects/devops/cicd-demo'
+          scan-ref: 'infra/cicd-demo'
           format: 'table'
           severity: 'CRITICAL'
           exit-code: '1'
-          trivyignores: 'projects/devops/cicd-demo/.trivyignore'
+          trivyignores: 'infra/cicd-demo/.trivyignore'
 
       - name: Run Trivy Quality Gate (IaC - CRITICAL only)
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'config'
-          scan-ref: 'projects/devops/cicd-demo'
+          scan-ref: 'infra/cicd-demo'
           format: 'table'
           severity: 'CRITICAL'
           exit-code: '1'
