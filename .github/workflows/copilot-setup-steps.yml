@@ -27,7 +27,7 @@ jobs:
           cache-dependency-path: |
             package-lock.json
             projects/functional/api-testing-demo/package-lock.json
-            projects/devops/cicd-demo/package-lock.json
+            infra/cicd-demo/package-lock.json
             projects/functional/iwsva-cypress-e2e/package-lock.json
             projects/platform/microservice-testing-platform/package-lock.json
             projects/platform/performance-testing-platform/package-lock.json
@@ -41,9 +41,9 @@ jobs:
           cache-dependency-path: |
             ai-lab/ai-testing-platform/pyproject.toml
             ai-lab/ai-testing-platform/requirements.txt
-            projects/platform/k8s-auto-testing-platform/app/requirements.txt
-            projects/platform/k8s-auto-testing-platform/pyproject.toml
-            projects/platform/k8s-auto-testing-platform/requirements.txt
+            infra/k8s-auto-testing-platform/app/requirements.txt
+            infra/k8s-auto-testing-platform/pyproject.toml
+            infra/k8s-auto-testing-platform/requirements.txt
             projects/security/security-testing-demo/pyproject.toml
             projects/security/security-testing-demo/requirements.txt
             projects/functional/selenium-demo/pyproject.toml

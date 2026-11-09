@@ -4,12 +4,12 @@ on:
   push:
     branches: [main]
     paths:
-      - 'projects/platform/k8s-auto-testing-platform/**'
+      - 'infra/k8s-auto-testing-platform/**'
       - '.github/workflows/k8s-ci.yml'
   pull_request:
     branches: [main]
     paths:
-      - 'projects/platform/k8s-auto-testing-platform/**'
+      - 'infra/k8s-auto-testing-platform/**'
   workflow_dispatch:
     inputs:
       run_integration:
@@ -27,7 +27,7 @@ permissions:
 
 defaults:
   run:
-    working-directory: projects/platform/k8s-auto-testing-platform
+    working-directory: infra/k8s-auto-testing-platform
 
 jobs:
   code-quality:
@@ -42,8 +42,8 @@ jobs:
       - name: Set up project
         uses: ./.github/actions/setup-python-project
         with:
-          cache-dependency-path: 'projects/platform/k8s-auto-testing-platform/requirements.txt'
-          working-directory: projects/platform/k8s-auto-testing-platform
+          cache-dependency-path: 'infra/k8s-auto-testing-platform/requirements.txt'
+          working-directory: infra/k8s-auto-testing-platform
           extra-packages: flake8 black isort pylint
 
       - name: Check code formatting with Black
@@ -89,8 +89,8 @@ jobs:
       - name: Set up project
         uses: ./.github/actions/setup-python-project
         with:
-          cache-dependency-path: 'projects/platform/k8s-auto-testing-platform/requirements.txt'
-          working-directory: projects/platform/k8s-auto-testing-platform
+          cache-dependency-path: 'infra/k8s-auto-testing-platform/requirements.txt'
+          working-directory: infra/k8s-auto-testing-platform
           extra-packages: pytest-cov
 
       - name: Create reports directory
@@ -133,7 +133,7 @@ jobs:
         if: always()
         with:
           name: coverage-report
-          path: projects/platform/k8s-auto-testing-platform/reports/htmlcov/
+          path: infra/k8s-auto-testing-platform/reports/htmlcov/
           retention-days: 7
 
       - name: Upload test reports
@@ -142,7 +142,7 @@ jobs:
         with:
           name: test-reports
           path: |
-            projects/platform/k8s-auto-testing-platform/reports/
+            infra/k8s-auto-testing-platform/reports/
           retention-days: 14
 
       - name: Test Summary
@@ -180,8 +180,8 @@ jobs:
       - name: Set up project
         uses: ./.github/actions/setup-python-project
         with:
-          cache-dependency-path: 'projects/platform/k8s-auto-testing-platform/requirements.txt'
-          working-directory: projects/platform/k8s-auto-testing-platform
+          cache-dependency-path: 'infra/k8s-auto-testing-platform/requirements.txt'
+          working-directory: infra/k8s-auto-testing-platform
 
       - name: Create Kind cluster
         uses: helm/kind-action@v1
@@ -230,8 +230,8 @@ jobs:
         with:
           name: integration-test-results
           path: |
-            projects/platform/k8s-auto-testing-platform/reports/integration-results.xml
-            projects/platform/k8s-auto-testing-platform/reports/integration-report.html
+            infra/k8s-auto-testing-platform/reports/integration-results.xml
+            infra/k8s-auto-testing-platform/reports/integration-report.html
           retention-days: 7
 
   build-status:

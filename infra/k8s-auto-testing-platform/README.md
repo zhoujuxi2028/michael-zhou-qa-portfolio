@@ -76,7 +76,7 @@ Kubernetes automated testing platform focused on **HPA auto-scaling testing**, *
 
 **6. CI/CD Integration**
 
-GitHub Actions workflow: [`k8s-ci.yml`](../../../.github/workflows/k8s-ci.yml)
+GitHub Actions workflow: [`k8s-ci.yml`](../../.github/workflows/k8s-ci.yml)
 
 | Stage | Job | Description |
 |-------|-----|-------------|
@@ -246,7 +246,7 @@ Kubernetes 自动化测试平台，专注于 **HPA 自动扩缩容测试**、**�
 
 **6. CI/CD 集成**
 
-GitHub Actions workflow: [`k8s-ci.yml`](../../../.github/workflows/k8s-ci.yml)
+GitHub Actions workflow: [`k8s-ci.yml`](../../.github/workflows/k8s-ci.yml)
 
 | 阶段 | 任务 | 说明 |
 |------|------|------|
