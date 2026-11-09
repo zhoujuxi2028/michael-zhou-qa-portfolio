@@ -76,7 +76,7 @@ class CodeScanner:
 
         try:
             blocks = cc_visit(source)
-        except Exception:
+        except Exception:  # noqa: BLE001
             return 1.0
         if not blocks:
             return 1.0
@@ -86,6 +86,7 @@ class CodeScanner:
         try:
             result = subprocess.run(
                 ["git", "log", "-1", "--format=%at", "--", str(file_path)],
+                check=False,
                 capture_output=True,
                 text=True,
                 cwd=str(self.git_root),
@@ -104,6 +105,7 @@ class CodeScanner:
         try:
             result = subprocess.run(
                 ["git", "log", "--oneline", "--since=30 days ago", "--", str(file_path)],
+                check=False,
                 capture_output=True,
                 text=True,
                 cwd=str(self.git_root),
@@ -119,6 +121,7 @@ class CodeScanner:
         try:
             result = subprocess.run(
                 ["git", "log", "--oneline", "--since=365 days ago", "--", str(file_path)],
+                check=False,
                 capture_output=True,
                 text=True,
                 cwd=str(self.git_root),

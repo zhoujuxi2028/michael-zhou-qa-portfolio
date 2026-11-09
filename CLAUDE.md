@@ -64,9 +64,9 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | 平台测试 | `projects/platform/sid-iam-testing-platform/` — IAM + Data + AI Agent (163 tests) | Python, Pytest, FastAPI, networkx | `sid-iam-testing-platform/CLAUDE.md` |
 | 平台测试 | `projects/platform/microservice-testing-platform/` — Microservice (101 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 | `microservice-testing-platform/CLAUDE.md` |
 | 性能测试 | `projects/platform/performance-testing-platform/` — k6 + JMeter dual-engine (148 unit + 31 integration + 33 perf) | k6, JMeter, Express, Grafana, InfluxDB | `performance-testing-platform/CLAUDE.md` |
-| infra | `projects/infra/k8s-auto-testing-platform/` — K8S HPA + Chaos (37 tests) | Python, Pytest, Chaos Mesh | `k8s-auto-testing-platform/CLAUDE.md` |
-| **AI 测试** | `projects/ai/ai-testing-platform/` — AI-Powered Testing Platform (92 tests) | Python, Pytest, Rule Engine | `ai-testing-platform/CLAUDE.md` |
-| AI 测试 | `projects/ai/llm-agent-tutorial/` — LLM Agent Engineering Tutorial | Python, Anthropic API | `llm-agent-tutorial/CLAUDE.md` |
+| 稳定性测试 | `projects/platform/k8s-auto-testing-platform/` — K8S HPA + Chaos (37 tests) | Python, Pytest, Chaos Mesh | `k8s-auto-testing-platform/CLAUDE.md` |
+| **AI 测试** | `ai-lab/ai-testing-platform/` — AI-Powered Testing Platform (92 tests) | Python, Pytest, Rule Engine | `ai-testing-platform/CLAUDE.md` |
+| AI 测试 | `ai-lab/llm-agent-tutorial/` — LLM Agent Engineering Tutorial | Python, Anthropic API | `llm-agent-tutorial/CLAUDE.md` |
 | 集成测试 | `projects/automotive/ivi-integration-lab/` — IVI 车载集成验证实验室 (65 tests: unit + smoke + integration + regression) | Python, pytest, python-can, cantools | `ivi-integration-lab/CLAUDE.md` |
 
 > **Quick Commands**: 各项目的安装、运行、测试命令详见对应子项目 `CLAUDE.md`。
