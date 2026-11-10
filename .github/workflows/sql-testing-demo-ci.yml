@@ -9,6 +9,10 @@ on:
     branches: [main]
     paths: ["projects/database/sql-testing-demo/**"]
 
+concurrency:
+  group: sql-testing-demo-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -19,6 +23,7 @@ defaults:
 jobs:
   code-quality:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -31,6 +36,7 @@ jobs:
 
   unit-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: code-quality
     services:
       postgres:
@@ -67,6 +73,7 @@ jobs:
 
   integration-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: unit-tests
     services:
       postgres:

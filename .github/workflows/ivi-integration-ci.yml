@@ -10,6 +10,13 @@ on:
       - "projects/automotive/ivi-integration-lab/**"
       - ".github/workflows/ivi-integration-ci.yml"
 
+concurrency:
+  group: ivi-integration-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 defaults:
   run:
     working-directory: projects/automotive/ivi-integration-lab
@@ -18,6 +25,7 @@ jobs:
   test:
     name: IVI Integration Lab / ${{ matrix.python-version }}
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       matrix:
         python-version: ["3.11", "3.12"]

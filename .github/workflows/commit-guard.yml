@@ -23,6 +23,7 @@ jobs:
   conventional-commits:
     name: Conventional Commits (subject rules)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Checkout PR range
         uses: actions/checkout@v7
@@ -81,6 +82,7 @@ jobs:
   secret-scan:
     name: Secret Scan (PR diff)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Checkout PR range
         uses: actions/checkout@v7
@@ -147,6 +149,7 @@ jobs:
   hook-syntax:
     name: Husky Hooks Syntax
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
 

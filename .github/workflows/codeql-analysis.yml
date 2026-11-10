@@ -59,13 +59,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Cache pip/npm (Python analysis)
+      - name: Cache pip (Python analysis)
         if: matrix.language == 'python'
         uses: actions/cache@v6
         with:
           path: ~/.cache/pip
           key: codeql-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: codeql-pip-
+
+      - name: Cache npm (JavaScript analysis)
+        if: matrix.language == 'javascript-typescript'
+        uses: actions/cache@v6
+        with:
+          path: ~/.npm
+          key: codeql-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: codeql-npm-
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4

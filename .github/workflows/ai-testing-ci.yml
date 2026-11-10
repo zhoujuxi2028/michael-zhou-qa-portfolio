@@ -9,6 +9,10 @@ on:
     branches: [main]
     paths: ['ai-lab/ai-testing-platform/**']
 
+concurrency:
+  group: ai-testing-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -19,6 +23,7 @@ defaults:
 jobs:
   code-quality:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: read
     steps:
@@ -35,6 +40,7 @@ jobs:
 
   unit-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: code-quality
     permissions:
       contents: read
@@ -57,6 +63,7 @@ jobs:
 
   verify-by-module:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: unit-tests
     permissions:
       contents: read
