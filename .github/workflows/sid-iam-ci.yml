@@ -17,6 +17,10 @@ on:
     branches: [main]
     paths: *sid_iam_trigger_paths
 
+concurrency:
+  group: sid-iam-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -28,6 +32,7 @@ jobs:
   code-quality:
     name: SID IAM / Code Quality
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-python-project
@@ -41,6 +46,7 @@ jobs:
   unit-tests:
     name: SID IAM / Unit Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: code-quality
     steps:
       - uses: actions/checkout@v7
@@ -60,6 +66,7 @@ jobs:
   integration-tests:
     name: SID IAM / Integration Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: unit-tests
     steps:
       - uses: actions/checkout@v7
@@ -70,9 +77,10 @@ jobs:
       - name: Run integration tests
         run: pytest tests/ -v -m integration
 
-  all-tests:
-    name: SID IAM / Full Test Matrix
+  verify-priority:
+    name: SID IAM / Priority Gate
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [unit-tests, integration-tests]
     steps:
       - uses: actions/checkout@v7
@@ -80,9 +88,7 @@ jobs:
         with:
           working-directory: projects/platform/sid-iam-testing-platform
           cache-dependency-path: projects/platform/sid-iam-testing-platform/requirements.txt
-      - name: Run all 138 tests with coverage
-        run: pytest tests/ -v --cov=src --cov-report=term-missing
-      - name: Verify by priority
+      - name: Verify P0 and security markers
         run: |
           echo "=== P0 Critical (60 tests) ==="
           pytest tests/ -v -m P0 --tb=no -q

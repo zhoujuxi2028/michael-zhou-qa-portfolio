@@ -13,6 +13,10 @@ on:
       - '.github/workflows/robot-framework-ci.yml'
   workflow_dispatch:
 
+concurrency:
+  group: robot-framework-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -20,6 +24,7 @@ jobs:
   unit-tests:
     name: Robot Framework / Pabot Parallel Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     services:
       selenium-hub:

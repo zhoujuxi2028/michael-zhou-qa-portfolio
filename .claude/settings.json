@@ -25,7 +25,13 @@
       "Bash(pylint:*)",
       "Bash(du -sh */)",
       "Bash(sed -n:*)",
+      "Bash(sed -i *)",
       "Bash(xargs ls:*)",
+      "Bash(mkdir *)",
+      "Bash(mkdir -p *)",
+      "Bash(source venv/bin/activate)",
+      "Bash(npm --prefix *)",
+      "Bash(for *)",
       "Skill(update-config)"
     ]
   },
