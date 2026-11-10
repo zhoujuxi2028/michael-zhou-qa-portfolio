@@ -76,3 +76,21 @@ jobs:
           cache-dependency-path: projects/platform/sid-iam-testing-platform/requirements.txt
       - name: Run integration tests
         run: pytest tests/ -v -m integration
+
+  verify-priority:
+    name: SID IAM / Priority Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [unit-tests, integration-tests]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-python-project
+        with:
+          working-directory: projects/platform/sid-iam-testing-platform
+          cache-dependency-path: projects/platform/sid-iam-testing-platform/requirements.txt
+      - name: Verify P0 and security markers
+        run: |
+          echo "=== P0 Critical (60 tests) ==="
+          pytest tests/ -v -m P0 --tb=no -q
+          echo "=== Security tests ==="
+          pytest tests/ -v -m security --tb=no -q
