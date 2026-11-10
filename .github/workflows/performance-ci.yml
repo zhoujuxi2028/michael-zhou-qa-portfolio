@@ -29,6 +29,7 @@ jobs:
   performance-lint:
     name: Performance Testing / Code Quality
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-node-project
@@ -56,6 +57,7 @@ jobs:
   unit-tests:
     name: Performance Testing / Unit Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     # 优化 #2：lint 不再阻塞测试 job，与 lint 并行运行；最终由 performance-gate 汇总
     steps:
       - uses: actions/checkout@v7
@@ -77,6 +79,7 @@ jobs:
   shell-tests-fast:
     name: Performance Testing / Shell Tests (Fast)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     # 优化 #2：与 lint 并行
     steps:
       - uses: actions/checkout@v7
@@ -102,6 +105,7 @@ jobs:
   shell-tests-integration:
     name: Performance Testing / Shell Tests (Integration)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     # 优化 #2：与 lint 并行；不被下游 smoke/jmeter job 依赖，因此天然不阻塞性能闸门关键路径
     steps:
       - uses: actions/checkout@v7
@@ -125,6 +129,7 @@ jobs:
     # dryrun 作为 smoke 之前的 step，保留早失败语义（dryrun 失败则不进入 smoke）。
     name: Performance Testing / JMeter Smoke Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: [unit-tests, shell-tests-fast]
     steps:
       - uses: actions/checkout@v7
@@ -202,6 +207,7 @@ jobs:
   smoke-test:
     name: Performance Testing / k6 Smoke Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [unit-tests, shell-tests-fast]
     steps:
       - uses: actions/checkout@v7
@@ -236,6 +242,7 @@ jobs:
   baseline-compare:
     name: Performance Testing / Baseline Compare
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [smoke-test, jmeter-smoke-test]
     permissions:
       contents: read
@@ -351,6 +358,7 @@ jobs:
   trend-collect:
     name: Performance Testing / Trend Collect
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: smoke-test
     permissions:
       contents: read
@@ -418,6 +426,7 @@ jobs:
     # 详见 root CLAUDE.md "修改 check 名称要同步清理 required checks" 历史教训。
     name: Performance Testing / Gate
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     if: always()
     needs:
       - performance-lint
