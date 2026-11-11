@@ -10,6 +10,22 @@ version: '3.8'
 
 # Define services
 services:
+  # Self-hosted UI test target (PDEF-021: replaces external example.com)
+  # Not exposed to host; reachable as http://test-site inside qa-demo-network
+  test-site:
+    image: nginx:1.27-alpine
+    container_name: qa-test-site
+    volumes:
+      - ./test-site:/usr/share/nginx/html:ro
+    healthcheck:
+      # -Y off: busybox wget ignores no_proxy; bypass client-injected HTTP_PROXY
+      test: ["CMD", "wget", "-q", "--spider", "-Y", "off", "http://127.0.0.1/"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+    networks:
+      - test-network
+
   # Cypress E2E Tests
   # Interview Talking Point:
   # "The Cypress service runs E2E tests in a containerized browser environment. We use
@@ -23,6 +39,10 @@ services:
     # Environment configuration
     environment:
       - CYPRESS_baseUrl=https://jsonplaceholder.typicode.com
+      - CYPRESS_siteUrl=http://test-site
+      # Keep internal service direct even if Docker client injects HTTP_PROXY (see PDEF-009)
+      - NO_PROXY=test-site,localhost,127.0.0.1
+      - no_proxy=test-site,localhost,127.0.0.1
       - CYPRESS_VIDEO=true
       - CYPRESS_SCREENSHOT_ON_RUN_FAILURE=true
 
@@ -52,6 +72,10 @@ services:
       --browser chrome
       --headless
       --config video=true
+
+    depends_on:
+      test-site:
+        condition: service_healthy
 
     # Network configuration
     networks:
