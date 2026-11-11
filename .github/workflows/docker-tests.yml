@@ -64,7 +64,17 @@ jobs:
       - name: Run Cypress and Newman tests
         run: |
           docker compose up -d
-          docker compose wait cypress newman || true
+          set +e
+          docker compose wait cypress newman
+          WAIT_EXIT=$?
+          set -e
+          CYPRESS_STATUS=$(docker inspect qa-cypress-demo --format='{{.State.Status}}')
+          NEWMAN_STATUS=$(docker inspect qa-newman-demo --format='{{.State.Status}}')
+          if [ "$CYPRESS_STATUS" != "exited" ] || [ "$NEWMAN_STATUS" != "exited" ]; then
+            echo "ERROR: containers not in exited state (cypress=$CYPRESS_STATUS, newman=$NEWMAN_STATUS)"
+            echo "docker compose wait exited with code $WAIT_EXIT"
+            exit 1
+          fi
           CYPRESS_EXIT=$(docker inspect qa-cypress-demo --format='{{.State.ExitCode}}')
           NEWMAN_EXIT=$(docker inspect qa-newman-demo --format='{{.State.ExitCode}}')
           echo "Cypress exit code: $CYPRESS_EXIT"
