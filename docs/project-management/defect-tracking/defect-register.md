@@ -26,7 +26,7 @@
 
 | Defect ID | GitHub Issue | 标题摘要 | 项目 / 范围 | 严重度 | Blocking? | 发现日期 | 状态 | 关联 Waiver | 关联 RCA / Postmortem |
 |-----------|--------------|----------|-------------|--------|-----------|----------|------|-------------|------------------------|
-| PDEF-022 | [#869](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/869) | `codeql-analysis.yml` 自 2026-05-25（#135）加入起无效：同一事件同时用 `paths` + `paths-ignore`（#442）、workflow 级 `concurrency` 引用 `matrix`；1244 次运行全部 0 job 失败，从未上传 CodeQL 分析 | 仓库级 / CI + 安全扫描 | P1 | No | 2026-11-11 | Fix in review（PR [#870](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/870)） | — | [RCA](../postmortems/RCA-2026-11-11-PDEF-022-codeql-workflow-invalid.md) |
+| _(无活跃缺陷)_ | | | | | | | | | |
 
 > 已存在的项目级活跃缺陷请见对应项目登记表（见第 6 节"项目级登记入口"）。
 >
@@ -72,6 +72,7 @@
 | PDEF-019 | [#831](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/831) | PR #834 Copilot commit subject 长度 85 > 72（2 个），`Commit Guard` 报红；PDEF-003 / DEF-022 同模式第三次复发；根因：Copilot 推送路径绕过 Husky，文档层规则无法形成约束 | 仓库级 / CI + 流程 | P2 | 2026-11-04 | cherry-pick rebase + amend 重写两个 subject；CLAUDE.md 记录三次复发结论；待评估 GitHub Push Ruleset 服务端校验 | PR #834 / [RCA](../postmortems/RCA-2026-11-04-PDEF-019-copilot-commit-subject-length.md) |
 | PDEF-020 | [#831](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/831) | PR #834 `robot-framework-demo` TC-NAV-002 smoke 测试断言 `example.com` 的 `xpath://h1`，在 Azure CI（westus3）CDN 返回不含 `<h1>` 的响应，导致 5 次 CI run 全部失败；`<title>` 存在（TC-NAV-001 通过）但 `<h1>` 缺失，`readyState == 'complete'` 亦通过，说明是 CDN 内容差异而非加载时机问题 | robot-framework-demo / 测试设计 | P2 | 2026-11-04 | 将 TC-NAV-002 由 `smoke/P0` 降级为 `regression/P1`；确立规范：CI smoke 不得断言第三方外部 URL 的 DOM 内部结构 | PR #834 commit `915e195c` / [RCA](../postmortems/RCA-2026-11-04-PDEF-020-robot-framework-external-url-smoke.md) |
 | PDEF-021 | [#859](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/859) | `CICD Demo / Docker Nightly` 自 2026-09-29 起连续 44 次失败：example.com 改版移除 `<h1>`，`02-ui-tests.cy.js` 6/9 断言超时；nightly 失败 44 天无告警 | cicd-demo / 测试设计 + CI 监控 | P2 | 2026-11-11 | 新增自托管 `test-site`（nginx + healthcheck），UI spec 改用 `Cypress.env('siteUrl')`；后续 #861（nightly 告警）/ #862（robot example.com）/ #863（`wait \|\| true` 假绿） | PR [#860](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/860) `47d1709f` / [RCA](../postmortems/RCA-2026-11-11-PDEF-021-docker-nightly-example-com.md) |
+| PDEF-022 | [#869](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/869) | `codeql-analysis.yml` 自 2026-05-25（#135）起无效：`paths` + `paths-ignore` 同用（#442）、workflow 级 `concurrency` 引用 `matrix`；1244 次运行全部 0 job，从未上传 CodeQL 分析 | 仓库级 / CI + 安全扫描 | P1 | 2026-11-11 | `paths` 取反替代 `paths-ignore`；`concurrency` 移至 job 级；`repo-meta-ci` 新增 actionlint 语义检查；main 首次全量扫描成功：52 条 open 告警（critical 1 / high 18 / medium 33）待分诊 | PR [#870](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/870) `c2f54240` / [RCA](../postmortems/RCA-2026-11-11-PDEF-022-codeql-workflow-invalid.md) |
 
 ---
 
@@ -119,6 +120,7 @@
 | 2026-07-12 | 登记并关闭 `PDEF-008`：Dependabot PR #407 lockfile 由 npm 11 生成但与 CI npm 10 不兼容，`npm ci` 报 `conventional-commits-parser@6.4.0 Missing from lock file`；用 npm 10 重新生成 lockfile 修复 | QA |
 | 2026-07-12 | 登记并关闭 `PDEF-009`：`robot-framework-demo` Selenium Grid 容器继承宿主机 HTTP_PROXY，`127.0.0.1:7890` 在容器内不可达导致浏览器 9 用例全红；在 `docker-compose.yml` 中添加 `no_proxy` 覆盖修复 | QA |
 | 2026-07-15 | 新增 PDEF-010~014（从 req-register PREQ-009/010/011/013/015 迁移而来，对应 Issues #428/#429/#430/#432/#434）；状态：Triaged | QA |
+| 2026-11-11 | 关闭 PDEF-022：PR #870 合并（`c2f54240`），#869 已关闭；迁入 Closed 历史区，活跃缺陷清零 | QA |
 | 2026-11-11 | 新增 PDEF-022（#869，P1）：CodeQL workflow 自创建起无效，1244 次运行 0 成功；修复 PR #870 + repo-meta-ci 增加 actionlint；PDEF-021 后续 #861/#862/#863 已随 PR #865 关闭；新增模式「CI 长期红灯无人感知」 | QA |
 | 2026-11-11 | 关闭 PDEF-021：PR #860 合并（`47d1709f`），#859 已关闭；迁入 Closed 历史区，活跃缺陷清零；开后续 Issue #861 / #862 / #863 | QA |
 | 2026-11-11 | 新增 PDEF-021（#859）：Docker Nightly 因 example.com 移除 `<h1>` 连续 44 次失败；状态 Triaged；新增模式追踪「E2E 断言第三方外部站点 DOM」（Q4 第 2 次）；修复改为自托管 `test-site`（nginx），状态 Fix in review，附 RCA | QA |
