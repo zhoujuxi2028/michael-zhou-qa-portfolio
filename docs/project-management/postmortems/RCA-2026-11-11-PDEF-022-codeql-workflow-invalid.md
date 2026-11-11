@@ -3,6 +3,7 @@
 **缺陷 ID**: PDEF-022 · **Issue**: [#869](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/869) · **PR**: [#870](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/870)
 **严重度**: P1 High（安全扫描完全缺失，不阻塞 PR）
 **发现日期**: 2026-11-11（排查 PR #865 合并后 main 上的红灯时发现）
+**修复日期**: 2026-11-11（PR [#870](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/870)，`c2f54240`）
 **影响范围**: `codeql-analysis.yml`，2026-05-25 ~ 2026-11-11
 
 ---
@@ -50,4 +51,4 @@ GitHub 在启动阶段拒绝无效的 workflow：运行记录显示为 failure�
 | 2 | 修改 workflow 的 PR 必须看到该 workflow 真正运行过（不只是 lint 通过） | ✅ 写入本 RCA，Stage 4 检查项 |
 | 3 | 把 CodeQL 加入 branch protection 的 required checks | ⏳ 待维护者评估 |
 | 4 | 把 #861 的失败告警机制推广到 CodeQL 等其他 workflow | ⏳ 待评估 |
-| 5 | 首次 CodeQL 扫描出的告警按严重度分诊 | ⏳ 待扫描完成 |
+| 5 | main 首次全量扫描（run 42994931861）：52 条 open 告警，critical 1（`js/request-forgery`）/ high 18 / medium 33；perf-platform 占 26 条 | ⏳ 待分诊 |
