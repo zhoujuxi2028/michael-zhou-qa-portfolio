@@ -26,33 +26,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
-    services:
-      selenium-hub:
-        image: selenium/hub:4.21.0
-        ports:
-          - 4444:4444
-      chrome-node:
-        image: selenium/node-chrome:4.21.0
-        env:
-          SE_EVENT_BUS_HOST: selenium-hub
-          SE_EVENT_BUS_PUBLISH_PORT: 4442
-          SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
-          SE_NODE_MAX_SESSIONS: 3
-        options: >-
-          --shm-size 2g
-      firefox-node:
-        image: selenium/node-firefox:4.21.0
-        env:
-          SE_EVENT_BUS_HOST: selenium-hub
-          SE_EVENT_BUS_PUBLISH_PORT: 4442
-          SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
-          SE_NODE_MAX_SESSIONS: 3
-        options: >-
-          --shm-size 2g
-
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: Start Selenium Grid + target-web
+        working-directory: projects/functional/robot-framework-demo
+        run: docker compose up -d
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -132,7 +112,6 @@ jobs:
           pabot --processes 2 \
             --outputdir results \
             --variable SELENIUM_GRID:http://localhost:4444/wd/hub \
-            --include smoke \
             tests/
 
       - name: Merge reports with Rebot
@@ -151,3 +130,8 @@ jobs:
           name: robot-results
           path: projects/functional/robot-framework-demo/results/
           retention-days: 14
+
+      - name: Stop containers
+        if: always()
+        working-directory: projects/functional/robot-framework-demo
+        run: docker compose down
