@@ -26,7 +26,7 @@
 
 | Defect ID | GitHub Issue | 标题摘要 | 项目 / 范围 | 严重度 | Blocking? | 发现日期 | 状态 | 关联 Waiver | 关联 RCA / Postmortem |
 |-----------|--------------|----------|-------------|--------|-----------|----------|------|-------------|------------------------|
-| _(无活跃缺陷)_ | | | | | | | | | |
+| PDEF-021 | [#859](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/859) | `CICD Demo / Docker Nightly` 自 2026-09-29 起连续 44 次失败（最新 run [#42943248609](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/runs/42943248609)）：example.com 改版移除 `<h1>`，`02-ui-tests.cy.js` 6/9 断言 `h1` 超时，Cypress exit 6；nightly 失败 44 天无告警 | cicd-demo / 测试设计 + CI 监控 | P2 | No | 2026-11-11 | Fix in review（`fix/pdef-021-nightly-local-site`） | — | [RCA](../postmortems/RCA-2026-11-11-PDEF-021-docker-nightly-example-com.md) |
 
 > 已存在的项目级活跃缺陷请见对应项目登记表（见第 6 节"项目级登记入口"）。
 >
@@ -82,6 +82,7 @@
 |------|--------------------|------|-----------------|-----------------|------|
 | Markdown 断链（相对路径错误） | 3 | 2026-Q2 | PDEF-001、PDEF-004（label-strategy）、PDEF-005 | [RCA-PDEF-005](../postmortems/RCA-2026-05-26-PDEF-005-rca-broken-links.md)（含模式分析） | 🟡 AI-1/2 待落地（本地检查工具缺失） |
 | Copilot commit subject 超 72 字符 | **3 次跨季度累计** | Q2–Q4 2026 | DEF-022、PDEF-003、PDEF-019 | [RCA-PDEF-019](../postmortems/RCA-2026-11-04-PDEF-019-copilot-commit-subject-length.md) | 🔴 已触发专项 AI：评估 GitHub Push Ruleset 服务端校验（AI-2） |
+| E2E 断言第三方外部站点 DOM（example.com） | 2 | 2026-Q4 | PDEF-020、PDEF-021 | [RCA-PDEF-020](../postmortems/RCA-2026-11-04-PDEF-020-robot-framework-external-url-smoke.md) | 🟡 观察中（再发 1 次触发专项 Postmortem） |
 
 ---
 
@@ -89,12 +90,12 @@
 
 | 项目 | 登记表位置 | 当前活跃数 | 最近更新 |
 |------|------------|-----------|---------|
-| performance-testing-platform | [defects/register.md](../../../performance-testing-platform/docs/qa/defects/register.md) | 10（DEF-005、DEF-006、DEF-007、DEF-008、DEF-011、DEF-012、DEF-017、DEF-020、DEF-021、DEF-023） | 2026-05-26 |
+| performance-testing-platform | [defects/register.md](../../../projects/platform/performance-testing-platform/docs/qa/defects/register.md) | 10（DEF-005、DEF-006、DEF-007、DEF-008、DEF-011、DEF-012、DEF-017、DEF-020、DEF-021、DEF-023） | 2026-05-26 |
 | api-testing-demo | _(按需初始化，复制 [模板](defect-register-template.md))_ | — | — |
 | playwright-demo | _(按需初始化)_ | — | — |
 | selenium-demo | _(按需初始化)_ | — | — |
 | iwsva-cypress-e2e | _(按需初始化)_ | — | — |
-| security-testing-demo | [defect-register.md](../../../security-testing-demo/docs/qa/defect-register.md) | 1（SEC-DEF-001） | 2026-05-17 |
+| security-testing-demo | [defect-register.md](../../../projects/security/security-testing-demo/docs/qa/defect-register.md) | 1（SEC-DEF-001） | 2026-05-17 |
 | k8s-auto-testing-platform | _(按需初始化)_ | — | — |
 | sid-iam-testing-platform | _(按需初始化)_ | — | — |
 | microservice-testing-platform | _(按需初始化)_ | — | — |
@@ -116,6 +117,7 @@
 | 2026-07-12 | 登记并关闭 `PDEF-008`：Dependabot PR #407 lockfile 由 npm 11 生成但与 CI npm 10 不兼容，`npm ci` 报 `conventional-commits-parser@6.4.0 Missing from lock file`；用 npm 10 重新生成 lockfile 修复 | QA |
 | 2026-07-12 | 登记并关闭 `PDEF-009`：`robot-framework-demo` Selenium Grid 容器继承宿主机 HTTP_PROXY，`127.0.0.1:7890` 在容器内不可达导致浏览器 9 用例全红；在 `docker-compose.yml` 中添加 `no_proxy` 覆盖修复 | QA |
 | 2026-07-15 | 新增 PDEF-010~014（从 req-register PREQ-009/010/011/013/015 迁移而来，对应 Issues #428/#429/#430/#432/#434）；状态：Triaged | QA |
+| 2026-11-11 | 新增 PDEF-021（#859）：Docker Nightly 因 example.com 移除 `<h1>` 连续 44 次失败；状态 Triaged；新增模式追踪「E2E 断言第三方外部站点 DOM」（Q4 第 2 次）；修复改为自托管 `test-site`（nginx），状态 Fix in review，附 RCA | QA |
 | 2026-11-04 | 登记并关闭 PDEF-019 / PDEF-020；关闭 PDEF-017（PR #836 dependabot 豁免）/ PDEF-018（PR #834）；将 PDEF-015～018 从活跃表迁入 Closed 历史区；活跃缺陷清零 | QA |
 | 2026-11-03 | 新增 PDEF-017（#832）：Commit Guard 未豁免 dependabot[bot]，grouped PR message 超 72 字符阻塞 CI；根治方案：Commit Guard 跳過 dependabot[bot] 作者 commit；新增 PDEF-018（#831）：CI Python 版本硬编码，依赖升级时版本冲突无法提前发现；根治方案：各平台引入 .python-version 统一声明 | QA |
 | 2026-07-16 | 关闭 PDEF-010~014：修复批量 PR（fix/batch-h1-h7-defects）；新增 PDEF-015（#431 commit-guard.yml path filter）、PDEF-016（#433 Dependabot Python 覆盖）；状态：Fixed | QA |

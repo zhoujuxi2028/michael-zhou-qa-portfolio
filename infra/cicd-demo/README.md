@@ -99,8 +99,10 @@ cicd-demo/
 ├── cypress/                         # Cypress E2E 测试
 │   ├── e2e/
 │   │   ├── 01-api-tests.cy.js      #   API 端点验证
-│   │   └── 02-ui-tests.cy.js       #   UI 功能验证
+│   │   └── 02-ui-tests.cy.js       #   UI 功能验证（访问自托管 test-site）
 │   └── support/                     #   Cypress 支持文件
+│
+├── test-site/                       # UI 测试目标静态页（nginx，PDEF-021）
 │
 ├── postman/                         # Newman API 测试
 │   ├── api-collection.json          #   Postman 集合 (18 assertions)

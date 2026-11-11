@@ -6,14 +6,19 @@
  * - Shows custom commands usage for reusability
  * - Includes viewport testing for responsive design
  * - Uses data-driven testing with fixtures
+ *
+ * Target: self-hosted static site (docker compose service `test-site`).
+ * External example.com was dropped after it removed <h1> (PDEF-021, #859).
  */
 
-describe('UI Tests - Example.com', () => {
+const siteUrl = Cypress.env('siteUrl')
+
+describe('UI Tests - Demo Site', () => {
 
   context('Page Load Tests', () => {
     it('should load the homepage successfully', () => {
       // Interview Point: "We test basic page load and verify key elements"
-      cy.visit('https://example.com')
+      cy.visit(siteUrl)
 
       cy.get('h1').should('be.visible')
         .and('contain', 'Example Domain')
@@ -25,7 +30,7 @@ describe('UI Tests - Example.com', () => {
     })
 
     it('should have proper meta tags', () => {
-      cy.visit('https://example.com')
+      cy.visit(siteUrl)
 
       // Interview Point: "We validate SEO-related meta tags"
       cy.document().then((doc) => {
@@ -38,7 +43,7 @@ describe('UI Tests - Example.com', () => {
 
   context('Link Tests', () => {
     it('should have a working "Learn more" link', () => {
-      cy.visit('https://example.com')
+      cy.visit(siteUrl)
 
       cy.get('a').contains('Learn more').should('be.visible')
         .and('have.attr', 'href')
@@ -57,7 +62,7 @@ describe('UI Tests - Example.com', () => {
       it(`should render correctly on ${viewport.device} (${viewport.width}x${viewport.height})`, () => {
         // Interview Point: "We test responsive design across multiple viewports in CI"
         cy.viewport(viewport.width, viewport.height)
-        cy.visit('https://example.com')
+        cy.visit(siteUrl)
 
         cy.get('h1').should('be.visible')
         cy.get('p').should('be.visible')
@@ -72,7 +77,7 @@ describe('UI Tests - Example.com', () => {
     it('should load the page within acceptable time', () => {
       const startTime = Date.now()
 
-      cy.visit('https://example.com')
+      cy.visit(siteUrl)
 
       cy.window().then(() => {
         const loadTime = Date.now() - startTime
@@ -94,7 +99,7 @@ describe('UI Tests - Example.com', () => {
         })
       })
 
-      cy.visit('https://example.com')
+      cy.visit(siteUrl)
       cy.get('h1').should('be.visible')
     })
   })
@@ -106,7 +111,7 @@ describe('UI Tests - Example.com', () => {
  */
 describe('Custom Command Examples', () => {
   it('should demonstrate reusable test patterns', () => {
-    cy.visit('https://example.com')
+    cy.visit(siteUrl)
 
     // Interview Point: "We create custom commands for frequently used actions"
     // Example: cy.login(), cy.searchFor(), cy.validateApiResponse()
