@@ -56,6 +56,15 @@ jobs:
           echo "Changed files: $count"
           cat changed-files.txt
 
+      # Semantic workflow check (PDEF-022): yaml.safe_load only validates syntax;
+      # invalid workflows (e.g. paths + paths-ignore, matrix in workflow-level
+      # concurrency) fail at startup with 0 jobs and go unnoticed.
+      - name: Lint workflows (actionlint)
+        shell: bash
+        run: |
+          docker run --rm -v "$PWD":/repo -w /repo rhysd/actionlint:1.7.12 \
+            -no-color -shellcheck= -pyflakes=
+
       - name: Run repository meta lint
         shell: bash
         run: |
