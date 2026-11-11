@@ -32,10 +32,14 @@ const ERROR_CODES = {
 
 const PAYMENT_FAILURE_THRESHOLD = 999.99;
 
+// productId is used in inter-service URL paths; restrict to safe chars (CodeQL #872)
+const PRODUCT_ID_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
+
 module.exports = {
   ORDER_STATUS,
   VALID_TRANSITIONS,
   EVENTS,
   ERROR_CODES,
   PAYMENT_FAILURE_THRESHOLD,
+  PRODUCT_ID_PATTERN,
 };

@@ -1,4 +1,9 @@
-const { ORDER_STATUS, VALID_TRANSITIONS, ERROR_CODES } = require('../../../../shared/constants');
+const {
+  ORDER_STATUS,
+  VALID_TRANSITIONS,
+  ERROR_CODES,
+  PRODUCT_ID_PATTERN,
+} = require('../../../../shared/constants');
 
 let _db;
 function getDb() {
@@ -17,7 +22,7 @@ function generateId() {
 function create({ productId, quantity, unitPrice }) {
   const db = getDb();
 
-  if (!productId) {
+  if (typeof productId !== 'string' || !PRODUCT_ID_PATTERN.test(productId)) {
     const err = new Error(ERROR_CODES.VALIDATION_ERROR);
     err.code = ERROR_CODES.VALIDATION_ERROR;
     throw err;
