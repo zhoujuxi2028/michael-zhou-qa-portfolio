@@ -155,5 +155,5 @@ docker-compose up -d
 
 1. **GitHub Actions 资源限制**: 免费版 2 core / 7GB RAM，并行进程建议 ≤ 3
 2. **Grid 启动时间**: 需等待 Hub 和 Node 就绪（约 10-20 秒）
-3. **网络访问**: 测试目标需要从 runner 可达（example.com 始终可用）
+3. **测试目标**: 本地 `target-web`（nginx，`docker/nginx/index.html`），不依赖外网（#862）
 4. **shm_size**: Chrome Node 需 `--shm-size 2g` 避免 OOM crash

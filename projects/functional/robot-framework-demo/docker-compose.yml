@@ -1,4 +1,10 @@
 services:
+  target-web:
+    image: nginx:1.27-alpine
+    container_name: target-web
+    volumes:
+      - ./docker/nginx/index.html:/usr/share/nginx/html/index.html:ro
+
   selenium-hub:
     image: selenium/hub:4.21.0
     container_name: selenium-hub
@@ -8,22 +14,23 @@ services:
       - GRID_MAX_SESSION=6
       - GRID_BROWSER_TIMEOUT=60
       - GRID_TIMEOUT=120
-      - no_proxy=localhost,127.0.0.1,example.com,selenium-hub
-      - NO_PROXY=localhost,127.0.0.1,example.com,selenium-hub
+      - no_proxy=localhost,127.0.0.1,target-web,selenium-hub
+      - NO_PROXY=localhost,127.0.0.1,target-web,selenium-hub
 
   chrome-node:
     image: selenium/node-chrome:4.21.0
     shm_size: 2gb
     depends_on:
       - selenium-hub
+      - target-web
     environment:
       - SE_EVENT_BUS_HOST=selenium-hub
       - SE_EVENT_BUS_PUBLISH_PORT=4442
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
       - SE_NODE_MAX_SESSIONS=3
       - TZ=Asia/Shanghai
-      - no_proxy=localhost,127.0.0.1,example.com,selenium-hub
-      - NO_PROXY=localhost,127.0.0.1,example.com,selenium-hub
+      - no_proxy=localhost,127.0.0.1,target-web,selenium-hub
+      - NO_PROXY=localhost,127.0.0.1,target-web,selenium-hub
     deploy:
       replicas: 2
 
@@ -32,13 +39,14 @@ services:
     shm_size: 2gb
     depends_on:
       - selenium-hub
+      - target-web
     environment:
       - SE_EVENT_BUS_HOST=selenium-hub
       - SE_EVENT_BUS_PUBLISH_PORT=4442
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
       - SE_NODE_MAX_SESSIONS=3
       - TZ=Asia/Shanghai
-      - no_proxy=localhost,127.0.0.1,example.com,selenium-hub
-      - NO_PROXY=localhost,127.0.0.1,example.com,selenium-hub
+      - no_proxy=localhost,127.0.0.1,target-web,selenium-hub
+      - NO_PROXY=localhost,127.0.0.1,target-web,selenium-hub
     deploy:
       replicas: 2

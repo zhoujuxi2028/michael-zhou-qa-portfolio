@@ -238,7 +238,7 @@ rebot --outputdir results/merged --merge results/output.xml
 *** Test Cases ***
 TC-NAV-001: 验证首页加载成功
     [Tags]    smoke    navigation    P0
-    Open Browser To Grid    https://example.com
+    Open Browser To Grid    http://target-web
     Verify Page Title Contains    Example Domain
     [Teardown]    Close Browser Safely
 ```
@@ -309,11 +309,11 @@ Trigger: push/PR to main (robot-framework-demo/**)
 ┌──────────────────────────────────────────────┐
 │  1. Checkout + Setup Python 3.12              │
 │  2. pip install -r requirements.txt            │
-│  3. Wait for Selenium Grid (services)          │
+│  3. docker compose up -d + Wait for Grid       │
 │     ┌──────────────────────────────────┐       │
-│     │ Hub:4444 + Chrome Node + Firefox  │       │
+│     │ Hub + Chrome/Firefox + target-web│       │
 │     └──────────────────────────────────┘       │
-│  4. pabot --processes 2 --include smoke        │
+│  4. pabot --processes 2（全量）                │
 │     └─ Grid URL: http://localhost:4444/wd/hub  │
 │  5. rebot --merge (always, even on failure)    │
 │  6. upload-artifact: robot-results/             │
@@ -325,8 +325,8 @@ Trigger: push/PR to main (robot-framework-demo/**)
 | 项目 | Local | CI |
 |------|-------|----|
 | Process count | 4 | 2 |
-| Grid startup | `docker-compose up -d` | `services` 自动管理 |
-| Test filter | 全部 | `--include smoke` |
+| Grid startup | `docker-compose up -d` | `docker compose up -d`（#862） |
+| Test filter | 全部 | 全部（#862） |
 | Proxy | OrbStack (需 NO_PROXY) | 无代理 |
 
 ---
@@ -374,7 +374,7 @@ Trigger: push/PR to main (robot-framework-demo/**)
 1. **关键字驱动 (Keyword-Driven)**：Robot Framework 的核心设计哲学。测试用例由自然语言关键字组成，业务人员可阅读和维护：
    ```robot
    # 自然语言可读
-   Open Browser To Grid    https://example.com
+   Open Browser To Grid    http://target-web
    Verify Page Title Contains    Example Domain
    Close Browser Safely
    ```
