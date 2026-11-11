@@ -121,6 +121,23 @@ describe('baseline regression detection', () => {
     expect(data[1].run).toBe(3);
   });
 
+  // CodeQL #872（alert 620）：去掉 existsSync 先检查再使用后，异常文件仍需安全处理
+  test.each([
+    ['corrupt JSON', '{not json'],
+    ['non-array JSON', '{"run": 1}'],
+  ])('appendTrend resets %s to [entry]', (_label, content) => {
+    fs.writeFileSync(trendFile, content);
+    appendTrend({ run: 9, p95_ms: 400 }, trendFile);
+    const data = JSON.parse(fs.readFileSync(trendFile, 'utf-8'));
+    expect(data).toEqual([{ run: 9, p95_ms: 400 }]);
+  });
+
+  test('appendTrend creates file when missing', () => {
+    expect(fs.existsSync(trendFile)).toBe(false);
+    appendTrend({ run: 1, p95_ms: 400 }, trendFile);
+    expect(JSON.parse(fs.readFileSync(trendFile, 'utf-8'))).toHaveLength(1);
+  });
+
   // loadBaseline / saveBaseline 互操作性
   test('saveBaseline and loadBaseline should round-trip correctly', () => {
     const baseline = { p95_ms: 420, error_rate: 0.003, run_id: 'abc123' };

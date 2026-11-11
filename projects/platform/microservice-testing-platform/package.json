@@ -4,8 +4,8 @@
   "description": "E-commerce microservice testing platform - Order, Inventory, Payment",
   "private": true,
   "scripts": {
-    "lint": "eslint services/ tests/ shared/ --ext .js",
-    "lint:fix": "eslint services/ tests/ shared/ --ext .js --fix",
+    "lint": "eslint services/ tests/ shared/",
+    "lint:fix": "eslint services/ tests/ shared/ --fix",
     "format": "prettier --write 'services/**/*.js' 'tests/**/*.js' 'shared/**/*.js'",
     "format:check": "prettier --check 'services/**/*.js' 'tests/**/*.js' 'shared/**/*.js'",
     "test": "jest",
@@ -21,10 +21,12 @@
     "docker:test": "docker compose up -d && npm run test:e2e && docker compose down"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "eslint": "^10.14.0",
     "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.14.0",
     "jest": "^30.5.2",
     "jest-html-reporters": "^3.1.7",
     "prettier": "^3.9.10",

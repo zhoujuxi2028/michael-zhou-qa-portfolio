@@ -42,14 +42,14 @@ function appendTrend(entry, filePath, retentionDays = 90) {
   const dir = path.dirname(filePath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-  let data = [];
-  if (fs.existsSync(filePath)) {
-    try {
-      data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-      if (!Array.isArray(data)) data = [];
-    } catch (e) {
-      data = [];
-    }
+  // Read directly instead of existsSync-then-read (TOCTOU, CodeQL #872);
+  // missing / corrupt / non-array file → start fresh
+  let data;
+  try {
+    data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    if (!Array.isArray(data)) data = [];
+  } catch {
+    data = [];
   }
 
   data.push(entry);
