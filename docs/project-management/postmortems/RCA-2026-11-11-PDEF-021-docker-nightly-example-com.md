@@ -49,6 +49,6 @@
 | # | 动作 | 状态 |
 |---|------|------|
 | 1 | 规范：E2E 不得断言第三方站点 DOM，改用自托管目标 | ✅ 本次落地 |
-| 2 | Nightly 失败自动建 Issue 或告警 | ⏳ [#861](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/861) |
-| 3 | `robot-framework-demo` 3 个 suite 仍依赖 example.com（TC-NAV-002 的 "More information"、`iana.org` 等文本已不存在） | ⏳ [#862](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/862) |
-| 4 | `docker-tests.yml` 中 `compose wait ... \|\| true` 可能读到运行中容器的 exit 0（假绿） | ⏳ [#863](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/863) |
+| 2 | Nightly 失败自动建 Issue 或告警 | ✅ [#861](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/861)（PR #865，`c8c58df5`；dry-run 验证 #868 建→评论→关闭） |
+| 3 | `robot-framework-demo` 3 个 suite 仍依赖 example.com（TC-NAV-002 的 "More information"、`iana.org` 等文本已不存在） | ✅ [#862](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/862)（PR #865；本地 `target-web`，CI 全量 9/9） |
+| 4 | `docker-tests.yml` 中 `compose wait ... \|\| true` 可能读到运行中容器的 exit 0（假绿） | ✅ [#863](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/863)（PR #865；先断言 `exited` 再读 exit code） |

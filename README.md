@@ -124,7 +124,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 | `nightly-soak.yml` | performance-testing-platform | Nightly / weekly, manual | Performance / Nightly: soak-short daily + capacity weekly |
 | `ai-testing-ci.yml` | ai-testing-platform | Push/PR, manual | AI Testing CI: code quality + unit tests (72 tests, 82% coverage) |
 | `setup-labels.yml` | repository | Manual (`workflow_dispatch`) | 一键创建/更新 11 个 `proj:xxx` labels |
-| `repo-meta-ci.yml` | repository root | Push/PR, manual | docs/workflow/JSON/shell/Markdown links 轻量校验 + workflow 文档同步检查 |
+| `repo-meta-ci.yml` | repository root | Push/PR, manual | docs/workflow/JSON/shell/Markdown links 轻量校验 + actionlint workflow 语义检查 + workflow 文档同步检查 |
 | `sql-testing-demo-ci.yml` | sql-testing-demo | Push/PR | SQL Testing Demo CI: code quality (ruff) → unit tests (CRUD/queries/constraints/procedures) → integration tests (transactions/performance/reports) |
 | `ivi-integration-ci.yml` | ivi-integration-lab | Push/PR | IVI Integration Lab CI: lint → unit tests → smoke → integration → regression (65 tests, Python 3.11/3.12 matrix) |
 | `api-testing-ci.yml` | api-testing-demo | Push/PR | Validate Postman collections → Newman tests (280+ assertions) |
