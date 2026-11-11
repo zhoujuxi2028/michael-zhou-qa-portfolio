@@ -1,7 +1,7 @@
 *** Settings ***
 Documentation    导航功能测试套件 - 验证基础页面导航和加载
 Resource         ../resources/common.robot
-Suite Setup      Open Browser To Grid    https://example.com
+Suite Setup      Open Browser To Grid    http://target-web
 Suite Teardown   Close Browser Safely
 
 *** Test Cases ***

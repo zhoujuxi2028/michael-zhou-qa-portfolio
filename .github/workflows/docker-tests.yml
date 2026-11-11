@@ -15,6 +15,12 @@ on:
     # Nightly regression at 2:00 AM UTC / 10:00 AM Beijing
     - cron: '0 2 * * *'
   workflow_dispatch:
+    inputs:
+      notify_test:
+        description: 'Dry-run failure-issue automation with a simulated result (skips tests; #861)'
+        type: choice
+        options: [none, failure, success]
+        default: none
 
 concurrency:
   group: docker-tests-${{ github.ref }}
@@ -32,6 +38,7 @@ defaults:
 jobs:
   docker-tests:
     name: Comprehensive Tests (Docker Containers)
+    if: ${{ !inputs.notify_test || inputs.notify_test == 'none' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -63,7 +70,19 @@ jobs:
       - name: Run Cypress and Newman tests
         run: |
           docker compose up -d
-          docker compose wait cypress newman || true
+          set +e
+          docker compose wait cypress newman
+          WAIT_EXIT=$?
+          set -e
+          CYPRESS_STATUS=$(docker inspect qa-cypress-demo --format='{{.State.Status}}')
+          NEWMAN_STATUS=$(docker inspect qa-newman-demo --format='{{.State.Status}}')
+          if [ "$CYPRESS_STATUS" != "exited" ] || [ "$NEWMAN_STATUS" != "exited" ]; then
+            echo "ERROR: containers not in exited state (cypress=$CYPRESS_STATUS, newman=$NEWMAN_STATUS)"
+            echo "docker compose wait exited with code $WAIT_EXIT"
+            docker compose ps -a
+            docker compose logs cypress newman
+            exit 1
+          fi
           CYPRESS_EXIT=$(docker inspect qa-cypress-demo --format='{{.State.ExitCode}}')
           NEWMAN_EXIT=$(docker inspect qa-newman-demo --format='{{.State.ExitCode}}')
           echo "Cypress exit code: $CYPRESS_EXIT"
@@ -152,6 +171,72 @@ jobs:
       - name: Cleanup
         if: always()
         run: docker compose down
+
+  # Nightly failure tracking (#861): open/comment an issue on scheduled
+  # failure, close it on the next scheduled success. Prevents silent
+  # multi-week red streaks (PDEF-021: 44 runs unnoticed).
+  notify:
+    name: Notify / Nightly Failure Issue
+    needs: docker-tests
+    if: ${{ always() && (github.event_name == 'schedule' || (inputs.notify_test && inputs.notify_test != 'none')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - name: Create, update or close failure issue
+        uses: actions/github-script@v9
+        env:
+          TEST_RESULT: ${{ inputs.notify_test }}
+          JOB_RESULT: ${{ needs.docker-tests.result }}
+        with:
+          script: |
+            const testMode = !!process.env.TEST_RESULT && process.env.TEST_RESULT !== 'none';
+            const result = testMode ? process.env.TEST_RESULT : process.env.JOB_RESULT;
+            const title = `${testMode ? '[notify-test] ' : ''}🔴 CICD Demo / Docker Nightly scheduled failure`;
+            const { owner, repo } = context.repo;
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            core.info(`result=${result} testMode=${testMode}`);
+            if (result !== 'failure' && result !== 'success') {
+              core.info('Neither failure nor success (cancelled/skipped); nothing to do');
+              return;
+            }
+            const open = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: 'open', labels: 'bug/ci', per_page: 100,
+            });
+            const existing = open.find(i => i.title === title && !i.pull_request);
+            if (result === 'failure') {
+              if (existing) {
+                await github.rest.issues.createComment({
+                  owner, repo, issue_number: existing.number,
+                  body: `❌ Scheduled run failed again: ${runUrl}`,
+                });
+                core.info(`Commented on #${existing.number}`);
+              } else {
+                const { data: issue } = await github.rest.issues.create({
+                  owner, repo, title, labels: ['bug/ci', 'cicd'],
+                  body: [
+                    '## CICD Demo / Docker Nightly — scheduled failure',
+                    '',
+                    `First failure: ${runUrl}`,
+                    '',
+                    'Further failures are appended as comments; the next successful scheduled run closes this issue automatically (#861).',
+                  ].join('\n'),
+                });
+                core.info(`Created #${issue.number}`);
+              }
+            } else if (existing) {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: existing.number,
+                body: `✅ Scheduled run succeeded: ${runUrl} — closing.`,
+              });
+              await github.rest.issues.update({
+                owner, repo, issue_number: existing.number, state: 'closed', state_reason: 'completed',
+              });
+              core.info(`Closed #${existing.number}`);
+            } else {
+              core.info('No open failure issue; nothing to close');
+            }
 
 # =============================================================================
 # Interview Discussion Points
