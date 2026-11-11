@@ -40,6 +40,8 @@ module.exports = defineConfig({
     // Environment-specific settings
     env: {
       apiUrl: 'https://jsonplaceholder.typicode.com',
+      // Self-hosted UI target (docker compose service `test-site`, PDEF-021)
+      siteUrl: 'http://test-site',
       environment: 'staging'
     },
 
