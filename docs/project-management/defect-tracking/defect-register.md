@@ -26,7 +26,7 @@
 
 | Defect ID | GitHub Issue | 标题摘要 | 项目 / 范围 | 严重度 | Blocking? | 发现日期 | 状态 | 关联 Waiver | 关联 RCA / Postmortem |
 |-----------|--------------|----------|-------------|--------|-----------|----------|------|-------------|------------------------|
-| _(无活跃缺陷)_ | | | | | | | | | |
+| PDEF-022 | [#869](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/869) | `codeql-analysis.yml` 自 2026-05-25（#135）加入起无效：同一事件同时用 `paths` + `paths-ignore`（#442）、workflow 级 `concurrency` 引用 `matrix`；1244 次运行全部 0 job 失败，从未上传 CodeQL 分析 | 仓库级 / CI + 安全扫描 | P1 | No | 2026-11-11 | Fix in review（PR [#870](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/870)） | — | [RCA](../postmortems/RCA-2026-11-11-PDEF-022-codeql-workflow-invalid.md) |
 
 > 已存在的项目级活跃缺陷请见对应项目登记表（见第 6 节"项目级登记入口"）。
 >
@@ -83,6 +83,7 @@
 |------|--------------------|------|-----------------|-----------------|------|
 | Markdown 断链（相对路径错误） | 3 | 2026-Q2 | PDEF-001、PDEF-004（label-strategy）、PDEF-005 | [RCA-PDEF-005](../postmortems/RCA-2026-05-26-PDEF-005-rca-broken-links.md)（含模式分析） | 🟡 AI-1/2 待落地（本地检查工具缺失） |
 | Copilot commit subject 超 72 字符 | **3 次跨季度累计** | Q2–Q4 2026 | DEF-022、PDEF-003、PDEF-019 | [RCA-PDEF-019](../postmortems/RCA-2026-11-04-PDEF-019-copilot-commit-subject-length.md) | 🔴 已触发专项 AI：评估 GitHub Push Ruleset 服务端校验（AI-2） |
+| CI 长期红灯无人感知（静默失败） | 2 | 2026-Q4 | PDEF-021（44 次）、PDEF-022（1244 次） | [RCA-PDEF-022](../postmortems/RCA-2026-11-11-PDEF-022-codeql-workflow-invalid.md) | 🟡 #861 告警仅覆盖 Docker Nightly；actionlint 已入 repo-meta-ci |
 | E2E 断言第三方外部站点 DOM（example.com） | 2 | 2026-Q4 | PDEF-020、PDEF-021 | [RCA-PDEF-020](../postmortems/RCA-2026-11-04-PDEF-020-robot-framework-external-url-smoke.md)、[RCA-PDEF-021](../postmortems/RCA-2026-11-11-PDEF-021-docker-nightly-example-com.md) | 🟡 观察中（再发 1 次触发专项 Postmortem）；robot-framework 根治跟踪 #862 |
 
 ---
@@ -118,6 +119,7 @@
 | 2026-07-12 | 登记并关闭 `PDEF-008`：Dependabot PR #407 lockfile 由 npm 11 生成但与 CI npm 10 不兼容，`npm ci` 报 `conventional-commits-parser@6.4.0 Missing from lock file`；用 npm 10 重新生成 lockfile 修复 | QA |
 | 2026-07-12 | 登记并关闭 `PDEF-009`：`robot-framework-demo` Selenium Grid 容器继承宿主机 HTTP_PROXY，`127.0.0.1:7890` 在容器内不可达导致浏览器 9 用例全红；在 `docker-compose.yml` 中添加 `no_proxy` 覆盖修复 | QA |
 | 2026-07-15 | 新增 PDEF-010~014（从 req-register PREQ-009/010/011/013/015 迁移而来，对应 Issues #428/#429/#430/#432/#434）；状态：Triaged | QA |
+| 2026-11-11 | 新增 PDEF-022（#869，P1）：CodeQL workflow 自创建起无效，1244 次运行 0 成功；修复 PR #870 + repo-meta-ci 增加 actionlint；PDEF-021 后续 #861/#862/#863 已随 PR #865 关闭；新增模式「CI 长期红灯无人感知」 | QA |
 | 2026-11-11 | 关闭 PDEF-021：PR #860 合并（`47d1709f`），#859 已关闭；迁入 Closed 历史区，活跃缺陷清零；开后续 Issue #861 / #862 / #863 | QA |
 | 2026-11-11 | 新增 PDEF-021（#859）：Docker Nightly 因 example.com 移除 `<h1>` 连续 44 次失败；状态 Triaged；新增模式追踪「E2E 断言第三方外部站点 DOM」（Q4 第 2 次）；修复改为自托管 `test-site`（nginx），状态 Fix in review，附 RCA | QA |
 | 2026-11-04 | 登记并关闭 PDEF-019 / PDEF-020；关闭 PDEF-017（PR #836 dependabot 豁免）/ PDEF-018（PR #834）；将 PDEF-015～018 从活跃表迁入 Closed 历史区；活跃缺陷清零 | QA |
