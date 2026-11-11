@@ -15,6 +15,12 @@ on:
     # Nightly regression at 2:00 AM UTC / 10:00 AM Beijing
     - cron: '0 2 * * *'
   workflow_dispatch:
+    inputs:
+      notify_test:
+        description: 'Dry-run failure-issue automation with a simulated result (skips tests; #861)'
+        type: choice
+        options: [none, failure, success]
+        default: none
 
 concurrency:
   group: docker-tests-${{ github.ref }}
@@ -24,7 +30,6 @@ permissions:
   contents: read
   checks: write
   pull-requests: write
-  issues: write
 
 defaults:
   run:
@@ -33,6 +38,7 @@ defaults:
 jobs:
   docker-tests:
     name: Comprehensive Tests (Docker Containers)
+    if: ${{ !inputs.notify_test || inputs.notify_test == 'none' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -73,6 +79,8 @@ jobs:
           if [ "$CYPRESS_STATUS" != "exited" ] || [ "$NEWMAN_STATUS" != "exited" ]; then
             echo "ERROR: containers not in exited state (cypress=$CYPRESS_STATUS, newman=$NEWMAN_STATUS)"
             echo "docker compose wait exited with code $WAIT_EXIT"
+            docker compose ps -a
+            docker compose logs cypress newman
             exit 1
           fi
           CYPRESS_EXIT=$(docker inspect qa-cypress-demo --format='{{.State.ExitCode}}')
@@ -164,84 +172,71 @@ jobs:
         if: always()
         run: docker compose down
 
-  report-failure:
-    name: Notify / Create Failure Issue
-    runs-on: ubuntu-latest
-    if: failure() && github.event_name == 'schedule'
+  # Nightly failure tracking (#861): open/comment an issue on scheduled
+  # failure, close it on the next scheduled success. Prevents silent
+  # multi-week red streaks (PDEF-021: 44 runs unnoticed).
+  notify:
+    name: Notify / Nightly Failure Issue
     needs: docker-tests
+    if: ${{ always() && (github.event_name == 'schedule' || (inputs.notify_test && inputs.notify_test != 'none')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       issues: write
     steps:
-      - name: Create or update failure issue
+      - name: Create, update or close failure issue
         uses: actions/github-script@v9
+        env:
+          TEST_RESULT: ${{ inputs.notify_test }}
+          JOB_RESULT: ${{ needs.docker-tests.result }}
         with:
           script: |
-            const title = '🔴 CICD Demo / Docker Nightly scheduled failure';
-            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const { data: issues } = await github.rest.issues.listForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              labels: ['bug/ci'],
-            });
-            const existing = issues.find(i => i.title === title);
-            if (existing) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: existing.number,
-                body: `❌ Scheduled run failed again: ${runUrl}`,
-              });
-              core.info(`Added comment to existing issue #${existing.number}`);
-            } else {
-              const { data: issue } = await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title,
-                body: `## CICD Demo / Docker Nightly — Scheduled Failure\n\nFirst failure: ${runUrl}\n\nSubsequent failures will be appended as comments.`,
-                labels: ['bug/ci'],
-              });
-              core.info(`Created new issue #${issue.number}`);
-            }
-
-  report-success:
-    name: Notify / Close Failure Issue
-    runs-on: ubuntu-latest
-    if: success() && github.event_name == 'schedule'
-    needs: docker-tests
-    permissions:
-      issues: write
-    steps:
-      - name: Close failure issue if open
-        uses: actions/github-script@v9
-        with:
-          script: |
-            const title = '🔴 CICD Demo / Docker Nightly scheduled failure';
-            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const { data: issues } = await github.rest.issues.listForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              labels: ['bug/ci'],
-            });
-            const existing = issues.find(i => i.title === title);
-            if (!existing) {
-              core.info('No open failure issue found, nothing to close');
+            const testMode = !!process.env.TEST_RESULT && process.env.TEST_RESULT !== 'none';
+            const result = testMode ? process.env.TEST_RESULT : process.env.JOB_RESULT;
+            const title = `${testMode ? '[notify-test] ' : ''}🔴 CICD Demo / Docker Nightly scheduled failure`;
+            const { owner, repo } = context.repo;
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            core.info(`result=${result} testMode=${testMode}`);
+            if (result !== 'failure' && result !== 'success') {
+              core.info('Neither failure nor success (cancelled/skipped); nothing to do');
               return;
             }
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: existing.number,
-              body: `✅ Scheduled run succeeded: ${runUrl} — closing issue.`,
+            const open = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: 'open', labels: 'bug/ci', per_page: 100,
             });
-            await github.rest.issues.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: existing.number,
-              state: 'closed',
-            });
-            core.info(`Closed issue #${existing.number}`);
+            const existing = open.find(i => i.title === title && !i.pull_request);
+            if (result === 'failure') {
+              if (existing) {
+                await github.rest.issues.createComment({
+                  owner, repo, issue_number: existing.number,
+                  body: `❌ Scheduled run failed again: ${runUrl}`,
+                });
+                core.info(`Commented on #${existing.number}`);
+              } else {
+                const { data: issue } = await github.rest.issues.create({
+                  owner, repo, title, labels: ['bug/ci', 'cicd'],
+                  body: [
+                    '## CICD Demo / Docker Nightly — scheduled failure',
+                    '',
+                    `First failure: ${runUrl}`,
+                    '',
+                    'Further failures are appended as comments; the next successful scheduled run closes this issue automatically (#861).',
+                  ].join('\n'),
+                });
+                core.info(`Created #${issue.number}`);
+              }
+            } else if (existing) {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: existing.number,
+                body: `✅ Scheduled run succeeded: ${runUrl} — closing.`,
+              });
+              await github.rest.issues.update({
+                owner, repo, issue_number: existing.number, state: 'closed', state_reason: 'completed',
+              });
+              core.info(`Closed #${existing.number}`);
+            } else {
+              core.info('No open failure issue; nothing to close');
+            }
 
 # =============================================================================
 # Interview Discussion Points
