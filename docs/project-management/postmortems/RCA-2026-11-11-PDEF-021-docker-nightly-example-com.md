@@ -3,6 +3,7 @@
 **缺陷 ID**: PDEF-021 · **Issue**: [#859](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/859)
 **严重度**: P2 Medium（只影响 nightly，不阻塞 PR Gate）
 **发现日期**: 2026-11-11
+**修复日期**: 2026-11-11（PR [#860](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/860)，`47d1709f`）
 **影响范围**: `infra/cicd-demo` / `CICD Demo / Docker Nightly`，2026-09-29 ~ 2026-11-11
 
 ---
@@ -48,5 +49,6 @@
 | # | 动作 | 状态 |
 |---|------|------|
 | 1 | 规范：E2E 不得断言第三方站点 DOM，改用自托管目标 | ✅ 本次落地 |
-| 2 | Nightly 失败自动建 Issue 或告警 | ⏳ 待开 Issue |
-| 3 | `robot-framework-demo` TC-NAV-002（regression）仍然断言 example.com 的 `h1` | ⏳ 待开 Issue |
+| 2 | Nightly 失败自动建 Issue 或告警 | ⏳ [#861](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/861) |
+| 3 | `robot-framework-demo` 3 个 suite 仍依赖 example.com（TC-NAV-002 的 "More information"、`iana.org` 等文本已不存在） | ⏳ [#862](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/862) |
+| 4 | `docker-tests.yml` 中 `compose wait ... \|\| true` 可能读到运行中容器的 exit 0（假绿） | ⏳ [#863](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/863) |

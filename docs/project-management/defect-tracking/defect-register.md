@@ -26,7 +26,7 @@
 
 | Defect ID | GitHub Issue | 标题摘要 | 项目 / 范围 | 严重度 | Blocking? | 发现日期 | 状态 | 关联 Waiver | 关联 RCA / Postmortem |
 |-----------|--------------|----------|-------------|--------|-----------|----------|------|-------------|------------------------|
-| PDEF-021 | [#859](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/859) | `CICD Demo / Docker Nightly` 自 2026-09-29 起连续 44 次失败（最新 run [#42943248609](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/runs/42943248609)）：example.com 改版移除 `<h1>`，`02-ui-tests.cy.js` 6/9 断言 `h1` 超时，Cypress exit 6；nightly 失败 44 天无告警 | cicd-demo / 测试设计 + CI 监控 | P2 | No | 2026-11-11 | Fix in review（`fix/pdef-021-nightly-local-site`） | — | [RCA](../postmortems/RCA-2026-11-11-PDEF-021-docker-nightly-example-com.md) |
+| _(无活跃缺陷)_ | | | | | | | | | |
 
 > 已存在的项目级活跃缺陷请见对应项目登记表（见第 6 节"项目级登记入口"）。
 >
@@ -71,6 +71,7 @@
 | PDEF-018 | [#831](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/831) | CI Python 版本硬编码且分散，依赖升级时版本冲突无法提前发现 | 仓库级 / CI 环境 | P2 | 2026-11-04 | 各平台引入 `.python-version` 文件；`setup-python-project` action 自动读取 | PR #834 |
 | PDEF-019 | [#831](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/831) | PR #834 Copilot commit subject 长度 85 > 72（2 个），`Commit Guard` 报红；PDEF-003 / DEF-022 同模式第三次复发；根因：Copilot 推送路径绕过 Husky，文档层规则无法形成约束 | 仓库级 / CI + 流程 | P2 | 2026-11-04 | cherry-pick rebase + amend 重写两个 subject；CLAUDE.md 记录三次复发结论；待评估 GitHub Push Ruleset 服务端校验 | PR #834 / [RCA](../postmortems/RCA-2026-11-04-PDEF-019-copilot-commit-subject-length.md) |
 | PDEF-020 | [#831](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/831) | PR #834 `robot-framework-demo` TC-NAV-002 smoke 测试断言 `example.com` 的 `xpath://h1`，在 Azure CI（westus3）CDN 返回不含 `<h1>` 的响应，导致 5 次 CI run 全部失败；`<title>` 存在（TC-NAV-001 通过）但 `<h1>` 缺失，`readyState == 'complete'` 亦通过，说明是 CDN 内容差异而非加载时机问题 | robot-framework-demo / 测试设计 | P2 | 2026-11-04 | 将 TC-NAV-002 由 `smoke/P0` 降级为 `regression/P1`；确立规范：CI smoke 不得断言第三方外部 URL 的 DOM 内部结构 | PR #834 commit `915e195c` / [RCA](../postmortems/RCA-2026-11-04-PDEF-020-robot-framework-external-url-smoke.md) |
+| PDEF-021 | [#859](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/859) | `CICD Demo / Docker Nightly` 自 2026-09-29 起连续 44 次失败：example.com 改版移除 `<h1>`，`02-ui-tests.cy.js` 6/9 断言超时；nightly 失败 44 天无告警 | cicd-demo / 测试设计 + CI 监控 | P2 | 2026-11-11 | 新增自托管 `test-site`（nginx + healthcheck），UI spec 改用 `Cypress.env('siteUrl')`；后续 #861（nightly 告警）/ #862（robot example.com）/ #863（`wait \|\| true` 假绿） | PR [#860](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/860) `47d1709f` / [RCA](../postmortems/RCA-2026-11-11-PDEF-021-docker-nightly-example-com.md) |
 
 ---
 
@@ -82,7 +83,7 @@
 |------|--------------------|------|-----------------|-----------------|------|
 | Markdown 断链（相对路径错误） | 3 | 2026-Q2 | PDEF-001、PDEF-004（label-strategy）、PDEF-005 | [RCA-PDEF-005](../postmortems/RCA-2026-05-26-PDEF-005-rca-broken-links.md)（含模式分析） | 🟡 AI-1/2 待落地（本地检查工具缺失） |
 | Copilot commit subject 超 72 字符 | **3 次跨季度累计** | Q2–Q4 2026 | DEF-022、PDEF-003、PDEF-019 | [RCA-PDEF-019](../postmortems/RCA-2026-11-04-PDEF-019-copilot-commit-subject-length.md) | 🔴 已触发专项 AI：评估 GitHub Push Ruleset 服务端校验（AI-2） |
-| E2E 断言第三方外部站点 DOM（example.com） | 2 | 2026-Q4 | PDEF-020、PDEF-021 | [RCA-PDEF-020](../postmortems/RCA-2026-11-04-PDEF-020-robot-framework-external-url-smoke.md) | 🟡 观察中（再发 1 次触发专项 Postmortem） |
+| E2E 断言第三方外部站点 DOM（example.com） | 2 | 2026-Q4 | PDEF-020、PDEF-021 | [RCA-PDEF-020](../postmortems/RCA-2026-11-04-PDEF-020-robot-framework-external-url-smoke.md)、[RCA-PDEF-021](../postmortems/RCA-2026-11-11-PDEF-021-docker-nightly-example-com.md) | 🟡 观察中（再发 1 次触发专项 Postmortem）；robot-framework 根治跟踪 #862 |
 
 ---
 
@@ -117,6 +118,7 @@
 | 2026-07-12 | 登记并关闭 `PDEF-008`：Dependabot PR #407 lockfile 由 npm 11 生成但与 CI npm 10 不兼容，`npm ci` 报 `conventional-commits-parser@6.4.0 Missing from lock file`；用 npm 10 重新生成 lockfile 修复 | QA |
 | 2026-07-12 | 登记并关闭 `PDEF-009`：`robot-framework-demo` Selenium Grid 容器继承宿主机 HTTP_PROXY，`127.0.0.1:7890` 在容器内不可达导致浏览器 9 用例全红；在 `docker-compose.yml` 中添加 `no_proxy` 覆盖修复 | QA |
 | 2026-07-15 | 新增 PDEF-010~014（从 req-register PREQ-009/010/011/013/015 迁移而来，对应 Issues #428/#429/#430/#432/#434）；状态：Triaged | QA |
+| 2026-11-11 | 关闭 PDEF-021：PR #860 合并（`47d1709f`），#859 已关闭；迁入 Closed 历史区，活跃缺陷清零；开后续 Issue #861 / #862 / #863 | QA |
 | 2026-11-11 | 新增 PDEF-021（#859）：Docker Nightly 因 example.com 移除 `<h1>` 连续 44 次失败；状态 Triaged；新增模式追踪「E2E 断言第三方外部站点 DOM」（Q4 第 2 次）；修复改为自托管 `test-site`（nginx），状态 Fix in review，附 RCA | QA |
 | 2026-11-04 | 登记并关闭 PDEF-019 / PDEF-020；关闭 PDEF-017（PR #836 dependabot 豁免）/ PDEF-018（PR #834）；将 PDEF-015～018 从活跃表迁入 Closed 历史区；活跃缺陷清零 | QA |
 | 2026-11-03 | 新增 PDEF-017（#832）：Commit Guard 未豁免 dependabot[bot]，grouped PR message 超 72 字符阻塞 CI；根治方案：Commit Guard 跳過 dependabot[bot] 作者 commit；新增 PDEF-018（#831）：CI Python 版本硬编码，依赖升级时版本冲突无法提前发现；根治方案：各平台引入 .python-version 统一声明 | QA |
