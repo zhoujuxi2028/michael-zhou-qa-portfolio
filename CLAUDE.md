@@ -206,7 +206,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `docker-tests.yml` | cicd-demo | CICD Demo / Docker Nightly: Cypress + Newman in containers |
 | `codeql-analysis.yml` | repository (JS+Python) | CodeQL Analysis: 代码语义漏洞扫描 (XSS, SQLi, path traversal) |
 | `security-scan.yml` | cicd-demo | Security / Scan: Trivy fs + Docker + IaC + npm audit → SARIF |
-| `repo-meta-ci.yml` | repository root | PR 级轻量 lint（docs / workflow / JSON / shell / Markdown links） |
+| `repo-meta-ci.yml` | repository root | PR 级轻量 lint（docs / workflow / JSON / shell / Markdown links）+ actionlint 语义检查 |
 | `commit-guard.yml` | repository | Conventional Commits 格式校验 + secret scan CI 兜底（绕过 pre-push hook 时的安全网） |
 | `setup-labels.yml` | repository | 手动触发：一键创建/更新 11 个 `proj:xxx` labels |
 | `copilot-setup-steps.yml` | repository | 预热 Node.js/Python 依赖缓存供 Copilot 使用 |

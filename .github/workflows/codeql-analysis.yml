@@ -8,36 +8,28 @@ name: CodeQL Analysis
 on:
   push:
     branches: [main]
+    # paths + paths-ignore cannot be combined on one event (PDEF-022); negate instead
     paths:
       - '**/*.js'
       - '**/*.py'
       - '.github/workflows/codeql-analysis.yml'
-    paths-ignore:
-      - '**/node_modules/**'
-      - '**/venv/**'
-      - '**/*.min.js'
-      - '**/*.map'
-      - '**/package-lock.json'
+      - '!**/node_modules/**'
+      - '!**/venv/**'
+      - '!**/*.min.js'
   pull_request:
     branches: [main]
+    # paths + paths-ignore cannot be combined on one event (PDEF-022); negate instead
     paths:
       - '**/*.js'
       - '**/*.py'
       - '.github/workflows/codeql-analysis.yml'
-    paths-ignore:
-      - '**/node_modules/**'
-      - '**/venv/**'
-      - '**/*.min.js'
-      - '**/*.map'
-      - '**/package-lock.json'
+      - '!**/node_modules/**'
+      - '!**/venv/**'
+      - '!**/*.min.js'
   schedule:
     # 每周一 04:00 UTC 定期扫描，检测新披露的漏洞模式
     - cron: '0 4 * * 1'
   workflow_dispatch:
-
-concurrency:
-  group: codeql-${{ github.ref }}-${{ matrix.language }}
-  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -49,6 +41,10 @@ jobs:
     name: CodeQL / ${{ matrix.language }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Job-level: `matrix` is not available in workflow-level concurrency (PDEF-022)
+    concurrency:
+      group: codeql-${{ github.ref }}-${{ matrix.language }}
+      cancel-in-progress: true
 
     strategy:
       fail-fast: false
