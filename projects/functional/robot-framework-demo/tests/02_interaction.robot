@@ -20,8 +20,9 @@ TC-INT-002: 验证页面标题文本内容
     [Teardown]    Close Browser Safely
 
 TC-INT-003: 验证页面包含 IANA 链接
-    [Documentation]    验证页面包含指向 iana.org 的链接文本
+    [Documentation]    验证页面链接 href 指向 iana.org
     [Tags]    regression    interaction    P1
     Open Browser To Grid    http://target-web
-    Page Should Contain    iana.org
+    ${href}=    Get Element Attribute    xpath://a    href
+    Should Contain    ${href}    iana.org
     [Teardown]    Close Browser Safely

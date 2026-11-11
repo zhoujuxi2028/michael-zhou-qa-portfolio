@@ -1,6 +1,6 @@
 services:
   target-web:
-    image: nginx:alpine
+    image: nginx:1.27-alpine
     container_name: target-web
     volumes:
       - ./docker/nginx/index.html:/usr/share/nginx/html/index.html:ro

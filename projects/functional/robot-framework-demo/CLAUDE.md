@@ -64,7 +64,9 @@ docker-compose down
 
 ## Smoke 测试设计规范（PDEF-020）
 
-CI smoke suite（`--include smoke`）测试第三方外部 URL 时：
+> **#862 起**：测试目标改为本地 `target-web`（nginx），CI 跑全量（smoke + regression），以下规则仅在必须访问第三方 URL 时适用。
+
+测试第三方外部 URL 时：
 
 | 允许断言 | 禁止断言 |
 |----------|----------|
