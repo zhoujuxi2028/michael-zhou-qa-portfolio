@@ -31,6 +31,16 @@ describe('Order Model', () => {
     expect(result.status).toBe(ORDER_STATUS.PENDING);
   });
 
+  // CodeQL #872 (alert 588): productId is used in inventory request path
+  test.each(['../admin', 'PROD 001', 'a/b'])(
+    'throws VALIDATION_ERROR when productId is %p',
+    (bad) => {
+      expect(() => {
+        orderModel.create({ productId: bad, quantity: 1, unitPrice: 9.99 });
+      }).toThrow(ERROR_CODES.VALIDATION_ERROR);
+    }
+  );
+
   // UT-O-02: Create order - missing productId
   test('throws VALIDATION_ERROR when productId is missing', () => {
     expect(() => {
