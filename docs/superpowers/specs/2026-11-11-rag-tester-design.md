@@ -11,7 +11,7 @@ status: draft
 
 ### 背景
 
-Siemens AI QA Engineer 职位（Job ID 546768）要求：
+AI 应用质量保障需要覆盖 RAG 全链路测试：
 > 开展 RAG 全链路测试，覆盖文档解析、切分、索引、召回、重排、上下文构建及答案生成。
 
 当前 `ai-lab/ai-testing-platform/` 覆盖 LLM 评测、代码扫描、测试生成等能力，但不包含 RAG 管道测试。
