@@ -135,3 +135,52 @@
 - `radon==6.0.1` — 圈复杂度分析
 - `git` CLI — 变更指标采集（系统安装）
 - Python `ast`, `subprocess`, `pathlib` — stdlib
+
+---
+
+## REQ-AI-004：RAG 全链路测试模块
+
+| 属性 | 内容 |
+|------|------|
+| **ID** | REQ-AI-004 |
+| **优先级** | Medium |
+| **状态** | Approved |
+| **提出日期** | 2026-11-11 |
+| **关联 Issue** | [#866](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/866) |
+| **影响模块** | `src/rag_tester/`, `tests/test_rag_tester/` |
+| **设计 spec** | `docs/superpowers/specs/2026-11-11-rag-tester-design.md` |
+
+### 背景
+
+AI 应用质量保障需覆盖 RAG 全链路测试。当前平台覆盖 LLM 评测、代码扫描、测试生成，但不含 RAG 管道测试。本需求在 `src/rag_tester/` 新增一个纯 mock 的 RAG 测试模块，覆盖文档解析 → 切分 → 索引 → 检索 → 重排 → 上下文构建 → 答案生成 7 个阶段，每阶段可独立测试，并支持端到端 Pipeline 验证。
+
+### 用户故事
+
+- **作为** QA 工程师，**我希望** 能分阶段验证 RAG 管道的每一环（解析/切分/索引/检索/重排/上下文/生成），**以便** 单点定位故障阶段。
+- **作为** QA 工程师，**我希望** 无需真实 LLM / 向量数据库即可运行 RAG 测试，**以便** 在 CI 中离线验证管道结构正确性。
+
+### 详细需求
+
+| 需求 ID | 描述 | 验收标准 |
+|---------|------|---------|
+| RAG-01 | 文档解析（DocumentParser） | 支持 pdf/docx/txt/html/md；HTML 剥标签；不支持格式抛 `ParseError` |
+| RAG-02 | 分块策略（Chunker） | 按 size/overlap 切分；`overlap >= chunk_size` 抛 `ChunkError`；覆盖全部原文 |
+| RAG-03 | 向量索引（VectorIndexer） | 确定性 384 维伪向量；重复 chunk_id 去重；`clear()` 后 size==0 |
+| RAG-04 | 检索（Retriever） | 余弦相似度 top-k；score∈[0,1]；rank 从 1 连续；k=0/空索引返回空列表 |
+| RAG-05 | 重排（Reranker） | 关键词密度加权；稳定排序；空候选/单结果正常处理 |
+| RAG-06 | 上下文构建（ContextBuilder） | token 估算截断（1 词≈1.3 token）；超限置 `truncated=True` |
+| RAG-07 | 答案生成（AnswerGenerator） | 忠实度/相关性评分；幻觉检测；空上下文/空 query 优雅降级 |
+| RAG-08 | 端到端 Pipeline（RAGPipeline） | 串联 7 阶段；`failed_stage` 定位失败阶段；空文档优雅降级 |
+
+### Scope
+
+- ✅ `src/rag_tester/` — 7 阶段 mock 模块 + `RAGPipeline`
+- ✅ `tests/test_rag_tester/` — 47 个单元测试
+- ❌ 真实 LLM / 向量数据库集成
+- ❌ 非 mock 的检索质量评测（真实向量召回准确率）
+- ❌ Web UI 或 API 接口
+
+### 依赖
+
+- 无新增第三方依赖（纯 Python stdlib：`dataclasses`、`hashlib`、`math`、`re`）
+- 现有 `pytest` + `venv` 环境即可

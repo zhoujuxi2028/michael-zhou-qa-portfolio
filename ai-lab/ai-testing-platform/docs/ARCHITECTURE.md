@@ -11,15 +11,25 @@ ai-testing-platform/
 │   │   └── predictor.py        # DefectPredictor
 │   ├── script_generator/       # 自动化脚本生成引擎
 │   │   └── generator.py        # ScriptGenerator
-│   └── code_scanner/           # 代码度量自动采集
-│       └── scanner.py          # CodeScanner
+│   ├── code_scanner/           # 代码度量自动采集
+│   │   └── scanner.py          # CodeScanner
+│   └── rag_tester/             # RAG 全链路测试（7 阶段 mock）← REQ-AI-004
+│       ├── document_parser.py  # Stage 1 文档解析
+│       ├── chunker.py          # Stage 2 分块
+│       ├── indexer.py          # Stage 3 向量索引
+│       ├── retriever.py        # Stage 4 检索
+│       ├── reranker.py         # Stage 5 重排
+│       ├── context_builder.py  # Stage 6 上下文构建
+│       ├── answer_generator.py # Stage 7 答案生成
+│       └── pipeline.py         # 全链路 E2E
 ├── tests/
 │   ├── conftest.py             # 根级 fixtures
 │   ├── test_case_generator/    # TestCaseGenerator 测试 (23)
 │   ├── test_defect_predictor/  # DefectPredictor 测试 (15)
 │   ├── test_script_generator/  # ScriptGenerator 测试 (16)
 │   ├── test_code_scanner/      # CodeScanner 测试 (18)
-│   └── test_llm_evaluator/    # LLMEvaluator 测试 (33)
+│   ├── test_llm_evaluator/    # LLMEvaluator 测试 (33)
+│   └── test_rag_tester/       # RAGTester 测试 (47)  ← REQ-AI-004
 └── docs/
     ├── REQUIREMENTS.md
     ├── FEASIBILITY.md
@@ -194,6 +204,41 @@ class Test{ModuleName}:
 
 ---
 
+### 2.5 RAGTester ← REQ-AI-004
+
+**职责**：以纯 mock 实现覆盖 RAG 全链路 7 个阶段，每阶段可独立测试，并支持端到端 Pipeline 验证与单阶段失败定位
+
+**数据流**：
+```
+原始文档 source
+   ↓ DocumentParser.parse()          Stage 1 → ParsedDocument
+   ↓ Chunker.chunk()                 Stage 2 → list[Chunk]
+   ↓ VectorIndexer.index()           Stage 3 → list[IndexedChunk]（384 维伪向量）
+   ↓ Retriever.retrieve(query)       Stage 4 → list[RetrievalResult]（余弦相似度 top-k）
+   ↓ Reranker.rerank(query, results) Stage 5 → list[RetrievalResult]（关键词密度加权）
+   ↓ ContextBuilder.build()          Stage 6 → Context（token 截断）
+   ↓ AnswerGenerator.generate()      Stage 7 → GeneratedAnswer（忠实度/幻觉检测）
+   └─ RAGPipeline.run() → PipelineResult{answer, stage_outputs, success, failed_stage}
+```
+
+**Mock 策略**：
+
+| 阶段 | Mock 方式 |
+|------|----------|
+| 文档解析 | 按扩展名返回预设内容；HTML 用正则剥标签；不依赖真实 IO |
+| 分块 | 按 size/overlap 滑窗切分（`overlap >= size` 抛 `ChunkError`） |
+| 向量索引 | 确定性哈希（token 加权）生成 384 维伪向量；内存 dict 存储 |
+| 检索 | query 与 chunk 伪向量余弦相似度，取 top-k |
+| 重排 | query 关键词在 chunk 中出现密度与原始 score 加权，稳定排序 |
+| 上下文构建 | 「1 词≈1.3 token」估算，超限截断并置 `truncated=True` |
+| 答案生成 | 抽取式：取上下文首句，忠实度=答案词来自上下文比例，幻觉=上下文外词汇 |
+
+**关键数据类**：`ParsedDocument`、`Chunk`、`IndexedChunk`、`RetrievalResult`、`Context`、`GeneratedAnswer`、`PipelineResult`（详见 spec）
+
+**CLI 无关**：模块无独立 CLI，通过 `pytest tests/test_rag_tester/` 验证。
+
+---
+
 ## 3. 测试架构
 
 ### Fixture 层级
@@ -216,6 +261,7 @@ tests/test_code_scanner/conftest.py       ← 本地：scanner, simple_py       
 | `@pytest.mark.script_gen` | ScriptGenerator 测试 |
 | `@pytest.mark.llm` | LLMEvaluator 测试（CI 默认排除） |
 | `@pytest.mark.scanner` | CodeScanner 测试 ← REQ-AI-003 |
+| `@pytest.mark.rag` | RAGTester 全链路测试（mock）← REQ-AI-004 |
 | `@pytest.mark.P0/P1/P2` | 测试优先级 |
 
 ---
@@ -364,6 +410,15 @@ tests/test_llm_evaluator/conftest.py      ← 本地：llm_io samples, evaluator
 | `@pytest.mark.llm_hallucination` | 幻觉检测子类 |
 | `@pytest.mark.llm_security` | 安全红队子类 |
 | `@pytest.mark.llm_bias` | 偏差检测子类 |
+| `@pytest.mark.rag` | RAG 全链路测试 |
+| `@pytest.mark.rag_parse` | 文档解析子类 |
+| `@pytest.mark.rag_chunk` | 分块策略子类 |
+| `@pytest.mark.rag_index` | 向量索引子类 |
+| `@pytest.mark.rag_retrieve` | 检索子类 |
+| `@pytest.mark.rag_rerank` | 重排子类 |
+| `@pytest.mark.rag_context` | 上下文构建子类 |
+| `@pytest.mark.rag_answer` | 答案生成子类 |
+| `@pytest.mark.rag_pipeline` | 端到端子类 |
 | `@pytest.mark.P0/P1/P2` | 测试优先级 |
 
 ---
@@ -379,3 +434,4 @@ tests/test_llm_evaluator/conftest.py      ← 本地：llm_io samples, evaluator
 | 数据模型 | Python dataclass | 与现有项目模式一致 |
 | 测试框架 | Pytest | 与 portfolio 其他 Python 项目一致 |
 | 注入检测 | GEval + 正则模式双重验证 | LLM 调用可用时 GEval 更准确，正则作为 fallback |
+| RAG 测试后端 | 全 mock（哈希伪向量 + 余弦相似度） | 零依赖、确定性、CI 离线可跑 |

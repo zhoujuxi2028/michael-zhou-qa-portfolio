@@ -2,7 +2,7 @@
 title: RAG 全链路测试模块设计
 issue: "#866"
 date: 2026-11-11
-status: draft
+status: ready-for-review
 ---
 
 # RAG 全链路测试模块设计
