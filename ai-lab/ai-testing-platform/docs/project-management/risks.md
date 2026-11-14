@@ -25,6 +25,10 @@
 | RSK-LLM-007 | **DeepSeek 兼容性**: 非 OpenAI 模型在某些 DeepEval 指标可能行为不同 | 🟢 LOW | 技术 | 低 | 中 | PoC 已验证 GPTModel 构造 + 指标配置均正常；如遇兼容问题可切换 gpt-4o-mini | 监控 |
 | RSK-LLM-008 | **ruff vs black 格式不一致**: pre-commit hook 用 ruff 但文档指定 black，导致多次提交失败 | 🟢 LOW | 工具 | 低 | 低 | 统一使用 ruff：`python3 -m ruff format`；`black --check` 已在 CI 通过 | ✅ 已处理 |
 | RSK-LLM-009 | **设计文档被覆盖**: 多次分支切换导致 design doc（risks.md, test-plan.md）丢失，需从 commit 历史恢复 | 🟡 MEDIUM | 流程 | 中 | 中 | 始终在 feature 分支工作；commit 后立即 push；使用 git stash 管理跨分支变更 | ✅ 已处理 |
+| RSK-RAG-001 | **mock 语义失真**: 哈希伪向量/关键词密度重排无法代表真实向量召回，测试结论可能误导对真实 RAG 系统质量的判断 | 🟡 MEDIUM | 技术 | 中 | 中 | scope 明确为「管道结构 + 阶段编排正确性」测试而非检索质量评测；文档标注 mock 边界 | 监控 |
+| RSK-RAG-002 | **伪向量相似度退化**: 简单哈希生成的 384 维向量在余弦相似度下可能对短文本退化为常数，导致 top-k 检索无区分度 | 🟡 MEDIUM | 技术 | 中 | 中 | 伪向量按 token 集合加权哈希，保证文本重叠度映射到向量距离；TC-RAG-RET 断言 score 降序验证区分度 | 监控 |
+| RSK-RAG-003 | **token 估算误差**: 「1 词≈1.3 token」对中文等 DBCS 文本误差较大，可能误判上下文截断 | 🟢 LOW | 技术 | 低 | 低 | token 估算仅用于截断逻辑验证；阈值断言放宽为 `token_count <= max_tokens` 而非精确值 | 监控 |
+| RSK-RAG-004 | **需求范围蔓延**: RAG 测试可能被要求扩展到真实 LLM / 向量数据库集成 | 🟡 MEDIUM | 范围 | 中 | 中 | requirements.md 明确 scope 仅 mock 实现；真实集成另开 Issue | 监控 |
 
 ---
 
