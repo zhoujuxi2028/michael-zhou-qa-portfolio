@@ -1,6 +1,6 @@
 # AI Testing Platform — CLAUDE.md
 
-AI-Powered Testing Platform：规则引擎驱动的智能测试用例生成 + 缺陷预测 + 脚本生成。
+AI-Powered Testing Platform：规则引擎驱动的智能测试用例生成 + 缺陷预测 + 脚本生成 + RAG 全链路测试 + 图像识别/知识图谱测试。
 
 ## Quick Commands
 
@@ -41,6 +41,8 @@ python scripts/scan_and_predict.py --path src/
 | ScriptGenerator | `src/script_generator/generator.py` | 从测试规范生成 pytest 脚本 |
 | CodeScanner | `src/code_scanner/scanner.py` | 自动扫描真实 Python 文件采集 ModuleMetrics（ast + radon + git） |
 | LLMEvaluator | `src/llm_evaluator/` | LLM 输出质量评测（需 API Key） |
+| RAGTester | `src/rag_tester/` | RAG 全链路测试（7 阶段 mock + E2E Pipeline）← REQ-AI-004 |
+| VisionKGTester | `src/vision_kg_tester/` | 图像识别 + 知识图谱测试（mock，四维验证）← REQ-AI-005 |
 
 ## 测试说明
 
@@ -49,6 +51,8 @@ python scripts/scan_and_predict.py --path src/
 | `generation` | TestCaseGenerator 单元测试 |
 | `prediction` | DefectPredictor 单元测试 |
 | `scanner` | CodeScanner 单元测试 |
+| `rag` | RAG 全链路测试（7 阶段 mock） |
+| `vision` / `knowledge_graph` | 图像识别 / 知识图谱测试 |
 | `llm` | LLM 集成测试（需 OPENAI_API_KEY） |
 | `integration` | 端到端集成测试 |
 | `P0/P1/P2` | 测试优先级 |
@@ -56,6 +60,6 @@ python scripts/scan_and_predict.py --path src/
 ## CI
 
 Workflow: `.github/workflows/ai-testing-ci.yml`
-- code-quality（black/isort/flake8/ruff）
-- unit-tests（92 tests，排除 llm + integration）
-- verify-by-module（按模块分组验证）
+- code-quality（ruff format/isort/flake8）
+- unit-tests（178 tests，排除 llm + integration）
+- verify-by-module（按模块分组验证，含 RAG/Vision-KG 覆盖率门禁）

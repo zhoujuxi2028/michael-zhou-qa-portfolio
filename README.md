@@ -60,7 +60,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [ai-testing-platform](./ai-lab/ai-testing-platform/) | AI-Powered Testing Platform — 智能测试用例生成 + 缺陷预测 + 脚本生成 + 代码扫描 (92 tests) | Python, Pytest, Rule Engine |
+| [ai-testing-platform](./ai-lab/ai-testing-platform/) | AI-Powered Testing Platform — 智能测试用例生成 + 缺陷预测 + 脚本生成 + 代码扫描 + RAG 全链路 + 图像识别/知识图谱测试 (178 tests) | Python, Pytest, Rule Engine |
 | [llm-agent-tutorial](./ai-lab/llm-agent-tutorial/) | LLM Agent Engineering Tutorial — Prompt/Context/Harness/Loop 四件套 + function-calling + Reflexion (single-file, zero-dependency) | Python, Anthropic API |
 
 ### DevOps
@@ -122,7 +122,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 | `sid-iam-ci.yml` | sid-iam-testing-platform | Push/PR, manual | Code quality + unit tests + integration (138 tests) |
 | `performance-ci.yml` | performance-testing-platform | Push/PR | Lint → unit tests → k6 + JMeter smoke gate |
 | `nightly-soak.yml` | performance-testing-platform | Nightly / weekly, manual | Performance / Nightly: soak-short daily + capacity weekly |
-| `ai-testing-ci.yml` | ai-testing-platform | Push/PR, manual | AI Testing CI: code quality + unit tests (72 tests, 82% coverage) |
+| `ai-testing-ci.yml` | ai-testing-platform | Push/PR, manual | AI Testing CI: code quality + unit tests (178 tests) + per-module coverage gates |
 | `setup-labels.yml` | repository | Manual (`workflow_dispatch`) | 一键创建/更新 11 个 `proj:xxx` labels |
 | `repo-meta-ci.yml` | repository root | Push/PR, manual | docs/workflow/JSON/shell/Markdown links 轻量校验 + actionlint workflow 语义检查 + workflow 文档同步检查 |
 | `sql-testing-demo-ci.yml` | sql-testing-demo | Push/PR | SQL Testing Demo CI: code quality (ruff) → unit tests (CRUD/queries/constraints/procedures) → integration tests (transactions/performance/reports) |

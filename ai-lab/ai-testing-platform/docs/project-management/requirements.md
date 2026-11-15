@@ -144,7 +144,7 @@
 |------|------|
 | **ID** | REQ-AI-004 |
 | **优先级** | Medium |
-| **状态** | Approved |
+| **状态** | Done |
 | **提出日期** | 2026-11-11 |
 | **关联 Issue** | [#866](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/866) |
 | **影响模块** | `src/rag_tester/`, `tests/test_rag_tester/` |
@@ -193,7 +193,7 @@ AI 应用质量保障需覆盖 RAG 全链路测试。当前平台覆盖 LLM 评�
 |------|------|
 | **ID** | REQ-AI-005 |
 | **优先级** | Medium |
-| **状态** | Approved |
+| **状态** | Done |
 | **提出日期** | 2026-11-11 |
 | **关联 Issue** | [#867](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/867) |
 | **影响模块** | `src/vision_kg_tester/`, `tests/test_vision_kg_tester/` |
