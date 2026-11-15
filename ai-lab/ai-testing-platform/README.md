@@ -23,11 +23,11 @@
 
 | 指标 | 数值 |
 |------|------|
-| 测试用例 | 92 |
-| 核心引擎 | 4（TestCaseGenerator / DefectPredictor / ScriptGenerator / CodeScanner）|
-| 测试覆盖率 | 82.50% |
-| 外部依赖 | radon（圈复杂度分析）|
-| 全部通过 | 92/92 PASSED |
+| 测试用例 | 178 |
+| 核心模块 | 7（TestCaseGenerator / DefectPredictor / ScriptGenerator / CodeScanner / LLMEvaluator / RAGTester / VisionKGTester）|
+| 测试覆盖率 | ≥ 82% |
+| 外部依赖 | radon（圈复杂度分析）、deepeval（LLM 评测，可选）|
+| 全部通过 | 178/178 PASSED（非 LLM）|
 
 ---
 
@@ -114,6 +114,40 @@ validation = gen.validate_generated_script(script)
 # → {"valid": True, "quality_score": 95, "test_count": 1}
 ```
 
+### 4. RAG 全链路测试 (RAGTester)
+
+以纯 mock 覆盖 RAG 全链路 7 个阶段，每阶段可独立测试，支持端到端 Pipeline 验证与单阶段失败定位。
+
+```python
+from src.rag_tester import RAGPipeline
+
+pipeline = RAGPipeline.build_default()
+
+result = pipeline.run("sample.pdf", "retrieval testing")
+# → success=True
+# → stage_outputs 含 document_parser/chunker/indexer/retriever/reranker/context_builder/answer_generator 7 个阶段
+# → failed_stage 可定位失败阶段（如 document_parser）
+```
+
+### 5. 图像识别与知识图谱测试 (VisionKGTester)
+
+以纯 mock 验证图像识别的准确性（precision/recall/F1）、置信度阈值、鲁棒性，以及知识图谱的准确性、完整性、一致性、时效性。
+
+```python
+from src.vision_kg_tester import ImageClassifier, KnowledgeGraph, Triple
+
+# 图像识别评估
+clf = ImageClassifier()
+report = clf.evaluate(["cat.jpg", "dog.jpg", "car.jpg"], ["cat", "dog", "car"])
+# → precision=1.0, recall=1.0, f1_score=1.0
+
+# 知识图谱四维验证
+kg = KnowledgeGraph()
+kg.add_triple(Triple("Alice", "age", "30"))
+report = kg.full_validation([Triple("Alice", "age", "30")], {"Alice"})
+# → accuracy/completeness/consistency/timeliness 四维得分
+```
+
 ---
 
 ## 快速开始
@@ -132,9 +166,12 @@ pip install -r requirements.txt
 pytest tests/ -v
 
 # 按模块运行
-pytest tests/test_case_generator/ -v    # 测试用例生成 (14)
-pytest tests/test_defect_predictor/ -v  # 缺陷预测 (13)
+pytest tests/test_case_generator/ -v    # 测试用例生成 (23)
+pytest tests/test_defect_predictor/ -v  # 缺陷预测 (15)
 pytest tests/test_script_generator/ -v  # 脚本生成 (16)
+pytest tests/test_code_scanner/ -v      # 代码扫描 (18)
+pytest tests/test_rag_tester/ -v        # RAG 全链路 (47)
+pytest tests/test_vision_kg_tester/ -v  # 图像识别 + 知识图谱 (39)
 
 # 覆盖率报告
 pytest tests/ --cov=src --cov-report=html
@@ -168,8 +205,10 @@ ai-testing-platform/
 │   │   └── predictor.py           # DefectPredictor — 代码度量 → 风险报告
 │   ├── script_generator/
 │   │   └── generator.py           # ScriptGenerator — 测试规范 → Pytest 脚本
-│   └── code_scanner/
-│       └── scanner.py             # CodeScanner — 扫描 .py 文件 → ModuleMetrics
+│   ├── code_scanner/
+│   │   └── scanner.py             # CodeScanner — 扫描 .py 文件 → ModuleMetrics
+│   ├── rag_tester/                # RAGTester — RAG 全链路测试（7 阶段 mock）
+│   └── vision_kg_tester/          # VisionKGTester — 图像识别 + 知识图谱测试
 ├── tests/
 │   ├── conftest.py                 # 根级 fixtures
 │   ├── test_case_generator/        # 23 个测试
@@ -178,8 +217,10 @@ ai-testing-platform/
 │   │   └── test_defect_predictor.py
 │   ├── test_script_generator/      # 16 个测试
 │   │   └── test_script_generator.py
-│   └── test_code_scanner/          # 18 个测试
-│       └── test_scanner.py
+│   ├── test_code_scanner/          # 18 个测试
+│   │   └── test_scanner.py
+│   ├── test_rag_tester/            # 47 个测试
+│   └── test_vision_kg_tester/      # 39 个测试
 ├── docs/
 │   ├── REQUIREMENTS.md             # 功能需求
 │   ├── FEASIBILITY.md              # 可行性分析
@@ -230,4 +271,4 @@ ai-testing-platform/
 
 ---
 
-*阶段: 完成（REQ-AI-001/002/003 全部 Done）| License: MIT*
+*阶段: 完成（REQ-AI-001~005 全部 Done）| License: MIT*
