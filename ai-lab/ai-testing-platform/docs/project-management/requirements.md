@@ -184,3 +184,55 @@ AI 应用质量保障需覆盖 RAG 全链路测试。当前平台覆盖 LLM 评�
 
 - 无新增第三方依赖（纯 Python stdlib：`dataclasses`、`hashlib`、`math`、`re`）
 - 现有 `pytest` + `venv` 环境即可
+
+---
+
+## REQ-AI-005：图像识别与知识图谱测试模块
+
+| 属性 | 内容 |
+|------|------|
+| **ID** | REQ-AI-005 |
+| **优先级** | Medium |
+| **状态** | Approved |
+| **提出日期** | 2026-11-11 |
+| **关联 Issue** | [#867](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/867) |
+| **影响模块** | `src/vision_kg_tester/`, `tests/test_vision_kg_tester/` |
+| **设计 spec** | `docs/superpowers/specs/2026-11-11-vision-kg-tester-design.md` |
+
+### 背景
+
+AI 应用质量保障需覆盖图像识别与知识图谱测试。当前平台不含这两类测试能力。本需求在 `src/vision_kg_tester/` 新增纯 mock 模块，验证图像识别的准确性与鲁棒性，以及知识图谱的准确性、完整性、一致性与时效性。
+
+### 用户故事
+
+- **作为** QA 工程师，**我希望** 用 mock 分类器验证图像识别的 precision/recall/F1 与置信度阈值、鲁棒性（模糊/旋转/低对比度），**以便** 无需真实模型即可离线评测。
+- **作为** QA 工程师，**我希望** 验证知识图谱的准确性、完整性、一致性、时效性四维质量，**以便** 单点定位图谱数据问题。
+
+### 详细需求
+
+| 需求 ID | 描述 | 验收标准 |
+|---------|------|---------|
+| VIS-01 | 图像分类 mock | 预置样本库返回正确标签 + confidence；未知/空路径抛 `ClassificationError` |
+| VIS-02 | 置信度阈值 | `is_reliable = confidence >= threshold`；边界值、自定义阈值生效 |
+| VIS-03 | 鲁棒性 | 模糊/旋转/低对比度图标签正确，降级幅度 ≤ 20% |
+| VIS-04 | 批量一致性 | 同图多次推理一致；批量与逐一结果一致；空列表不抛异常 |
+| VIS-05 | 评估指标 | precision/recall/F1 计算正确（F1 = 2PR/(P+R)） |
+| KG-01 | 图谱数据操作 | add/get/remove 三元组，按 subject/predicate 过滤 |
+| KG-02 | 准确性 | `validate_accuracy` 返回正确三元组比例 |
+| KG-03 | 完整性 | `validate_completeness` 返回实体覆盖率 |
+| KG-04 | 一致性 | 单值谓词冲突、类型互斥、自反三类违规检测 |
+| KG-05 | 时效性 | TTL 过期三元组检测；自定义 TTL（mock time） |
+| KG-06 | 综合验证 | `full_validation` 返回四维报告，`is_valid` 正确 |
+
+### Scope
+
+- ✅ `src/vision_kg_tester/` — `ImageClassifier` + `KnowledgeGraph` mock 模块
+- ✅ `tests/test_vision_kg_tester/` — 39 个单元测试
+- ❌ 真实图像模型 / 图数据库集成
+- ❌ 真实图像像素处理或 CV 库
+- ❌ Web UI 或 API 接口
+
+### 依赖
+
+- 无新增第三方依赖（纯 Python stdlib：`dataclasses`、`time`、`math`）
+- 现有 `pytest` + `venv` 环境即可
