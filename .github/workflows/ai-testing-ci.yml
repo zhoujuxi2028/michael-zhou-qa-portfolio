@@ -83,5 +83,9 @@ jobs:
         run: pytest tests/test_script_generator/ -v -m "script_gen" --tb=short
       - name: LLMEvaluator unit tests
         run: pytest tests/test_llm_evaluator/ -v -m "not llm" --tb=short
+      - name: RAGTester tests
+        run: pytest tests/test_rag_tester/ -v -m "rag" --cov=src/rag_tester --cov-fail-under=80 --tb=short
+      - name: VisionKGTester tests
+        run: pytest tests/test_vision_kg_tester/ -v -m "vision or knowledge_graph" --cov=src/vision_kg_tester --cov-fail-under=80 --tb=short
       - name: P0 critical tests
         run: pytest tests/ -v -m P0 --tb=short -q
