@@ -16,6 +16,7 @@
 | REQ-AI-002 | DefectPredictor 激活 dependency_count 和 last_modified_days 因子 | `defect_predictor` | Medium | Done | 2026-07-22 |
 | REQ-AI-003 | DefectPredictor 真实代码扫描器（自动采集 ModuleMetrics） | `code_scanner` | Medium | Done | 2026-07-23 |
 | REQ-AI-004 | RAG 全链路测试模块（7 阶段 + Pipeline，mock 实现） | `rag_tester` | Medium | Approved | 2026-11-11 |
+| REQ-AI-005 | 图像识别与知识图谱测试模块（mock 实现） | `vision_kg_tester` | Medium | Approved | 2026-11-11 |
 
 ---
 

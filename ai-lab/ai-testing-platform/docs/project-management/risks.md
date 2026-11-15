@@ -29,6 +29,10 @@
 | RSK-RAG-002 | **伪向量相似度退化**: 简单哈希生成的 384 维向量在余弦相似度下可能对短文本退化为常数，导致 top-k 检索无区分度 | 🟡 MEDIUM | 技术 | 中 | 中 | 伪向量按 token 集合加权哈希，保证文本重叠度映射到向量距离；TC-RAG-RET 断言 score 降序验证区分度 | 监控 |
 | RSK-RAG-003 | **token 估算误差**: 「1 词≈1.3 token」对中文等 DBCS 文本误差较大，可能误判上下文截断 | 🟢 LOW | 技术 | 低 | 低 | token 估算仅用于截断逻辑验证；阈值断言放宽为 `token_count <= max_tokens` 而非精确值 | 监控 |
 | RSK-RAG-004 | **需求范围蔓延**: RAG 测试可能被要求扩展到真实 LLM / 向量数据库集成 | 🟡 MEDIUM | 范围 | 中 | 中 | requirements.md 明确 scope 仅 mock 实现；真实集成另开 Issue | 监控 |
+| RSK-VIS-001 | **mock 样本覆盖有限**: 预置 `SAMPLE_IMAGES` 仅 6 张，无法代表真实图像分布，测试结论可能误导对真实模型质量的判断 | 🟡 MEDIUM | 技术 | 中 | 中 | scope 明确为「分类器接口 + 指标计算正确性」测试而非真实 CV 精度评测 | 监控 |
+| RSK-VIS-002 | **降级幅度硬编码**: `SAMPLE_IMAGES` 的降级 delta 硬编码（0.16~0.17），调整样本需同步修改 TC-VIS-ROB-005 断言 | 🟢 LOW | 技术 | 低 | 低 | 样本与断言同源维护；新增降级样本时保持 delta ≤ 0.20 | 监控 |
+| RSK-KG-001 | **一致性规则可扩展性**: 内置约束仅 3 类（单值/类型互斥/自反），真实图谱约束需扩展 | 🟢 LOW | 范围 | 低 | 低 | 约束表结构预留扩展位（`SINGLE_VALUE_PREDICATES` / `MUTUALLY_EXCLUSIVE_TYPES` 常量） | 监控 |
+| RSK-KG-002 | **时效性测试时间依赖**: `check_timeliness` 依赖 `time.time()`，若实现改用 `from time import time` 则 `patch("time.time")` 失效 | 🟢 LOW | 技术 | 低 | 低 | 模块内统一 `import time` + `time.time()` 调用；TTL 测试用显式 timestamp + mock 时间 | 监控 |
 
 ---
 

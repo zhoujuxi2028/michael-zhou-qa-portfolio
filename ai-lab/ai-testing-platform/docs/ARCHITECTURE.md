@@ -22,6 +22,9 @@ ai-testing-platform/
 │       ├── context_builder.py  # Stage 6 上下文构建
 │       ├── answer_generator.py # Stage 7 答案生成
 │       └── pipeline.py         # 全链路 E2E
+│   └── vision_kg_tester/       # 图像识别 + 知识图谱测试（mock）← REQ-AI-005
+│       ├── image_classifier.py # 图像识别 mock + 评估
+│       └── knowledge_graph.py  # 知识图谱四维验证
 ├── tests/
 │   ├── conftest.py             # 根级 fixtures
 │   ├── test_case_generator/    # TestCaseGenerator 测试 (23)
@@ -29,7 +32,8 @@ ai-testing-platform/
 │   ├── test_script_generator/  # ScriptGenerator 测试 (16)
 │   ├── test_code_scanner/      # CodeScanner 测试 (18)
 │   ├── test_llm_evaluator/    # LLMEvaluator 测试 (33)
-│   └── test_rag_tester/       # RAGTester 测试 (47)  ← REQ-AI-004
+│   ├── test_rag_tester/       # RAGTester 测试 (47)  ← REQ-AI-004
+│   └── test_vision_kg_tester/ # Vision/KG Tester 测试 (39) ← REQ-AI-005
 └── docs/
     ├── REQUIREMENTS.md
     ├── FEASIBILITY.md
@@ -239,6 +243,42 @@ class Test{ModuleName}:
 
 ---
 
+### 2.6 VisionKGTester ← REQ-AI-005
+
+**职责**：以纯 mock 实现图像识别与知识图谱测试能力，验证图像识别准确性与鲁棒性，以及知识图谱准确性/完整性/一致性/时效性
+
+**数据流**：
+```
+图像识别：
+   image_path
+   ↓ ImageClassifier.classify()      → ClassificationResult{label, confidence, is_reliable}
+   ↓ ImageClassifier.evaluate()      → BatchClassificationReport{precision, recall, f1, reliable_count}
+
+知识图谱：
+   Triple 三元组
+   ↓ KnowledgeGraph.add_triple()     → 内存存储
+   ↓ full_validation()
+      ├─ validate_accuracy()         → accuracy_score（正确三元组比例）
+      ├─ validate_completeness()     → completeness_score（实体覆盖率）
+      ├─ check_consistency()         → consistency_violations（单值/类型互斥/自反）
+      └─ check_timeliness()          → stale_triples（TTL 过期）
+   └─ ValidationReport
+```
+
+**Mock 策略**：
+
+| 模块 | Mock 方式 |
+|------|----------|
+| 图像分类 | 预置 `SAMPLE_IMAGES` 标签字典（含模糊/旋转/低对比度降级样本，delta ≤ 0.20） |
+| 置信度阈值 | `is_reliable = confidence >= threshold`，`DEFAULT_THRESHOLD = 0.5` |
+| 评估指标 | precision/recall/F1 基于标签匹配统计 |
+| 知识图谱 | 纯内存三元组列表；每条携 timestamp 支持时效性 |
+| 一致性约束 | 内置规则：单值谓词（age/birthdate/capital）、类型互斥（Person/Organization）、自反禁止 |
+
+**关键数据类**：`ClassificationResult`、`BatchClassificationReport`、`Triple`、`ValidationReport`（详见 spec）
+
+---
+
 ## 3. 测试架构
 
 ### Fixture 层级
@@ -262,6 +302,8 @@ tests/test_code_scanner/conftest.py       ← 本地：scanner, simple_py       
 | `@pytest.mark.llm` | LLMEvaluator 测试（CI 默认排除） |
 | `@pytest.mark.scanner` | CodeScanner 测试 ← REQ-AI-003 |
 | `@pytest.mark.rag` | RAGTester 全链路测试（mock）← REQ-AI-004 |
+| `@pytest.mark.vision` | 图像识别测试 ← REQ-AI-005 |
+| `@pytest.mark.knowledge_graph` | 知识图谱测试 ← REQ-AI-005 |
 | `@pytest.mark.P0/P1/P2` | 测试优先级 |
 
 ---
@@ -419,6 +461,16 @@ tests/test_llm_evaluator/conftest.py      ← 本地：llm_io samples, evaluator
 | `@pytest.mark.rag_context` | 上下文构建子类 |
 | `@pytest.mark.rag_answer` | 答案生成子类 |
 | `@pytest.mark.rag_pipeline` | 端到端子类 |
+| `@pytest.mark.vision` | 图像识别测试 |
+| `@pytest.mark.vision_accuracy` | 分类准确性子类 |
+| `@pytest.mark.vision_threshold` | 置信度阈值子类 |
+| `@pytest.mark.vision_robustness` | 鲁棒性子类 |
+| `@pytest.mark.vision_batch` | 批量一致性子类 |
+| `@pytest.mark.knowledge_graph` | 知识图谱测试 |
+| `@pytest.mark.kg_accuracy` | KG 准确性子类 |
+| `@pytest.mark.kg_completeness` | KG 完整性子类 |
+| `@pytest.mark.kg_consistency` | KG 一致性子类 |
+| `@pytest.mark.kg_timeliness` | KG 时效性子类 |
 | `@pytest.mark.P0/P1/P2` | 测试优先级 |
 
 ---
@@ -435,3 +487,4 @@ tests/test_llm_evaluator/conftest.py      ← 本地：llm_io samples, evaluator
 | 测试框架 | Pytest | 与 portfolio 其他 Python 项目一致 |
 | 注入检测 | GEval + 正则模式双重验证 | LLM 调用可用时 GEval 更准确，正则作为 fallback |
 | RAG 测试后端 | 全 mock（哈希伪向量 + 余弦相似度） | 零依赖、确定性、CI 离线可跑 |
+| 图像/KG 测试后端 | 全 mock（预置样本 + 内存三元组） | 零依赖、确定性、CI 离线可跑 |

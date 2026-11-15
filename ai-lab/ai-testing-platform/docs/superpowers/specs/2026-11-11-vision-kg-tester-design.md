@@ -2,7 +2,7 @@
 title: 图像识别与知识图谱测试模块设计
 issue: "#867"
 date: 2026-11-11
-status: draft
+status: ready-for-review
 ---
 
 # 图像识别与知识图谱测试模块设计
