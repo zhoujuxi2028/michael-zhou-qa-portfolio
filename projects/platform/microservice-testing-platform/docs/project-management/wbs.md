@@ -21,7 +21,7 @@
 │   ├── 1.1.1 定义项目目标与范围              → docs/requirements.md
 │   ├── 1.1.2 定义 3 个服务职责与 API 接口      → docs/api-spec.md
 │   ├── 1.1.3 定义服务间通信契约（REST + Redis） → docs/api-spec.md §4
-│   ├── 1.1.4 编写测试用例清单（90 cases）       → docs/test-cases.md
+│   ├── 1.1.4 编写测试用例清单（130 cases）      → docs/test-cases.md
 │   └── 1.1.5 技术选型确认与 WBS 输出           → docs/wbs.md
 │
 ├── 1.2 设计阶段
@@ -71,17 +71,17 @@
 │       └── 1.3.5.3 docker-compose.yml（一键启动）
 │
 ├── 1.4 测试阶段
-│   ├── 1.4.1 单元测试（Jest，30 tests）
-│   │   ├── 1.4.1.1 Order Service 业务逻辑（10）
-│   │   ├── 1.4.1.2 Inventory Service 业务逻辑（10）
-│   │   └── 1.4.1.3 Payment Service 业务逻辑（10）
+│   ├── 1.4.1 单元测试（Jest，73 tests）
+│   │   ├── 1.4.1.1 Order Service 业务逻辑
+│   │   ├── 1.4.1.2 Inventory Service 业务逻辑
+│   │   └── 1.4.1.3 Payment Service 业务逻辑
 │   │
-│   ├── 1.4.2 契约测试（Pact，15 tests）
-│   │   ├── 1.4.2.1 Order→Inventory 消费者契约（5）
-│   │   ├── 1.4.2.2 Payment→Order 消费者契约（5）
+│   ├── 1.4.2 契约测试（ajv JSON Schema，15 tests）
+│   │   ├── 1.4.2.1 Order→Inventory 接口契约（5）
+│   │   ├── 1.4.2.2 Payment→Order 接口契约（5）
 │   │   └── 1.4.2.3 事件契约验证（5）
 │   │
-│   ├── 1.4.3 集成测试（Supertest，20 tests）
+│   ├── 1.4.3 集成测试（Supertest + jest.mock，22 tests）
 │   │   ├── 1.4.3.1 Order API 集成（6）
 │   │   ├── 1.4.3.2 Inventory API 集成（6）
 │   │   └── 1.4.3.3 Payment + Redis 集成（8）
@@ -119,5 +119,5 @@
 | 1 需求分析 | requirements.md, api-spec.md, test-cases.md, wbs.md | Markdown |
 | 2 设计阶段 | architecture.md, data-model.md, test-strategy.md, project-structure.md, cicd-design.md | Markdown |
 | 3 开发阶段 | 3 services, docker-compose.yml, Dockerfiles | Code |
-| 4 测试阶段 | 90 tests, test-report.md | Code + Markdown |
+| 4 测试阶段 | 130 tests, test-report.md | Code + Markdown |
 | 5 收尾阶段 | CI workflow, CLAUDE.md, README update, PR | Config + Markdown |

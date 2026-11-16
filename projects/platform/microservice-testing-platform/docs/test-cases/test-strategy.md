@@ -9,18 +9,18 @@
        ╱──────╲
       ╱        ╲       E2E (Supertest)            10 tests
      ╱──────────╲
-    ╱            ╲     Integration (Supertest)    20 tests
+    ╱            ╲     Integration (Supertest)    22 tests
    ╱──────────────╲
-  ╱                ╲   Contract (Pact)            15 tests
+  ╱                ╲   Contract (ajv)             15 tests
  ╱──────────────────╲
-╱                    ╲  Unit (Jest)               30 tests
+╱                    ╲  Unit (Jest)               73 tests
 ╲────────────────────╱
-        Total: 90
+        Total: 130
 ```
 
 ## 2. 各层策略
 
-### 2.1 单元测试（30 tests）
+### 2.1 单元测试（73 tests）
 
 | 项目 | 说明 |
 |------|------|
@@ -29,16 +29,16 @@
 | Mock | 数据库、Redis、HTTP 调用全部 mock |
 | 覆盖率目标 | > 80% |
 | 运行时间 | < 10s |
-| 运行方式 | `npm test -- --testPathPattern=unit` |
+| 运行方式 | `npm run test:unit` |
 
 ### 2.2 契约测试（15 tests）
 
 | 项目 | 说明 |
 |------|------|
-| 工具 | Pact (JS) |
+| 工具 | ajv（JSON Schema） |
 | 范围 | 服务间 API 契约 + 事件格式契约 |
-| 模式 | Consumer-Driven Contract Testing |
-| Pact Broker | 本地文件（pacts/ 目录） |
+| 模式 | JSON Schema 契约校验 |
+| 契约文件 | tests/contract/schemas/*.schema.js |
 | 运行时间 | < 15s |
 
 **契约矩阵:**
@@ -50,14 +50,14 @@
 | Payment | Order | Event: order.created 格式 |
 | Order | Payment | Event: payment.completed 格式 |
 
-### 2.3 集成测试（20 tests）
+### 2.3 集成测试（22 tests）
 
 | 项目 | 说明 |
 |------|------|
-| 工具 | Supertest + Testcontainers |
-| 范围 | 单服务 API + 真实 DB + 真实 Redis |
-| 依赖 | Docker（通过 Testcontainers 启动 Redis） |
-| 隔离 | 每个测试套件独立数据库文件 |
+| 工具 | Supertest + jest.mock |
+| 范围 | 单服务 API + 真实 DB（内存 SQLite） |
+| 依赖 | 无（外部依赖如 Redis/REST 客户端均 mock） |
+| 隔离 | 每个测试套件独立内存数据库（`:memory:`） |
 | 运行时间 | < 30s |
 
 ### 2.4 E2E 流程测试（10 tests）
@@ -94,9 +94,8 @@
 
 | 环境 | 用途 | 启动方式 |
 |------|------|----------|
-| Local (no Docker) | 单元测试、契约测试 | `npm test` |
-| Testcontainers | 集成测试 | 自动启动/销毁 Redis |
-| Docker Compose | E2E、性能、可观测性 | `docker compose up -d` |
+| Local (no Docker) | 单元、契约、集成、可观测性测试 | `npm test` |
+| Docker Compose | E2E、性能 | `docker compose up -d` |
 | CI (GitHub Actions) | 全部 | workflow 自动编排 |
 
 ## 4. 测试执行顺序
@@ -105,8 +104,8 @@
 CI Pipeline:
   1. Lint (ESLint)
   2. Unit Tests (Jest)          ← 快，无依赖
-  3. Contract Tests (Pact)      ← 快，无依赖
-  4. Integration Tests          ← 需要 Docker
+  3. Contract Tests (ajv)       ← 快，无依赖
+  4. Integration Tests          ← 无 Docker（外部依赖 mock）
   5. E2E Tests                  ← 需要全部服务
   6. Performance Tests          ← 仅 main 分支 / 手动触发
 ```

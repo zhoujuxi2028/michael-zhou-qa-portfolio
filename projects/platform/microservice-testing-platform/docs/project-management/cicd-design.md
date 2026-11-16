@@ -12,17 +12,17 @@
       │
       ▼
   ┌────────┐
-  │  Unit  │  Jest unit tests (30)
+  │  Unit  │  Jest unit tests (73)
   └───┬────┘
       │
       ▼
   ┌──────────┐
-  │ Contract │  Pact contract tests (15)
+  │ Contract │  ajv contract tests (15)
   └────┬─────┘
        │
        ▼
   ┌─────────────┐
-  │ Integration │  Supertest + Redis container (20)
+  │ Integration │  Supertest + jest.mock (22)
   └──────┬──────┘
          │
          ▼
