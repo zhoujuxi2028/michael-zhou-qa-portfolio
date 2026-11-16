@@ -192,6 +192,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 |----------|---------|---------|
 | `ai-testing-ci.yml` | ai-testing-platform | AI Testing CI: code quality + unit tests (178 tests) + per-module coverage gates |
 | `api-testing-ci.yml` | api-testing-demo | Validate collections → Newman tests (280+ assertions) |
+| `microservice-ci.yml` | microservice-testing-platform | Microservice Testing CI: code quality + unit/contract/integration/e2e/observability tests (130 tests) |
 | `robot-framework-ci.yml` | robot-framework-demo | Robot Framework / Pabot parallel + Selenium Grid + Rebot merge (9 tests) |
 | `cicd-demo-pr.yml` | cicd-demo | PR Gate: lint + unit/contract tests + Docker build + quick security scan |
 | `cicd-demo-deploy.yml` | cicd-demo | Deploy Pipeline: Helm package + SBOM → staging (auto) → smoke test → production (manual approval) |
