@@ -1,0 +1,92 @@
+name: Microservice Testing CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'projects/platform/microservice-testing-platform/**'
+      - '.github/workflows/microservice-ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'projects/platform/microservice-testing-platform/**'
+      - '.github/workflows/microservice-ci.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: microservice-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: projects/platform/microservice-testing-platform
+
+jobs:
+  code-quality:
+    name: Microservice / Code Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-node-project
+        with:
+          node-version: '18'
+          working-directory: projects/platform/microservice-testing-platform
+          cache-dependency-path: projects/platform/microservice-testing-platform/package-lock.json
+      - name: Lint (ESLint + Prettier)
+        run: |
+          set +e
+          npm run lint
+          LINT_STATUS=$?
+          npm run format:check
+          FORMAT_STATUS=$?
+          echo "ESLint exit: $LINT_STATUS, Prettier exit: $FORMAT_STATUS"
+          if [ "$LINT_STATUS" -ne 0 ] || [ "$FORMAT_STATUS" -ne 0 ]; then
+            exit 1
+          fi
+
+  unit-tests:
+    name: Microservice / Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-node-project
+        with:
+          node-version: '18'
+          working-directory: projects/platform/microservice-testing-platform
+          cache-dependency-path: projects/platform/microservice-testing-platform/package-lock.json
+      - name: Run all tests (unit/contract/integration/e2e/observability, 130 tests)
+        run: npm run test:coverage
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report
+          path: projects/platform/microservice-testing-platform/coverage/
+
+  gate:
+    name: Microservice / Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: always()
+    needs:
+      - code-quality
+      - unit-tests
+    steps:
+      - name: Verify all upstream jobs succeeded
+        working-directory: .
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          echo "$NEEDS_JSON" | jq .
+          if echo "$NEEDS_JSON" | jq -e 'all(.[]; .result == "success")' > /dev/null; then
+            echo "All upstream jobs succeeded"
+          else
+            echo "::error::One or more upstream jobs did not succeed"
+            echo "$NEEDS_JSON" | jq -r 'to_entries[] | select(.value.result != "success") | "\(.key): \(.value.result)"'
+            exit 1
+          fi

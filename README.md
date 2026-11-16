@@ -128,6 +128,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 | `sql-testing-demo-ci.yml` | sql-testing-demo | Push/PR | SQL Testing Demo CI: code quality (ruff) → unit tests (CRUD/queries/constraints/procedures) → integration tests (transactions/performance/reports) |
 | `ivi-integration-ci.yml` | ivi-integration-lab | Push/PR | IVI Integration Lab CI: lint → unit tests → smoke → integration → regression (65 tests, Python 3.11/3.12 matrix) |
 | `api-testing-ci.yml` | api-testing-demo | Push/PR | Validate Postman collections → Newman tests (280+ assertions) |
+| `microservice-ci.yml` | microservice-testing-platform | Push/PR, manual | Microservice Testing CI: code quality + unit/contract/integration/e2e/observability tests (130 tests) |
 | `codeql-analysis.yml` | repository (JS+Python) | Push/PR, weekly | CodeQL 代码语义漏洞扫描 (XSS, SQLi, path traversal) |
 | `commit-guard.yml` | repository | PR opened/updated | Commit Guard: Conventional Commits 格式校验 + secret 泄漏扫描 CI 兜底 |
 
