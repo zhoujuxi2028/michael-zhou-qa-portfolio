@@ -156,8 +156,15 @@ Order Service (log with corr-uuid-001)
 
 | 场景 | 处理方式 |
 |------|----------|
-| Inventory Service 不可达 | Order 返回 503，不创建订单 |
+| Inventory Service 不可达 / 超时 | Order 侧 inventory-client 带超时（默认 2s）+ 有界重试（默认 3 次，仅重试网络/超时/5xx，4xx 不重试，幂等保证安全）；仍失败则返回 503，不创建订单 |
 | Redis 断开 | 自动重连，日志记录，健康检查标记 unhealthy |
 | 支付失败 | Payment 发布 payment.completed(status:failed)，Order 触发库存回滚 |
 | 重复事件 | 幂等处理（按 orderId 去重） |
 | 无效事件格式 | 记录 error 日志，跳过处理，不崩溃 |
+
+### 6.1 已知限制
+
+| 限制 | 影响 | 说明 |
+|------|------|------|
+| Redis Pub/Sub at-most-once | `order.created` 丢失则支付不触发，订单卡 confirmed | 无持久化/重投；生产级需 Stream/Kafka 或 outbox，本项目作为已知限制 |
+| 支付回调无重试/补偿 | `payment.completed` 回调失败时订单状态不更新 | `redis-subscriber` 仅记日志；需人工介入 |
