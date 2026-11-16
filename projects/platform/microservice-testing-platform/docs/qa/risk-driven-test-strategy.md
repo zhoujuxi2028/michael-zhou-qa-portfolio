@@ -49,4 +49,6 @@
 
 ## 5. 与 CI 的衔接
 
-所有 jest 测试（130 个）均无需 Docker（jest.mock + 内存 SQLite），故 CI 只分两个 job：`code-quality`（lint + format）+ `unit-tests`（`test:coverage` 跑全部 130 测试并强制覆盖率门禁），再经 `gate` 汇总。详见 `.github/workflows/microservice-ci.yml`。
+所有 jest 测试（135 个）均无需 Docker（jest.mock + 内存 SQLite），故 CI 只分两个 job：`code-quality`（lint + format）+ `unit-tests`（`test:coverage` 跑全部 135 测试并强制覆盖率门禁），再经 `gate` 汇总。详见 `.github/workflows/microservice-ci.yml`。
+
+真实 Redis 异步链路（`order.created` → 支付 → 回调）不由 jest 层覆盖（E2E 用 mock 模拟），改由按需脚本 `scripts/e2e-real-flow.sh`（docker compose 起栈 + 轮询订单到 `paid`）验证，不接入 PR CI 以保持主流程快速稳定。

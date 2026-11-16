@@ -36,7 +36,7 @@
 ## 4. 后续动作
 
 - [x] U1：决定「文档化已知限制」（outbox/Stream 超出范围，采纳诚实边界）
-- [ ] U2：补 docker 环境真实事件流 smoke（当前 docker daemon 未运行，标记为后续手动验证项，不接入自动 CI，避免未验证的 workflow）
+- [x] U2：补 docker 环境真实事件流 smoke（脚本 `scripts/e2e-real-flow.sh`，2026-11-16 本地验证 PASS）
 - [x] U3：给 inventory-client 加超时 + 有界重试（已实现 + 5 个单测）
 
 ## 5. 自审说明
@@ -49,5 +49,5 @@
 |----|------|------|
 | U3 超时/重试 | ✅ 已实现 | `inventory-client` 增加 `AbortController` 超时（默认 2s）+ 有界重试（默认 3 次，指数退避）；仅重试网络/超时/5xx，4xx 业务错误不重试。幂等（按 orderId 去重）保证重试安全。新增 5 个单测覆盖 5xx 重试/4xx 不重试/网络错误/超时。 |
 | U1 消息可靠性 | ✅ 决策：文档化已知限制 | 引入 outbox/Redis Stream 超出本项目范围。Pub/Sub at-most-once + 回调无重试作为**已知限制**记录（R3/R4），不宣称「生产级可靠」。 |
-| U2 真实事件流 smoke | ⏸ 后续手动项 | 需 docker daemon；当前环境 daemon 未运行，无法验证，故不接入自动 CI。保留为后续手动验证项。 |
+| U2 真实事件流 smoke | ✅ 已实现并验证 | `scripts/e2e-real-flow.sh`：docker compose 起栈 → 下单 → Redis 异步 `order.created` → 轮询订单直达 `paid`。2026-11-16 本地验证 PASS（订单 ORD-20261116-002 → paid，PAY-002 completed）。保持为**手动/按需脚本**，不接入 PR CI（避免 docker 构建拖慢主流程且降低波动）。如需 CI 化，可用 `workflow_dispatch` 单独触发。 |
 
