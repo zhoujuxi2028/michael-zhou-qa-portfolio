@@ -13,13 +13,13 @@ services/
 └── payment-service/    Express :3005, SQLite, Redis Sub
 ```
 
-## Test Layers (101 tests)
+## Test Layers (130 tests)
 
 | Layer | Tests | Tool |
 |-------|:-----:|------|
-| Unit | 46 | Jest |
+| Unit | 73 | Jest |
 | Contract | 15 | JSON Schema (ajv) |
-| Integration | 20 | Supertest |
+| Integration | 22 | Supertest |
 | E2E | 10 | Supertest (cross-service) |
 | Performance | 5 scripts | k6 |
 | Observability | 10 | Jest |
@@ -28,7 +28,7 @@ services/
 
 ```bash
 npm install
-npm run test:all           # All 101 tests
+npm run test:all           # All 130 tests
 npm run docker:up          # Start all services + Redis
 ```
 

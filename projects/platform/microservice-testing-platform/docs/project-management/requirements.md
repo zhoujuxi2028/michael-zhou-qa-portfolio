@@ -39,8 +39,8 @@
 | 数据库 | SQLite | 零配置、本地即跑、每服务独立 |
 | 消息队列 | Redis Pub/Sub | 一个组件解决消息+缓存，依赖少 |
 | 单元测试 | Jest | Node.js 标准测试框架 |
-| 契约测试 | Pact | 行业标准 Consumer-Driven Contract Testing |
-| 集成测试 | Supertest + Testcontainers | 真实依赖启动测试 |
+| 契约测试 | ajv（JSON Schema） | JSON Schema 契约校验，零依赖 |
+| 集成测试 | Supertest + jest.mock | 内存 SQLite + mock 外部依赖 |
 | E2E 测试 | Supertest | 全链路流程验证 |
 | 性能测试 | k6 | 轻量、脚本化、CI 友好 |
 | 可观测性 | Winston + prom-client | Node.js 生态标准选择 |

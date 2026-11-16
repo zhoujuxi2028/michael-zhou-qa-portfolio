@@ -84,13 +84,12 @@ microservice-testing-platform/
 │   │   ├── inventory-service/
 │   │   └── payment-service/
 │   ├── contract/
-│   │   ├── consumer/
-│   │   ├── provider/
-│   │   └── pacts/               # Pact 契约文件
+│   │   ├── consumer/           # 契约测试用例
+│   │   └── schemas/            # JSON Schema 契约定义
 │   ├── integration/
 │   │   ├── order-api.test.js
 │   │   ├── inventory-api.test.js
-│   │   └── payment-redis.test.js
+│   │   └── payment-api.test.js
 │   ├── e2e/
 │   │   └── order-flow.test.js
 │   ├── performance/

@@ -1,6 +1,6 @@
 # 测试用例清单
 
-## 1. 单元测试（Jest，~30 tests）
+## 1. 单元测试（Jest，~73 tests）
 
 ### 1.1 Order Service（10 tests）
 
@@ -49,7 +49,7 @@
 
 ---
 
-## 2. 契约测试（Pact，~15 tests）
+## 2. 契约测试（ajv JSON Schema，15 tests）
 
 ### 2.1 Consumer: Order → Inventory（5 tests）
 
@@ -83,7 +83,7 @@
 
 ---
 
-## 3. 集成测试（Supertest + Testcontainers，~20 tests）
+## 3. 集成测试（Supertest + jest.mock，22 tests）
 
 ### 3.1 Order API 集成（6 tests）
 
@@ -172,10 +172,10 @@
 
 | 层级 | 数量 |
 |------|------|
-| 单元测试 | 30 |
+| 单元测试 | 73 |
 | 契约测试 | 15 |
-| 集成测试 | 20 |
+| 集成测试 | 22 |
 | E2E 测试 | 10 |
 | 性能测试 | 5 |
 | 可观测性 | 10 |
-| **总计** | **90** |
+| **总计** | **130** |

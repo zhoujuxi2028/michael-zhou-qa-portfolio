@@ -74,7 +74,7 @@ michael-zhou-qa-portfolio/
 ├── security-testing-demo/              # DAST + OWASP ZAP (~182 tests)
 ├── k8s-auto-testing-platform/          # K8S HPA + Chaos (37 tests)
 ├── sid-iam-testing-platform/           # IAM + Data Platform (163 tests, Python)
-├── microservice-testing-platform/      # 5-layer testing (101 tests, Node.js)
+├── microservice-testing-platform/      # 5-layer testing (130 tests, Node.js)
 ├── cicd-demo/                          # DevOps Infrastructure (Terraform, ArgoCD)
 ├── .github/workflows/                  # CI/CD for all projects (14 workflows)
 └── docs/                               # Portfolio-level architecture & guides
@@ -349,13 +349,13 @@ bash scripts/integration-test.sh
 
 Quick links to project CLAUDE.md files for detailed commands and branch rules:
 
-- [performance-testing-platform/CLAUDE.md](../../performance-testing-platform/CLAUDE.md)
-- [playwright-demo/CLAUDE.md](../../playwright-demo/CLAUDE.md)
-- [api-testing-demo/CLAUDE.md](../../api-testing-demo/CLAUDE.md)
-- [security-testing-demo/CLAUDE.md](../../security-testing-demo/CLAUDE.md)
-- [microservice-testing-platform/CLAUDE.md](../../microservice-testing-platform/CLAUDE.md)
-- [sid-iam-testing-platform/CLAUDE.md](../../sid-iam-testing-platform/CLAUDE.md)
-- [k8s-auto-testing-platform/CLAUDE.md](../../k8s-auto-testing-platform/CLAUDE.md)
+- [performance-testing-platform/CLAUDE.md](../projects/platform/performance-testing-platform/CLAUDE.md)
+- [playwright-demo/CLAUDE.md](../projects/functional/playwright-demo/CLAUDE.md)
+- [api-testing-demo/CLAUDE.md](../projects/functional/api-testing-demo/CLAUDE.md)
+- [security-testing-demo/CLAUDE.md](../projects/security/security-testing-demo/CLAUDE.md)
+- [microservice-testing-platform/CLAUDE.md](../projects/platform/microservice-testing-platform/CLAUDE.md)
+- [sid-iam-testing-platform/CLAUDE.md](../projects/platform/sid-iam-testing-platform/CLAUDE.md)
+- [k8s-auto-testing-platform/CLAUDE.md](../infra/k8s-auto-testing-platform/CLAUDE.md)
 
 ---
 
