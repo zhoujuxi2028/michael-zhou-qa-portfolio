@@ -71,7 +71,7 @@
 │       └── 1.3.5.3 docker-compose.yml（一键启动）
 │
 ├── 1.4 测试阶段
-│   ├── 1.4.1 单元测试（Jest，73 tests）
+│   ├── 1.4.1 单元测试（Jest，78 tests）
 │   │   ├── 1.4.1.1 Order Service 业务逻辑
 │   │   ├── 1.4.1.2 Inventory Service 业务逻辑
 │   │   └── 1.4.1.3 Payment Service 业务逻辑
@@ -119,5 +119,5 @@
 | 1 需求分析 | requirements.md, api-spec.md, test-cases.md, wbs.md | Markdown |
 | 2 设计阶段 | architecture.md, data-model.md, test-strategy.md, project-structure.md, cicd-design.md | Markdown |
 | 3 开发阶段 | 3 services, docker-compose.yml, Dockerfiles | Code |
-| 4 测试阶段 | 130 tests, test-report.md | Code + Markdown |
+| 4 测试阶段 | 135 tests, test-report.md | Code + Markdown |
 | 5 收尾阶段 | CI workflow, CLAUDE.md, README update, PR | Config + Markdown |
