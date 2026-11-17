@@ -216,3 +216,148 @@ def ssim(ref: Path, dist: Path) -> float:
     if not m:
         raise MediaError(f"could not parse SSIM: {_tail(text)}")
     return float(m.group(1))
+
+
+# ── Audio quality ────────────────────────────────────────────────────────────
+def reencode_audio(
+    src: Path, dst: Path, *, bitrate: str = "16k", sample_rate: int | None = None
+) -> Path:
+    """Re-encode (and optionally downsample) audio to induce measurable degradation."""
+    dst = Path(dst)
+    args = ["-i", str(src), "-vn", "-c:a", "aac", "-b:a", bitrate]
+    if sample_rate:
+        args += ["-ar", str(sample_rate)]
+    args += ["-y", str(dst)]
+    proc = _run(args)
+    if proc.returncode != 0:
+        raise MediaError(f"ffmpeg audio reencode failed: {_tail(proc.stderr)}")
+    return dst
+
+
+def audio_asdr(ref: Path, dist: Path) -> float:
+    """Audio Signal-to-Distortion Ratio in dB (``inf`` when identical).
+
+    Higher is better; low-bitrate / downsampled audio shows a clearly lower SDR,
+    which is how audio quality regressions are detected objectively.
+    """
+    args = [
+        "-i",
+        str(ref),
+        "-i",
+        str(dist),
+        "-lavfi",
+        "[0:a][1:a]asdr",
+        "-f",
+        "null",
+        "-",
+    ]
+    proc = _run(args)
+    if proc.returncode != 0:
+        raise MediaError(f"ffmpeg asdr failed: {_tail(proc.stderr)}")
+    m = re.search(r"SDR ch0:\s*(\S+)\s*dB", proc.stderr)
+    if not m:
+        raise MediaError(f"could not parse ASDR: {_tail(proc.stderr)}")
+    value = m.group(1).lower()
+    return float("inf") if value == "inf" else float(value)
+
+
+# ── Multi-codec comparison ───────────────────────────────────────────────────
+CODECS = {
+    "h264": "libx264",
+    "hevc": "libx265",
+    "vp9": "libvpx-vp9",
+    "mpeg4": "mpeg4",
+}
+
+
+def encode_video(
+    src: Path, dst: Path, codec: str = "h264", *, bitrate: str = "200k"
+) -> Path:
+    """Encode ``src`` with the named codec so codecs can be compared on equal footing."""
+    if codec not in CODECS:
+        raise MediaError(f"unsupported codec '{codec}', choose from {sorted(CODECS)}")
+    dst = Path(dst)
+    args = [
+        "-i",
+        str(src),
+        "-c:v",
+        CODECS[codec],
+        "-b:v",
+        bitrate,
+        "-pix_fmt",
+        "yuv420p",
+        "-c:a",
+        "aac",
+        "-y",
+        str(dst),
+    ]
+    proc = _run(args)
+    if proc.returncode != 0:
+        raise MediaError(f"ffmpeg encode ({codec}) failed: {_tail(proc.stderr)}")
+    return dst
+
+
+def file_size(path: Path) -> int:
+    return Path(path).stat().st_size
+
+
+# ── Frame extraction + diff visualization ────────────────────────────────────
+def extract_frame(video: Path, frame_index: int, out_png: Path) -> Path:
+    """Extract a single decoded frame to PNG (for inspection or frame-level diff)."""
+    out_png = Path(out_png)
+    vf = f"select=eq(n\\,{frame_index})"
+    args = ["-i", str(video), "-vf", vf, "-frames:v", "1", "-y", str(out_png)]
+    proc = _run(args)
+    if proc.returncode != 0 or not out_png.exists():
+        raise MediaError(f"ffmpeg extract_frame failed: {_tail(proc.stderr)}")
+    return out_png
+
+
+def difference_image(ref_img: Path, dist_img: Path, out_png: Path) -> Path:
+    """Write |ref - dist| as a PNG so a human can see where two frames differ.
+
+    Diff two *extracted frames* (static images), not two video streams: blending
+    live streams is subject to frame-alignment and would compare mismatched frames.
+    """
+    out_png = Path(out_png)
+    args = [
+        "-i",
+        str(ref_img),
+        "-i",
+        str(dist_img),
+        "-lavfi",
+        "blend=all_mode=difference",
+        "-frames:v",
+        "1",
+        "-y",
+        str(out_png),
+    ]
+    proc = _run(args)
+    if proc.returncode != 0 or not out_png.exists():
+        raise MediaError(f"ffmpeg difference_image failed: {_tail(proc.stderr)}")
+    return out_png
+
+
+def _run_bytes(args: list[str]) -> bytes:
+    cmd = [FFMPEG, "-hide_banner", "-nostdin", *args]
+    return subprocess.run(cmd, check=False, capture_output=True).stdout
+
+
+def mean_gray(image: Path) -> float:
+    """Mean gray value (0-255) of an image; ~0 means a near-black difference image."""
+    raw = _run_bytes(
+        [
+            "-loglevel",
+            "error",
+            "-i",
+            str(image),
+            "-f",
+            "rawvideo",
+            "-pix_fmt",
+            "gray",
+            "-",
+        ]
+    )
+    if not raw:
+        raise MediaError(f"could not read pixels from {image}")
+    return sum(raw) / len(raw)

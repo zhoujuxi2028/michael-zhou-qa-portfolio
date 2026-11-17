@@ -68,7 +68,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | **AI 测试** | `ai-lab/ai-testing-platform/` — AI-Powered Testing Platform (178 tests) | Python, Pytest, Rule Engine | `ai-testing-platform/CLAUDE.md` |
 | AI 测试 | `ai-lab/llm-agent-tutorial/` — LLM Agent Engineering Tutorial | Python, Anthropic API | `llm-agent-tutorial/CLAUDE.md` |
 | 集成测试 | `projects/automotive/ivi-integration-lab/` — IVI 车载集成验证实验室 (65 tests: unit + smoke + integration + regression) | Python, pytest, python-can, cantools | `ivi-integration-lab/CLAUDE.md` |
-| **多媒体测试** | `projects/multimedia/av-testing-demo/` — 音视频规格断言 + PSNR/SSIM 画质回归 (10 tests) | Python, pytest, ffmpeg (imageio-ffmpeg) | — |
+| **多媒体测试** | `projects/multimedia/av-testing-demo/` — 音视频规格断言 + 音频ASDR + PSNR/SSIM + 多编码对比 + 帧diff可视化 (19 tests) | Python, pytest, ffmpeg (imageio-ffmpeg) | — |
 
 > **Quick Commands**: 各项目的安装、运行、测试命令详见对应子项目 `CLAUDE.md`。
 
