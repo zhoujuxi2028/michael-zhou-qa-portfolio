@@ -67,7 +67,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [av-testing-demo](./projects/multimedia/av-testing-demo/) | Audio/Video (AV) automated testing — spec assertions (resolution/duration/fps/codec/bitrate/audio layout) + PSNR/SSIM quality regression (10 tests) | Python, pytest, ffmpeg (imageio-ffmpeg) |
+| [av-testing-demo](./projects/multimedia/av-testing-demo/) | Audio/Video (AV) automated testing — spec assertions (resolution/duration/fps/codec/bitrate/audio layout) + audio ASDR + PSNR/SSIM + multi-codec comparison + frame-diff visualization (19 tests) | Python, pytest, ffmpeg (imageio-ffmpeg) |
 
 ### DevOps
 

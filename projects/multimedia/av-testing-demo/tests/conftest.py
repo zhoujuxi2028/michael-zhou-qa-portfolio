@@ -32,3 +32,11 @@ def identical(workdir, original):
 def lowbitrate(workdir, original):
     """Re-encoded at 30k video bitrate — should show measurable quality loss."""
     return media.reencode(original, workdir / "lowbitrate.mp4", video_bitrate="30k")
+
+
+@pytest.fixture(scope="session")
+def degraded_audio(workdir, original):
+    """Audio re-encoded to 8 kHz / 16k — should show clear distortion (low SDR)."""
+    return media.reencode_audio(
+        original, workdir / "audio_low.m4a", bitrate="16k", sample_rate=8000
+    )

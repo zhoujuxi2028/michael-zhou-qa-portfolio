@@ -65,3 +65,46 @@ def test_lowbitrate_degrades_psnr(original, lowbitrate):
 def test_lowbitrate_degrades_ssim(original, lowbitrate):
     score = media.ssim(original, lowbitrate)
     assert score < 0.99, f"expected structural loss, got SSIM={score}"
+
+
+# ── Audio quality (ASDR) ─────────────────────────────────────────────────────
+def test_audio_asdr_identical_is_infinite(original):
+    assert media.audio_asdr(original, original) == float("inf")
+
+
+def test_audio_asdr_detects_degradation(original, degraded_audio):
+    score = media.audio_asdr(original, degraded_audio)
+    assert score < 30, f"expected audio distortion, got SDR={score} dB"
+
+
+# ── Multi-codec comparison ───────────────────────────────────────────────────
+@pytest.mark.parametrize("codec", ["h264", "hevc", "vp9", "mpeg4"])
+def test_multi_codec_encodes_and_matches_tag(workdir, original, codec):
+    out = media.encode_video(
+        original, workdir / f"enc_{codec}.mp4", codec, bitrate="200k"
+    )
+    info = media.probe(out)
+    assert info.video.codec == codec
+    assert media.psnr(original, out) > 20, f"{codec}: quality floor not met"
+
+
+# ── Frame extraction + diff visualization ────────────────────────────────────
+def test_extract_frame_creates_png(workdir, original):
+    frame = media.extract_frame(original, 15, workdir / "frame15.png")
+    assert frame.exists() and frame.stat().st_size > 0
+
+
+def test_frame_diff_identical_is_black(workdir, original):
+    a = media.extract_frame(original, 15, workdir / "same_a.png")
+    b = media.extract_frame(original, 15, workdir / "same_b.png")
+    diff = media.difference_image(a, b, workdir / "diff_same.png")
+    assert media.mean_gray(diff) < 1.0
+    assert media.psnr(a, b) == float("inf")
+
+
+def test_frame_diff_detects_change(workdir, original, lowbitrate):
+    a = media.extract_frame(original, 15, workdir / "ref15.png")
+    b = media.extract_frame(lowbitrate, 15, workdir / "low15.png")
+    diff = media.difference_image(a, b, workdir / "diff_low.png")
+    assert media.mean_gray(diff) > 1.0
+    assert media.psnr(a, b) < 40
