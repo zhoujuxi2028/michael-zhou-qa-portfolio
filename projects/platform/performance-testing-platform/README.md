@@ -402,6 +402,7 @@ performance-testing-platform/
 | 项目管理         | [docs/project-management/](docs/project-management/)                                           |
 | 需求文档         | [docs/project-management/requirements.md](docs/project-management/requirements.md)             |
 | 性能测试参数指南 | [docs/guides/performance-testing-parameters.md](docs/guides/performance-testing-parameters.md) |
+| CI 反馈时长实测 | [docs/qa/reports/investigations/issue-879-ci-feedback-time.md](docs/qa/reports/investigations/issue-879-ci-feedback-time.md)（534s → 206s，−61%） |
 
 ## Known Limitations
 
