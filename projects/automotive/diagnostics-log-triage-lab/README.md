@@ -2,7 +2,7 @@
 
 汽车诊断协议与日志分析实验室：合成 CAN/CAN FD + UDS 日志 → 协议级异常识别 → 聚类去重 → P1/P2 分流 → 缺陷转 pytest 回归模板。
 
-> **状态**：Stage 2 — Design（[#838](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/838)）
+> **状态**：Stage 3 — Development（[#838](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/838)）
 > **声明**：simulation lab，全部使用合成数据，不代表实车、台架或量产 ECU 经验。
 
 ## 范围
@@ -13,6 +13,13 @@
 | 2 | DoIP、SOME/IP |
 
 详见 [需求文档](docs/project-management/requirements.md)、[架构](docs/architecture/architecture.md)、[实施计划](docs/project-management/implementation-plan.md)、[测试计划](docs/qa/test-plan.md)、[风险清单](docs/project-management/risks.md)。
+
+## 快速开始
+
+```bash
+python3.13 -m venv venv && source venv/bin/activate && make install
+make demo    # 生成 seed 42 数据 → 分流 → 报告 out/report.md → 运行回归模板
+```
 
 ## 规则 / 模型边界
 

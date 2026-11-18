@@ -1,7 +1,7 @@
 # diagnostics-log-triage-lab 测试计划
 
 **项目**: diagnostics-log-triage-lab (PREQ-021, #838)
-**最近更新**: 2026-11-18（Stage 2，已按 Plan Review 修订）
+**最近更新**: 2026-11-18（Stage 3 实现后同步）
 **口径**: 匹配规则与指标定义见 [architecture.md §7](../architecture/architecture.md#7-匹配与指标口径metricspy)
 
 ---
@@ -37,7 +37,7 @@
 | 回归覆盖率 | = 100% | DLT-11 |
 | 自动处理耗时 | 60 s trace 端到端 ≤ 10 s（不含首次导入） | DLT-12 |
 
-对抗样本（TC-INT-04）阈值相同，但只断言召回率、误报率、分流准确率。人工耗时为**估算**：每条 Incident 人工定位 5 分钟（假设写入报告），不做断言。
+对抗样本（TC-INT-04）为特征化测试：误报率 = 0、召回率 ≥ 90%、分流准确率 ≥ 80%，并精确锁定下表 3 个已知缺口（Stage 3 实测召回 91.7%、准确率 81.8%；未为迎合样本而调规则）。人工耗时为**估算**：每条 Incident 人工定位 5 分钟（假设写入报告），不做断言。
 
 ---
 
@@ -124,7 +124,7 @@
 | TC-TM-02 | test_categorical_fields_split | `nrc=0x31` vs `nrc=0x35` → 不同 template_id |
 | TC-CL-01 | test_cluster_deterministic | 同输入两次标签一致 |
 | TC-CL-02 | test_cluster_homogeneity_fixture | 固定样本 homogeneity = 1.0 |
-| TC-CL-03 | test_tfidf_merges_optional_field_variants | 有无 `gap_ms=` 的两个模板 → 同一簇 |
+| TC-CL-03 | test_tfidf_merges_optional_field_variants | 有无 `dropout=` 的两个模板 → 同一簇；不同 ID 不合并 |
 | TC-TR-01 | test_priority_base_rules | 各 kind 基础优先级符合规则表 |
 | TC-TR-02 | test_priority_escalation | 安全 ID 周期丢失、error frame burst、NRC 0x36 → P1；非安全 ID、单次 error frame → P2 |
 | TC-TR-03 | test_regression_candidate | P1 或 count ≥ 2 → 候选；单次 P2 → 非候选 |
@@ -173,7 +173,7 @@
 | TC-INT-01 | test_eval_seeds_meet_thresholds | seed 1001–1005 全部满足阈值表 |
 | TC-INT-02 | test_pipeline_runtime | 60 s trace ≤ 10 s |
 | TC-INT-03 | test_demo_end_to_end | `cli demo` 退出码 0，产出全部文件，回归模板全部通过 |
-| TC-INT-04 | test_adversarial_fixture | 手写对抗样本满足召回率 / 误报率 / 准确率阈值 |
+| TC-INT-04 | test_adversarial_fixture | 手写对抗样本：边界负例 0 误报；已知缺口集合与下表完全一致 |
 
 ---
 
@@ -196,3 +196,24 @@
 | DLT-13 | TC-API-* |
 | DLT-14 | TC-CLI-01、TC-INT-03 |
 | DLT-15 | CI workflow 绿灯 |
+
+---
+
+## 对抗样本已知缺口（TC-INT-04 锁定）
+
+| ID | 场景 | 规则结果 | 手写判断 | 类型 |
+|----|------|---------|---------|------|
+| A02 | 安全报文 0x100 车速单次越界（300.01） | P2 | P1 | 分流规则缺口 |
+| A07 | 1 s 内 2 次 bus-off 错误帧（class 0x040） | P2（burst 需 3 次） | P1 | 分流规则缺口 |
+| A12 | tester 侧多帧请求 CF 序号跳变 | 未检出 | ISOTP_SEQUENCE_ERROR / P2 | 检测范围缺口（只检查 ECU 响应方向） |
+
+---
+
+## Stage 3 执行结果（2026-11-18，本地 Python 3.13）
+
+| 层级 | 结果 |
+|------|------|
+| 单元 | 154 passed，覆盖率 98.15%（门禁 85%） |
+| 集成 | 4 passed（eval 5 个 seed 全部达标，回归模板 100% 通过） |
+| demo | seed 42：16 Incident（P1 = 7），14 个回归模板全部通过 |
+| CI | [run 44280777398](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/runs/44280777398)：5 个 job 全部 success（Ubuntu，Python 3.11 / 3.12） |

@@ -11,7 +11,32 @@
 
 ## 当前阶段
 
-Stage 2 — Design。设计见 `docs/architecture/architecture.md`、`docs/project-management/implementation-plan.md`、`docs/qa/test-plan.md`；命令与模块表在 Stage 3 落地后补充。
+Stage 3 — Development（待评审）。设计见 `docs/architecture/architecture.md`，偏差见其 §11。
+
+## 命令
+
+```bash
+python3.13 -m venv venv && source venv/bin/activate && make install
+make lint          # black / isort / flake8 / ruff
+make test          # 单元测试 + 覆盖率门禁 85%
+make integration   # eval 阈值 + 对抗样本 + demo 端到端
+make demo          # generate → triage → 运行回归模板，产物在 out/
+make serve         # FastAPI，端口 3030
+```
+
+## 模块
+
+| 模块 | 需求 | 职责 |
+|------|------|------|
+| `generator.py` + `data/scenarios/` | DLT-01 | 手写场景驱动的合成 trace + labels |
+| `can_parser.py` / `can_rules.py` | DLT-02/03 | candump 解析、CAN 规则 |
+| `isotp.py` / `uds.py` / `uds_rules.py` | DLT-04/05 | ISO-TP、模拟 ECU、请求配对、UDS 规则 |
+| `events.py` / `normalize.py` | DLT-06 | 统一事件 schema |
+| `templates.py` / `clustering.py` | DLT-07/08 | Drain + 身份约束 TF-IDF 聚类 |
+| `triage.py` + `data/triage_rules.json` | DLT-09 | P1/P2 与回归候选 |
+| `llm.py` | DLT-10 | 可选 Claude 摘要（默认关闭） |
+| `regression.py` / `metrics.py` / `report.py` | DLT-11/12 | 回归模板、指标、报告 |
+| `pipeline.py` / `api.py` / `cli.py` | DLT-13/14 | 编排、API、CLI |
 
 ## 约定
 

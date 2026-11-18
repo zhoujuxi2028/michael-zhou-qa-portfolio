@@ -1,6 +1,6 @@
 # diagnostics-log-triage-lab 架构文档
 
-**Issue**: #838 · **PREQ**: PREQ-021 · **阶段**: Stage 2 — Design（2026-11-18，已按 Plan Review F01–F26 修订）
+**Issue**: #838 · **PREQ**: PREQ-021 · **阶段**: Stage 3 — Development（2026-11-18；Stage 2 按 Plan Review F01–F26 修订，Stage 3 偏差见 §11）
 
 ---
 
@@ -127,19 +127,19 @@ class TriageResult:
 
 | 字段类别 | 键 | Drain 处理 |
 |---------|----|-----------|
-| 分类（故障身份） | `id`、`sid`、`nrc`、`name`、`signal`、`sub` | 不通配 |
-| 变量（参数） | `did`、`expected`、`actual`、`level`、`value`、`gap_ms`、`count`、`dur_ms` | 掩码为 `<*>` |
+| 分类（故障身份） | `id`、`sid`、`nrc`、`name`、`signal`、`sub`、`class`、`timer` | 不通配 |
+| 变量（参数） | 其余所有 `key=value`（如 `expected`、`actual`、`expected_ms`、`gap_ms`、`value`、`count`、`dur_ms`、`dropout`） | 掩码为 `<*>` |
 
 Drain：按 `(token 数, 首 token)` 分桶，桶内相似度 ≥ 0.6 合并；分类字段不同时相似度直接记 0。
 
 ### 3.3 TF-IDF 层的作用
 
-同一故障可能产出 token 数不同的消息，例如：
+同一故障可能产出 token 数不同的消息，例如长时间丢帧（≥ 10 个周期）时 `CAN_CYCLE_LOSS` 多带一个 `dropout=long` 字段：
 
-- `CAN_COUNTER_JUMP id=0x101 expected=4 actual=6`
-- 在回绕附近多带一个 `gap_ms=` 字段
+- `CAN_CYCLE_LOSS id=0x100 expected_ms=20 gap_ms=95`
+- `CAN_CYCLE_LOSS id=0x100 expected_ms=20 gap_ms=260 dropout=long`
 
-这两种消息落进 Drain 的不同桶，成为两个模板。TF-IDF（token 含 `key=value` 分类字段）+ 层次聚类（cosine，average，阈值 0.3）把它们合并为一簇；分类字段不同的模板余弦距离大，不会被合并。TC-CL-03 用固定样本验证这一合并。
+这两种消息落进 Drain 的不同桶，成为两个模板。TF-IDF + 层次聚类（预计算距离，average，阈值 0.3）把它们合并为一簇。**故障身份**（KIND + 分类字段）不同的模板距离固定为 1.0，不允许合并（AD-08）。TC-CL-03 用固定样本验证，eval seed 1001 / 1003 的真实数据中也出现了这一合并。
 
 ### 3.4 `labels.json`
 
@@ -168,7 +168,7 @@ UDS 故障的 `bus_id` 一律用请求 ID（`0x7E0`）。
 | `CAN_CYCLE_LOSS` | 间隔 > 周期 × 2.5 | P2 | `bus_id` ∈ 安全 ID（0x100、0x200） |
 | `CAN_DLC_MISMATCH` | 数据字节数 ≠ DBC 长度 | P2 | — |
 | `CAN_SIGNAL_OUT_OF_RANGE` | 解码值超出 DBC min/max | P2 | 安全 ID 且 1 s 内 ≥ 3 次 |
-| `CAN_ERROR_FRAME` | `CAN_ERR_FLAG` 置位 | P2 | 1 s 内 ≥ 3 次（burst） |
+| `CAN_ERROR_FRAME` | `CAN_ERR_FLAG` 置位；`bus_id = "ERR"`，signature `class=0x<错误类>` | P2 | 1 s 内 ≥ 3 次（burst） |
 | `CAN_COUNTER_JUMP` | alive counter ≠ 上一帧 + 1 (mod 16) | P2 | — |
 | `UDS_NRC` | 负响应（0x78、0x35、0x36 除外） | P2 | — |
 | `UDS_P2_TIMEOUT` | §4.3 | P1 | — |
@@ -315,7 +315,7 @@ def test_reg_c003_0_detected():
 | profile | seed | 抖动 | 故障密度 | 额外噪声 |
 |---------|------|------|---------|---------|
 | `dev` | 42 | ±10% 周期 | 每类 2–4 次 | 单次 0x78 后正响应 |
-| `eval` | 1001–1005 | ±20% 周期 | 每类 1–6 次 | + DBC 外 ID 帧、截断行、重复行、`3E 80` 无响应 |
+| `eval` | 1001–1005 | ±20% 周期 | 每类 1–6 次；另加 0x100 长时间丢帧、0x200 丢帧 | + DBC 外 ID（0x123）帧、5 条截断副本行（非法）、`3E 80` 无响应 |
 
 规则调参只看 `dev`；`eval` 只在集成测试中运行。
 
@@ -331,6 +331,7 @@ def test_reg_c003_0_detected():
 | AD-04 | 模板层层次聚类（距离阈值），不逐事件聚类、不用 KMeans | PoC-4：逐事件 450 条 1.3 s，模板层约 70 ms；无需预设簇数，结果确定 |
 | AD-05 | 分流规则、UDS 时序外置 JSON | 可评审、可单测 |
 | AD-06 | 场景手写 + dev / eval profile 分离 + 对抗样本 | 缓解 RISK-01（Plan Review F04） |
+| AD-08 | 聚类加硬约束：故障身份不同的模板距离 = 1.0 | Stage 3 实测：纯 TF-IDF 下 0x100 与 0x101 周期丢失距离 0.286（< 0.3 会误合并），与 dropout 变体的 0.173 只差 0.11，阈值过脆；代价是 homogeneity 基本由构造保证，completeness 才有信息量 |
 | AD-07 | 保留服务端 `fallbacks` | Claude API 现行建议对 `claude-opus-5-5` 默认开启；已有本地回退兜底；评审 F19 建议去掉，未采纳 |
 
 ---
@@ -345,3 +346,17 @@ def test_reg_c003_0_detected():
 | 4 聚类 | TF-IDF + Agglomerative | 3 次运行标签一致；阈值 0.3 下 5 个模板分为 5 簇，0.5 时 DLC 不符与计数器跳变合并 |
 | 5 SDK | `anthropic==2.10.0` 离线 | `beta.messages.parse` 接受 `output_format` / `output_config` / `betas` / `fallbacks`；异常类存在；无网络时抛 `APIConnectionError` |
 | 6 依赖解析 | pip dry-run，Linux x86_64 | 3.11 → numpy 2.4.6 / scipy 1.17.1；3.12 → 2.5.5 / 1.18.1；直接依赖均可装 |
+
+---
+
+## 11. Stage 3 实现偏差（2026-11-18）
+
+| # | 偏差 | 原因 |
+|---|------|------|
+| 1 | 新增 AD-08（身份约束聚类） | 见 §9 |
+| 2 | 分类字段新增 `class`、`timer`；error frame 用 `bus_id="ERR"` | error frame 没有业务 ID；`timer=P2` 与 `timer=P2*` 属于不同故障 |
+| 3 | eval 噪声去掉「重复行」，改为「截断副本行」 | 重复一帧周期报文会让 alive counter 不变，`CAN_COUNTER_JUMP` 属于正确检出而非误报 |
+| 4 | 场景文件新增 `attempt_labels` | lockout 场景中前两次 0x35、第三次 0x36 的标签逐条手写，不由生成器推导 |
+| 5 | 故障槽：CAN / ERR 从 1.0 s 起，UDS 从 1.6 s 起，每槽 1 s | 同一总线上的故障互不重叠；UDS 与 CAN 错开，噪声与标签不重叠 |
+| 6 | lint 增加 ruff（行宽 120） | 仓库 pre-commit 钩子对所有 `*.py` 运行 `ruff check` / `ruff format --check` |
+| 7 | 对抗样本阈值放宽，并锁定 3 个已知缺口 | 见 [test-plan](../qa/test-plan.md) TC-INT-04 |
