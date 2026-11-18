@@ -1,0 +1,239 @@
+{
+  "profile": "eval",
+  "duration_s": 60,
+  "jitter": 0.2,
+  "invalid_lines": 5,
+  "truncated_copies": 5,
+  "unknown_id_period_s": 0.2,
+  "uds_noise": [
+    "single_pending",
+    "suppress_no_response"
+  ],
+  "faults": [
+    {
+      "kind": "CAN_CYCLE_LOSS",
+      "bus_id": "0x100",
+      "signature": "",
+      "drop": 4,
+      "count": [
+        1,
+        6
+      ],
+      "expected_priority": "P1",
+      "note": "安全报文丢帧"
+    },
+    {
+      "kind": "CAN_CYCLE_LOSS",
+      "bus_id": "0x100",
+      "signature": "",
+      "drop": 12,
+      "count": [
+        1,
+        2
+      ],
+      "expected_priority": "P1",
+      "note": "安全报文长时间丢帧（多出 dropout 字段）"
+    },
+    {
+      "kind": "CAN_CYCLE_LOSS",
+      "bus_id": "0x101",
+      "signature": "",
+      "drop": 3,
+      "count": [
+        1,
+        6
+      ],
+      "expected_priority": "P2",
+      "note": "车身报文丢帧"
+    },
+    {
+      "kind": "CAN_CYCLE_LOSS",
+      "bus_id": "0x200",
+      "signature": "",
+      "drop": 3,
+      "count": [
+        1,
+        3
+      ],
+      "expected_priority": "P1",
+      "note": "ADAS FD 报文丢帧"
+    },
+    {
+      "kind": "CAN_DLC_MISMATCH",
+      "bus_id": "0x101",
+      "signature": "",
+      "count": [
+        1,
+        6
+      ],
+      "expected_priority": "P2"
+    },
+    {
+      "kind": "CAN_SIGNAL_OUT_OF_RANGE",
+      "bus_id": "0x100",
+      "signature": "signal=VehicleSpeed",
+      "burst": 1,
+      "count": [
+        1,
+        6
+      ],
+      "expected_priority": "P2",
+      "note": "单次越界"
+    },
+    {
+      "kind": "CAN_SIGNAL_OUT_OF_RANGE",
+      "bus_id": "0x200",
+      "signature": "signal=ObjDistance",
+      "burst": 4,
+      "count": [
+        1,
+        6
+      ],
+      "expected_priority": "P1",
+      "note": "ADAS 连续越界"
+    },
+    {
+      "kind": "CAN_ERROR_FRAME",
+      "bus_id": "ERR",
+      "signature": "class=0x004",
+      "burst": 1,
+      "count": [
+        1,
+        6
+      ],
+      "expected_priority": "P2",
+      "note": "偶发控制器告警"
+    },
+    {
+      "kind": "CAN_ERROR_FRAME",
+      "bus_id": "ERR",
+      "signature": "class=0x040",
+      "burst": 4,
+      "count": [
+        1,
+        6
+      ],
+      "expected_priority": "P1",
+      "note": "bus-off 连发"
+    },
+    {
+      "kind": "CAN_COUNTER_JUMP",
+      "bus_id": "0x101",
+      "signature": "",
+      "count": [
+        1,
+        6
+      ],
+      "expected_priority": "P2"
+    },
+    {
+      "kind": "UDS_NRC",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x22 nrc=0x31",
+      "request": "22ABCD",
+      "count": [
+        1,
+        6
+      ],
+      "expected_priority": "P2",
+      "note": "读未知 DID"
+    },
+    {
+      "kind": "UDS_NRC",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x2E nrc=0x22",
+      "request": "2EF19A0102",
+      "count": [
+        1,
+        6
+      ],
+      "expected_priority": "P2",
+      "note": "默认会话写 DID"
+    },
+    {
+      "kind": "UDS_P2_TIMEOUT",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x22 timer=P2",
+      "request": "22F187",
+      "mode": "no_response",
+      "count": [
+        1,
+        6
+      ],
+      "expected_priority": "P1"
+    },
+    {
+      "kind": "UDS_P2_TIMEOUT",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x19 timer=P2*",
+      "request": "1902FF",
+      "mode": "pending_then_silence",
+      "count": [
+        1,
+        6
+      ],
+      "expected_priority": "P1"
+    },
+    {
+      "kind": "UDS_PENDING_LOOP",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x19",
+      "request": "1902FF",
+      "pending": 7,
+      "count": [
+        1,
+        6
+      ],
+      "expected_priority": "P1"
+    },
+    {
+      "kind": "UDS_SECURITY_FAIL",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x27 nrc=0x35",
+      "mode": "wrong_key",
+      "count": [
+        1,
+        6
+      ],
+      "expected_priority": "P2",
+      "note": "单次错 key"
+    },
+    {
+      "kind": "UDS_SECURITY_FAIL",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x27 nrc=0x36",
+      "mode": "lockout",
+      "count": [
+        1,
+        1
+      ],
+      "expected_priority": "P1",
+      "note": "连续错 key 锁定",
+      "attempt_labels": [
+        {
+          "signature": "sid=0x27 nrc=0x35",
+          "expected_priority": "P2"
+        },
+        {
+          "signature": "sid=0x27 nrc=0x35",
+          "expected_priority": "P2"
+        },
+        {
+          "signature": "sid=0x27 nrc=0x36",
+          "expected_priority": "P1"
+        }
+      ]
+    },
+    {
+      "kind": "ISOTP_SEQUENCE_ERROR",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x22",
+      "request": "22F190",
+      "count": [
+        1,
+        6
+      ],
+      "expected_priority": "P2"
+    }
+  ]
+}
