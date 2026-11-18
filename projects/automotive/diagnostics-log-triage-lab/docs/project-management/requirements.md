@@ -2,7 +2,7 @@
 
 **Portfolio 需求 ID**: PREQ-021
 **GitHub Issue**: [#838](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/838)
-**状态**: Stage 1 — Requirements
+**状态**: Stage 1 — Requirements（2026-11-18 评审通过）
 **定位**: 汽车诊断协议与日志分析 simulation lab（合成数据，不代表实车/量产 ECU 经验）
 
 ---
@@ -77,6 +77,16 @@
 | 确定性 triage + 可选 LLM 摘要 | LLM 作为分流主路径 |
 | 通用汽车 I&V 能力映射 | 任何公司名 / 岗位 JD 映射（放私有求职仓库） |
 | Phase 2：DoIP、SOME/IP | FlexRay、Android/AOSP、GB C7 / CN-eCall 法规 |
+
+---
+
+## Scope 评审记录（2026-11-18）
+
+| 偏离 Issue 原文 | 决定 |
+|----------------|------|
+| DoIP / SOME/IP 推迟到 Phase 2 | 接受 |
+| README 不含公司 JD 映射，仅通用汽车 I&V 能力映射 | 接受 |
+| 放在本仓库 `projects/automotive/`，不单独建仓库 | 接受 |
 
 ---
 
