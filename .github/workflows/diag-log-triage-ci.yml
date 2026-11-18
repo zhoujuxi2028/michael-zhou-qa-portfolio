@@ -1,0 +1,110 @@
+name: Diagnostics Log Triage CI
+
+on:
+  push:
+    paths:
+      - "projects/automotive/diagnostics-log-triage-lab/**"
+      - ".github/workflows/diag-log-triage-ci.yml"
+  pull_request:
+    paths:
+      - "projects/automotive/diagnostics-log-triage-lab/**"
+      - ".github/workflows/diag-log-triage-ci.yml"
+
+concurrency:
+  group: diag-log-triage-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  DLT_LLM: "off"
+
+defaults:
+  run:
+    working-directory: projects/automotive/diagnostics-log-triage-lab
+
+jobs:
+  code-quality:
+    name: Diagnostics Log Triage / Code Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: projects/automotive/diagnostics-log-triage-lab/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Lint (black / isort / flake8 / ruff)
+        run: make lint
+
+  unit-tests:
+    name: Diagnostics Log Triage / Unit Tests (${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: projects/automotive/diagnostics-log-triage-lab/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Unit tests (coverage gate 85%)
+        run: make test
+
+  integration:
+    name: Diagnostics Log Triage / Integration (${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: unit-tests
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: projects/automotive/diagnostics-log-triage-lab/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Integration tests (eval thresholds + adversarial fixture)
+        run: make integration
+
+      - name: Demo (generate → triage → regression templates)
+        run: make demo
+
+      - name: Upload demo output
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: diag-log-triage-demo-py${{ matrix.python-version }}
+          path: |
+            projects/automotive/diagnostics-log-triage-lab/out/report.md
+            projects/automotive/diagnostics-log-triage-lab/out/report.json
+            projects/automotive/diagnostics-log-triage-lab/out/regression/
+          if-no-files-found: warn
+          retention-days: 30
