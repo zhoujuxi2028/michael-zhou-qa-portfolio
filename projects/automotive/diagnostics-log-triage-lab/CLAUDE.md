@@ -11,7 +11,7 @@
 
 ## 当前阶段
 
-Stage 1 — Requirements。代码、命令、模块表在 Stage 2 设计后补充。
+Stage 2 — Design。设计见 `docs/architecture/architecture.md`、`docs/project-management/implementation-plan.md`、`docs/qa/test-plan.md`；命令与模块表在 Stage 3 落地后补充。
 
 ## 约定
 
@@ -19,3 +19,6 @@ Stage 1 — Requirements。代码、命令、模块表在 Stage 2 设计后补�
 - 数据只用合成 / 脱敏样例，不入库任何真实日志
 - 默认分流路径必须确定性可复现；Claude 后端可选，测试中一律 mock
 - 文档不写公司名 / 岗位 JD
+- candump 解析、Drain、ISO-TP 均自写（PoC 结论见 architecture §7/§8），不引入 `python-can` / `drain3` / `can-isotp`
+- 只锁直接依赖，不锁 numpy / scipy（RISK-09）
+- 本地 API 端口 3030

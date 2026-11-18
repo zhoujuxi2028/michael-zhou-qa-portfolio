@@ -102,12 +102,12 @@
 
 ---
 
-## 依赖清单（Stage 2 锁版本）
+## 依赖清单（版本见 implementation-plan）
 
 | 依赖 | 用途 |
 |------|------|
-| cantools、python-can | DBC 解码、CAN 帧/candump 格式 |
+| cantools | DBC 解码（`python-can` 在 Stage 2 移除，见 architecture AD-01） |
 | scikit-learn | TF-IDF + 聚类 |
-| fastapi、httpx | API 与 TestClient |
+| fastapi、uvicorn、httpx、pydantic | API、本地服务、TestClient、结构化输出模型 |
 | anthropic | 可选 LLM 后端 |
 | pytest、pytest-cov、black、isort、flake8 | 测试与 lint（与 root 规范一致） |
