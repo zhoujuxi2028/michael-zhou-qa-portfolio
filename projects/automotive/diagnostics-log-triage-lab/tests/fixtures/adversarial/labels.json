@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "source": "hand-written adversarial fixture (not produced by src/generator.py)",
+    "total_lines": 60,
+    "invalid_line_nos": [14, 26]
+  },
+  "faults": [
+    {"fault_id": "A01", "kind": "CAN_CYCLE_LOSS", "bus_id": "0x100", "signature": "", "t_start": 1700000100.128, "t_end": 1700000100.18, "expected_priority": "P1", "note": "间隔 52 ms = 2.6× 周期；前面 48 ms (2.4×) 不算"},
+    {"fault_id": "A02", "kind": "CAN_SIGNAL_OUT_OF_RANGE", "bus_id": "0x100", "signature": "signal=VehicleSpeed", "t_start": 1700000100.22, "t_end": 1700000100.22, "expected_priority": "P1", "note": "安全报文车速无效，即使单次也应 P1（判断与规则表不同）；300.00 边界值不算"},
+    {"fault_id": "A03", "kind": "CAN_COUNTER_JUMP", "bus_id": "0x101", "signature": "", "t_start": 1700000100.9, "t_end": 1700000100.9, "expected_priority": "P2", "note": "1→3；之前 15→0 回绕正常"},
+    {"fault_id": "A04", "kind": "CAN_DLC_MISMATCH", "bus_id": "0x101", "signature": "", "t_start": 1700000101.1, "t_end": 1700000101.1, "expected_priority": "P2", "note": "7 字节；之后计数器 5→6 不应误报"},
+    {"fault_id": "A05", "kind": "CAN_SIGNAL_OUT_OF_RANGE", "bus_id": "0x101", "signature": "signal=DoorState", "t_start": 1700000101.3, "t_end": 1700000101.3, "expected_priority": "P2"},
+    {"fault_id": "A06", "kind": "CAN_ERROR_FRAME", "bus_id": "ERR", "signature": "class=0x004", "t_start": 1700000102.0, "t_end": 1700000102.0, "expected_priority": "P2"},
+    {"fault_id": "A07", "kind": "CAN_ERROR_FRAME", "bus_id": "ERR", "signature": "class=0x040", "t_start": 1700000102.3, "t_end": 1700000102.7, "expected_priority": "P1", "note": "bus-off 1 s 内 2 次即应 P1（规则表要求 3 次）"},
+    {"fault_id": "A08", "kind": "UDS_P2_TIMEOUT", "bus_id": "0x7E0", "signature": "sid=0x22 timer=P2", "t_start": 1700000104.0, "t_end": 1700000104.055, "expected_priority": "P1", "note": "55 ms 才响应；3.5 s 处 48 ms 多帧响应正常；3E 80 无响应正常"},
+    {"fault_id": "A09", "kind": "UDS_PENDING_LOOP", "bus_id": "0x7E0", "signature": "sid=0x19", "t_start": 1700000110.0, "t_end": 1700000112.6, "expected_priority": "P1", "note": "6 次 0x78；5.0 s 处恰好 5 次不算"},
+    {"fault_id": "A10", "kind": "UDS_SECURITY_FAIL", "bus_id": "0x7E0", "signature": "sid=0x27 nrc=0x35", "t_start": 1700000113.0, "t_end": 1700000113.01, "expected_priority": "P2"},
+    {"fault_id": "A11", "kind": "UDS_NRC", "bus_id": "0x7E0", "signature": "sid=0x22 nrc=0x13", "t_start": 1700000113.5, "t_end": 1700000113.51, "expected_priority": "P2"},
+    {"fault_id": "A12", "kind": "ISOTP_SEQUENCE_ERROR", "bus_id": "0x7E0", "signature": "sid=0x2E", "t_start": 1700000114.0, "t_end": 1700000114.002, "expected_priority": "P2", "note": "tester 侧多帧请求 CF 序号跳变（当前设计只检查 ECU 响应方向）"}
+  ]
+}

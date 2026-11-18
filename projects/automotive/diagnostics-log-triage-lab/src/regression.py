@@ -105,7 +105,7 @@ def _module_name(incident: Incident) -> str:
     return f"reg_{incident.incident_id.lower().replace('-', '_')}_{incident.kind.lower()}"
 
 
-def write_tests(result: TriageResult, lines: Sequence[str], out_dir: str | Path) -> list[Path]:
+def write_tests(result: TriageResult, lines: Sequence[str], out_dir: str | Path, prefix: str = "") -> list[Path]:
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     (out / "conftest.py").write_text(CONFTEST.format(root=str(PROJECT_ROOT)), encoding="utf-8")
@@ -116,7 +116,7 @@ def write_tests(result: TriageResult, lines: Sequence[str], out_dir: str | Path)
     for inc in result.incidents:
         if not inc.regression_candidate:
             continue
-        name = _module_name(inc)
+        name = prefix + _module_name(inc)
         body = TEMPLATE.format(
             incident_id=inc.incident_id,
             kind=inc.kind,
