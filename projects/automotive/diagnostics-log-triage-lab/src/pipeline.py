@@ -8,6 +8,7 @@ from collections.abc import Iterable
 from src import can_rules, uds_rules
 from src.can_parser import parse_candump
 from src.clustering import cluster
+from src.llm import get_backend, summarize_incidents
 from src.models import TriageResult
 from src.normalize import to_events
 from src.triage import triage
@@ -22,6 +23,7 @@ def run(trace: str | Iterable[str], *, backend=None) -> TriageResult:
     anomalies += uds_rules.detect(pair_exchanges(parsed.frames), parsed.trace_end)
     clustered = cluster(to_events(anomalies))
     incidents = triage(clustered.events, clustered.clusters)
+    incidents = summarize_incidents(incidents, clustered.events, backend or get_backend())
     return TriageResult(
         parse_stats=parsed.stats,
         events=clustered.events,
