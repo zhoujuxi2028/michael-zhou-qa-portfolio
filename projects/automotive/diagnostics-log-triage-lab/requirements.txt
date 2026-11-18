@@ -1,0 +1,13 @@
+cantools==45.2.0
+scikit-learn==1.9.1
+fastapi==0.163.2
+uvicorn==0.54.0
+httpx==0.28.1
+pydantic==2.14.3
+anthropic==2.10.0
+pytest==9.2.0
+pytest-cov==7.1.0
+black==26.10.1
+isort==9.0.2
+flake8==7.5.0
+ruff==0.17.4

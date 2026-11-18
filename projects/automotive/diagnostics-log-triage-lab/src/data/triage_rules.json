@@ -1,0 +1,22 @@
+{
+  "safety_ids": ["0x100", "0x200"],
+  "base_priority": {
+    "CAN_CYCLE_LOSS": "P2",
+    "CAN_DLC_MISMATCH": "P2",
+    "CAN_SIGNAL_OUT_OF_RANGE": "P2",
+    "CAN_ERROR_FRAME": "P2",
+    "CAN_COUNTER_JUMP": "P2",
+    "UDS_NRC": "P2",
+    "UDS_P2_TIMEOUT": "P1",
+    "UDS_PENDING_LOOP": "P1",
+    "UDS_SECURITY_FAIL": "P2",
+    "ISOTP_SEQUENCE_ERROR": "P2"
+  },
+  "escalate": [
+    {"kind": "CAN_CYCLE_LOSS", "when": "safety_id"},
+    {"kind": "CAN_SIGNAL_OUT_OF_RANGE", "when": "safety_id_burst", "count": 3, "window_s": 1.0},
+    {"kind": "CAN_ERROR_FRAME", "when": "burst", "count": 3, "window_s": 1.0},
+    {"kind": "UDS_SECURITY_FAIL", "when": "signature_contains", "value": "nrc=0x36"}
+  ],
+  "regression_candidate": {"min_count": 2, "always_if_priority": "P1"}
+}
