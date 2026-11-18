@@ -50,7 +50,7 @@ def _markdown(result: TriageResult, m: Metrics | None, regression_files: Sequenc
     out += ["## Incident 分流", "", "| ID | 优先级 | kind | bus | signature | 次数 | 回归候选 | 摘要 |"]
     out += ["|----|--------|------|-----|-----------|------|----------|------|"]
     for i in result.incidents:
-        summary = (i.summary or "").replace("|", "/")
+        summary = (i.summary or "—").replace("|", "/")
         if i.summary_note:
             summary += f"（{i.summary_note}）"
         out.append(

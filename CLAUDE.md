@@ -100,6 +100,7 @@ python3 -m venv venv && source venv/bin/activate
 | 3003-3005 | microservice-testing-platform | Order / Inventory / Payment |
 | 3010 | performance-testing-platform | Grafana |
 | 3020 | k8s-auto-testing-platform | Grafana (K8S) |
+| 3030 | diagnostics-log-triage-lab | Triage API（`make serve`） |
 | 6379 | microservice-testing-platform | Redis |
 | 8080 | k8s-auto-testing-platform | Test App |
 | 8086 | performance-testing-platform | InfluxDB |
