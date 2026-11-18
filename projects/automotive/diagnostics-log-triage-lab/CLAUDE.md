@@ -11,7 +11,7 @@
 
 ## 当前阶段
 
-Stage 3 — Development（待评审）。设计见 `docs/architecture/architecture.md`，偏差见其 §11。
+Stage 4 — Testing。已知局限 A02/A07/A12 见 README。设计见 `docs/architecture/architecture.md`，偏差见其 §11。
 
 ## 命令
 

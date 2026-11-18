@@ -2,7 +2,7 @@
 
 汽车诊断协议与日志分析实验室：合成 CAN/CAN FD + UDS 日志 → 协议级异常识别 → 聚类去重 → P1/P2 分流 → 缺陷转 pytest 回归模板。
 
-> **状态**：Stage 3 — Development（[#838](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/838)）
+> **状态**：Stage 4 — Testing（[#838](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/838)）
 > **声明**：simulation lab，全部使用合成数据，不代表实车、台架或量产 ECU 经验。
 
 ## 范围
@@ -27,6 +27,18 @@ make demo    # 生成 seed 42 数据 → 分流 → 报告 out/report.md → 运
 |------|------|-------------|
 | 异常识别、聚类、P1/P2 分流 | 确定性：规则 + Drain 模板挖掘 + TF-IDF | ✅ |
 | 摘要、根因假设 | 可选 Claude 后端（需 `ANTHROPIC_API_KEY`） | ❌ |
+
+## 已知局限
+
+手写对抗样本（`tests/fixtures/adversarial/`）独立于规则编写，暴露 3 个缺口；为保持其评估独立性未调规则，由 TC-INT-04 精确锁定（召回 91.7%、分流准确率 81.8%、误报 0）。
+
+| ID | 场景 | 当前行为 | 期望 |
+|----|------|---------|------|
+| A02 | 安全报文 0x100 车速单次越界 | P2（升级需 1 s 内 3 次） | P1 |
+| A07 | 1 s 内 2 次 bus-off 错误帧 | P2（burst 需 3 次） | P1 |
+| A12 | tester 侧多帧请求 CF 序号跳变 | 未检出（仅检查 ECU 响应方向） | `ISOTP_SEQUENCE_ERROR` / P2 |
+
+另：生成数据上指标为 100%，因场景与规则出自同一理解，不代表泛化能力；以对抗样本结果为准。详见 [测试计划](docs/qa/test-plan.md#对抗样本已知缺口tc-int-04-锁定)。
 
 ## 能力映射（汽车集成与验证）
 
