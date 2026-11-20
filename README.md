@@ -48,6 +48,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 | [k8s-auto-testing-platform](./infra/k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests) | Python, Pytest, Chaos Mesh |
 | [sql-testing-demo](./projects/database/sql-testing-demo/) | SQL & PL/pgSQL Testing — FastWare WMS scenario (32 tests: CRUD + queries + constraints + procedures + transactions) | PostgreSQL, psycopg3, testcontainers, pytest |
 | [ivi-integration-lab](./projects/automotive/ivi-integration-lab/) | IVI 车载集成验证实验室 — CAN bus 3节点仿真 + ECU 刷写 + 质量门禁 (65 tests: unit + smoke + integration + regression) | Python, pytest, python-can, cantools |
+| [diagnostics-log-triage-lab](./projects/automotive/diagnostics-log-triage-lab/) | 汽车诊断与 AI 日志分流实验室 — CAN/CAN FD + UDS 合成日志 → 异常识别 → 聚类 → P1/P2 分流 → pytest 回归模板 (158 tests: 154 unit + 4 integration) | Python, pytest, scikit-learn, FastAPI |
 
 ### 平台测试 (Platform Testing)
 
@@ -133,7 +134,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 | `repo-meta-ci.yml` | repository root | Push/PR, manual | docs/workflow/JSON/shell/Markdown links 轻量校验 + actionlint workflow 语义检查 + workflow 文档同步检查 |
 | `sql-testing-demo-ci.yml` | sql-testing-demo | Push/PR | SQL Testing Demo CI: code quality (ruff) → unit tests (CRUD/queries/constraints/procedures) → integration tests (transactions/performance/reports) |
 | `ivi-integration-ci.yml` | ivi-integration-lab | Push/PR | IVI Integration Lab CI: lint → unit tests → smoke → integration → regression (65 tests, Python 3.11/3.12 matrix) |
-| `diag-log-triage-ci.yml` | diagnostics-log-triage-lab | Push/PR | Diagnostics Log Triage CI: code quality → unit tests → integration → demo (158 tests, Python 3.11/3.12 matrix) |
+| `diag-log-triage-ci.yml` | diagnostics-log-triage-lab | Push/PR | Diagnostics Log Triage CI: code quality ∥ unit tests → integration → demo (158 tests, Python 3.11/3.12 matrix) |
 | `api-testing-ci.yml` | api-testing-demo | Push/PR | Validate Postman collections → Newman tests (280+ assertions) |
 | `microservice-ci.yml` | microservice-testing-platform | Push/PR, manual | Microservice Testing CI: code quality + unit/contract/integration/e2e/observability tests (135 tests) |
 | `codeql-analysis.yml` | repository (JS+Python) | Push/PR, weekly | CodeQL 代码语义漏洞扫描 (XSS, SQLi, path traversal) |

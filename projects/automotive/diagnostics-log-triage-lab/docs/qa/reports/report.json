@@ -1,0 +1,1034 @@
+{
+  "parse_stats": {
+    "total": 4952,
+    "ok": 4950,
+    "invalid": 2,
+    "invalid_line_nos": [
+      1835,
+      4721
+    ]
+  },
+  "events": [
+    {
+      "event_id": "E00001",
+      "ts": 1700000001.006444,
+      "source": "CAN",
+      "kind": "CAN_DLC_MISMATCH",
+      "bus_id": "0x101",
+      "signature": "",
+      "template_id": 0,
+      "cluster_id": 0
+    },
+    {
+      "event_id": "E00002",
+      "ts": 1700000010.0,
+      "source": "CAN",
+      "kind": "CAN_ERROR_FRAME",
+      "bus_id": "ERR",
+      "signature": "class=0x004",
+      "template_id": 1,
+      "cluster_id": 1
+    },
+    {
+      "event_id": "E00003",
+      "ts": 1700000010.8,
+      "source": "UDS",
+      "kind": "UDS_SECURITY_FAIL",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x27 nrc=0x35",
+      "template_id": 2,
+      "cluster_id": 2
+    },
+    {
+      "event_id": "E00004",
+      "ts": 1700000011.6,
+      "source": "UDS",
+      "kind": "UDS_PENDING_LOOP",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x19",
+      "template_id": 3,
+      "cluster_id": 3
+    },
+    {
+      "event_id": "E00005",
+      "ts": 1700000012.005174,
+      "source": "CAN",
+      "kind": "CAN_SIGNAL_OUT_OF_RANGE",
+      "bus_id": "0x100",
+      "signature": "signal=VehicleSpeed",
+      "template_id": 4,
+      "cluster_id": 4
+    },
+    {
+      "event_id": "E00006",
+      "ts": 1700000012.6,
+      "source": "UDS",
+      "kind": "UDS_NRC",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x22 nrc=0x31",
+      "template_id": 5,
+      "cluster_id": 5
+    },
+    {
+      "event_id": "E00007",
+      "ts": 1700000017.001586,
+      "source": "CAN",
+      "kind": "CAN_COUNTER_JUMP",
+      "bus_id": "0x101",
+      "signature": "",
+      "template_id": 6,
+      "cluster_id": 6
+    },
+    {
+      "event_id": "E00008",
+      "ts": 1700000017.004961,
+      "source": "CAN",
+      "kind": "CAN_SIGNAL_OUT_OF_RANGE",
+      "bus_id": "0x100",
+      "signature": "signal=VehicleSpeed",
+      "template_id": 4,
+      "cluster_id": 4
+    },
+    {
+      "event_id": "E00009",
+      "ts": 1700000017.6,
+      "source": "UDS",
+      "kind": "UDS_P2_TIMEOUT",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x22 timer=P2",
+      "template_id": 7,
+      "cluster_id": 7
+    },
+    {
+      "event_id": "E00010",
+      "ts": 1700000020.008814,
+      "source": "CAN",
+      "kind": "CAN_COUNTER_JUMP",
+      "bus_id": "0x101",
+      "signature": "",
+      "template_id": 6,
+      "cluster_id": 6
+    },
+    {
+      "event_id": "E00011",
+      "ts": 1700000020.6,
+      "source": "UDS",
+      "kind": "UDS_P2_TIMEOUT",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x22 timer=P2",
+      "template_id": 7,
+      "cluster_id": 7
+    },
+    {
+      "event_id": "E00012",
+      "ts": 1700000024.085459,
+      "source": "CAN",
+      "kind": "CAN_CYCLE_LOSS",
+      "bus_id": "0x100",
+      "signature": "",
+      "template_id": 8,
+      "cluster_id": 8
+    },
+    {
+      "event_id": "E00013",
+      "ts": 1700000025.6,
+      "source": "UDS",
+      "kind": "UDS_P2_TIMEOUT",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x19 timer=P2*",
+      "template_id": 9,
+      "cluster_id": 9
+    },
+    {
+      "event_id": "E00014",
+      "ts": 1700000032.408737,
+      "source": "CAN",
+      "kind": "CAN_CYCLE_LOSS",
+      "bus_id": "0x101",
+      "signature": "",
+      "template_id": 10,
+      "cluster_id": 10
+    },
+    {
+      "event_id": "E00015",
+      "ts": 1700000033.6,
+      "source": "UDS",
+      "kind": "ISOTP_SEQUENCE_ERROR",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x22",
+      "template_id": 11,
+      "cluster_id": 11
+    },
+    {
+      "event_id": "E00016",
+      "ts": 1700000034.302894,
+      "source": "CAN",
+      "kind": "CAN_CYCLE_LOSS",
+      "bus_id": "0x101",
+      "signature": "",
+      "template_id": 10,
+      "cluster_id": 10
+    },
+    {
+      "event_id": "E00017",
+      "ts": 1700000036.6,
+      "source": "UDS",
+      "kind": "UDS_NRC",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x2E nrc=0x22",
+      "template_id": 12,
+      "cluster_id": 12
+    },
+    {
+      "event_id": "E00018",
+      "ts": 1700000041.0,
+      "source": "CAN",
+      "kind": "CAN_ERROR_FRAME",
+      "bus_id": "ERR",
+      "signature": "class=0x040",
+      "template_id": 13,
+      "cluster_id": 13
+    },
+    {
+      "event_id": "E00019",
+      "ts": 1700000041.1,
+      "source": "CAN",
+      "kind": "CAN_ERROR_FRAME",
+      "bus_id": "ERR",
+      "signature": "class=0x040",
+      "template_id": 13,
+      "cluster_id": 13
+    },
+    {
+      "event_id": "E00020",
+      "ts": 1700000041.2,
+      "source": "CAN",
+      "kind": "CAN_ERROR_FRAME",
+      "bus_id": "ERR",
+      "signature": "class=0x040",
+      "template_id": 13,
+      "cluster_id": 13
+    },
+    {
+      "event_id": "E00021",
+      "ts": 1700000041.3,
+      "source": "CAN",
+      "kind": "CAN_ERROR_FRAME",
+      "bus_id": "ERR",
+      "signature": "class=0x040",
+      "template_id": 13,
+      "cluster_id": 13
+    },
+    {
+      "event_id": "E00022",
+      "ts": 1700000041.8,
+      "source": "UDS",
+      "kind": "UDS_SECURITY_FAIL",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x27 nrc=0x35",
+      "template_id": 2,
+      "cluster_id": 2
+    },
+    {
+      "event_id": "E00023",
+      "ts": 1700000042.006037,
+      "source": "CAN",
+      "kind": "CAN_SIGNAL_OUT_OF_RANGE",
+      "bus_id": "0x200",
+      "signature": "signal=ObjDistance",
+      "template_id": 14,
+      "cluster_id": 14
+    },
+    {
+      "event_id": "E00024",
+      "ts": 1700000042.105875,
+      "source": "CAN",
+      "kind": "CAN_SIGNAL_OUT_OF_RANGE",
+      "bus_id": "0x200",
+      "signature": "signal=ObjDistance",
+      "template_id": 14,
+      "cluster_id": 14
+    },
+    {
+      "event_id": "E00025",
+      "ts": 1700000042.206848,
+      "source": "CAN",
+      "kind": "CAN_SIGNAL_OUT_OF_RANGE",
+      "bus_id": "0x200",
+      "signature": "signal=ObjDistance",
+      "template_id": 14,
+      "cluster_id": 14
+    },
+    {
+      "event_id": "E00026",
+      "ts": 1700000042.300074,
+      "source": "CAN",
+      "kind": "CAN_SIGNAL_OUT_OF_RANGE",
+      "bus_id": "0x200",
+      "signature": "signal=ObjDistance",
+      "template_id": 14,
+      "cluster_id": 14
+    },
+    {
+      "event_id": "E00027",
+      "ts": 1700000042.6,
+      "source": "UDS",
+      "kind": "UDS_NRC",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x22 nrc=0x31",
+      "template_id": 5,
+      "cluster_id": 5
+    },
+    {
+      "event_id": "E00028",
+      "ts": 1700000044.0,
+      "source": "CAN",
+      "kind": "CAN_ERROR_FRAME",
+      "bus_id": "ERR",
+      "signature": "class=0x004",
+      "template_id": 1,
+      "cluster_id": 1
+    },
+    {
+      "event_id": "E00029",
+      "ts": 1700000044.014038,
+      "source": "CAN",
+      "kind": "CAN_COUNTER_JUMP",
+      "bus_id": "0x101",
+      "signature": "",
+      "template_id": 6,
+      "cluster_id": 6
+    },
+    {
+      "event_id": "E00030",
+      "ts": 1700000045.084394,
+      "source": "CAN",
+      "kind": "CAN_CYCLE_LOSS",
+      "bus_id": "0x100",
+      "signature": "",
+      "template_id": 8,
+      "cluster_id": 8
+    },
+    {
+      "event_id": "E00031",
+      "ts": 1700000045.8,
+      "source": "UDS",
+      "kind": "UDS_SECURITY_FAIL",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x27 nrc=0x35",
+      "template_id": 2,
+      "cluster_id": 2
+    },
+    {
+      "event_id": "E00032",
+      "ts": 1700000046.0,
+      "source": "CAN",
+      "kind": "CAN_ERROR_FRAME",
+      "bus_id": "ERR",
+      "signature": "class=0x004",
+      "template_id": 1,
+      "cluster_id": 1
+    },
+    {
+      "event_id": "E00033",
+      "ts": 1700000049.0,
+      "source": "CAN",
+      "kind": "CAN_ERROR_FRAME",
+      "bus_id": "ERR",
+      "signature": "class=0x040",
+      "template_id": 13,
+      "cluster_id": 13
+    },
+    {
+      "event_id": "E00034",
+      "ts": 1700000049.005462,
+      "source": "CAN",
+      "kind": "CAN_COUNTER_JUMP",
+      "bus_id": "0x101",
+      "signature": "",
+      "template_id": 6,
+      "cluster_id": 6
+    },
+    {
+      "event_id": "E00035",
+      "ts": 1700000049.1,
+      "source": "CAN",
+      "kind": "CAN_ERROR_FRAME",
+      "bus_id": "ERR",
+      "signature": "class=0x040",
+      "template_id": 13,
+      "cluster_id": 13
+    },
+    {
+      "event_id": "E00036",
+      "ts": 1700000049.2,
+      "source": "CAN",
+      "kind": "CAN_ERROR_FRAME",
+      "bus_id": "ERR",
+      "signature": "class=0x040",
+      "template_id": 13,
+      "cluster_id": 13
+    },
+    {
+      "event_id": "E00037",
+      "ts": 1700000049.3,
+      "source": "CAN",
+      "kind": "CAN_ERROR_FRAME",
+      "bus_id": "ERR",
+      "signature": "class=0x040",
+      "template_id": 13,
+      "cluster_id": 13
+    },
+    {
+      "event_id": "E00038",
+      "ts": 1700000050.000068,
+      "source": "CAN",
+      "kind": "CAN_DLC_MISMATCH",
+      "bus_id": "0x101",
+      "signature": "",
+      "template_id": 0,
+      "cluster_id": 0
+    },
+    {
+      "event_id": "E00039",
+      "ts": 1700000050.8,
+      "source": "UDS",
+      "kind": "UDS_SECURITY_FAIL",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x27 nrc=0x35",
+      "template_id": 2,
+      "cluster_id": 2
+    },
+    {
+      "event_id": "E00040",
+      "ts": 1700000051.0,
+      "source": "UDS",
+      "kind": "UDS_SECURITY_FAIL",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x27 nrc=0x35",
+      "template_id": 2,
+      "cluster_id": 2
+    },
+    {
+      "event_id": "E00041",
+      "ts": 1700000051.2,
+      "source": "UDS",
+      "kind": "UDS_SECURITY_FAIL",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x27 nrc=0x36",
+      "template_id": 15,
+      "cluster_id": 15
+    },
+    {
+      "event_id": "E00042",
+      "ts": 1700000053.083244,
+      "source": "CAN",
+      "kind": "CAN_CYCLE_LOSS",
+      "bus_id": "0x100",
+      "signature": "",
+      "template_id": 8,
+      "cluster_id": 8
+    },
+    {
+      "event_id": "E00043",
+      "ts": 1700000057.107608,
+      "source": "CAN",
+      "kind": "CAN_DLC_MISMATCH",
+      "bus_id": "0x101",
+      "signature": "",
+      "template_id": 0,
+      "cluster_id": 0
+    }
+  ],
+  "clusters": [
+    {
+      "cluster_id": 0,
+      "template_ids": [
+        0
+      ],
+      "event_ids": [
+        "E00001",
+        "E00038",
+        "E00043"
+      ]
+    },
+    {
+      "cluster_id": 1,
+      "template_ids": [
+        1
+      ],
+      "event_ids": [
+        "E00002",
+        "E00028",
+        "E00032"
+      ]
+    },
+    {
+      "cluster_id": 2,
+      "template_ids": [
+        2
+      ],
+      "event_ids": [
+        "E00003",
+        "E00022",
+        "E00031",
+        "E00039",
+        "E00040"
+      ]
+    },
+    {
+      "cluster_id": 3,
+      "template_ids": [
+        3
+      ],
+      "event_ids": [
+        "E00004"
+      ]
+    },
+    {
+      "cluster_id": 4,
+      "template_ids": [
+        4
+      ],
+      "event_ids": [
+        "E00005",
+        "E00008"
+      ]
+    },
+    {
+      "cluster_id": 5,
+      "template_ids": [
+        5
+      ],
+      "event_ids": [
+        "E00006",
+        "E00027"
+      ]
+    },
+    {
+      "cluster_id": 6,
+      "template_ids": [
+        6
+      ],
+      "event_ids": [
+        "E00007",
+        "E00010",
+        "E00029",
+        "E00034"
+      ]
+    },
+    {
+      "cluster_id": 7,
+      "template_ids": [
+        7
+      ],
+      "event_ids": [
+        "E00009",
+        "E00011"
+      ]
+    },
+    {
+      "cluster_id": 8,
+      "template_ids": [
+        8
+      ],
+      "event_ids": [
+        "E00012",
+        "E00030",
+        "E00042"
+      ]
+    },
+    {
+      "cluster_id": 9,
+      "template_ids": [
+        9
+      ],
+      "event_ids": [
+        "E00013"
+      ]
+    },
+    {
+      "cluster_id": 10,
+      "template_ids": [
+        10
+      ],
+      "event_ids": [
+        "E00014",
+        "E00016"
+      ]
+    },
+    {
+      "cluster_id": 11,
+      "template_ids": [
+        11
+      ],
+      "event_ids": [
+        "E00015"
+      ]
+    },
+    {
+      "cluster_id": 12,
+      "template_ids": [
+        12
+      ],
+      "event_ids": [
+        "E00017"
+      ]
+    },
+    {
+      "cluster_id": 13,
+      "template_ids": [
+        13
+      ],
+      "event_ids": [
+        "E00018",
+        "E00019",
+        "E00020",
+        "E00021",
+        "E00033",
+        "E00035",
+        "E00036",
+        "E00037"
+      ]
+    },
+    {
+      "cluster_id": 14,
+      "template_ids": [
+        14
+      ],
+      "event_ids": [
+        "E00023",
+        "E00024",
+        "E00025",
+        "E00026"
+      ]
+    },
+    {
+      "cluster_id": 15,
+      "template_ids": [
+        15
+      ],
+      "event_ids": [
+        "E00041"
+      ]
+    }
+  ],
+  "incidents": [
+    {
+      "incident_id": "C003-0",
+      "cluster_id": 3,
+      "kind": "UDS_PENDING_LOOP",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x19",
+      "priority": "P1",
+      "count": 1,
+      "first_ts": 1700000011.6,
+      "last_ts": 1700000011.6,
+      "regression_candidate": true,
+      "evidence": [
+        "E00004"
+      ],
+      "summary": "UDS_PENDING_LOOP @ 0x7E0 sid=0x19：1 次，1700000011.600–1700000011.600，P1",
+      "hypotheses": [
+        {
+          "text": "ECU 长时间 responsePending，后台任务未完成",
+          "evidence_event_ids": [
+            "E00004"
+          ]
+        }
+      ],
+      "summary_note": null
+    },
+    {
+      "incident_id": "C007-0",
+      "cluster_id": 7,
+      "kind": "UDS_P2_TIMEOUT",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x22 timer=P2",
+      "priority": "P1",
+      "count": 2,
+      "first_ts": 1700000017.6,
+      "last_ts": 1700000020.6,
+      "regression_candidate": true,
+      "evidence": [
+        "E00009",
+        "E00011"
+      ],
+      "summary": "UDS_P2_TIMEOUT @ 0x7E0 sid=0x22 timer=P2：2 次，1700000017.600–1700000020.600，P1",
+      "hypotheses": [
+        {
+          "text": "ECU 未在 P2/P2* 时限内响应，可能处理阻塞或网关丢包",
+          "evidence_event_ids": [
+            "E00009",
+            "E00011"
+          ]
+        }
+      ],
+      "summary_note": null
+    },
+    {
+      "incident_id": "C008-0",
+      "cluster_id": 8,
+      "kind": "CAN_CYCLE_LOSS",
+      "bus_id": "0x100",
+      "signature": "",
+      "priority": "P1",
+      "count": 3,
+      "first_ts": 1700000024.085459,
+      "last_ts": 1700000053.083244,
+      "regression_candidate": true,
+      "evidence": [
+        "E00012",
+        "E00030",
+        "E00042"
+      ],
+      "summary": "CAN_CYCLE_LOSS @ 0x100：3 次，1700000024.085–1700000053.083，P1",
+      "hypotheses": [
+        {
+          "text": "发送节点负载过高或总线拥塞导致周期报文丢失",
+          "evidence_event_ids": [
+            "E00012",
+            "E00030",
+            "E00042"
+          ]
+        }
+      ],
+      "summary_note": null
+    },
+    {
+      "incident_id": "C009-0",
+      "cluster_id": 9,
+      "kind": "UDS_P2_TIMEOUT",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x19 timer=P2*",
+      "priority": "P1",
+      "count": 1,
+      "first_ts": 1700000025.6,
+      "last_ts": 1700000025.6,
+      "regression_candidate": true,
+      "evidence": [
+        "E00013"
+      ],
+      "summary": "UDS_P2_TIMEOUT @ 0x7E0 sid=0x19 timer=P2*：1 次，1700000025.600–1700000025.600，P1",
+      "hypotheses": [
+        {
+          "text": "ECU 未在 P2/P2* 时限内响应，可能处理阻塞或网关丢包",
+          "evidence_event_ids": [
+            "E00013"
+          ]
+        }
+      ],
+      "summary_note": null
+    },
+    {
+      "incident_id": "C013-0",
+      "cluster_id": 13,
+      "kind": "CAN_ERROR_FRAME",
+      "bus_id": "ERR",
+      "signature": "class=0x040",
+      "priority": "P1",
+      "count": 8,
+      "first_ts": 1700000041.0,
+      "last_ts": 1700000049.3,
+      "regression_candidate": true,
+      "evidence": [
+        "E00018",
+        "E00019",
+        "E00020",
+        "E00021",
+        "E00033",
+        "E00035",
+        "E00036",
+        "E00037"
+      ],
+      "summary": "CAN_ERROR_FRAME @ ERR class=0x040：8 次，1700000041.000–1700000049.300，P1",
+      "hypotheses": [
+        {
+          "text": "物理层干扰、终端电阻或节点 bus-off",
+          "evidence_event_ids": [
+            "E00018",
+            "E00019",
+            "E00020"
+          ]
+        }
+      ],
+      "summary_note": null
+    },
+    {
+      "incident_id": "C014-0",
+      "cluster_id": 14,
+      "kind": "CAN_SIGNAL_OUT_OF_RANGE",
+      "bus_id": "0x200",
+      "signature": "signal=ObjDistance",
+      "priority": "P1",
+      "count": 4,
+      "first_ts": 1700000042.006037,
+      "last_ts": 1700000042.300074,
+      "regression_candidate": true,
+      "evidence": [
+        "E00023",
+        "E00024",
+        "E00025",
+        "E00026"
+      ],
+      "summary": "CAN_SIGNAL_OUT_OF_RANGE @ 0x200 signal=ObjDistance：4 次，1700000042.006–1700000042.300，P1",
+      "hypotheses": [
+        {
+          "text": "传感器或信号缩放配置异常",
+          "evidence_event_ids": [
+            "E00023",
+            "E00024",
+            "E00025"
+          ]
+        }
+      ],
+      "summary_note": null
+    },
+    {
+      "incident_id": "C015-0",
+      "cluster_id": 15,
+      "kind": "UDS_SECURITY_FAIL",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x27 nrc=0x36",
+      "priority": "P1",
+      "count": 1,
+      "first_ts": 1700000051.2,
+      "last_ts": 1700000051.2,
+      "regression_candidate": true,
+      "evidence": [
+        "E00041"
+      ],
+      "summary": "UDS_SECURITY_FAIL @ 0x7E0 sid=0x27 nrc=0x36：1 次，1700000051.200–1700000051.200，P1",
+      "hypotheses": [
+        {
+          "text": "安全访问 key 算法或密钥配置不匹配",
+          "evidence_event_ids": [
+            "E00041"
+          ]
+        }
+      ],
+      "summary_note": null
+    },
+    {
+      "incident_id": "C000-0",
+      "cluster_id": 0,
+      "kind": "CAN_DLC_MISMATCH",
+      "bus_id": "0x101",
+      "signature": "",
+      "priority": "P2",
+      "count": 3,
+      "first_ts": 1700000001.006444,
+      "last_ts": 1700000057.107608,
+      "regression_candidate": true,
+      "evidence": [
+        "E00001",
+        "E00038",
+        "E00043"
+      ],
+      "summary": "CAN_DLC_MISMATCH @ 0x101：3 次，1700000001.006–1700000057.108，P2",
+      "hypotheses": [
+        {
+          "text": "发送端软件版本与 DBC 定义不一致",
+          "evidence_event_ids": [
+            "E00001",
+            "E00038",
+            "E00043"
+          ]
+        }
+      ],
+      "summary_note": null
+    },
+    {
+      "incident_id": "C001-0",
+      "cluster_id": 1,
+      "kind": "CAN_ERROR_FRAME",
+      "bus_id": "ERR",
+      "signature": "class=0x004",
+      "priority": "P2",
+      "count": 3,
+      "first_ts": 1700000010.0,
+      "last_ts": 1700000046.0,
+      "regression_candidate": true,
+      "evidence": [
+        "E00002",
+        "E00028",
+        "E00032"
+      ],
+      "summary": "CAN_ERROR_FRAME @ ERR class=0x004：3 次，1700000010.000–1700000046.000，P2",
+      "hypotheses": [
+        {
+          "text": "物理层干扰、终端电阻或节点 bus-off",
+          "evidence_event_ids": [
+            "E00002",
+            "E00028",
+            "E00032"
+          ]
+        }
+      ],
+      "summary_note": null
+    },
+    {
+      "incident_id": "C002-0",
+      "cluster_id": 2,
+      "kind": "UDS_SECURITY_FAIL",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x27 nrc=0x35",
+      "priority": "P2",
+      "count": 5,
+      "first_ts": 1700000010.8,
+      "last_ts": 1700000051.0,
+      "regression_candidate": true,
+      "evidence": [
+        "E00003",
+        "E00022",
+        "E00031",
+        "E00039",
+        "E00040"
+      ],
+      "summary": "UDS_SECURITY_FAIL @ 0x7E0 sid=0x27 nrc=0x35：5 次，1700000010.800–1700000051.000，P2",
+      "hypotheses": [
+        {
+          "text": "安全访问 key 算法或密钥配置不匹配",
+          "evidence_event_ids": [
+            "E00003",
+            "E00022",
+            "E00031"
+          ]
+        }
+      ],
+      "summary_note": null
+    },
+    {
+      "incident_id": "C004-0",
+      "cluster_id": 4,
+      "kind": "CAN_SIGNAL_OUT_OF_RANGE",
+      "bus_id": "0x100",
+      "signature": "signal=VehicleSpeed",
+      "priority": "P2",
+      "count": 2,
+      "first_ts": 1700000012.005174,
+      "last_ts": 1700000017.004961,
+      "regression_candidate": true,
+      "evidence": [
+        "E00005",
+        "E00008"
+      ],
+      "summary": null,
+      "hypotheses": [],
+      "summary_note": null
+    },
+    {
+      "incident_id": "C005-0",
+      "cluster_id": 5,
+      "kind": "UDS_NRC",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x22 nrc=0x31",
+      "priority": "P2",
+      "count": 2,
+      "first_ts": 1700000012.6,
+      "last_ts": 1700000042.6,
+      "regression_candidate": true,
+      "evidence": [
+        "E00006",
+        "E00027"
+      ],
+      "summary": null,
+      "hypotheses": [],
+      "summary_note": null
+    },
+    {
+      "incident_id": "C006-0",
+      "cluster_id": 6,
+      "kind": "CAN_COUNTER_JUMP",
+      "bus_id": "0x101",
+      "signature": "",
+      "priority": "P2",
+      "count": 4,
+      "first_ts": 1700000017.001586,
+      "last_ts": 1700000049.005462,
+      "regression_candidate": true,
+      "evidence": [
+        "E00007",
+        "E00010",
+        "E00029",
+        "E00034"
+      ],
+      "summary": null,
+      "hypotheses": [],
+      "summary_note": null
+    },
+    {
+      "incident_id": "C010-0",
+      "cluster_id": 10,
+      "kind": "CAN_CYCLE_LOSS",
+      "bus_id": "0x101",
+      "signature": "",
+      "priority": "P2",
+      "count": 2,
+      "first_ts": 1700000032.408737,
+      "last_ts": 1700000034.302894,
+      "regression_candidate": true,
+      "evidence": [
+        "E00014",
+        "E00016"
+      ],
+      "summary": null,
+      "hypotheses": [],
+      "summary_note": null
+    },
+    {
+      "incident_id": "C011-0",
+      "cluster_id": 11,
+      "kind": "ISOTP_SEQUENCE_ERROR",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x22",
+      "priority": "P2",
+      "count": 1,
+      "first_ts": 1700000033.6,
+      "last_ts": 1700000033.6,
+      "regression_candidate": false,
+      "evidence": [
+        "E00015"
+      ],
+      "summary": null,
+      "hypotheses": [],
+      "summary_note": null
+    },
+    {
+      "incident_id": "C012-0",
+      "cluster_id": 12,
+      "kind": "UDS_NRC",
+      "bus_id": "0x7E0",
+      "signature": "sid=0x2E nrc=0x22",
+      "priority": "P2",
+      "count": 1,
+      "first_ts": 1700000036.6,
+      "last_ts": 1700000036.6,
+      "regression_candidate": false,
+      "evidence": [
+        "E00017"
+      ],
+      "summary": null,
+      "hypotheses": [],
+      "summary_note": null
+    }
+  ],
+  "elapsed_s": 0.12047056799929123,
+  "trace_end": 1700000059.986646,
+  "metrics": {
+    "faults": 34,
+    "incidents": 16,
+    "recall": 1.0,
+    "false_positive_rate": 0.0,
+    "triage_accuracy": 1.0,
+    "homogeneity": 1.0000000000000002,
+    "completeness": 1.0000000000000002,
+    "v_measure": 1.0000000000000002,
+    "purity": 1.0,
+    "parse_success_rate": 1.0,
+    "invalid_lines_exact": true,
+    "regression_coverage": 1.0,
+    "elapsed_s": 0.12047056799929123,
+    "manual_estimate_min": 80
+  }
+}

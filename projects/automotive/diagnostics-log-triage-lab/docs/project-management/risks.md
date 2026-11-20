@@ -1,6 +1,6 @@
 # diagnostics-log-triage-lab 风险清单
 
-**更新于**: Stage 3 — Development（2026-11-18）
+**更新于**: Stage 5 — Closing（2026-11-20）
 **Issue**: #838
 
 ---
@@ -20,7 +20,7 @@
 | RISK-09 | numpy 2.5 / scipy 1.18 要求 Python ≥ 3.12，精确锁定会使 CI 3.11 安装失败 | 依赖 | 高 | 中 | 只锁直接依赖，numpy/scipy 由 scikit-learn 约束解析；已 dry-run 验证 3.11（numpy 2.4.6 / scipy 1.17.1）与 3.12；Stage 3 CI 3.11 / 3.12 安装与测试通过 | Resolved |
 | RISK-10 | 不同 numpy 版本下聚类浮点结果可能有微小差异 | 环境 | 低 | 低 | 同环境内断言标签一致；跨版本只断言指标阈值，不断言具体标签 | Open |
 | RISK-11 | 冷启动时 scikit-learn 首次导入（编译 .pyc）超过 60 s，可能拖慢 CI 首个测试 | 环境 | 中 | 低 | PoC-4 实测；Stage 3 中首次聚类测试 33 s；TC-INT-02 先预热再计时；5 个 seed 的回归模板合并为一次子进程运行 | Open |
-| RISK-12 | 对抗样本暴露 3 个规则缺口（A02 / A07 分流、A12 tester 侧 ISO-TP） | 方法 | 已发生 | 中 | TC-INT-04 精确锁定；报告与 test-plan 公开记录；是否修补待评审决定 | Open |
+| RISK-12 | 对抗样本暴露 3 个规则缺口（A02 / A07 分流、A12 tester 侧 ISO-TP） | 方法 | 已发生 | 中 | TC-INT-04 精确锁定；报告与 test-plan 公开记录；Stage 5 决定暂不修补以保持评估独立性，遗留项转 [#891](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/891) | Transferred |
 | RISK-13 | 仓库 pre-commit 用 ruff format，项目用 black，两者格式可能冲突 | 工具 | 中 | 低 | 两者行宽统一为 120；`make lint` 同时运行两者；Stage 3 未再出现冲突 | Mitigated |
 
 ---

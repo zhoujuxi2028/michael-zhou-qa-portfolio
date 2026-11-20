@@ -11,7 +11,7 @@
 
 ## 当前阶段
 
-Stage 4 — Testing。已知局限 A02/A07/A12 见 README。设计见 `docs/architecture/architecture.md`，偏差见其 §11。
+Stage 5 — Closing。已知局限 A02/A07/A12 见 README，遗留风险转 [#891](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/891)。设计见 `docs/architecture/architecture.md`，偏差见其 §11。
 
 ## 命令
 
