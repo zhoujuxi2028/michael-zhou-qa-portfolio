@@ -68,6 +68,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | **AI 测试** | `ai-lab/ai-testing-platform/` — AI-Powered Testing Platform (178 tests) | Python, Pytest, Rule Engine | `ai-testing-platform/CLAUDE.md` |
 | AI 测试 | `ai-lab/llm-agent-tutorial/` — LLM Agent Engineering Tutorial | Python, Anthropic API | `llm-agent-tutorial/CLAUDE.md` |
 | 集成测试 | `projects/automotive/ivi-integration-lab/` — IVI 车载集成验证实验室 (65 tests: unit + smoke + integration + regression) | Python, pytest, python-can, cantools | `ivi-integration-lab/CLAUDE.md` |
+| 集成测试 | `projects/automotive/diagnostics-log-triage-lab/` — 汽车诊断与 AI 日志分流实验室 (158 tests: 154 unit + 4 integration) | Python, pytest, scikit-learn, FastAPI | `diagnostics-log-triage-lab/CLAUDE.md` |
 | **多媒体测试** | `projects/multimedia/av-testing-demo/` — 音视频规格断言 + 音频ASDR + PSNR/SSIM + 多编码对比 + 帧diff可视化 (19 tests) | Python, pytest, ffmpeg (imageio-ffmpeg) | — |
 
 > **Quick Commands**: 各项目的安装、运行、测试命令详见对应子项目 `CLAUDE.md`。
@@ -100,6 +101,7 @@ python3 -m venv venv && source venv/bin/activate
 | 3003-3005 | microservice-testing-platform | Order / Inventory / Payment |
 | 3010 | performance-testing-platform | Grafana |
 | 3020 | k8s-auto-testing-platform | Grafana (K8S) |
+| 3030 | diagnostics-log-triage-lab | Triage API（`make serve`） |
 | 6379 | microservice-testing-platform | Redis |
 | 8080 | k8s-auto-testing-platform | Test App |
 | 8086 | performance-testing-platform | InfluxDB |
@@ -205,6 +207,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `sid-iam-ci.yml` | sid-iam-testing-platform | SID IAM CI: code quality, unit tests, integration |
 | `sql-testing-demo-ci.yml` | sql-testing-demo | SQL Testing Demo CI: ruff format → unit tests → integration tests (32 tests) |
 | `ivi-integration-ci.yml` | ivi-integration-lab | IVI Integration Lab CI: lint → unit tests (43) → smoke → integration → regression (65 tests total, Python 3.11/3.12 matrix) |
+| `diag-log-triage-ci.yml` | diagnostics-log-triage-lab | Diagnostics Log Triage CI: code quality ∥ unit tests (154, coverage ≥ 85%) → integration (eval thresholds + adversarial) → demo (Python 3.11/3.12 matrix) |
 | `docker-tests.yml` | cicd-demo | CICD Demo / Docker Nightly: Cypress + Newman in containers |
 | `codeql-analysis.yml` | repository (JS+Python) | CodeQL Analysis: 代码语义漏洞扫描 (XSS, SQLi, path traversal) |
 | `security-scan.yml` | cicd-demo | Security / Scan: Trivy fs + Docker + IaC + npm audit → SARIF |

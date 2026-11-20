@@ -39,6 +39,7 @@
 | PREQ-017 | [#18](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/18) | Mobile Testing Demo (Appium/Detox) | 新项目 | FR | P2 | 2026-07-17 | Proposed | — |
 | PREQ-018 | [#813](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/813) | 为 dependabot.yml 添加 groups 聚合配置，减少每周 PR 数量 | 仓库级 / 依赖管理 | NFR | P2 | 2026-11-02 | Proposed | — |
 | PREQ-019 | [#828](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/828) | 新建 sql-testing-demo：SQL + PL/pgSQL 测试，PostgreSQL + testcontainers | sql-testing-demo | FR | P1 | 2026-11-03 | In Development | — |
+| PREQ-021 | [#838](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/838) | 新建 diagnostics-log-triage-lab：CAN/UDS 诊断日志分析与分流（Phase 1） | diagnostics-log-triage-lab | FR | P2 | 2026-11-18 | Proposed | — |
 
 ---
 
@@ -56,7 +57,7 @@
 
 | REQ ID | 标题摘要 | 项目 / 范围 | 优先级 | 关闭日期 | 关闭方式 | 关联 PR / Commit |
 |--------|----------|-------------|--------|----------|----------|-----------------|
-| _(待归档)_ | | | | | | |
+| PREQ-020 | 新建 ivi-integration-lab：IVI 车载集成验证实验室（#837，补登记） | ivi-integration-lab | P1 | 2026-11-05 | Implemented | #841 #842 #843 #844 #845 #846 |
 
 ---
 
@@ -74,18 +75,20 @@
 
 | 项目 | 需求文档位置 | 当前活跃数 | 关联 RTM | 最近更新 |
 |------|------------|-----------|---------|---------|
-| cicd-demo | [REQUIREMENTS.md](../../cicd-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
-| performance-testing-platform | [requirements.md](../../performance-testing-platform/docs/project-management/requirements.md) | — | — | 2026-07-17 |
-| api-testing-demo | [REQUIREMENTS.md](../../api-testing-demo/docs/project-management/REQUIREMENTS.md) | — | — | 2026-07-17 |
-| k8s-auto-testing-platform | [REQUIREMENTS.md](../../k8s-auto-testing-platform/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
-| security-testing-demo | [REQUIREMENTS.md](../../security-testing-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
-| sid-iam-testing-platform | [REQUIREMENTS.md](../../sid-iam-testing-platform/docs/project-management/REQUIREMENTS.md) | — | — | 2026-07-17 |
-| microservice-testing-platform | [requirements.md](../../microservice-testing-platform/docs/project-management/requirements.md) | — | — | 2026-07-17 |
-| ai-testing-platform | [requirements-backlog.md](../../ai-testing-platform/docs/project-management/requirements-backlog.md) | 1 (REQ-AI-003) | — | 2026-07-23 |
-| playwright-demo | [REQUIREMENTS.md](../../playwright-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
-| selenium-demo | [REQUIREMENTS.md](../../selenium-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
-| robot-framework-demo | [REQUIREMENTS.md](../../robot-framework-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
-| sql-testing-demo | [requirements.md](../../sql-testing-demo/docs/project-management/requirements.md) | 10 (SQL-01~10) | — | 2026-11-03 |
+| cicd-demo | [REQUIREMENTS.md](../../infra/cicd-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
+| performance-testing-platform | [requirements.md](../../projects/platform/performance-testing-platform/docs/project-management/requirements.md) | — | — | 2026-07-17 |
+| api-testing-demo | [REQUIREMENTS.md](../../projects/functional/api-testing-demo/docs/project-management/REQUIREMENTS.md) | — | — | 2026-07-17 |
+| k8s-auto-testing-platform | [REQUIREMENTS.md](../../infra/k8s-auto-testing-platform/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
+| security-testing-demo | [REQUIREMENTS.md](../../projects/security/security-testing-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
+| sid-iam-testing-platform | [REQUIREMENTS.md](../../projects/platform/sid-iam-testing-platform/docs/project-management/REQUIREMENTS.md) | — | — | 2026-07-17 |
+| microservice-testing-platform | [requirements.md](../../projects/platform/microservice-testing-platform/docs/project-management/requirements.md) | — | — | 2026-07-17 |
+| ai-testing-platform | [requirements-backlog.md](../../ai-lab/ai-testing-platform/docs/project-management/requirements-backlog.md) | 1 (REQ-AI-003) | — | 2026-07-23 |
+| playwright-demo | [REQUIREMENTS.md](../../projects/functional/playwright-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
+| selenium-demo | [REQUIREMENTS.md](../../projects/functional/selenium-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
+| robot-framework-demo | [REQUIREMENTS.md](../../projects/functional/robot-framework-demo/docs/requirements/REQUIREMENTS.md) | — | — | 2026-07-17 |
+| sql-testing-demo | [requirements.md](../../projects/database/sql-testing-demo/docs/project-management/requirements.md) | 10 (SQL-01~10) | — | 2026-11-03 |
+| ivi-integration-lab | [requirements.md](../../projects/automotive/ivi-integration-lab/docs/project-management/requirements.md) | — (IVI-01~12) | — | 2026-11-18 |
+| diagnostics-log-triage-lab | [requirements.md](../../projects/automotive/diagnostics-log-triage-lab/docs/project-management/requirements.md) | 15 (DLT-01~15) + 3 Phase 2 | — | 2026-11-18 |
 
 ---
 
@@ -101,3 +104,4 @@
 | 2026-07-23 | 新增 | ai-testing-platform 录入 REQ-AI-003 (#513)；更新项目入口表文档路径及活跃数 | Michael Zhou |
 | 2026-11-02 | 新增 | 录入 PREQ-018 (#813)：为 dependabot.yml 添加 groups 聚合，减少每周 PR 数量 | Michael Zhou |
 | 2026-11-03 | 新增 | 录入 PREQ-019 (#828)：新建 sql-testing-demo，SQL + PL/pgSQL 测试项目 | Michael Zhou |
+| 2026-11-18 | 新增 | 补登记 PREQ-020 (#837) ivi-integration-lab；录入 PREQ-021 (#838) diagnostics-log-triage-lab；§6 项目入口链接修正为重组后路径 | Michael Zhou |

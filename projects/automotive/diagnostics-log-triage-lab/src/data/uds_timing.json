@@ -1,0 +1,7 @@
+{
+  "p2_ms": 50,
+  "p2_star_ms": 5000,
+  "pending_loop_max": 5,
+  "tester_id": "0x7E0",
+  "ecu_id": "0x7E8"
+}
