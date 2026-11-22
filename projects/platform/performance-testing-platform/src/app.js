@@ -51,6 +51,13 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
+// Express 5 leaves req.body undefined when no body is sent; restore the Express 4
+// default so routes can destructure it safely (DEF-026)
+app.use((req, _res, next) => {
+  if (req.body === undefined) req.body = {};
+  next();
+});
+
 // Swagger UI - available at /api-docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
