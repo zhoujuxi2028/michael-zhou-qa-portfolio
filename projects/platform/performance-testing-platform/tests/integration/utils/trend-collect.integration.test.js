@@ -77,12 +77,13 @@ describe('趋势采集集成测试 (TREND-INT)', () => {
 
   // TREND-INT-03: 趋势报告 Markdown 生成
   test('TREND-INT-03: 应从趋势数据生成格式正确的 Markdown 报告', () => {
-    // Arrange: 准备趋势数据
+    // Arrange: 准备趋势数据（相对日期：硬编码日期会超出 90 天保留期，DEF-027）
+    const DAY_MS = 24 * 60 * 60 * 1000;
     for (let i = 1; i <= 3; i++) {
       appendTrend(
         {
           run: i,
-          date: `2026-04-${10 + i}`,
+          date: new Date(Date.now() - (4 - i) * DAY_MS).toISOString().slice(0, 10),
           p95_ms: 100 + i * 5,
           error_rate: 0.005,
           throughput_rps: 50,

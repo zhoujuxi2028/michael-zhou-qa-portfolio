@@ -121,4 +121,18 @@ describe('POST /api/auth/logout', () => {
     const res = await request(app).post('/api/auth/refresh').send({ refreshToken });
     expect(res.status).toBe(401);
   });
+
+  // DEF-026: Express 5 leaves req.body undefined when no body is sent
+  test('UT-AUTH-11: logout without request body succeeds and revokes token', async () => {
+    const res = await request(app)
+      .post('/api/auth/logout')
+      .set('Authorization', `Bearer ${accessToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe('Logged out');
+
+    const reuse = await request(app)
+      .post('/api/auth/logout')
+      .set('Authorization', `Bearer ${accessToken}`);
+    expect(reuse.status).toBe(200); // idempotent: INSERT OR IGNORE
+  });
 });
