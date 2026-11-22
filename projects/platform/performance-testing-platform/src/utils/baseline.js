@@ -59,12 +59,9 @@ function appendTrend(entry, filePath, retentionDays = 90) {
   const cutoffDate = new Date(now.getTime() - retentionDays * 24 * 60 * 60 * 1000);
   data = data.filter((e) => {
     if (!e.date) return true; // Keep entries without date
-    try {
-      const entryDate = new Date(e.date);
-      return entryDate >= cutoffDate;
-    } catch {
-      return true; // Keep entries with invalid dates
-    }
+    const entryDate = new Date(e.date);
+    if (Number.isNaN(entryDate.getTime())) return true; // Keep entries with invalid dates (DEF-027)
+    return entryDate >= cutoffDate;
   });
 
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2));

@@ -121,6 +121,13 @@ describe('baseline regression detection', () => {
     expect(data[1].run).toBe(3);
   });
 
+  // DEF-027：new Date('bad') 不抛异常而是 Invalid Date，不能被当作过期删除
+  test('appendTrend keeps entries with an invalid date', () => {
+    appendTrend({ run: 1, date: 'not-a-date', p95_ms: 400 }, trendFile);
+    const data = JSON.parse(fs.readFileSync(trendFile, 'utf-8'));
+    expect(data).toEqual([{ run: 1, date: 'not-a-date', p95_ms: 400 }]);
+  });
+
   // CodeQL #872（alert 620）：去掉 existsSync 先检查再使用后，异常文件仍需安全处理
   test.each([
     ['corrupt JSON', '{not json'],
