@@ -93,6 +93,15 @@ jobs:
       (github.event_name == 'workflow_dispatch' && inputs.scenario == 'capacity')
     steps:
       - uses: actions/checkout@v7
+      - name: Record runner hardware (DEF-025)
+        run: |
+          {
+            echo "### Runner hardware"
+            echo "- vCPU: $(nproc)"
+            echo "- CPU: $(lscpu | sed -n 's/^Model name:[[:space:]]*//p')"
+            echo "- Mem: $(free -h | awk '/^Mem:/{print $2}')"
+            echo "- Image: ${ImageOS:-unknown} ${ImageVersion:-}"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
       - uses: ./.github/actions/setup-node-project
         with:
           node-version: '18'
@@ -112,6 +121,9 @@ jobs:
             sleep 1
           done
       - name: Run k6 capacity test
+        env:
+          # DEF-025: 5000 VUs saturates the shared runner (k6 + API on one box) → flaky p95
+          CAPACITY_TARGET_VUS: '2500'
         run: |
           mkdir -p reports results
           k6 run \

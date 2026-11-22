@@ -44,6 +44,7 @@
 | DEF-021   | [PR #255](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/255) | `stage4-defect-waiver-register.md` 引用不存在的 `stage4-gate-template.md`   | P3 / Low    | ❌ Non-blocking    | 2026-05-24 | ✅ Fixed         | —           | 修复：更正为 `gates/stage4-template.md`（实际路径） |
 | DEF-023   | [#278](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/278) / [PR #276](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/276) | BATS 9.1 分支白名单缺少 `docs/` 前缀，PR #276 CI 红灯 | P2 / Medium | ✅ Blocking (PR)  | 2026-05-26 | 🟡 Fix in review | —           | `stage4-selftest-fast.bats:144` pattern 未含 `docs/`；修复：加入 `docs/`；pre-push 改进见 PR #277；[RCA](../../project-management/postmortems/RCA-2026-05-26-DEF-023-bats-branch-whitelist.md) |
 | DEF-024   | [#586](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/issues/586) / [PR #585](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/pull/585) | `better-sqlite3` v13 在 Ubuntu 24.04 触发 SIGSEGV，CI 持续红灯 | P1 / High | ✅ Blocking (CI)  | 2026-08-10 | ✅ Fixed         | —           | PR #561 将 v12→v13，Linux native binary 在 Ubuntu 24.04 (glibc 2.39) 崩溃；macOS 本地不复现；修复：降回 `12.11.1`（精确锁定）；防护：`scripts/test-linux.sh` + CLAUDE.md native 依赖规则 |
+| DEF-025   | [run 44992089942](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/runs/44992089942) | Weekly Capacity Test 不稳定：5000 VU 下 p95<500ms 阈值近 6 次 4 次失败 | P2 / Medium | ❌ Non-blocking (nightly) | 2026-11-22 | 🟡 Fix in review | —           | 结果双峰：PASS 227–330ms / ~2900 rps，FAIL 1.18–2.6s / ~1800–2260 rps；0 请求失败；event loop lag p95 最高 6.3s（CPU 饱和）。**纠正误判**：最初归因于 `ubuntu-latest` 24.04→26.04，但 24.04 对照 [run 45020406390](https://github.com/zhoujuxi2028/michael-zhou-qa-portfolio/actions/runs/45020406390) 同样失败（p95 2.4s），且镜像切换前 10-18/10-25/11-08 已在 24.04 失败；pin 修复已 revert。根因：k6 5000 VU 与被测 API 同机运行于共享 runner，处于饱和临界点，宿主机差异即触发排队雪崩。修复：CI 设 `CAPACITY_TARGET_VUS=2500` + 记录 runner 硬件（nproc/lscpu）。验证：3/3 PASS（runs 45023266801 / 45023818426 / 45024329468），p95 50.8–58.2ms，~1540 rps，lag p95 ≤ 17.7ms；3 次分配到 3 种 CPU（EPYC 7763 / 9V45 / 9V74，均 4 vCPU），证实宿主机异构；7763 上 lag 最高，与「旧 CPU 宿主机在 5000 VU 下失败」假设一致（待累积数据确认） |
 
 ---
 
@@ -91,6 +92,7 @@
 
 | 日期       | 变更内容                                                                                                                                | 操作人 |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 2026-11-22 | 登记 `DEF-025`：Weekly Capacity Test 在 5000 VU 下 flaky（近 6 次 4 次失败）；纠正「26.04 镜像导致」的误判（24.04 对照同样失败），revert runner pin；CI 降为 2500 VU 并记录 runner 硬件 | QA     |
 | 2026-08-10 | 登记并关闭 `DEF-024`（#586 / PR #585）：`better-sqlite3` v13 在 Ubuntu 24.04 触发 SIGSEGV；降回 v12.11.1（精确锁定），添加 `scripts/test-linux.sh`，补充 CLAUDE.md native 依赖检查规则 | QA     |
 | 2026-05-26 | 登记 `DEF-023`（PR #276）：BATS 9.1 分支白名单缺 `docs/` 前缀，导致 CI 红灯；修复 `stage4-selftest-fast.bats` 第 144 行 pattern，加入 `docs/` | QA     |
 | 2026-05-25 | 同步 Issue #259 / #260 至 DEF-019 / DEF-022：根因均已在 main 修复（PR #257 已 merge），按生命周期搬迁至 Closed 区并补齐 Issue 反链；活跃数 11 → 9 | QA     |
