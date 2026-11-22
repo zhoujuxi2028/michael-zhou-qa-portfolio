@@ -86,7 +86,8 @@ jobs:
 
   weekly-capacity:
     name: Weekly Capacity Test
-    runs-on: ubuntu-latest
+    # Pinned: 5000-VU baseline measured on 24.04; ubuntu-latest→26.04 made p95 330ms→2.49s
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     if: >
       (github.event_name == 'schedule' && github.event.schedule == '0 6 * * 0') ||
