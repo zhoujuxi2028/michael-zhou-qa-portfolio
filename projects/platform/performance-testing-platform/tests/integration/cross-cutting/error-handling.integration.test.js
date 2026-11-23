@@ -25,8 +25,9 @@ describe('错误处理集成测试 (ERR-INT)', () => {
       .set('Content-Type', 'application/json')
       .send('{ invalid json }');
 
-    // Express json parser 默认返回 400
+    // Express json parser 返回 400；errorHandler 统一为 JSON 且不含堆栈（DEF-028）
     expect(res.status).toBe(400);
+    expect(res.body).toEqual({ error: 'Invalid JSON body' });
   });
 
   // ERR-INT-02: 空 body 创建产品返回 400
