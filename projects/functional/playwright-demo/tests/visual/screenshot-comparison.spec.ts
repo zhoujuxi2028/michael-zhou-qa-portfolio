@@ -7,7 +7,7 @@
  * screenshots on first run and diffs against them on subsequent runs."
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/base.fixture';
 
 test.describe('Visual Regression — example.com', () => {
 
