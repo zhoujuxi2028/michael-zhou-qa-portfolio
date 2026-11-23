@@ -4,6 +4,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('../docs/swagger');
 const { metricsMiddleware } = require('./middleware/metrics');
 const rateLimiter = require('./middleware/rateLimiter');
+const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 const healthRoutes = require('./routes/health');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
@@ -67,5 +68,9 @@ app.use(healthRoutes);
 app.use(productRoutes);
 app.use(authRoutes);
 app.use(orderRoutes);
+
+// Must stay last: JSON 404 + error responses without stack traces (DEF-028)
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 module.exports = app;
