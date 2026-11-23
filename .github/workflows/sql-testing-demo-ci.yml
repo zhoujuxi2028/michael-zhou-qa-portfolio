@@ -69,7 +69,7 @@ jobs:
       - run: pip install -r requirements.txt
       - run: >-
           pytest tests/unit/ -v
-          -m "crud or queries or constraints or procedures"
+          -m "smoke or crud or queries or constraints or procedures"
 
   integration-tests:
     runs-on: ubuntu-latest
