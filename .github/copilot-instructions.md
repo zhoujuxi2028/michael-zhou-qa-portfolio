@@ -66,7 +66,7 @@
 
 ```
 michael-zhou-qa-portfolio/
-├── performance-testing-platform/       # k6 + JMeter dual-engine (148 unit + 31 integration + 33 perf tests)
+├── performance-testing-platform/       # k6 + JMeter dual-engine (358 unit + 71 integration + 13 k6 / 5 JMeter scripts)
 ├── playwright-demo/                    # Cross-browser E2E (38 tests)
 ├── api-testing-demo/                   # API + Newman (280+ assertions)
 ├── selenium-demo/                      # Browser automation (Python)
@@ -84,7 +84,7 @@ michael-zhou-qa-portfolio/
 
 | Layer | Technologies | Coverage |
 |-------|--------------|----------|
-| Unit | Jest, Pytest | 148+ unit tests (perf-platform), per-project base tests |
+| Unit | Jest, Pytest | 358 unit tests (perf-platform), per-project base tests |
 | Integration | Jest, Pytest, Docker | 31+ integration tests (perf-platform), contract tests (microservices) |
 | E2E | Playwright, Cypress, Selenium | 38-77 tests per frontend project |
 | Performance | k6, JMeter | 33+ performance tests (perf-platform) |
@@ -282,12 +282,12 @@ This portfolio's flagship project deserves special attention:
 ```bash
 cd performance-testing-platform
 npm install && npm start            # Start API
-npm test                            # 148 unit tests (Jest)
+npm test                            # 358 unit + 71 integration tests (Jest)
 npm run test:coverage               # Coverage report
 npm run lint && npm run lint:fix     # ESLint + auto-fix
 npm run k6:smoke                    # k6 smoke test
 npm run jmeter:smoke                # JMeter smoke test
-bash scripts/integration-test.sh    # 31 integration tests (with mutex lock)
+bash scripts/integration-test.sh    # 7-phase shell integration suite (with mutex lock)
 ```
 
 ### Integration Test Lock Mechanism

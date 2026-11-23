@@ -288,7 +288,8 @@ performance-testing-platform/
 ├── env/                     # 多环境配置 (local/staging/production)
 ├── profiles/                # k6 负载 profile (smoke/load/stress/spike/peak)
 ├── tests/
-│   ├── unit/                # Jest 单元测试 (148 tests)
+│   ├── unit/                # Jest 单元测试 (358 tests)
+│   ├── integration/         # Jest 集成测试 (71 tests，CI 已纳入 Gate)
 │   ├── performance/         # k6 脚本 (smoke, load, stress, spike, auth, soak)
 │   └── jmeter/              # JMeter 测试计划 + config/*.properties
 ├── grafana/                 # Dashboard (soak-results + provisioning) + alert rules
@@ -345,7 +346,7 @@ performance-testing-platform/
 | `npm stop`                 | 停止目标 API                                      |
 | `npm restart`              | 重启目标 API — Cluster 模式                       |
 | `npm run restart:single`   | 重启目标 API — 单进程模式                         |
-| `npm test`                 | 运行 Jest 单元测试 (148 tests)                    |
+| `npm test`                 | 运行 Jest 单元 + 集成测试 (358 + 71 tests)        |
 | `npm run setup`            | 安装 + lint + 测试 (一键初始化)                   |
 | `npm run clean`            | 清理 reports/results/coverage/db                  |
 | `npm run health`           | preflight + 测试 (健康检查)                       |
