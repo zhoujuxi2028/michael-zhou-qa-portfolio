@@ -61,5 +61,5 @@ python scripts/scan_and_predict.py --path src/
 
 Workflow: `.github/workflows/ai-testing-ci.yml`
 - code-quality（ruff format/isort/flake8）
-- unit-tests（178 tests，排除 llm + integration）
+- unit-tests（209 tests：CI 运行 185，24 个 LLM evaluator 测试因无 API key 跳过）
 - verify-by-module（按模块分组验证，含 RAG/Vision-KG 覆盖率门禁）

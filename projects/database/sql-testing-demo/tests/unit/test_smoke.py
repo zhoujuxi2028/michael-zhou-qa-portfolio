@@ -1,3 +1,8 @@
+import pytest
+
+pytestmark = pytest.mark.smoke
+
+
 def test_db_connection(cur):
     cur.execute("SELECT 1")
     assert cur.fetchone()[0] == 1

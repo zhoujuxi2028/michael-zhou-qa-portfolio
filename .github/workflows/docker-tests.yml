@@ -93,6 +93,27 @@ jobs:
             exit 1
           fi
 
+      # Container logs are otherwise printed only on failure, so a green run showed no
+      # test counts. Surface the Cypress / Newman summary lines in the job summary.
+      - name: Test summary
+        if: always()
+        run: |
+          strip() { sed -E 's/\x1b\[[0-9;]*m//g'; }
+          {
+            echo "### Cypress"
+            echo '```'
+            docker compose logs --no-log-prefix cypress 2>/dev/null | strip \
+              | grep -E "Tests:|Passing:|Failing:|Pending:|Skipped:|All specs passed|failed \(" \
+              || echo "(no Cypress summary found)"
+            echo '```'
+            echo "### Newman"
+            echo '```'
+            docker compose logs --no-log-prefix newman 2>/dev/null | strip \
+              | grep -E "│ +(iterations|requests|test-scripts|assertions) +│" \
+              || echo "(no Newman summary found)"
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
       # Step 5: Upload test artifacts
       - name: Upload Cypress screenshots
         if: always()

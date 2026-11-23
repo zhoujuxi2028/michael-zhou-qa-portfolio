@@ -54,7 +54,7 @@ test.describe('Network Interception Tests', () => {
     await page.route('**/*', async (route) => {
       // Add 100ms delay to all requests
       await new Promise((resolve) => setTimeout(resolve, 100));
-      await route.continue();
+      await route.fallback(); // hand over to the example.com stub
     });
 
     await page.goto('https://example.com');

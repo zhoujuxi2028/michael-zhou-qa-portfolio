@@ -36,7 +36,7 @@ Kubernetes automated testing platform focused on **HPA auto-scaling testing**, *
 
 | Metric | Value |
 |--------|-------|
-| Test Cases | 37 |
+| Test Cases | 41 |
 | Test Results | 27 passed, 10 skipped, 0 failed |
 | Pass Rate | 100% |
 | Chaos Scenarios | 12 |
@@ -206,7 +206,7 @@ Kubernetes 自动化测试平台，专注于 **HPA 自动扩缩容测试**、**�
 
 | 指标 | 数值 |
 |-----|------|
-| 测试用例 | 37 |
+| 测试用例 | 41 |
 | 测试结果 | 27 通过, 10 跳过, 0 失败 |
 | 通过率 | 100% |
 | 混沌场景 | 12 类 |

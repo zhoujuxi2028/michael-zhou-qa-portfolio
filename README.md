@@ -38,14 +38,14 @@ Test automation, performance testing, and DevOps demonstration projects.
 | [selenium-demo](./projects/functional/selenium-demo/) | Browser Automation | Selenium, Python, Allure |
 | [robot-framework-demo](./projects/functional/robot-framework-demo/) | Parallel Testing (9 tests) | Robot Framework, Pabot, Selenium Grid, Rebot |
 | [iwsva-cypress-e2e](./projects/functional/iwsva-cypress-e2e/) | IWSVA E2E Testing (77 tests) | Cypress, JavaScript |
-| [api-testing-demo](./projects/functional/api-testing-demo/) | API Testing (280+ assertions) | Newman, Postman, json-server |
+| [api-testing-demo](./projects/functional/api-testing-demo/) | API Testing (316 assertions) | Newman, Postman, json-server |
 
 ### 系统测试 (System Testing)
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
 | [security-testing-demo](./projects/security/security-testing-demo/) | DAST Security Testing (~182 tests, OWASP Top 10) | OWASP ZAP, Nessus, SQLMap, Pytest |
-| [k8s-auto-testing-platform](./infra/k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (37 tests) | Python, Pytest, Chaos Mesh |
+| [k8s-auto-testing-platform](./infra/k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (41 tests) | Python, Pytest, Chaos Mesh |
 | [sql-testing-demo](./projects/database/sql-testing-demo/) | SQL & PL/pgSQL Testing — FastWare WMS scenario (32 tests: CRUD + queries + constraints + procedures + transactions) | PostgreSQL, psycopg3, testcontainers, pytest |
 | [ivi-integration-lab](./projects/automotive/ivi-integration-lab/) | IVI 车载集成验证实验室 — CAN bus 3节点仿真 + ECU 刷写 + 质量门禁 (65 tests: unit + smoke + integration + regression) | Python, pytest, python-can, cantools |
 | [diagnostics-log-triage-lab](./projects/automotive/diagnostics-log-triage-lab/) | 汽车诊断与 AI 日志分流实验室 — CAN/CAN FD + UDS 合成日志 → 异常识别 → 聚类 → P1/P2 分流 → pytest 回归模板 (158 tests: 154 unit + 4 integration) | Python, pytest, scikit-learn, FastAPI |
@@ -61,7 +61,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [ai-testing-platform](./ai-lab/ai-testing-platform/) | AI-Powered Testing Platform — 智能测试用例生成 + 缺陷预测 + 脚本生成 + 代码扫描 + RAG 全链路 + 图像识别/知识图谱测试 (178 tests) | Python, Pytest, Rule Engine |
+| [ai-testing-platform](./ai-lab/ai-testing-platform/) | AI-Powered Testing Platform — 智能测试用例生成 + 缺陷预测 + 脚本生成 + 代码扫描 + RAG 全链路 + 图像识别/知识图谱测试 (209 tests) | Python, Pytest, Rule Engine |
 | [llm-agent-tutorial](./ai-lab/llm-agent-tutorial/) | LLM Agent Engineering Tutorial — Prompt/Context/Harness/Loop 四件套 + function-calling + Reflexion (single-file, zero-dependency) | Python, Anthropic API |
 
 ### 多媒体测试 (Multimedia Testing)
@@ -129,13 +129,15 @@ Test automation, performance testing, and DevOps demonstration projects.
 | `sid-iam-ci.yml` | sid-iam-testing-platform | Push/PR, manual | Code quality + unit tests + integration (138 tests) |
 | `performance-ci.yml` | performance-testing-platform | Push/PR | Lint → unit + integration tests → k6 + JMeter smoke gate |
 | `nightly-soak.yml` | performance-testing-platform | Nightly / weekly, manual | Performance / Nightly: soak-short daily + capacity weekly |
-| `ai-testing-ci.yml` | ai-testing-platform | Push/PR, manual | AI Testing CI: code quality + unit tests (178 tests) + per-module coverage gates |
+| `ai-testing-ci.yml` | ai-testing-platform | Push/PR, manual | AI Testing CI: code quality + unit tests (185 run, 24 LLM skipped) + per-module coverage gates |
 | `setup-labels.yml` | repository | Manual (`workflow_dispatch`) | 一键创建/更新 11 个 `proj:xxx` labels |
 | `repo-meta-ci.yml` | repository root | Push/PR, manual | docs/workflow/JSON/shell/Markdown links 轻量校验 + actionlint workflow 语义检查 + workflow 文档同步检查 |
 | `sql-testing-demo-ci.yml` | sql-testing-demo | Push/PR | SQL Testing Demo CI: code quality (ruff) → unit tests (CRUD/queries/constraints/procedures) → integration tests (transactions/performance/reports) |
 | `ivi-integration-ci.yml` | ivi-integration-lab | Push/PR | IVI Integration Lab CI: lint → unit tests → smoke → integration → regression (65 tests, Python 3.11/3.12 matrix) |
 | `diag-log-triage-ci.yml` | diagnostics-log-triage-lab | Push/PR | Diagnostics Log Triage CI: code quality ∥ unit tests → integration → demo (158 tests, Python 3.11/3.12 matrix) |
-| `api-testing-ci.yml` | api-testing-demo | Push/PR | Validate Postman collections → Newman tests (280+ assertions) |
+| `av-testing-ci.yml` | av-testing-demo | Push/PR | AV Testing Demo CI: unit tests (19, bundled ffmpeg) |
+| `playwright-ci.yml` | playwright-demo | Push/PR | Playwright Demo CI: Chromium E2E/API/visual/a11y (38 tests) |
+| `api-testing-ci.yml` | api-testing-demo | Push/PR | Validate Postman collections → Newman tests (316 assertions) |
 | `microservice-ci.yml` | microservice-testing-platform | Push/PR, manual | Microservice Testing CI: code quality + unit/contract/integration/e2e/observability tests (135 tests) |
 | `codeql-analysis.yml` | repository (JS+Python) | Push/PR, weekly | CodeQL 代码语义漏洞扫描 (XSS, SQLi, path traversal) |
 | `commit-guard.yml` | repository | PR opened/updated | Commit Guard: Conventional Commits 格式校验 + secret 泄漏扫描 CI 兜底 |
