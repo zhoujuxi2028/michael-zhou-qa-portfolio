@@ -36,6 +36,8 @@ jobs:
           node-version: '22'
           working-directory: projects/functional/playwright-demo
           cache-dependency-path: projects/functional/playwright-demo/package-lock.json
+      - name: Type check
+        run: npx tsc --noEmit -p .
       # Chromium only: linux visual baselines exist for chromium; other engines can be added later
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test --project=chromium
