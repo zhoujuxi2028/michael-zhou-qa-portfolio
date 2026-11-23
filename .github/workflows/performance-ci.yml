@@ -76,6 +76,20 @@ jobs:
           name: coverage-report
           path: projects/platform/performance-testing-platform/coverage/
 
+  integration-tests:
+    name: Performance Testing / Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # DEF-026/027: integration failures went unnoticed for months while CI ran unit tests only
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-node-project
+        with:
+          node-version: '18'
+          working-directory: projects/platform/performance-testing-platform
+          cache-dependency-path: projects/platform/performance-testing-platform/package-lock.json
+      - run: npm run test:integration
+
   shell-tests-fast:
     name: Performance Testing / Shell Tests (Fast)
     runs-on: ubuntu-latest
@@ -431,6 +445,7 @@ jobs:
     needs:
       - performance-lint
       - unit-tests
+      - integration-tests
       - shell-tests-fast
       - shell-tests-integration
       - jmeter-smoke-test

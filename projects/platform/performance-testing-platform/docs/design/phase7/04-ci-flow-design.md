@@ -86,6 +86,9 @@ jobs:
   unit-tests:
     - npx jest tests/unit/ --coverage --coverageReporters=text --coverageReporters=lcov
 
+  integration-tests: # 与 unit-tests 并行，纳入 Gate（DEF-026/027）
+    - npm run test:integration
+
   smoke-test:
     - k6 run tests/performance/smoke.k6.js
     - export baseline.json

@@ -266,7 +266,8 @@ function lintWorkflowFile(filePath) {
 // ─── CLI 入口 ─────────────────────────────────────────────────────────────────
 
 if (require.main === module) {
-  const workflowsDir = path.resolve(__dirname, '../../.github/workflows');
+  // scripts/analysis → repo root（#847 目录重构后项目位于 projects/platform/ 下）
+  const workflowsDir = path.resolve(__dirname, '../../../../../.github/workflows');
   const args = process.argv.slice(2);
 
   let filesToCheck;
