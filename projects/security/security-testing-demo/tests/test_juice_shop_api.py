@@ -121,6 +121,9 @@ class TestIDOR:
 class TestAPIInformationLeak:
     """Test for API information disclosure vulnerabilities."""
 
+    @pytest.mark.xfail(
+        reason="Juice Shop leaks stack traces / internals in error responses"
+    )
     def test_error_message_disclosure(self, juice_shop_url):
         """SEC-API-003: Test if error messages reveal sensitive info.
 
@@ -147,14 +150,9 @@ class TestAPIInformationLeak:
                 "sql",
             ]
 
-            info_leaked = any(
-                pattern in response_text for pattern in sensitive_patterns
-            )
-            # Note: We're documenting if vulnerability exists
-            if info_leaked:
-                pytest.skip(
-                    "Information disclosure detected - known Juice Shop vulnerability"
-                )
+            leaked = [p for p in sensitive_patterns if p in response_text]
+            # Known vulnerability → xfail; a fixed target would show as XPASS
+            assert not leaked, f"Error response discloses internals: {leaked}"
 
     @pytest.mark.xfail(
         reason="Juice Shop exposes version endpoint without authentication"
