@@ -201,7 +201,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `cicd-demo-deploy.yml` | cicd-demo | Deploy Pipeline: Helm package + SBOM → staging (auto) → smoke test → production (manual approval) |
 | `cicd-demo-terraform.yml` | cicd-demo | Terraform CI: fmt-check + validate + Trivy IaC security scan + tf-gate |
 | `k8s-ci.yml` | k8s-auto-testing-platform | K8S Testing CI: code quality, unit tests, integration |
-| `performance-ci.yml` | performance-testing-platform | Performance Testing CI: lint → unit tests → k6 + JMeter smoke gate |
+| `performance-ci.yml` | performance-testing-platform | Performance Testing CI: lint → unit + integration tests → k6 + JMeter smoke gate |
 | `nightly-soak.yml` | performance-testing-platform | Performance / Nightly: soak-short daily + capacity weekly, artifact retention 30 days |
 | `security-tests.yml` | security-testing-demo | Security / Tests: DVWA, Juice Shop, ZAP, OWASP Top 10 |
 | `sid-iam-ci.yml` | sid-iam-testing-platform | SID IAM CI: code quality, unit tests, integration |

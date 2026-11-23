@@ -127,7 +127,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 | `k8s-ci.yml` | k8s-auto-testing-platform | Push/PR, manual | Code quality + unit tests + K8S integration |
 | `robot-framework-ci.yml` | robot-framework-demo | Push/PR | Pabot parallel + Selenium Grid + Rebot merge (9 tests) |
 | `sid-iam-ci.yml` | sid-iam-testing-platform | Push/PR, manual | Code quality + unit tests + integration (138 tests) |
-| `performance-ci.yml` | performance-testing-platform | Push/PR | Lint → unit tests → k6 + JMeter smoke gate |
+| `performance-ci.yml` | performance-testing-platform | Push/PR | Lint → unit + integration tests → k6 + JMeter smoke gate |
 | `nightly-soak.yml` | performance-testing-platform | Nightly / weekly, manual | Performance / Nightly: soak-short daily + capacity weekly |
 | `ai-testing-ci.yml` | ai-testing-platform | Push/PR, manual | AI Testing CI: code quality + unit tests (178 tests) + per-module coverage gates |
 | `setup-labels.yml` | repository | Manual (`workflow_dispatch`) | 一键创建/更新 11 个 `proj:xxx` labels |
