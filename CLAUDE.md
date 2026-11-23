@@ -208,6 +208,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 | `sql-testing-demo-ci.yml` | sql-testing-demo | SQL Testing Demo CI: ruff format → unit tests → integration tests (32 tests) |
 | `ivi-integration-ci.yml` | ivi-integration-lab | IVI Integration Lab CI: lint → unit tests (43) → smoke → integration → regression (65 tests total, Python 3.11/3.12 matrix) |
 | `diag-log-triage-ci.yml` | diagnostics-log-triage-lab | Diagnostics Log Triage CI: code quality ∥ unit tests (154, coverage ≥ 85%) → integration (eval thresholds + adversarial) → demo (Python 3.11/3.12 matrix) |
+| `av-testing-ci.yml` | av-testing-demo | AV Testing Demo CI: unit tests (19, bundled ffmpeg via imageio-ffmpeg) |
 | `docker-tests.yml` | cicd-demo | CICD Demo / Docker Nightly: Cypress + Newman in containers |
 | `codeql-analysis.yml` | repository (JS+Python) | CodeQL Analysis: 代码语义漏洞扫描 (XSS, SQLi, path traversal) |
 | `security-scan.yml` | cicd-demo | Security / Scan: Trivy fs + Docker + IaC + npm audit → SARIF |
