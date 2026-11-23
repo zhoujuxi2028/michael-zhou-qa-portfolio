@@ -29,6 +29,7 @@
 | Defect ID | GitHub Issue | 标题摘要 | 严重度 | Blocking? | 发现日期 | 状态 | 关联 Waiver | 备注 |
 |-----------|--------------|----------|--------|-----------|----------|------|-------------|------|
 | SEC-DEF-001 | TBD | Security Tests dependency-scan job 失败 - safety check 缺少策略文件 | P2 | No | 2026-05-17 | ✅ Fixed | N/A | safety check 默认查找 `.safety-policy.yml` 但文件不存在。[RCA](../project-management/RCA-2026-05-17-SEC-DEF-001-dependency-scan-failure.md) |
+| SEC-DEF-002 | — | dependency-scan 自 2026-11-22 失败：`safety check` 扫描整个 CI 环境，命中 safety 自身依赖 filelock 3.32.7 的 13 个 CVE | P2 | No | 2026-11-23 | 🟡 Fix in review | N/A | safety 3.8.1（最新）要求 `filelock<4.0`，而 filelock `<=4.2.0` 全部受影响（CVE-2026-112907 等，2026-10 发布），项目 `requirements.txt` 不含 filelock。另：旧脚本失败时用通用错误覆盖报告，掩盖了真实原因；`check` 命令已弃用。修复：改用 `pip-audit -r requirements.txt`（仅扫描项目声明依赖，无需账号），保留 JSON 报告并打印漏洞摘要 |
 
 ---
 
@@ -57,3 +58,4 @@
 | 日期 | 变更内容 | 操作人 |
 |------|----------|--------|
 | 2026-05-17 | 初始建表；登记 SEC-DEF-001（dependency-scan job 失败） | QA |
+| 2026-11-23 | 登记 SEC-DEF-002：safety 命中自身依赖 filelock 的 CVE，dependency-scan 改用 pip-audit | QA |

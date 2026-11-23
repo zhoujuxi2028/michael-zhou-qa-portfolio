@@ -182,7 +182,7 @@ The project includes GitHub Actions workflow ([`security-tests.yml`](../../../.g
 | `security-tests` | DVWA + Phase 7 tests (crypto, components, integrity, logging, SSRF, multi-level, SQLMap) | DVWA |
 | `juice-shop-tests` | Juice Shop API, JWT, NoSQL injection, business logic, SSRF | Juice Shop |
 | `zap-baseline-scan` | OWASP ZAP passive scan with custom rules | DVWA + ZAP |
-| `dependency-scan` | Python dependency vulnerability check (safety) | — |
+| `dependency-scan` | Python dependency vulnerability check (pip-audit on `requirements.txt`) | — |
 | `summary` | Test counts, OWASP Top 10 coverage table | — |
 
 Triggers: push to main, PR to main, weekly schedule, manual dispatch.

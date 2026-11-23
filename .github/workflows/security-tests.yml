@@ -208,25 +208,29 @@ jobs:
         with:
           cache-dependency-path: 'projects/security/security-testing-demo/requirements.txt'
           working-directory: projects/security/security-testing-demo
-          extra-packages: safety
+          extra-packages: pip-audit
 
       - name: Run dependency vulnerability scan
-        # Keep safety's real output: the old step overwrote the report with a generic
-        # error on failure, hiding whether safety broke or found vulnerabilities.
+        # SEC-DEF-002: `safety check` scanned the whole CI environment, so filelock 3.x
+        # pulled in by safety itself (safety pins filelock<4, all 3.x vulnerable) failed
+        # the job; `check` is also deprecated. pip-audit scans only this project's
+        # declared requirements and needs no account.
         run: |
           mkdir -p reports
+          pip-audit --version
           set +e
-          safety --version
-          safety check --json > reports/dependency-scan.json 2> reports/dependency-scan.stderr.log
+          pip-audit -r requirements.txt --format json --output reports/dependency-scan.json
           rc=$?
           set -e
-          echo "safety check exit code: $rc"
-          cat reports/dependency-scan.json
-          if [ "$rc" -ne 0 ]; then
-            echo "::group::safety stderr"
-            cat reports/dependency-scan.stderr.log
-            echo "::endgroup::"
-          fi
+          python - <<'EOF'
+          import json
+          deps = json.load(open("reports/dependency-scan.json"))["dependencies"]
+          vulns = [(d["name"], d["version"], v["id"], ",".join(v["fix_versions"]) or "-")
+                   for d in deps for v in d.get("vulns", [])]
+          print(f"Scanned {len(deps)} packages, {len(vulns)} known vulnerabilities")
+          for name, ver, vid, fix in vulns:
+              print(f"  {name} {ver}: {vid} (fix: {fix})")
+          EOF
           exit "$rc"
 
       - name: Upload dependency report
@@ -234,9 +238,7 @@ jobs:
         if: always()
         with:
           name: dependency-scan-report
-          path: |
-            projects/security/security-testing-demo/reports/dependency-scan.json
-            projects/security/security-testing-demo/reports/dependency-scan.stderr.log
+          path: projects/security/security-testing-demo/reports/dependency-scan.json
 
   summary:
     needs: [security-tests, juice-shop-tests, zap-baseline-scan, dependency-scan]

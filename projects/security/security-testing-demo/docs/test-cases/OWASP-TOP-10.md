@@ -188,7 +188,7 @@ Referrer-Policy: strict-origin-when-cross-origin
 ```yaml
 # CI/CD 集成依赖扫描
 - name: Dependency scan
-  run: safety check
+  run: pip-audit -r requirements.txt
 ```
 
 ### A08: 软件和数据完整性故障
