@@ -40,7 +40,7 @@ updates:
 
   # npm — cicd-demo
   - package-ecosystem: "npm"
-    directory: "/cicd-demo"
+    directory: "/infra/cicd-demo"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -60,7 +60,7 @@ updates:
 
   # npm — playwright-demo
   - package-ecosystem: "npm"
-    directory: "/playwright-demo"
+    directory: "/projects/functional/playwright-demo"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -80,7 +80,7 @@ updates:
 
   # npm — microservice-testing-platform
   - package-ecosystem: "npm"
-    directory: "/microservice-testing-platform"
+    directory: "/projects/platform/microservice-testing-platform"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -100,7 +100,7 @@ updates:
 
   # npm — performance-testing-platform
   - package-ecosystem: "npm"
-    directory: "/performance-testing-platform"
+    directory: "/projects/platform/performance-testing-platform"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -120,7 +120,7 @@ updates:
 
   # npm — api-testing-demo
   - package-ecosystem: "npm"
-    directory: "/api-testing-demo"
+    directory: "/projects/functional/api-testing-demo"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -140,7 +140,7 @@ updates:
 
   # npm — iwsva-cypress-e2e
   - package-ecosystem: "npm"
-    directory: "/iwsva-cypress-e2e"
+    directory: "/projects/functional/iwsva-cypress-e2e"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -160,7 +160,7 @@ updates:
 
   # Terraform — cicd-demo
   - package-ecosystem: "terraform"
-    directory: "/cicd-demo/terraform"
+    directory: "/infra/cicd-demo/terraform"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -180,7 +180,7 @@ updates:
 
   # Docker — cicd-demo
   - package-ecosystem: "docker"
-    directory: "/cicd-demo"
+    directory: "/infra/cicd-demo"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -200,7 +200,7 @@ updates:
 
   # Docker — k8s-auto-testing-platform
   - package-ecosystem: "docker"
-    directory: "/k8s-auto-testing-platform/app"
+    directory: "/infra/k8s-auto-testing-platform/app"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -220,7 +220,7 @@ updates:
 
   # Docker — microservice inventory-service
   - package-ecosystem: "docker"
-    directory: "/microservice-testing-platform/services/inventory-service"
+    directory: "/projects/platform/microservice-testing-platform/services/inventory-service"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -240,7 +240,7 @@ updates:
 
   # Docker — microservice order-service
   - package-ecosystem: "docker"
-    directory: "/microservice-testing-platform/services/order-service"
+    directory: "/projects/platform/microservice-testing-platform/services/order-service"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -260,7 +260,7 @@ updates:
 
   # Docker — microservice payment-service
   - package-ecosystem: "docker"
-    directory: "/microservice-testing-platform/services/payment-service"
+    directory: "/projects/platform/microservice-testing-platform/services/payment-service"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -280,7 +280,7 @@ updates:
 
   # Docker — performance-testing-platform
   - package-ecosystem: "docker"
-    directory: "/performance-testing-platform"
+    directory: "/projects/platform/performance-testing-platform"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -300,7 +300,7 @@ updates:
 
   # pip — ai-testing-platform
   - package-ecosystem: "pip"
-    directory: "/ai-testing-platform"
+    directory: "/ai-lab/ai-testing-platform"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -320,7 +320,7 @@ updates:
 
   # pip — k8s-auto-testing-platform (root)
   - package-ecosystem: "pip"
-    directory: "/k8s-auto-testing-platform"
+    directory: "/infra/k8s-auto-testing-platform"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -340,7 +340,7 @@ updates:
 
   # pip — k8s-auto-testing-platform (app)
   - package-ecosystem: "pip"
-    directory: "/k8s-auto-testing-platform/app"
+    directory: "/infra/k8s-auto-testing-platform/app"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -360,7 +360,7 @@ updates:
 
   # pip — robot-framework-demo
   - package-ecosystem: "pip"
-    directory: "/robot-framework-demo"
+    directory: "/projects/functional/robot-framework-demo"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -380,7 +380,7 @@ updates:
 
   # pip — security-testing-demo
   - package-ecosystem: "pip"
-    directory: "/security-testing-demo"
+    directory: "/projects/security/security-testing-demo"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -400,7 +400,7 @@ updates:
 
   # pip — selenium-demo
   - package-ecosystem: "pip"
-    directory: "/selenium-demo"
+    directory: "/projects/functional/selenium-demo"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -420,7 +420,7 @@ updates:
 
   # pip — sid-iam-testing-platform
   - package-ecosystem: "pip"
-    directory: "/sid-iam-testing-platform"
+    directory: "/projects/platform/sid-iam-testing-platform"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -429,6 +429,82 @@ updates:
       - "sid-iam"
     commit-message:
       prefix: "chore(sid-iam)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
+
+  # pip — sql-testing-demo
+  - package-ecosystem: "pip"
+    directory: "/projects/database/sql-testing-demo"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+    commit-message:
+      prefix: "chore(sql-testing)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
+
+  # pip — ivi-integration-lab
+  - package-ecosystem: "pip"
+    directory: "/projects/automotive/ivi-integration-lab"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+    commit-message:
+      prefix: "chore(ivi)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
+
+  # pip — diagnostics-log-triage-lab
+  - package-ecosystem: "pip"
+    directory: "/projects/automotive/diagnostics-log-triage-lab"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+    commit-message:
+      prefix: "chore(diag-lab)"
+    groups:
+      routine-updates:
+        update-types:
+          - "minor"
+          - "patch"
+      major-updates:
+        update-types:
+          - "major"
+
+  # pip — av-testing-demo
+  - package-ecosystem: "pip"
+    directory: "/projects/multimedia/av-testing-demo"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "enhancement"
+    commit-message:
+      prefix: "chore(av-testing)"
     groups:
       routine-updates:
         update-types:
