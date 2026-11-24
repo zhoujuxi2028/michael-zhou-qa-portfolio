@@ -44,12 +44,12 @@
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "cypress": "^16.2.1",
-    "eslint": "^10.14.0",
-    "eslint-plugin-cypress": "^7.0.2",
+    "cypress": "^16.3.0",
+    "eslint": "^10.15.0",
+    "eslint-plugin-cypress": "^7.1.0",
     "globals": "^17.13.0",
     "husky": "^9.1.7",
-    "lint-staged": "^17.6.0",
+    "lint-staged": "^17.6.1",
     "newman": "^6.2.3",
     "newman-reporter-htmlextra": "^1.23.0"
   },
