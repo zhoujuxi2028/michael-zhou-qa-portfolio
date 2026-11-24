@@ -5,13 +5,13 @@ pytest-html==4.2.0
 pytest-xdist==3.8.0
 
 # LLM Evaluation
-deepeval==4.3.2
+deepeval==4.3.4
 
 # Code Analysis
 radon==6.0.1
 
 # Code Quality
-ruff==0.17.3
+ruff==0.17.6
 black==26.10.1
 flake8==7.5.0
 isort==9.0.2
