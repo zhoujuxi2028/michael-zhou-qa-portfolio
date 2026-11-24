@@ -215,10 +215,16 @@ jobs:
         run: |
           kubectl apply --server-side -f \
             "https://github.com/prometheus-operator/prometheus-operator/releases/download/${PROM_OPERATOR_VERSION}/stripped-down-crds.yaml"
-          kubectl wait --for=condition=established --timeout=60s \
-            crd/servicemonitors.monitoring.coreos.com \
-            crd/podmonitors.monitoring.coreos.com \
-            crd/prometheusrules.monitoring.coreos.com
+          # Poll instead of `kubectl wait`: it errors if .status.conditions is still nil
+          for crd in servicemonitors podmonitors prometheusrules; do
+            for i in $(seq 1 30); do
+              s=$(kubectl get "crd/${crd}.monitoring.coreos.com" \
+                -o jsonpath='{.status.conditions[?(@.type=="Established")].status}')
+              [[ "$s" == "True" ]] && echo "${crd}: Established" && break
+              [[ $i -eq 30 ]] && echo "::error::${crd} CRD not Established" && exit 1
+              sleep 2
+            done
+          done
 
       - name: Deploy to K8S
         run: |
