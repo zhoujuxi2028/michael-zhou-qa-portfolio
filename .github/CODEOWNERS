@@ -1,17 +1,25 @@
 # Default owner for all files
 * @zhoujuxi2028
 
-# Project-specific owners
-/iwsva-cypress-e2e/          @zhoujuxi2028
-/k8s-auto-testing-platform/  @zhoujuxi2028
-/security-testing-demo/      @zhoujuxi2028
-/cicd-demo/                  @zhoujuxi2028
-/api-testing-demo/           @zhoujuxi2028
-/playwright-demo/            @zhoujuxi2028
-/selenium-demo/              @zhoujuxi2028
-/sid-iam-testing-platform/   @zhoujuxi2028
-/microservice-testing-platform/ @zhoujuxi2028
-/performance-testing-platform/  @zhoujuxi2028
+# Project-specific owners (paths follow projects/<category>/, infra/, ai-lab/ — see #847)
+/projects/functional/iwsva-cypress-e2e/              @zhoujuxi2028
+/projects/functional/api-testing-demo/               @zhoujuxi2028
+/projects/functional/playwright-demo/                @zhoujuxi2028
+/projects/functional/selenium-demo/                  @zhoujuxi2028
+/projects/functional/robot-framework-demo/           @zhoujuxi2028
+/projects/security/security-testing-demo/            @zhoujuxi2028
+/projects/database/sql-testing-demo/                 @zhoujuxi2028
+/projects/platform/sid-iam-testing-platform/         @zhoujuxi2028
+/projects/platform/microservice-testing-platform/    @zhoujuxi2028
+/projects/platform/performance-testing-platform/     @zhoujuxi2028
+/projects/automotive/ivi-integration-lab/            @zhoujuxi2028
+/projects/automotive/diagnostics-log-triage-lab/     @zhoujuxi2028
+/projects/multimedia/av-testing-demo/                @zhoujuxi2028
+/infra/cicd-demo/                                    @zhoujuxi2028
+/infra/k8s-auto-testing-platform/                    @zhoujuxi2028
+/ai-lab/ai-testing-platform/                         @zhoujuxi2028
+/ai-lab/llm-agent-tutorial/                          @zhoujuxi2028
 
-# CI/CD workflows
+# CI/CD workflows and composite actions
 /.github/workflows/          @zhoujuxi2028
+/.github/actions/            @zhoujuxi2028
