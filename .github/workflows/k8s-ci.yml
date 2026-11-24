@@ -244,6 +244,15 @@ jobs:
             --self-contained-html \
             -m "integration or hpa or deployment or service"
 
+      - name: Dump K8S diagnostics on failure
+        if: failure()
+        run: |
+          kubectl get all -n k8s-testing -o wide || true
+          kubectl describe deployment/test-app -n k8s-testing || true
+          kubectl describe pods -n k8s-testing -l app=test-app || true
+          kubectl logs -n k8s-testing -l app=test-app --all-containers --tail=100 || true
+          kubectl get events -n k8s-testing --sort-by=.lastTimestamp | tail -50 || true
+
       - name: Upload integration test results
         uses: actions/upload-artifact@v7
         if: always()
