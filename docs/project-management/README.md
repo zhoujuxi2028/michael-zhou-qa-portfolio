@@ -8,6 +8,7 @@
 |------|------|
 | [defect-tracking/](defect-tracking/) | Portfolio 级缺陷/Waiver/Flaky/依赖风险跟踪系统（SSOT） |
 | [postmortems/](postmortems/) | 季度复盘、专项 RCA、问题闭环文档 |
+| [optimization-backlog.md](optimization-backlog.md) | 仓库级优化工作项（`OPT-NNN`）与审计批次 |
 
 ## 管理规则
 
