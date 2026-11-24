@@ -29,4 +29,6 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
         set -euo pipefail
-        npm ci || (echo "::warning::npm ci failed - lockfile out of sync; running npm install as fallback (PDEF-008)" && npm install)
+        # OPT-005 / PDEF-026: no npm install fallback — lockfile drift must fail CI.
+        # Fix drift with `npm install --package-lock-only` (see CLAUDE.md Dependabot rules, PDEF-008).
+        npm ci

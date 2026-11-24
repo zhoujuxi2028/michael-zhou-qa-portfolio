@@ -26,7 +26,10 @@
 
 | Defect ID | GitHub Issue | 标题摘要 | 项目 / 范围 | 严重度 | Blocking? | 发现日期 | 状态 | 关联 Waiver | 关联 RCA / Postmortem |
 |-----------|--------------|----------|-------------|--------|-----------|----------|------|-------------|------------------------|
-| _(无活跃缺陷)_ | | | | | | | | | |
+| PDEF-023 | TBD | Dependabot 20/22 个 `directory:` 指向 #847 目录迁移前旧路径，子项目依赖更新自 2026-11-08 起静默停止；4 个新项目无条目（OPT-001/002） | 仓库级 / 依赖治理 | P2 | No | 2026-11-24 | In progress | — | [optimization-backlog](../optimization-backlog.md) |
+| PDEF-024 | TBD | CODEOWNERS 路径全部过期且缺新项目（OPT-003） | 仓库级 / 评审路由 | P3 | No | 2026-11-24 | In progress | — | [optimization-backlog](../optimization-backlog.md) |
+| PDEF-025 | TBD | `k8s-ci.yml` build-status 不因 unit-tests 失败/取消而失败，存在假绿（OPT-004） | k8s-auto-testing-platform / CI | P2 | No | 2026-11-24 | In progress | — | [optimization-backlog](../optimization-backlog.md) |
+| PDEF-026 | TBD | `setup-node-project` composite `npm ci \|\| npm install` fallback 掩盖 lockfile 漂移（OPT-005） | 仓库级 / CI | P2 | No | 2026-11-24 | In progress | — | [optimization-backlog](../optimization-backlog.md) |
 
 > 已存在的项目级活跃缺陷请见对应项目登记表（见第 6 节"项目级登记入口"）。
 >
@@ -143,3 +146,4 @@
 | 2026-04-26 | 同步 `performance-testing-platform`：`DEF-009` 已关闭，活跃数调整为 4 | QA |
 | 2026-04-26 | 将 `performance-testing-platform` 入口切换到 `docs/qa/defect-register.md`；同步活跃数至 5（含 `DEF-009`） | QA |
 | 2026-04-25 | 初始建表；Portfolio 级跟踪系统 v1.0 落地；登记 11 个项目级入口 | QA |
+| 2026-11-24 | 新增 PDEF-023~026（AUDIT-2026-11-24 / OPT-001~005）：Dependabot / CODEOWNERS 路径过期、k8s-ci 假绿、npm ci fallback；修复分支 `fix/automation-stale-paths` | QA |

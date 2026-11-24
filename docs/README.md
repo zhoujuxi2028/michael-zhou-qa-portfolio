@@ -51,6 +51,7 @@ docs/
 
 ## 最近新增
 
+- [project-management/optimization-backlog.md](project-management/optimization-backlog.md) — 仓库优化 Backlog（`OPT-NNN` 编号，AUDIT-2026-11-24）
 - [project-management/defect-tracking/](project-management/defect-tracking/) — Portfolio 级"文档化的问题/缺陷跟踪系统"（v1.0，2026-04-25）
 - [process/portfolio-quality-gate-baseline.md](process/portfolio-quality-gate-baseline.md) — 统一质量门禁与治理基线（v1.0，2026-05-25）
 - [process/test-data-environment-standard.md](process/test-data-environment-standard.md) — 测试数据与环境一致性标准（v1.0，2026-05-25）
