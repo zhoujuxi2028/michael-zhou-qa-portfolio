@@ -251,10 +251,11 @@ jobs:
           echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| K8S Auto Testing / Code Quality | ${{ needs.code-quality.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| K8S Auto Testing / Unit Tests | ${{ needs.unit-tests.result == 'success' && '✅ Passed' || '⚠️ Check Results' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| K8S Auto Testing / Unit Tests | ${{ needs.unit-tests.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
 
-          if [[ "${{ needs.code-quality.result }}" == "failure" ]]; then
-            echo "Code quality checks failed!"
+          # OPT-004 / PDEF-025: any non-success upstream result (failure, cancelled, skipped) fails the gate
+          if [[ "${{ needs.code-quality.result }}" != "success" || "${{ needs.unit-tests.result }}" != "success" ]]; then
+            echo "Upstream jobs not successful: code-quality=${{ needs.code-quality.result }}, unit-tests=${{ needs.unit-tests.result }}"
             exit 1
           fi
           echo "Build completed successfully!"
