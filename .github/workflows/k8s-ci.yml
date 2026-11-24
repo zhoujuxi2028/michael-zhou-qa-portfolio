@@ -10,6 +10,7 @@ on:
     branches: [main]
     paths:
       - 'infra/k8s-auto-testing-platform/**'
+      - '.github/workflows/k8s-ci.yml'
   workflow_dispatch:
     inputs:
       run_integration:
@@ -170,7 +171,8 @@ jobs:
     name: K8S Auto Testing / Integration Tests
     runs-on: ubuntu-latest
     needs: unit-tests
-    if: github.event.inputs.run_integration == 'true' || github.event_name == 'workflow_dispatch'
+    # Issue #926: run only when explicitly requested via workflow_dispatch input
+    if: github.event.inputs.run_integration == 'true'
     timeout-minutes: 30
 
     steps:
@@ -205,6 +207,18 @@ jobs:
       - name: Create namespace
         run: |
           kubectl create namespace k8s-testing --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Install Prometheus Operator CRDs
+        # Issue #926: servicemonitor.yaml needs ServiceMonitor/PodMonitor/PrometheusRule CRDs
+        env:
+          PROM_OPERATOR_VERSION: v0.95.2
+        run: |
+          kubectl apply --server-side -f \
+            "https://github.com/prometheus-operator/prometheus-operator/releases/download/${PROM_OPERATOR_VERSION}/stripped-down-crds.yaml"
+          kubectl wait --for=condition=established --timeout=60s \
+            crd/servicemonitors.monitoring.coreos.com \
+            crd/podmonitors.monitoring.coreos.com \
+            crd/prometheusrules.monitoring.coreos.com
 
       - name: Deploy to K8S
         run: |
