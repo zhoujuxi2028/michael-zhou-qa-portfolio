@@ -10,6 +10,7 @@ on:
     branches: [main]
     paths:
       - 'infra/k8s-auto-testing-platform/**'
+      - '.github/workflows/k8s-ci.yml'
   workflow_dispatch:
     inputs:
       run_integration:
@@ -170,7 +171,8 @@ jobs:
     name: K8S Auto Testing / Integration Tests
     runs-on: ubuntu-latest
     needs: unit-tests
-    if: github.event.inputs.run_integration == 'true' || github.event_name == 'workflow_dispatch'
+    # Issue #926: run only when explicitly requested via workflow_dispatch input
+    if: github.event.inputs.run_integration == 'true'
     timeout-minutes: 30
 
     steps:
@@ -206,6 +208,24 @@ jobs:
         run: |
           kubectl create namespace k8s-testing --dry-run=client -o yaml | kubectl apply -f -
 
+      - name: Install Prometheus Operator CRDs
+        # Issue #926: servicemonitor.yaml needs ServiceMonitor/PodMonitor/PrometheusRule CRDs
+        env:
+          PROM_OPERATOR_VERSION: v0.95.2
+        run: |
+          kubectl apply --server-side -f \
+            "https://github.com/prometheus-operator/prometheus-operator/releases/download/${PROM_OPERATOR_VERSION}/stripped-down-crds.yaml"
+          # Poll instead of `kubectl wait`: it errors if .status.conditions is still nil
+          for crd in servicemonitors podmonitors prometheusrules; do
+            for i in $(seq 1 30); do
+              s=$(kubectl get "crd/${crd}.monitoring.coreos.com" \
+                -o jsonpath='{.status.conditions[?(@.type=="Established")].status}')
+              [[ "$s" == "True" ]] && echo "${crd}: Established" && break
+              [[ $i -eq 30 ]] && echo "::error::${crd} CRD not Established" && exit 1
+              sleep 2
+            done
+          done
+
       - name: Deploy to K8S
         run: |
           kubectl apply -f k8s-manifests/
@@ -223,6 +243,15 @@ jobs:
             --html=reports/integration-report.html \
             --self-contained-html \
             -m "integration or hpa or deployment or service"
+
+      - name: Dump K8S diagnostics on failure
+        if: failure()
+        run: |
+          kubectl get all -n k8s-testing -o wide || true
+          kubectl describe deployment/test-app -n k8s-testing || true
+          kubectl describe pods -n k8s-testing -l app=test-app || true
+          kubectl logs -n k8s-testing -l app=test-app --all-containers --tail=100 || true
+          kubectl get events -n k8s-testing --sort-by=.lastTimestamp | tail -50 || true
 
       - name: Upload integration test results
         uses: actions/upload-artifact@v7
