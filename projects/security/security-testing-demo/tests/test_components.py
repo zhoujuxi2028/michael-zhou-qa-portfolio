@@ -9,8 +9,11 @@ Tests for detecting vulnerable dependencies and outdated components including:
 Reference: https://owasp.org/Top10/A06_2021-Vulnerable_and_Outdated_Components/
 """
 
+import json
 import re
+import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
 import requests
@@ -21,69 +24,34 @@ pytestmark = pytest.mark.components
 class TestDependencyVulnerabilities:
     """Tests for vulnerable dependencies."""
 
-    def test_python_dependencies_safety(self):
-        """
-        Test Python dependencies for known vulnerabilities using safety.
-
-        ID: SEC-COMP-001
-        """
-        try:
-            # Check if safety is installed
-            result = subprocess.run(
-                ["safety", "--version"],
-                capture_output=True,
-                text=True,
-            )
-            if result.returncode != 0:
-                pytest.skip("safety not installed (pip install safety)")
-        except FileNotFoundError:
-            pytest.skip("safety not installed")
-
-        # Run safety check
-        result = subprocess.run(
-            ["safety", "check", "--json"],
-            capture_output=True,
-            text=True,
-        )
-
-        if "vulnerabilities found" in result.stdout.lower():
-            print("[!] Vulnerable dependencies found:")
-            print(result.stdout[:500])
-        else:
-            print("[+] No known vulnerabilities in dependencies")
-
-        assert result.returncode in [0, 64], f"safety check failed with return code {result.returncode}"
-
     def test_pip_audit(self):
         """
-        Test Python dependencies using pip-audit.
+        Test this project's pinned Python dependencies with pip-audit.
 
         ID: SEC-COMP-002
+        Scans requirements.txt (not the whole runner environment) and fails on
+        any known vulnerability - same gate as the dependency-scan CI job.
+        SEC-COMP-001 (safety) was removed: safety scanned its own dependency
+        tree and was replaced by pip-audit in SEC-DEF-002 (#901).
         """
-        try:
-            result = subprocess.run(
-                ["pip-audit", "--version"],
-                capture_output=True,
-                text=True,
-            )
-            if result.returncode != 0:
-                pytest.skip("pip-audit not installed (pip install pip-audit)")
-        except FileNotFoundError:
-            pytest.skip("pip-audit not installed")
+        if shutil.which("pip-audit") is None:
+            pytest.skip("pip-audit not installed (pip install pip-audit)")
 
+        requirements = Path(__file__).resolve().parent.parent / "requirements.txt"
         result = subprocess.run(
-            ["pip-audit", "--format", "json"],
+            ["pip-audit", "-r", str(requirements), "--format", "json", "--progress-spinner", "off"],
             capture_output=True,
             text=True,
+            timeout=600,
         )
 
-        if "vulns" in result.stdout:
-            print("[!] Vulnerabilities found by pip-audit")
-            print(result.stdout[:500])
-        else:
-            print("[+] pip-audit: No vulnerabilities found")
-
-        assert result.returncode in [0, 1], f"pip-audit failed with return code {result.returncode}"
+        assert result.returncode in (0, 1), f"pip-audit error (rc={result.returncode}): {result.stderr[-500:]}"
+        report = json.loads(result.stdout)
+        vulnerable = {
+            dep["name"]: [v["id"] for v in dep["vulns"]] for dep in report["dependencies"] if dep.get("vulns")
+        }
+        print(f"[+] pip-audit scanned {len(report['dependencies'])} dependencies")
+        assert not vulnerable, f"Vulnerable dependencies in requirements.txt: {vulnerable}"
 
 
 class TestServerVersionDisclosure:
