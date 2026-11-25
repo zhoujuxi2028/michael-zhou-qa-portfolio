@@ -80,6 +80,21 @@ def target_url(config):
     return config.TARGET_URL
 
 
+def _set_dvwa_security_level(session, config, level):
+    """POST a DVWA security level with the security.php CSRF token."""
+    import re as _re
+
+    resp = session.get(f"{config.DVWA_URL}/security.php", timeout=10)
+    token_match = _re.search(r"user_token'[^>]+value='([^']+)'", resp.text)
+    token = token_match.group(1) if token_match else ""
+    session.post(
+        f"{config.DVWA_URL}/security.php",
+        data={"security": level, "seclev_submit": "Submit", "user_token": token},
+        timeout=10,
+    )
+    return level
+
+
 @pytest.fixture(scope="session")
 def dvwa_session(config):
     """Create authenticated DVWA session.
@@ -117,13 +132,8 @@ def dvwa_session(config):
 
         response = session.post(login_url, data=login_data, timeout=10)
 
-        # Set security level to low for testing
-        session.get(f"{config.DVWA_URL}/security.php", timeout=10)
-        session.post(
-            f"{config.DVWA_URL}/security.php",
-            data={"security": "low", "seclev_submit": "Submit"},
-            timeout=10,
-        )
+        # Set security level to low for testing (needs the page's CSRF token)
+        _set_dvwa_security_level(session, config, "low")
 
         return session
 
@@ -506,29 +516,25 @@ def set_security_level(dvwa_session, config):
         dvwa_session: Authenticated DVWA session
         config: Test configuration
 
-    Returns:
+    Yields:
         Function to set security level
     """
+
+    changed = []
 
     def _set_level(level: str):
         """Set DVWA security level (low, medium, high, impossible)."""
         if dvwa_session is None:
             pytest.skip("DVWA not available")
+        changed.append(level)
+        return _set_dvwa_security_level(dvwa_session, config, level)
 
-        import re as _re
+    yield _set_level
 
-        # GET security.php to extract CSRF token
-        resp = dvwa_session.get(f"{config.DVWA_URL}/security.php", timeout=10)
-        token_match = _re.search(r"user_token'[^>]+value='([^']+)'", resp.text)
-        token = token_match.group(1) if token_match else ""
-        dvwa_session.post(
-            f"{config.DVWA_URL}/security.php",
-            data={"security": level, "seclev_submit": "Submit", "user_token": token},
-            timeout=10,
-        )
-        return level
-
-    return _set_level
+    # dvwa_session is session-scoped: restore "low" so later tests are not
+    # silently run at a stricter level (caused XPASS in test_sqli / test_xss)
+    if changed and dvwa_session is not None:
+        _set_dvwa_security_level(dvwa_session, config, "low")
 
 
 @pytest.fixture(params=["low", "medium", "high"])
@@ -549,16 +555,7 @@ def security_level(request, dvwa_session, config):
     if dvwa_session is None:
         pytest.skip("DVWA not available")
 
-    level = request.param
-    import re as _re
-
-    # GET security.php to extract CSRF token
-    resp = dvwa_session.get(f"{config.DVWA_URL}/security.php", timeout=10)
-    token_match = _re.search(r"user_token'[^>]+value='([^']+)'", resp.text)
-    token = token_match.group(1) if token_match else ""
-    dvwa_session.post(
-        f"{config.DVWA_URL}/security.php",
-        data={"security": level, "seclev_submit": "Submit", "user_token": token},
-        timeout=10,
-    )
+    level = _set_dvwa_security_level(dvwa_session, config, request.param)
     yield level
+    # Restore "low" for the shared session-scoped dvwa_session
+    _set_dvwa_security_level(dvwa_session, config, "low")
