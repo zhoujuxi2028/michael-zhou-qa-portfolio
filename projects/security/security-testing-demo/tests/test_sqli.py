@@ -16,7 +16,6 @@ class TestSQLInjection:
     """Tests for SQL Injection vulnerabilities."""
 
     @pytest.mark.sqli
-    @pytest.mark.xfail(reason="DVWA at low security exposes SQL error messages")
     def test_error_based_sqli(self, dvwa_session, config):
         """Test for Error-based SQL Injection.
 
@@ -64,10 +63,10 @@ class TestSQLInjection:
         if errors_found:
             print(f"[!] SQL errors exposed: {errors_found}")
 
-        assert len(errors_found) == 0, f"SQL errors should not be exposed: {errors_found}"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert errors_found, 'Expected finding not detected: DVWA at low security exposes SQL error messages'
 
     @pytest.mark.sqli
-    @pytest.mark.xfail(reason="DVWA at low security is vulnerable to UNION injection")
     def test_union_based_sqli(self, dvwa_session, config):
         """Test for Union-based SQL Injection.
 
@@ -106,7 +105,8 @@ class TestSQLInjection:
         if successful_unions:
             print("[!] UNION injection may be possible")
 
-        assert len(successful_unions) == 0, "UNION injection should not be possible"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert successful_unions, 'Expected finding not detected: DVWA at low security is vulnerable to UNION injection'
 
     @pytest.mark.sqli
     @pytest.mark.slow

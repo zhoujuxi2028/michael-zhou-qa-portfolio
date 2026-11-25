@@ -22,7 +22,6 @@ class TestReflectedXSS:
     ]
 
     @pytest.mark.xss
-    @pytest.mark.xfail(reason="DVWA at low security reflects XSS payloads without sanitization")
     def test_xss_in_search_parameter(self, dvwa_session, config):
         """Test for XSS in search/query parameters.
 
@@ -48,10 +47,12 @@ class TestReflectedXSS:
         if reflected:
             print(f"[!] XSS payloads reflected: {len(reflected)}")
 
-        assert len(reflected) == 0, f"XSS payloads should not be reflected: {reflected}"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert reflected, (
+            'Expected finding not detected: DVWA at low security reflects XSS payloads without sanitization'
+        )
 
     @pytest.mark.xss
-    @pytest.mark.xfail(reason="DVWA at low security does not HTML-encode output")
     def test_xss_payload_encoding(self, dvwa_session, config):
         """Test if XSS payloads are properly HTML encoded.
 
@@ -80,7 +81,10 @@ class TestReflectedXSS:
         if is_raw and not is_encoded:
             print("[!] XSS Vulnerability: Payload reflected without encoding")
 
-        assert is_encoded and not is_raw, "XSS payload should be HTML-encoded in output"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert is_raw or not is_encoded, (
+            'Expected finding not detected: DVWA at low security does not HTML-encode output'
+        )
 
     @pytest.mark.xss
     def test_xss_in_url_fragment(self, http_session, config):
@@ -118,7 +122,6 @@ class TestReflectedXSS:
 
     @pytest.mark.xss
     @pytest.mark.slow
-    @pytest.mark.xfail(reason="DVWA at low security has no XSS filter to bypass")
     def test_xss_filter_bypass(self, dvwa_session, config):
         """Test XSS filter bypass techniques.
 
@@ -153,14 +156,14 @@ class TestReflectedXSS:
         if bypassed:
             print(f"[!] Filter bypass successful with {len(bypassed)} payloads")
 
-        assert len(bypassed) == 0, f"XSS filter bypass should not be possible: {len(bypassed)} payloads succeeded"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert bypassed, 'Expected finding not detected: DVWA at low security has no XSS filter to bypass'
 
 
 class TestStoredXSS:
     """Tests for Stored XSS vulnerabilities."""
 
     @pytest.mark.xss
-    @pytest.mark.xfail(reason="DVWA at low security stores XSS payloads without sanitization")
     def test_stored_xss_in_comments(self, dvwa_session, config):
         """Test for Stored XSS in comment/guestbook functionality.
 
@@ -193,4 +196,7 @@ class TestStoredXSS:
         if payload in response.text:
             print("[!] Stored XSS vulnerability found")
 
-        assert payload not in response.text, "Stored XSS payload should not be rendered raw"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert payload in response.text, (
+            'Expected finding not detected: DVWA at low security stores XSS payloads without sanitization'
+        )

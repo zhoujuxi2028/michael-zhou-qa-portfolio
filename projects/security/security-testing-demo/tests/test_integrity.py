@@ -286,7 +286,6 @@ class TestDataIntegrity:
         except requests.RequestException:
             pytest.skip("Target not available")
 
-    @pytest.mark.xfail(reason="DVWA does not set X-Content-Type-Options header")
     def test_x_content_type_options(self, http_session, config):
         """
         Test for X-Content-Type-Options header.
@@ -305,9 +304,10 @@ class TestDataIntegrity:
             else:
                 print("[!] X-Content-Type-Options header missing")
 
-            assert (
-                xcto.lower() == "nosniff"
-            ), f"X-Content-Type-Options should be 'nosniff', got: '{xcto}'"
+            # Intentionally vulnerable target: assert the finding is detected (was xfail)
+            assert not (xcto.lower() == 'nosniff'), (
+                'Expected finding not detected: DVWA does not set X-Content-Type-Options header'
+            )
 
         except requests.RequestException:
             pytest.skip("Target not available")

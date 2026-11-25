@@ -57,7 +57,6 @@ class TestDependencyVulnerabilities:
 class TestServerVersionDisclosure:
     """Tests for server version disclosure."""
 
-    @pytest.mark.xfail(reason="DVWA server header discloses version information")
     def test_server_header_disclosure(self, http_session, config):
         """
         Test if Server header discloses version info.
@@ -83,7 +82,8 @@ class TestServerVersionDisclosure:
                 has_version = False
                 print("[+] Server header not present")
 
-            assert not has_version, f"Server header should not disclose version: {server}"
+            # Intentionally vulnerable target: assert the finding is detected (was xfail)
+            assert has_version, 'Expected finding not detected: DVWA server header discloses version information'
 
         except requests.RequestException:
             pytest.skip("Target not available")

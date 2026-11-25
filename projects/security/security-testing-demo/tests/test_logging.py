@@ -230,7 +230,6 @@ class TestSecurityEventLogging:
 
         assert detected, "Failed login should be detected in response"
 
-    @pytest.mark.xfail(reason="DVWA does not implement brute force protection")
     def test_brute_force_detection(self, http_session, config):
         """
         Test for brute force detection.
@@ -264,7 +263,8 @@ class TestSecurityEventLogging:
         else:
             print("[!] No brute force protection after 5 attempts")
 
-        assert blocked, "Brute force protection should be active after multiple failed attempts"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert not blocked, 'Expected finding not detected: DVWA does not implement brute force protection'
 
 
 class TestMonitoringCapabilities:
@@ -309,7 +309,6 @@ class TestMonitoringCapabilities:
             pytest.skip("Target not available")
         assert variance < 1.0, f"Response time variance too high: {variance:.3f}s"
 
-    @pytest.mark.xfail(reason="DVWA does not set monitoring-related headers")
     def test_security_headers_present(self, http_session, config):
         """
         Test for security headers that aid monitoring.
@@ -340,7 +339,8 @@ class TestMonitoringCapabilities:
         except requests.RequestException:
             pytest.skip("Target not available")
 
-        assert len(present_headers) > 0, "At least one monitoring header should be present"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert not present_headers, 'Expected finding not detected: DVWA does not set monitoring-related headers'
 
 
 class TestAuditCapabilities:

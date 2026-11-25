@@ -45,7 +45,6 @@ class TestSecurityHeaders:
     }
 
     @pytest.mark.headers
-    @pytest.mark.xfail(reason="DVWA does not set HSTS header")
     def test_hsts_header(self, http_session, config):
         """Test for HTTP Strict Transport Security header.
 
@@ -85,10 +84,10 @@ class TestSecurityHeaders:
         except requests.RequestException:
             pytest.skip("Target not available")
 
-        assert hsts, "HSTS header should be present"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert not hsts, 'Expected finding not detected: DVWA does not set HSTS header'
 
     @pytest.mark.headers
-    @pytest.mark.xfail(reason="DVWA does not set X-Frame-Options or CSP frame-ancestors")
     def test_x_frame_options(self, http_session, config):
         """Test for X-Frame-Options header.
 
@@ -121,10 +120,12 @@ class TestSecurityHeaders:
             pytest.skip("Target not available")
 
         csp = response.headers.get("Content-Security-Policy", "")
-        assert xfo or "frame-ancestors" in csp.lower(), "Clickjacking protection should be present"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert not (xfo or 'frame-ancestors' in csp.lower()), (
+            'Expected finding not detected: DVWA does not set X-Frame-Options or CSP frame-ancestors'
+        )
 
     @pytest.mark.headers
-    @pytest.mark.xfail(reason="DVWA does not set Content-Security-Policy header")
     def test_content_security_policy(self, http_session, config):
         """Test for Content-Security-Policy header.
 
@@ -168,10 +169,10 @@ class TestSecurityHeaders:
         except requests.RequestException:
             pytest.skip("Target not available")
 
-        assert csp, "Content-Security-Policy header should be present"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert not csp, 'Expected finding not detected: DVWA does not set Content-Security-Policy header'
 
     @pytest.mark.headers
-    @pytest.mark.xfail(reason="DVWA is missing most security headers")
     def test_all_security_headers(self, http_session, config):
         """Test all recommended security headers.
 
@@ -207,14 +208,14 @@ class TestSecurityHeaders:
         except requests.RequestException:
             pytest.skip("Target not available")
 
-        assert missing == 0, f"{missing} security headers are missing"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert missing > 0, 'Expected finding not detected: DVWA is missing most security headers'
 
 
 class TestCacheHeaders:
     """Tests for Cache-related security headers."""
 
     @pytest.mark.headers
-    @pytest.mark.xfail(reason="DVWA does not set cache-control headers on sensitive pages")
     def test_cache_control_sensitive_pages(self, http_session, config):
         """Test Cache-Control for sensitive pages.
 
@@ -253,4 +254,5 @@ class TestCacheHeaders:
         if not checked:
             pytest.skip("Target not available")
 
-        assert not uncached, f"Sensitive pages without cache-control: {uncached}"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert uncached, 'Expected finding not detected: DVWA does not set cache-control headers on sensitive pages'

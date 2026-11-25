@@ -14,7 +14,6 @@ class TestBruteForce:
     """Tests for Brute Force vulnerabilities."""
 
     @pytest.mark.auth
-    @pytest.mark.xfail(reason="DVWA does not implement login rate limiting")
     def test_login_rate_limiting(self, http_session, config):
         """Test if login has rate limiting.
 
@@ -54,7 +53,8 @@ class TestBruteForce:
         else:
             print(f"[!] No rate limiting detected after {failed_attempts} failed attempts")
 
-        assert blocked, "Login should have rate limiting after multiple failed attempts"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert not blocked, 'Expected finding not detected: DVWA does not implement login rate limiting'
 
     @pytest.mark.auth
     @pytest.mark.skip(reason="Conceptual: DVWA has no account lockout mechanism")
@@ -75,7 +75,6 @@ class TestSessionManagement:
     """Tests for Session Management vulnerabilities."""
 
     @pytest.mark.auth
-    @pytest.mark.xfail(reason="DVWA does not regenerate session ID after login")
     def test_session_fixation(self, http_session, config):
         """Test for Session Fixation vulnerability.
 
@@ -108,7 +107,10 @@ class TestSessionManagement:
         else:
             print("[+] Session ID regenerated after login")
 
-        assert session_before != session_after, "Session ID should be regenerated after login"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert session_before == session_after, (
+            'Expected finding not detected: DVWA does not regenerate session ID after login'
+        )
 
     @pytest.mark.auth
     @pytest.mark.skip(reason="Conceptual: requires waiting minutes to test timeout")
