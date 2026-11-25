@@ -129,7 +129,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
         with:
           driver: docker
 
@@ -171,7 +171,7 @@ jobs:
         run: npm audit --omit=dev --audit-level=moderate
 
       - name: Trivy fs scan (HIGH/CRITICAL gate)
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: fs
           scan-ref: infra/cicd-demo

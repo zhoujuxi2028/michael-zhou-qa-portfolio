@@ -32,6 +32,7 @@ permissions:
 jobs:
   security-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 20  # OPT-020
     defaults:
       run:
         working-directory: projects/security/security-testing-demo
@@ -94,6 +95,7 @@ jobs:
 
   juice-shop-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 15  # OPT-020
     defaults:
       run:
         working-directory: projects/security/security-testing-demo
@@ -150,6 +152,7 @@ jobs:
 
   zap-baseline-scan:
     runs-on: ubuntu-latest
+    timeout-minutes: 20  # OPT-020
     permissions:
       contents: read
       issues: write
@@ -179,7 +182,7 @@ jobs:
           done
 
       - name: OWASP ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.15.0
+        uses: zaproxy/action-baseline@de8ad967d3548d44ef623df22cf95c3b0baf8b25 # v0.15.0
         with:
           target: 'http://localhost:80'
           rules_file_name: 'projects/security/security-testing-demo/.zap/rules.tsv'
@@ -195,6 +198,7 @@ jobs:
 
   dependency-scan:
     runs-on: ubuntu-latest
+    timeout-minutes: 10  # OPT-020
     defaults:
       run:
         working-directory: projects/security/security-testing-demo
@@ -243,6 +247,7 @@ jobs:
   summary:
     needs: [security-tests, juice-shop-tests, zap-baseline-scan, dependency-scan]
     runs-on: ubuntu-latest
+    timeout-minutes: 5  # OPT-020
     if: always()
 
     steps:
@@ -250,7 +255,6 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           path: artifacts
-        continue-on-error: true
 
       - name: Security Test Summary
         run: |
@@ -281,6 +285,10 @@ jobs:
               errors=$(grep -oP 'errors="\K[^"]+' "$report" | head -1)
               passed=$((${tests:-0} - ${failures:-0} - ${skipped:-0} - ${errors:-0}))
               echo "| ${name} | ${tests:-N/A} | ${passed} | ${failures:-0} | ${skipped:-0} | ${errors:-0} |" >> $GITHUB_STEP_SUMMARY
+            else
+              # OPT-030: make a missing report visible instead of an empty table
+              echo "::warning::JUnit report not found: ${report}"
+              echo "| $(basename "$report" .xml) | ⚠️ report missing | - | - | - | - |" >> $GITHUB_STEP_SUMMARY
             fi
           done
 
