@@ -182,7 +182,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "🔍 [staging] Running Newman smoke test against external API..."
-          newman run postman/api-collection.json \
+          npx --no-install newman run postman/api-collection.json \
             -e postman/environment.json \
             --iteration-count 1 \
             --timeout-request 10000 \
