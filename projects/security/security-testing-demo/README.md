@@ -11,7 +11,7 @@
 
 This project demonstrates professional security testing automation capabilities, including:
 - **OWASP ZAP Integration**: Automated vulnerability scanning (baseline, full, API scans)
-- **Security Test Cases**: 182 Pytest tests covering OWASP Top 10 2021 (DVWA, Juice Shop, ZAP, Nessus, OpenVAS)
+- **Security Test Cases**: 190 Pytest tests covering OWASP Top 10 2021 (DVWA, Juice Shop, ZAP, Nessus, OpenVAS)
 - **Multiple Target Apps**: DVWA (PHP/MySQL) and Juice Shop (Node.js/Angular)
 - **CI/CD Integration**: GitHub Actions for continuous security testing
 - **Docker Environment**: Complete testing environment with ZAP and vulnerable targets
@@ -138,7 +138,7 @@ security-testing-demo/
 │   ├── zap-baseline.py           # Baseline scan (2-5 min)
 │   ├── zap-full-scan.py          # Full scan (15-30 min)
 │   └── zap-api-scan.py           # API security scan
-├── tests/                        # Pytest security tests (182 tests)
+├── tests/                        # Pytest security tests (190 tests)
 │   ├── conftest.py               # Fixtures for DVWA + Juice Shop
 │   ├── test_xss.py               # XSS vulnerability tests (A03)
 │   ├── test_sqli.py              # SQL injection tests (A03)
@@ -201,7 +201,7 @@ Triggers: push to main, PR to main, weekly schedule, manual dispatch.
 
 本项目展示专业的安全测试自动化能力，包括：
 - **OWASP ZAP 集成**: 自动化漏洞扫描（基线扫描、全量扫描、API 扫描）
-- **安全测试用例**: 182 个 Pytest 测试，完整覆盖 OWASP Top 10 2021 漏洞 (DVWA, Juice Shop, ZAP, Nessus, OpenVAS, SQLMap)
+- **安全测试用例**: 190 个 Pytest 测试，完整覆盖 OWASP Top 10 2021 漏洞 (DVWA, Juice Shop, ZAP, Nessus, OpenVAS, SQLMap)
 - **多目标应用**: DVWA (PHP/MySQL) 和 Juice Shop (Node.js/Angular)
 - **CI/CD 集成**: GitHub Actions 持续安全测试
 - **Docker 环境**: 完整的测试环境，包含 ZAP 和靶机
