@@ -11,9 +11,51 @@ Reference: https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures
 """
 
 import os
+import re
+from pathlib import Path
 
 import pytest
 import requests
+
+# Real credential shapes, not bare substrings: a bare "AKIA" also appears in
+# the secret-scan regex of commit-guard.yml (false positive).
+SECRET_PATTERNS = {
+    "aws_access_key": re.compile(r"\b(?:AKIA|ASIA)[0-9A-Z]{16}\b"),
+    "literal_credential": re.compile(
+        r"(?i)\b(?:password|passwd|api[_-]?key|secret|token)\s*[:=]\s*"
+        r"['\"]?(?!\$\{\{)[A-Za-z0-9_\-/+]{12,}"
+    ),
+}
+
+
+@pytest.mark.parametrize(
+    "line,expected",
+    [
+        ("  AWS_KEY: AKIAIOSFODNN7EXAMPLE", True),
+        ("  password: SuperSecret12345", True),
+        ("  api_key=abcdef0123456789xyz", True),
+        ("  token: ${{ secrets.GITHUB_TOKEN }}", False),
+        ("          (AKIA|ASIA)[0-9A-Z]{16}", False),
+        ("  password: password", False),
+    ],
+)
+def test_secret_patterns_detect_real_shapes(line, expected):
+    """Self-check SEC-INTEG-004's detector: catches real shapes, ignores refs/regex."""
+    assert any(p.search(line) for p in SECRET_PATTERNS.values()) is expected
+
+
+def _workflow_dir():
+    """Locate the repo's .github/workflows regardless of pytest's cwd.
+
+    CI runs pytest from the project dir, so a relative ".github/workflows"
+    never existed and these tests were always skipped.
+    """
+    for parent in Path(__file__).resolve().parents:
+        candidate = parent / ".github" / "workflows"
+        if candidate.is_dir():
+            return candidate
+    return None
+
 
 pytestmark = pytest.mark.integrity
 
@@ -60,7 +102,9 @@ class TestInsecureDeserialization:
             except requests.RequestException:
                 pass
 
-        assert not dangerous_accepted, f"Malicious JSON payloads should be rejected: {dangerous_accepted}"
+        assert (
+            not dangerous_accepted
+        ), f"Malicious JSON payloads should be rejected: {dangerous_accepted}"
 
     @pytest.mark.skip(reason="Conceptual: no XML endpoint available to test XXE")
     def test_xml_external_entity(self, http_session, config):
@@ -77,36 +121,31 @@ class TestInsecureDeserialization:
 class TestCICDIntegrity:
     """Tests for CI/CD pipeline integrity."""
 
-    @pytest.mark.xfail(reason="Workflow does not yet define explicit permissions")
     def test_github_actions_permissions(self):
         """
         Test GitHub Actions workflow permissions.
 
         ID: SEC-INTEG-003
-        Workflows should use minimal permissions.
+        Every workflow should declare explicit (least-privilege) permissions,
+        at workflow or job level, instead of inheriting the default token scope.
         """
-        workflow_path = ".github/workflows/security-scan.yml"
+        workflow_dir = _workflow_dir()
+        if workflow_dir is None:
+            pytest.skip("Workflow directory not found")
 
-        if not os.path.exists(workflow_path):
-            pytest.skip("Workflow file not found")
+        workflows = sorted(workflow_dir.glob("*.y*ml"))
+        assert workflows, "No workflow files found"
 
-        with open(workflow_path) as f:
-            content = f.read()
+        missing = [
+            wf.name
+            for wf in workflows
+            if not re.search(r"^(\s{4})?permissions:", wf.read_text(), re.MULTILINE)
+        ]
 
-        # Check for security best practices
-        checks = {
-            "uses: actions/checkout": "Checkout action used",
-            "permissions:": "Explicit permissions defined",
-            "continue-on-error": "Error handling present",
-        }
-
-        print("\n=== GitHub Actions Security Checks ===")
-        for check, desc in checks.items():
-            present = check in content
-            status = "[+]" if present else "[-]"
-            print(f"{status} {desc}")
-
-        assert "permissions:" in content, "Workflow should define explicit permissions"
+        print(
+            f"\n[+] {len(workflows) - len(missing)}/{len(workflows)} workflows declare permissions"
+        )
+        assert not missing, f"Workflows without explicit permissions: {missing}"
 
     def test_no_hardcoded_secrets(self):
         """
@@ -115,31 +154,17 @@ class TestCICDIntegrity:
         ID: SEC-INTEG-004
         Secrets should use GitHub secrets, not hardcoded values.
         """
-        workflow_dir = ".github/workflows"
+        workflow_dir = _workflow_dir()
 
-        if not os.path.exists(workflow_dir):
+        if workflow_dir is None:
             pytest.skip("Workflow directory not found")
 
-        secret_patterns = [
-            "password=",
-            "api_key=",
-            "secret=",
-            "token=",
-            "AKIA",  # AWS access key prefix
-        ]
-
         issues = []
-        for filename in os.listdir(workflow_dir):
-            if filename.endswith((".yml", ".yaml")):
-                filepath = os.path.join(workflow_dir, filename)
-                with open(filepath) as f:
-                    content = f.read().lower()
-
-                for pattern in secret_patterns:
-                    if pattern.lower() in content:
-                        # Check if it's a reference to secrets
-                        if "${{ secrets." not in content:
-                            issues.append((filename, pattern))
+        for filepath in sorted(workflow_dir.glob("*.y*ml")):
+            for lineno, line in enumerate(filepath.read_text().splitlines(), 1):
+                for name, pattern in SECRET_PATTERNS.items():
+                    if pattern.search(line):
+                        issues.append((filepath.name, lineno, name))
 
         if issues:
             print(f"[!] Potential hardcoded secrets: {issues}")
@@ -168,23 +193,27 @@ class TestSubresourceIntegrity:
             script_pattern = r'<script[^>]+src=["\']([^"\']+)["\'][^>]*>'
             scripts = re.findall(script_pattern, response.text, re.IGNORECASE)
 
-            external_scripts = [s for s in scripts if s.startswith(("http://", "https://", "//"))]
+            external_scripts = [
+                s for s in scripts if s.startswith(("http://", "https://", "//"))
+            ]
 
             if external_scripts:
                 print(f"[*] External scripts found: {len(external_scripts)}")
 
                 # Check for integrity attribute
                 integrity_pattern = r'<script[^>]+integrity=["\']([^"\']+)["\'][^>]*>'
-                scripts_with_sri = re.findall(integrity_pattern, response.text, re.IGNORECASE)
+                scripts_with_sri = re.findall(
+                    integrity_pattern, response.text, re.IGNORECASE
+                )
 
                 if scripts_with_sri:
                     print(f"[+] Scripts with SRI: {len(scripts_with_sri)}")
                 else:
                     print("[!] No SRI hashes found on external scripts")
 
-                assert len(scripts_with_sri) >= len(external_scripts), (
-                    f"All external scripts should have SRI ({len(scripts_with_sri)}/{len(external_scripts)})"
-                )
+                assert len(scripts_with_sri) >= len(
+                    external_scripts
+                ), f"All external scripts should have SRI ({len(scripts_with_sri)}/{len(external_scripts)})"
             else:
                 print("[+] No external scripts found")
 
@@ -206,16 +235,20 @@ class TestSubresourceIntegrity:
             link_pattern = r'<link[^>]+href=["\']([^"\']+\.css[^"\']*)["\'][^>]*>'
             stylesheets = re.findall(link_pattern, response.text, re.IGNORECASE)
 
-            external_css = [s for s in stylesheets if s.startswith(("http://", "https://", "//"))]
+            external_css = [
+                s for s in stylesheets if s.startswith(("http://", "https://", "//"))
+            ]
 
             if external_css:
                 print(f"[*] External stylesheets: {len(external_css)}")
                 # Check for integrity attribute on link tags
                 integrity_pattern = r'<link[^>]+integrity=["\']([^"\']+)["\'][^>]*>'
-                links_with_sri = re.findall(integrity_pattern, response.text, re.IGNORECASE)
-                assert len(links_with_sri) >= len(external_css), (
-                    f"All external stylesheets should have SRI ({len(links_with_sri)}/{len(external_css)})"
+                links_with_sri = re.findall(
+                    integrity_pattern, response.text, re.IGNORECASE
                 )
+                assert len(links_with_sri) >= len(
+                    external_css
+                ), f"All external stylesheets should have SRI ({len(links_with_sri)}/{len(external_css)})"
             else:
                 print("[+] No external stylesheets")
 
@@ -272,7 +305,9 @@ class TestDataIntegrity:
             else:
                 print("[!] X-Content-Type-Options header missing")
 
-            assert xcto.lower() == "nosniff", f"X-Content-Type-Options should be 'nosniff', got: '{xcto}'"
+            assert (
+                xcto.lower() == "nosniff"
+            ), f"X-Content-Type-Options should be 'nosniff', got: '{xcto}'"
 
         except requests.RequestException:
             pytest.skip("Target not available")
@@ -334,4 +369,6 @@ class TestUpdateIntegrity:
         else:
             print("[+] All dependencies have version specifiers")
 
-        assert not unpinned, f"All dependencies should have pinned versions: {unpinned[:5]}"
+        assert (
+            not unpinned
+        ), f"All dependencies should have pinned versions: {unpinned[:5]}"
