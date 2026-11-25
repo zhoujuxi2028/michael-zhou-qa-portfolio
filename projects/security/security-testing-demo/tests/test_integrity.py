@@ -106,6 +106,7 @@ class TestInsecureDeserialization:
             not dangerous_accepted
         ), f"Malicious JSON payloads should be rejected: {dangerous_accepted}"
 
+
 class TestCICDIntegrity:
     """Tests for CI/CD pipeline integrity."""
 

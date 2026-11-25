@@ -56,6 +56,7 @@ class TestBruteForce:
         # Intentionally vulnerable target: assert the finding is detected (was xfail)
         assert not blocked, 'Expected finding not detected: DVWA does not implement login rate limiting'
 
+
 class TestSessionManagement:
     """Tests for Session Management vulnerabilities."""
 
@@ -96,6 +97,7 @@ class TestSessionManagement:
         assert session_before == session_after, (
             'Expected finding not detected: DVWA does not regenerate session ID after login'
         )
+
 
 class TestPasswordPolicy:
     """Tests for Password Policy vulnerabilities."""
