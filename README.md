@@ -55,7 +55,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
 | [sid-iam-testing-platform](./projects/platform/sid-iam-testing-platform/) | IAM + Data + AI Agent Testing (138 tests) | Python, Pytest, FastAPI, networkx |
-| [microservice-testing-platform](./projects/platform/microservice-testing-platform/) | Microservice Testing (135 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 |
+| [microservice-testing-platform](./projects/platform/microservice-testing-platform/) | Microservice Testing (138 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 |
 
 ### AI 测试 (AI Testing)
 
@@ -138,7 +138,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 | `av-testing-ci.yml` | av-testing-demo | Push/PR | AV Testing Demo CI: unit tests (19, bundled ffmpeg) |
 | `playwright-ci.yml` | playwright-demo | Push/PR | Playwright Demo CI: Chromium E2E/API/visual/a11y (38 tests) |
 | `api-testing-ci.yml` | api-testing-demo | Push/PR | Validate Postman collections → Newman tests (316 assertions) |
-| `microservice-ci.yml` | microservice-testing-platform | Push/PR, manual | Microservice Testing CI: code quality + unit/contract/integration/e2e/observability tests (135 tests) |
+| `microservice-ci.yml` | microservice-testing-platform | Push/PR, manual | Microservice Testing CI: code quality + unit/contract/integration/e2e/observability tests (138 tests) |
 | `codeql-analysis.yml` | repository (JS+Python) | Push/PR, weekly | CodeQL 代码语义漏洞扫描 (XSS, SQLi, path traversal) |
 | `commit-guard.yml` | repository | PR opened/updated | Commit Guard: Conventional Commits 格式校验 + secret 泄漏扫描 CI 兜底 |
 
