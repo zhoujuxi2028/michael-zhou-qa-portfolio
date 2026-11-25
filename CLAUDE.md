@@ -62,7 +62,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | 安全测试 | `projects/security/security-testing-demo/` — Security (~182 tests, OWASP Top 10) | Pytest, OWASP ZAP, Nessus, SQLMap | `security-testing-demo/CLAUDE.md` |
 | 数据库测试 | `projects/database/sql-testing-demo/` — SQL & PL/pgSQL (32 tests: CRUD + queries + constraints + procedures + transactions) | PostgreSQL, psycopg3, testcontainers, pytest | — |
 | 平台测试 | `projects/platform/sid-iam-testing-platform/` — IAM + Data + AI Agent (168 tests) | Python, Pytest, FastAPI, networkx | `sid-iam-testing-platform/CLAUDE.md` |
-| 平台测试 | `projects/platform/microservice-testing-platform/` — Microservice (135 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 | `microservice-testing-platform/CLAUDE.md` |
+| 平台测试 | `projects/platform/microservice-testing-platform/` — Microservice (138 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 | `microservice-testing-platform/CLAUDE.md` |
 | 性能测试 | `projects/platform/performance-testing-platform/` — k6 + JMeter dual-engine (358 unit + 71 integration + 13 k6 / 5 JMeter scripts) | k6, JMeter, Express, Grafana, InfluxDB | `performance-testing-platform/CLAUDE.md` |
 | 稳定性测试 | `infra/k8s-auto-testing-platform/` — K8S HPA + Chaos (42 tests) | Python, Pytest, Chaos Mesh | `k8s-auto-testing-platform/CLAUDE.md` |
 | **AI 测试** | `ai-lab/ai-testing-platform/` — AI-Powered Testing Platform (209 tests) | Python, Pytest, Rule Engine | `ai-testing-platform/CLAUDE.md` |
@@ -195,7 +195,7 @@ All workflows are in root `.github/workflows/` (GitHub ignores subdirectory work
 |----------|---------|---------|
 | `ai-testing-ci.yml` | ai-testing-platform | AI Testing CI: code quality + unit tests (185 run, 24 LLM skipped) + per-module coverage gates |
 | `api-testing-ci.yml` | api-testing-demo | Validate collections → Newman tests (316 assertions) |
-| `microservice-ci.yml` | microservice-testing-platform | Microservice Testing CI: code quality + unit/contract/integration/e2e/observability tests (135 tests) |
+| `microservice-ci.yml` | microservice-testing-platform | Microservice Testing CI: code quality + unit/contract/integration/e2e/observability tests (138 tests) |
 | `robot-framework-ci.yml` | robot-framework-demo | Robot Framework / Pabot parallel + Selenium Grid + Rebot merge (9 tests) |
 | `cicd-demo-pr.yml` | cicd-demo | PR Gate: lint + unit/contract tests + Docker build + quick security scan |
 | `cicd-demo-deploy.yml` | cicd-demo | Deploy Pipeline: Helm package + SBOM → staging (auto) → smoke test → production (manual approval) |

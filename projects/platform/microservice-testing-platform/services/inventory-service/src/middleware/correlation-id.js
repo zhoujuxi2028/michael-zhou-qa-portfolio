@@ -1,7 +1,7 @@
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('node:crypto');
 
 function correlationId(req, _res, next) {
-  req.correlationId = req.headers['x-correlation-id'] || uuidv4();
+  req.correlationId = req.headers['x-correlation-id'] || randomUUID();
   next();
 }
 

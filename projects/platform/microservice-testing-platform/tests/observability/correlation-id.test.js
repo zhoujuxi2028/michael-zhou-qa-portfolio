@@ -52,6 +52,27 @@ describe('Observability: Correlation ID', () => {
     db.close();
   });
 
+  // OB-08: Every service generates unique RFC 4122 v4 IDs (#931: no uuid package)
+  test.each(['inventory-service', 'order-service', 'payment-service'])(
+    '%s middleware generates unique v4 UUIDs',
+    async (service) => {
+      const middleware = require(`../../services/${service}/src/middleware/correlation-id`);
+      const svcApp = express();
+      svcApp.use(middleware);
+      svcApp.get('/test', (req, res) => res.json({ correlationId: req.correlationId }));
+
+      const [a, b] = await Promise.all([
+        request(svcApp).get('/test'),
+        request(svcApp).get('/test'),
+      ]);
+
+      const v4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      expect(a.body.correlationId).toMatch(v4);
+      expect(b.body.correlationId).toMatch(v4);
+      expect(a.body.correlationId).not.toBe(b.body.correlationId);
+    }
+  );
+
   // OB-07: Correlation ID in events
   test('parseOrderEvent preserves correlationId', () => {
     jest.resetModules();
