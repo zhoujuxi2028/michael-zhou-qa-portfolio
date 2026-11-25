@@ -218,8 +218,9 @@ jobs:
           # Poll instead of `kubectl wait`: it errors if .status.conditions is still nil
           for crd in servicemonitors podmonitors prometheusrules; do
             for i in $(seq 1 30); do
+              # jsonpath filter errors while .status.conditions is nil; treat as "not yet"
               s=$(kubectl get "crd/${crd}.monitoring.coreos.com" \
-                -o jsonpath='{.status.conditions[?(@.type=="Established")].status}')
+                -o jsonpath='{.status.conditions[?(@.type=="Established")].status}' 2>/dev/null || true)
               [[ "$s" == "True" ]] && echo "${crd}: Established" && break
               [[ $i -eq 30 ]] && echo "::error::${crd} CRD not Established" && exit 1
               sleep 2
