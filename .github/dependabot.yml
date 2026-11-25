@@ -109,6 +109,10 @@ updates:
       - "performance-testing"
     commit-message:
       prefix: "chore(perf)"
+    ignore:
+      # DEF-024: v13 native binary segfaults on Ubuntu 24.04 CI; pinned at v12
+      - dependency-name: "better-sqlite3"
+        update-types: ["version-update:semver-major"]
     groups:
       routine-updates:
         update-types:
