@@ -3,5 +3,5 @@ testcontainers[postgres]>=4.15.0
 pytest>=9.2.0
 pytest-cov>=7.1.0
 ruff>=0.17.6
-black>=24.0
+black>=26.10.1
 flake8>=7.5.0
