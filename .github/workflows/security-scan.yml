@@ -7,7 +7,7 @@ name: Security / Scan
 # 3. Scheduled daily scans (detect new vulnerabilities)
 # 4. Manual trigger via GitHub UI
 #
-# Interview Talking Point:
+# Rationale:
 # "Security scanning is integrated into our CI/CD pipeline to shift security left.
 # We scan on every push and PR to catch vulnerabilities early, before they reach
 # production. Daily scheduled scans detect newly disclosed vulnerabilities (CVEs)
@@ -23,6 +23,7 @@ on:
     branches: [main]
     paths:
       - 'infra/cicd-demo/**'
+      - '.github/workflows/security-scan.yml'
   schedule:
     - cron: '0 3 * * *'
   workflow_dispatch:
@@ -52,7 +53,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      # Interview Talking Point:
+      # Rationale:
       # "We cache node_modules to speed up CI. The cache key includes package-lock.json
       # hash, so the cache invalidates when dependencies change. This reduces install
       # time from ~2 minutes to ~30 seconds on cache hits."
@@ -66,7 +67,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Interview Talking Point:
+      # Rationale:
       # "npm audit checks our dependencies against the npm security advisory database.
       # We audit production dependencies (--omit=dev) since dev dependencies don't
       # ship to production. The --audit-level=moderate flag fails CI on moderate or
@@ -74,20 +75,32 @@ jobs:
       - name: Run npm audit (production dependencies)
         run: npm audit --omit=dev --audit-level=moderate
 
-      - name: Run npm audit (all dependencies with JSON output)
-        run: npm audit --json > npm-audit.json || true
-
-      - name: Generate npm audit report
+      # OPT-031: audit all deps once (JSON) for the report. The gate is the
+      # production audit above; a non-zero exit here only means findings exist,
+      # so record it in the report instead of masking it with `|| true`.
+      - name: Generate npm audit report (all dependencies)
+        if: always()
         run: |
-          echo "## NPM Audit Report" > npm-audit-report.md
-          echo "" >> npm-audit-report.md
-          echo "### Summary" >> npm-audit-report.md
-          npm audit || echo "Vulnerabilities detected"
-          echo "" >> npm-audit-report.md
-          echo "### Detailed Report" >> npm-audit-report.md
-          cat npm-audit.json >> npm-audit-report.md
+          rc=0
+          npm audit --json > npm-audit.json || rc=$?
+          {
+            echo "## NPM Audit Report"
+            echo ""
+            echo "### Summary (all dependencies, npm audit exit code: ${rc})"
+            node -e '
+              const v = require("./npm-audit.json").metadata.vulnerabilities;
+              console.log("| Severity | Count |\n|----------|-------|");
+              for (const k of ["critical", "high", "moderate", "low", "info"]) console.log(`| ${k} | ${v[k] || 0} |`);
+            '
+            echo ""
+            echo "### Detailed Report"
+            echo '```json'
+            cat npm-audit.json
+            echo '```'
+          } > npm-audit-report.md
+          head -12 npm-audit-report.md >> "$GITHUB_STEP_SUMMARY"
 
-      # Interview Talking Point:
+      # Rationale:
       # "We upload audit results as artifacts for audit trails and compliance.
       # Security teams can review historical scans, track remediation progress,
       # and demonstrate due diligence to auditors."
@@ -111,13 +124,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      # Interview Talking Point:
+      # Rationale:
       # "Trivy is an open-source vulnerability scanner from Aqua Security. It scans
       # filesystems, container images, IaC configs, and more. We use it because it's
       # fast, comprehensive, and integrates seamlessly with GitHub Security tab via
       # SARIF format."
       - name: Run Trivy vulnerability scanner (filesystem)
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: 'fs'
           scan-ref: 'infra/cicd-demo'
@@ -170,9 +183,9 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
-      # Interview Talking Point:
+      # Rationale:
       # "We build images in CI before scanning to ensure we're scanning the exact
       # image that would be deployed. The --load flag loads the image into Docker
       # daemon for scanning, rather than just building to cache."
@@ -185,12 +198,12 @@ jobs:
             --load \
             .
 
-      # Interview Talking Point:
+      # Rationale:
       # "Trivy scans both OS packages and application dependencies in the image.
       # For Node.js images, it analyzes package-lock.json. This catches vulnerabilities
       # in base images (e.g., Alpine Linux) and our application dependencies."
       - name: Run Trivy vulnerability scanner (Docker image)
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: 'image'
           image-ref: ${{ matrix.image.tag }}
@@ -232,12 +245,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      # Interview Talking Point:
+      # Rationale:
       # "Trivy can scan Infrastructure as Code (Terraform, K8s manifests, Dockerfiles)
       # for misconfigurations and security issues. This includes insecure defaults,
       # missing security controls, and compliance violations (CIS benchmarks)."
       - name: Run Trivy IaC scanner
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: 'config'
           scan-ref: 'infra/cicd-demo'
@@ -279,12 +292,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      # Interview Talking Point:
+      # Rationale:
       # "This job enforces a hard Quality Gate: CRITICAL vulnerabilities fail the pipeline.
       # This is separate from the reporting jobs above (which use exit-code: 0) so we can
       # still collect full scan artifacts even when the gate triggers."
       - name: Run Trivy Quality Gate (filesystem - CRITICAL only)
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: 'fs'
           scan-ref: 'infra/cicd-demo'
@@ -294,7 +307,7 @@ jobs:
           trivyignores: 'infra/cicd-demo/.trivyignore'
 
       - name: Run Trivy Quality Gate (IaC - CRITICAL only)
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: 'config'
           scan-ref: 'infra/cicd-demo'
@@ -355,7 +368,7 @@ jobs:
           path: security-summary.md
           retention-days: 90
 
-# Interview Talking Points:
+# Design Notes:
 #
 # 1. Defense in Depth:
 #    "We use multiple scanning tools (npm audit + Trivy) for defense in depth. npm audit
