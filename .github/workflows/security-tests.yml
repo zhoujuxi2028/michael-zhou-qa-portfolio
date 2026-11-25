@@ -71,6 +71,8 @@ jobs:
       - name: Initialize DVWA database
         run: python scripts/init_dvwa.py
 
+      # Juice Shop-only files run in juice-shop-tests; collecting them here only
+      # produced ~25 "Juice Shop not available" skips (double-counted)
       - name: Run security tests
         run: |
           mkdir -p reports
@@ -78,6 +80,11 @@ jobs:
             --ignore=tests/test_zap_scan.py \
             --ignore=tests/test_nessus_scan.py \
             --ignore=tests/test_openvas_scan.py \
+            --ignore=tests/test_juice_shop_api.py \
+            --ignore=tests/test_jwt.py \
+            --ignore=tests/test_nosql_injection.py \
+            --ignore=tests/test_business_logic.py \
+            --ignore=tests/test_ssrf.py \
             -m "not zap and not nessus and not openvas" \
             --tb=short \
             --junitxml=reports/security-tests.xml \

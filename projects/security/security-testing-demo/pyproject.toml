@@ -29,3 +29,5 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = "-v --tb=short --strict-markers"
+# OPT-049: an XPASS means a test no longer detects what it claims to; fail loudly
+xfail_strict = true

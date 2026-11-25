@@ -59,7 +59,7 @@ Michael Zhou's QA Portfolio - Test automation & DevOps demos.
 | 功能测试 | `projects/functional/playwright-demo/` — Cross-browser E2E (38 tests) | Playwright, TypeScript, axe-core | `playwright-demo/CLAUDE.md` |
 | 功能测试 | `projects/functional/selenium-demo/` — Browser automation | Selenium, Python, Allure | `selenium-demo/CLAUDE.md` |
 | 功能测试 | `projects/functional/robot-framework-demo/` — Pabot + Selenium Grid + Rebot (9 tests) | Robot Framework, Pabot, Selenium Grid | `robot-framework-demo/CLAUDE.md` |
-| 安全测试 | `projects/security/security-testing-demo/` — Security (~182 tests, OWASP Top 10) | Pytest, OWASP ZAP, Nessus, SQLMap | `security-testing-demo/CLAUDE.md` |
+| 安全测试 | `projects/security/security-testing-demo/` — Security (~190 tests, OWASP Top 10) | Pytest, OWASP ZAP, Nessus, SQLMap | `security-testing-demo/CLAUDE.md` |
 | 数据库测试 | `projects/database/sql-testing-demo/` — SQL & PL/pgSQL (32 tests: CRUD + queries + constraints + procedures + transactions) | PostgreSQL, psycopg3, testcontainers, pytest | — |
 | 平台测试 | `projects/platform/sid-iam-testing-platform/` — IAM + Data + AI Agent (168 tests) | Python, Pytest, FastAPI, networkx | `sid-iam-testing-platform/CLAUDE.md` |
 | 平台测试 | `projects/platform/microservice-testing-platform/` — Microservice (135 tests, 5 layers) | Node.js, Express, Jest, Redis, k6 | `microservice-testing-platform/CLAUDE.md` |
