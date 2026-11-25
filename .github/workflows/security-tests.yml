@@ -92,6 +92,7 @@ jobs:
             --ignore=tests/test_nosql_injection.py \
             --ignore=tests/test_business_logic.py \
             --ignore=tests/test_ssrf.py \
+            --ignore=tests/test_xxe.py \
             -m "not zap and not nessus and not openvas" \
             --tb=short \
             --junitxml=reports/security-tests.xml \
@@ -149,7 +150,7 @@ jobs:
           mkdir -p reports
           pytest tests/test_juice_shop_api.py tests/test_jwt.py \
             tests/test_nosql_injection.py tests/test_business_logic.py \
-            tests/test_ssrf.py \
+            tests/test_ssrf.py tests/test_xxe.py \
             -v --tb=short \
             --junitxml=reports/juice-shop-tests.xml \
             --html=reports/juice-shop-report.html \
@@ -316,7 +317,7 @@ jobs:
           echo "| A02 | Cryptographic Failures | test_crypto |" >> $GITHUB_STEP_SUMMARY
           echo "| A03 | Injection | test_xss, test_sqli, test_nosql_injection, test_sqlmap |" >> $GITHUB_STEP_SUMMARY
           echo "| A04 | Insecure Design | test_business_logic |" >> $GITHUB_STEP_SUMMARY
-          echo "| A05 | Security Misconfiguration | test_headers |" >> $GITHUB_STEP_SUMMARY
+          echo "| A05 | Security Misconfiguration | test_headers, test_xxe |" >> $GITHUB_STEP_SUMMARY
           echo "| A06 | Vulnerable Components | test_components |" >> $GITHUB_STEP_SUMMARY
           echo "| A07 | Identification Failures | test_auth, test_jwt |" >> $GITHUB_STEP_SUMMARY
           echo "| A08 | Software Integrity | test_integrity |" >> $GITHUB_STEP_SUMMARY

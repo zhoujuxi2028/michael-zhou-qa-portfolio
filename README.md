@@ -44,7 +44,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [security-testing-demo](./projects/security/security-testing-demo/) | DAST Security Testing (~189 tests, OWASP Top 10) | OWASP ZAP, Nessus, SQLMap, Pytest |
+| [security-testing-demo](./projects/security/security-testing-demo/) | DAST Security Testing (~185 tests, OWASP Top 10) | OWASP ZAP, Nessus, SQLMap, Pytest |
 | [k8s-auto-testing-platform](./infra/k8s-auto-testing-platform/) | K8S HPA + Chaos Engineering (42 tests) | Python, Pytest, Chaos Mesh |
 | [sql-testing-demo](./projects/database/sql-testing-demo/) | SQL & PL/pgSQL Testing — FastWare WMS scenario (32 tests: CRUD + queries + constraints + procedures + transactions) | PostgreSQL, psycopg3, testcontainers, pytest |
 | [ivi-integration-lab](./projects/automotive/ivi-integration-lab/) | IVI 车载集成验证实验室 — CAN bus 3节点仿真 + ECU 刷写 + 质量门禁 (65 tests: unit + smoke + integration + regression) | Python, pytest, python-can, cantools |

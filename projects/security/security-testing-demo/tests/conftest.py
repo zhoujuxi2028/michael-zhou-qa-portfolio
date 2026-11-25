@@ -244,6 +244,9 @@ def juice_shop_auth_session(config):
             auth_data = response.json()
             token = auth_data.get("authentication", {}).get("token", "")
             session.headers.update({"Authorization": f"Bearer {token}"})
+            # Some Juice Shop routes (e.g. /rest/user/whoami, /profile/*) only read
+            # req.cookies.token; without it whoami returned an empty user.
+            session.cookies.set("token", token)
             yield session, token, test_email
         else:
             pytest.skip("Could not authenticate with Juice Shop")

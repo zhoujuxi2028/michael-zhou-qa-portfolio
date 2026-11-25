@@ -106,18 +106,6 @@ class TestInsecureDeserialization:
             not dangerous_accepted
         ), f"Malicious JSON payloads should be rejected: {dangerous_accepted}"
 
-    @pytest.mark.skip(reason="Conceptual: no XML endpoint available to test XXE")
-    def test_xml_external_entity(self, http_session, config):
-        """
-        Test for XML External Entity (XXE) vulnerability.
-
-        ID: SEC-INTEG-002
-        XML parsers should disable external entity processing.
-        """
-        print("[*] XXE Test: Most modern APIs use JSON")
-        print("[*] If XML is used, ensure external entities are disabled")
-
-
 class TestCICDIntegrity:
     """Tests for CI/CD pipeline integrity."""
 

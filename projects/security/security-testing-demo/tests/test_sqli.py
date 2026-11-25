@@ -189,20 +189,3 @@ class TestSQLInjection:
             print(f"    False condition response: {false_len} bytes")
 
         assert abs(true_len - false_len) <= 50, "Boolean-based blind SQL injection should not be possible"
-
-
-class TestSecondOrderSQLI:
-    """Tests for Second-Order SQL Injection."""
-
-    @pytest.mark.sqli
-    @pytest.mark.skip(reason="Conceptual: requires multi-step manual analysis of data flow")
-    def test_second_order_sqli_concept(self, http_session, config):
-        """Test concept for Second-Order SQL Injection.
-
-        ID: SEC-SQLI-005
-        Description: Detect potential second-order injection points
-        """
-        print("[*] Second-order SQLi requires manual analysis of:")
-        print("    - User registration/profile update flows")
-        print("    - Data that is stored and later used in queries")
-        print("    - Admin panels that display user-submitted data")

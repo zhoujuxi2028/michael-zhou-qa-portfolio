@@ -56,21 +56,6 @@ class TestBruteForce:
         # Intentionally vulnerable target: assert the finding is detected (was xfail)
         assert not blocked, 'Expected finding not detected: DVWA does not implement login rate limiting'
 
-    @pytest.mark.auth
-    @pytest.mark.skip(reason="Conceptual: DVWA has no account lockout mechanism")
-    def test_account_lockout(self, dvwa_session, config):
-        """Test if accounts get locked after failed attempts.
-
-        ID: SEC-AUTH-002
-        Description: Check for account lockout mechanism
-        """
-
-        print("[*] Account lockout test:")
-        print("    - Secure apps should lock accounts after 3-5 failed attempts")
-        print("    - Lockout duration: 15-30 minutes recommended")
-        print("    - Consider progressive lockout (increasing delays)")
-
-
 class TestSessionManagement:
     """Tests for Session Management vulnerabilities."""
 
@@ -111,21 +96,6 @@ class TestSessionManagement:
         assert session_before == session_after, (
             'Expected finding not detected: DVWA does not regenerate session ID after login'
         )
-
-    @pytest.mark.auth
-    @pytest.mark.skip(reason="Conceptual: requires waiting minutes to test timeout")
-    def test_session_timeout(self, http_session, config):
-        """Test session timeout configuration.
-
-        ID: SEC-AUTH-004
-        Description: Check for session timeout implementation
-        """
-        print("[*] Session timeout best practices:")
-        print("    - Idle timeout: 15-30 minutes")
-        print("    - Absolute timeout: 4-8 hours")
-        print("    - Re-authentication for sensitive operations")
-        print("    - Secure session invalidation on logout")
-
 
 class TestPasswordPolicy:
     """Tests for Password Policy vulnerabilities."""

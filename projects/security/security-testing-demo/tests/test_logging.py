@@ -19,65 +19,6 @@ pytestmark = pytest.mark.logging
 class TestLogInjection:
     """Tests for log injection vulnerabilities."""
 
-    @pytest.mark.skip(reason="Conceptual: cannot verify log injection without server log access")
-    def test_log_injection_via_user_agent(self, http_session, config):
-        """
-        Test for log injection via User-Agent header.
-
-        ID: SEC-LOG-001
-        User input in logs should be sanitized.
-        """
-        # Log injection payloads
-        injection_payloads = [
-            "Mozilla/5.0\nFake-Log-Entry: INJECTED",
-            "Mozilla/5.0\r\n[ERROR] Fake error message",
-            "Mozilla/5.0%0d%0a[CRITICAL] Injected log",
-        ]
-
-        for payload in injection_payloads:
-            try:
-                http_session.get(
-                    config.TARGET_URL,
-                    headers={"User-Agent": payload},
-                    timeout=5,
-                )
-                # We can't directly verify log injection without log access
-                # This test documents the attack vector
-
-            except requests.RequestException:
-                pass
-
-        print("[*] Log injection test completed")
-        print("[*] Manual verification: Check server logs for injected entries")
-
-    @pytest.mark.skip(reason="Conceptual: cannot verify log injection without server log access")
-    def test_log_injection_via_username(self, http_session, config):
-        """
-        Test for log injection via username field.
-
-        ID: SEC-LOG-002
-        Login attempts are typically logged.
-        """
-        login_url = f"{config.DVWA_URL}/login.php"
-
-        injection_payloads = [
-            "admin\nFake-Entry: Success",
-            "admin\r\n[INFO] User logged in successfully",
-            "admin%0a%0dFake entry",
-        ]
-
-        for payload in injection_payloads:
-            try:
-                http_session.post(
-                    login_url,
-                    data={"username": payload, "password": "test", "Login": "Login"},
-                    timeout=5,
-                )
-            except requests.RequestException:
-                pass
-
-        print("[*] Username log injection test completed")
-
     def test_crlf_injection(self, http_session, config):
         """
         Test for CRLF injection in headers.
