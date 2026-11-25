@@ -74,8 +74,7 @@ class TestSQLMapDetection:
     """Tests for SQL injection detection using sqlmap."""
 
     @pytest.mark.slow
-    @pytest.mark.xfail(reason="sqlmap session cookie may not maintain DVWA authentication")
-    def test_sqlmap_detect_dvwa(self, dvwa_session, config):
+    def test_sqlmap_detect_dvwa(self, dvwa_session, config, tmp_path):
         """
         Test sqlmap detection on DVWA.
 
@@ -103,6 +102,10 @@ class TestSQLMapDetection:
             "--cookie",
             f"PHPSESSID={session_cookie}; security=low",
             "--batch",  # Non-interactive
+            # Isolate from ~/.local/share/sqlmap/output: a resumed session prints
+            # "resumed ... injection point(s)" instead of "is vulnerable"
+            "--flush-session",
+            f"--output-dir={tmp_path}",
             "--level",
             "1",  # Basic level
             "--risk",
@@ -129,7 +132,7 @@ class TestSQLMapDetection:
             output = result.stdout + result.stderr
             is_injectable = "is vulnerable" in output.lower() or "injectable" in output.lower()
 
-            print(f"[*] SQLMap output (truncated):\n{output[:500]}")
+            print(f"[*] SQLMap output (last 1500 chars):\n{output[-1500:]}")
 
             if is_injectable:
                 print("[!] SQL injection detected by sqlmap")
@@ -140,8 +143,7 @@ class TestSQLMapDetection:
             pytest.skip("sqlmap timed out")
 
     @pytest.mark.slow
-    @pytest.mark.xfail(reason="sqlmap session cookie may not maintain DVWA authentication")
-    def test_sqlmap_enumerate_dbs(self, dvwa_session, config):
+    def test_sqlmap_enumerate_dbs(self, dvwa_session, config, tmp_path):
         """
         Test sqlmap database enumeration.
 
@@ -167,6 +169,8 @@ class TestSQLMapDetection:
             "--cookie",
             f"PHPSESSID={session_cookie}; security=low",
             "--batch",
+            "--flush-session",
+            f"--output-dir={tmp_path}",
             "--dbs",  # Enumerate databases
             "--timeout",
             "10",
