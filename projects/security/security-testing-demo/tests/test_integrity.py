@@ -106,17 +106,6 @@ class TestInsecureDeserialization:
             not dangerous_accepted
         ), f"Malicious JSON payloads should be rejected: {dangerous_accepted}"
 
-    @pytest.mark.skip(reason="Conceptual: no XML endpoint available to test XXE")
-    def test_xml_external_entity(self, http_session, config):
-        """
-        Test for XML External Entity (XXE) vulnerability.
-
-        ID: SEC-INTEG-002
-        XML parsers should disable external entity processing.
-        """
-        print("[*] XXE Test: Most modern APIs use JSON")
-        print("[*] If XML is used, ensure external entities are disabled")
-
 
 class TestCICDIntegrity:
     """Tests for CI/CD pipeline integrity."""
@@ -286,7 +275,6 @@ class TestDataIntegrity:
         except requests.RequestException:
             pytest.skip("Target not available")
 
-    @pytest.mark.xfail(reason="DVWA does not set X-Content-Type-Options header")
     def test_x_content_type_options(self, http_session, config):
         """
         Test for X-Content-Type-Options header.
@@ -305,9 +293,10 @@ class TestDataIntegrity:
             else:
                 print("[!] X-Content-Type-Options header missing")
 
-            assert (
-                xcto.lower() == "nosniff"
-            ), f"X-Content-Type-Options should be 'nosniff', got: '{xcto}'"
+            # Intentionally vulnerable target: assert the finding is detected (was xfail)
+            assert not (xcto.lower() == 'nosniff'), (
+                'Expected finding not detected: DVWA does not set X-Content-Type-Options header'
+            )
 
         except requests.RequestException:
             pytest.skip("Target not available")

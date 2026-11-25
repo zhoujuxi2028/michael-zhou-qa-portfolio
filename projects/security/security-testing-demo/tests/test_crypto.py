@@ -21,7 +21,6 @@ pytestmark = pytest.mark.crypto
 class TestTLSConfiguration:
     """Tests for TLS/SSL configuration against DVWA."""
 
-    @pytest.mark.xfail(reason="DVWA does not support HTTPS")
     def test_https_available(self, config):
         """
         SEC-CRYPTO-001: Site should support HTTPS.
@@ -31,14 +30,14 @@ class TestTLSConfiguration:
         """
         https_url = config.TARGET_URL.replace("http://", "https://")
 
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
         try:
             response = requests.get(https_url, timeout=5, verify=False)
-        except (requests.exceptions.ConnectionError, requests.exceptions.SSLError) as e:
-            pytest.fail(f"HTTPS not available: {e}")
+        except (requests.exceptions.ConnectionError, requests.exceptions.SSLError):
+            return  # finding confirmed: no working HTTPS endpoint
 
-        assert response.status_code < 500, f"HTTPS returned server error: {response.status_code}"
+        assert response.status_code >= 500, "Expected finding not detected: DVWA does not support HTTPS"
 
-    @pytest.mark.xfail(reason="DVWA does not redirect HTTP to HTTPS")
     def test_http_to_https_redirect(self, http_session, config):
         """
         SEC-CRYPTO-002: HTTP should redirect to HTTPS.
@@ -56,11 +55,11 @@ class TestTLSConfiguration:
             pytest.skip("Target not available")
 
         location = response.headers.get("Location", "")
-        assert location.startswith("https://"), (
-            f"No HTTPS redirect (status={response.status_code}, location='{location}')"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert not (location.startswith('https://')), (
+            'Expected finding not detected: DVWA does not redirect HTTP to HTTPS'
         )
 
-    @pytest.mark.xfail(reason="DVWA does not set HSTS header")
     def test_hsts_header_present(self, http_session, config):
         """
         SEC-CRYPTO-003: Site should set HSTS header.
@@ -74,8 +73,8 @@ class TestTLSConfiguration:
             pytest.skip("Target not available")
 
         hsts = response.headers.get("Strict-Transport-Security")
-        assert hsts is not None, "HSTS header missing"
-        assert "max-age=" in hsts, f"HSTS missing max-age directive: {hsts}"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert hsts is None or 'max-age=' not in hsts, 'Expected finding not detected: DVWA does not set HSTS header'
 
 
 class TestSensitiveDataExposure:
@@ -164,7 +163,6 @@ class TestWeakCryptography:
         assert not session_id.isdigit(), "Session ID is numeric only - predictable"
         assert not session_id.isalpha(), "Session ID is alphabetic only - weak entropy"
 
-    @pytest.mark.xfail(reason="DVWA does not set Secure flag on cookies (HTTP only)")
     def test_cookie_secure_flag(self, http_session, config):
         """
         SEC-CRYPTO-009: Cookies should have Secure flag.
@@ -179,13 +177,15 @@ class TestWeakCryptography:
 
         set_cookie = response.headers.get("Set-Cookie", "")
         assert set_cookie, "No Set-Cookie header returned from login.php"
-        assert "secure" in set_cookie.lower(), f"Cookie missing Secure flag: {set_cookie}"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert not ('secure' in set_cookie.lower()), (
+            'Expected finding not detected: DVWA does not set Secure flag on cookies (HTTP only)'
+        )
 
 
 class TestDataInTransit:
     """Tests for data-in-transit protection."""
 
-    @pytest.mark.xfail(reason="DVWA does not set Cache-Control: no-store on sensitive pages")
     def test_sensitive_pages_cache_headers(self, http_session, config):
         """
         SEC-CRYPTO-010: Sensitive pages should set Cache-Control: no-store.
@@ -208,4 +208,7 @@ class TestDataInTransit:
         assert results, "Could not reach any sensitive page"
 
         missing_no_store = [path for path, cc in results.items() if "no-store" not in cc.lower()]
-        assert not missing_no_store, f"Sensitive pages cacheable (missing no-store): {missing_no_store}"
+        # Intentionally vulnerable target: assert the finding is detected (was xfail)
+        assert missing_no_store, (
+            'Expected finding not detected: DVWA does not set Cache-Control: no-store on sensitive pages'
+        )
