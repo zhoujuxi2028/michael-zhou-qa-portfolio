@@ -41,3 +41,7 @@ Thumbs.db
 # Logs
 logs/
 *.log
+
+# curl cookie jars from learning guides (contain session IDs)
+cookies.txt
+*.cookies
