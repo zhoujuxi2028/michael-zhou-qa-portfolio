@@ -1,7 +1,6 @@
 venv/
 .venv/
-security-testing-demo/.claude/
-.claude/settings.local.json
+**/.claude/settings.local.json
 coverage/
 .worktrees/
 # JMeter execution logs - test artifacts
@@ -17,3 +16,11 @@ node_modules/
 # Obsidian personal workspace (OPT-036)
 .obsidian/
 *.canvas
+# Secrets / coverage / report output (OPT-038)
+.env
+.coverage
+htmlcov/
+allure-results/
+allure-report/
+# Stray stage4 self-test logs at repo root (OPT-037)
+/docs/qa/reports/logs-stage4/
