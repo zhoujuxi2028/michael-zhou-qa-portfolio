@@ -61,7 +61,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [ai-testing-platform](./ai-lab/ai-testing-platform/) | AI-Powered Testing Platform — 智能测试用例生成 + 缺陷预测 + 脚本生成 + 代码扫描 + RAG 全链路 + 图像识别/知识图谱测试 (209 tests) | Python, Pytest, Rule Engine |
+| [ai-testing-platform](./ai-lab/ai-testing-platform/) | AI-Powered Testing Platform — 智能测试用例生成 + 缺陷预测 + 脚本生成 + 代码扫描 + RAG 全链路 + 图像识别/知识图谱测试 (218 tests) | Python, Pytest, Rule Engine |
 | [llm-agent-tutorial](./ai-lab/llm-agent-tutorial/) | LLM Agent Engineering Tutorial — Prompt/Context/Harness/Loop 四件套 + function-calling + Reflexion (single-file, zero-dependency) | Python, Anthropic API |
 
 ### 多媒体测试 (Multimedia Testing)

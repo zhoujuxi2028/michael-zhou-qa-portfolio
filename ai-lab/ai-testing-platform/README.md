@@ -23,11 +23,11 @@
 
 | 指标 | 数值 |
 |------|------|
-| 测试用例 | 209 |
+| 测试用例 | 218 |
 | 核心模块 | 7（TestCaseGenerator / DefectPredictor / ScriptGenerator / CodeScanner / LLMEvaluator / RAGTester / VisionKGTester）|
 | 测试覆盖率 | ≥ 82% |
 | 外部依赖 | radon（圈复杂度分析）、deepeval（LLM 评测，可选）|
-| 全部通过 | 185 PASSED + 24 SKIPPED（LLM，需 API key）|
+| 全部通过 | 194 PASSED + 24 SKIPPED（LLM，需 API key）|
 
 ---
 
