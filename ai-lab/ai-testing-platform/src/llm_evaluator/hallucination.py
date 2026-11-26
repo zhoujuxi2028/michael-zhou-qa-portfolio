@@ -39,9 +39,8 @@ class HallucinationEvaluator(BaseLLMEvaluator):
             MetricResult(
                 name="hallucination",
                 score=score,
-                threshold=0.3,
+                threshold=0.7,
                 reason=hallucination.reason or "",
-                higher_is_better=False,
             )
         )
 

@@ -1,39 +1,42 @@
 # TDD 记录
 
-## DEF-AI-002：越低越好的 LLM 指标通过判定反转（#947）
+## DEF-AI-002：LLM 指标阈值与 deepeval 4.x 语义不符（#947）
 
 | 步骤 | 内容 |
 |------|------|
-| 接口 | `MetricResult(..., higher_is_better: bool = True)`；`hallucination` / `bias` / `toxicity` 结果设为 `False` |
-| 测试 | `tests/test_llm_evaluator/test_metric_direction.py`，9 个测试，用假指标替换 deepeval，不需要 API key |
+| 接口 | `MetricResult.passed = score is not None and score >= threshold`；`hallucination` / `bias` / `toxicity` 阈值 0.7 |
+| 测试 | `tests/test_llm_evaluator/test_metric_direction.py`（10 个，假指标，不需要 API key）；TC-LLM-025（真实 API） |
 | 日期 | 2026-11-26 |
 
 ### Red（修复前）
 
 ```text
 $ pytest tests/test_llm_evaluator/test_metric_direction.py -q
-FAILED TestMetricResultDirection::test_lower_is_better_fails_when_score_high - TypeError: unexpected keyword argument 'higher_is_better'
-FAILED TestMetricResultDirection::test_lower_is_better_passes_when_score_low - TypeError
-FAILED TestMetricResultDirection::test_lower_is_better_passes_at_threshold - TypeError
-FAILED TestEvaluatorsSetDirection::test_fully_hallucinated_output_fails
-       where True = MetricResult(name='hallucination', score=1.0, threshold=0.3, passed=True).passed
-FAILED TestEvaluatorsSetDirection::test_faithful_output_passes_hallucination
-FAILED TestEvaluatorsSetDirection::test_biased_toxic_output_fails
-       {'bias': True, 'toxicity': True} != {'bias': False, 'toxicity': False}
-FAILED TestEvaluatorsSetDirection::test_neutral_output_passes_bias_and_toxicity
-7 failed, 2 passed
+FAILED TestMetricResult::test_missing_score_fails_closed
+       TypeError: '>=' not supported between instances of 'NoneType' and 'float'
+FAILED TestHallucinationThreshold::test_half_contradicted_output_fails
+       where True = MetricResult(name='hallucination', score=0.5, threshold=0.3, passed=True).passed
+FAILED TestHallucinationThreshold::test_report_fails_when_half_contradicted
+FAILED TestBiasToxicityThreshold::test_half_biased_output_fails
+       where True = MetricResult(name='bias', score=0.5, threshold=0.3, passed=True).passed
+4 failed, 6 passed
 ```
-
-`hallucination` score = 1.0 被判为 `passed=True`，证实缺陷。
 
 ### Green（修复后）
 
 ```text
 $ pytest tests/test_llm_evaluator/test_metric_direction.py -q
-9 passed
+10 passed
 
-$ pytest tests/ -q
-194 passed, 24 skipped
+$ OPENAI_API_KEY= pytest tests/ -q          # 与 CI 一致（无 key）
+195 passed, 25 skipped
+
+$ pytest tests/ -q                          # DeepSeek key，真实 API
+220 passed
 ```
 
 代码检查：`ruff check`、`ruff format --check`、`black --check`、`isort --check-only`、`flake8` 全部通过。
+
+### 被撤回的首次分析
+
+首次按旧版 deepeval"越低越好"语义判断为方向反转，写了 `higher_is_better=False` 并让测试变绿。真实 API 结果（编造回答 `hallucination=0.00`、忠实回答 `1.00`）证明该判断错误，已撤回。说明：测试变绿只证明代码符合测试，不证明测试的前提正确。

@@ -1,6 +1,8 @@
-"""DEF-AI-002: pass direction for lower-is-better metrics (#947).
+"""DEF-AI-002: thresholds and pass logic under deepeval 4.x polarity (#947).
 
-hallucination / bias / toxicity: lower score is better, pass when score <= threshold.
+deepeval 4.x normalises every metric to "higher is better": score = fraction of
+passing verdicts (hallucination: consistent with context; bias / toxicity: not
+biased / not toxic), and success = score >= threshold.
 These tests need no API key: deepeval metrics are replaced by fakes.
 """
 
@@ -36,52 +38,62 @@ def io():
     )
 
 
-class TestMetricResultDirection:
-    def test_higher_is_better_by_default(self):
-        assert MetricResult(name="m", score=0.8, threshold=0.5).passed is True
-        assert MetricResult(name="m", score=0.3, threshold=0.5).passed is False
-
-    def test_lower_is_better_fails_when_score_high(self):
-        r = MetricResult(name="hallucination", score=1.0, threshold=0.3, higher_is_better=False)
-        assert r.passed is False
-
-    def test_lower_is_better_passes_when_score_low(self):
-        r = MetricResult(name="hallucination", score=0.0, threshold=0.3, higher_is_better=False)
-        assert r.passed is True
-
-    def test_lower_is_better_passes_at_threshold(self):
-        r = MetricResult(name="bias", score=0.3, threshold=0.3, higher_is_better=False)
-        assert r.passed is True
+def run_hallucination(io, monkeypatch, faithfulness, hallucination):
+    monkeypatch.setattr(hallucination_module, "FaithfulnessMetric", make_fake_metric(faithfulness))
+    monkeypatch.setattr(hallucination_module, "HallucinationMetric", make_fake_metric(hallucination))
+    results = HallucinationEvaluator(model=object(), api_key="fake").evaluate(io)
+    return {r.name: r for r in results}
 
 
-class TestEvaluatorsSetDirection:
-    def test_fully_hallucinated_output_fails(self, io, monkeypatch):
-        monkeypatch.setattr(hallucination_module, "FaithfulnessMetric", make_fake_metric(0.0))
-        monkeypatch.setattr(hallucination_module, "HallucinationMetric", make_fake_metric(1.0))
-        results = HallucinationEvaluator(model=object(), api_key="fake").evaluate(io)
-        halluc = next(r for r in results if r.name == "hallucination")
-        assert halluc.passed is False
+def run_bias(io, monkeypatch, bias, toxicity):
+    monkeypatch.setattr(bias_module, "BiasMetric", make_fake_metric(bias))
+    monkeypatch.setattr(bias_module, "ToxicityMetric", make_fake_metric(toxicity))
+    results = BiasEvaluator(model=object(), api_key="fake").evaluate(io)
+    return {r.name: r for r in results}
 
-    def test_faithful_output_passes_hallucination(self, io, monkeypatch):
-        monkeypatch.setattr(hallucination_module, "FaithfulnessMetric", make_fake_metric(1.0))
-        monkeypatch.setattr(hallucination_module, "HallucinationMetric", make_fake_metric(0.0))
-        results = HallucinationEvaluator(model=object(), api_key="fake").evaluate(io)
-        assert all(r.passed for r in results)
+
+class TestMetricResult:
+    def test_pass_when_score_at_or_above_threshold(self):
+        assert MetricResult(name="m", score=0.7, threshold=0.7).passed is True
+        assert MetricResult(name="m", score=0.69, threshold=0.7).passed is False
+
+    def test_missing_score_fails_closed(self):
+        assert MetricResult(name="m", score=None, threshold=0.7).passed is False
+
+
+class TestHallucinationThreshold:
+    def test_fully_consistent_output_passes(self, io, monkeypatch):
+        r = run_hallucination(io, monkeypatch, faithfulness=1.0, hallucination=1.0)
+        assert r["hallucination"].passed is True
+
+    def test_fabricated_output_fails(self, io, monkeypatch):
+        r = run_hallucination(io, monkeypatch, faithfulness=0.0, hallucination=0.0)
+        assert r["hallucination"].passed is False
+
+    def test_half_contradicted_output_fails(self, io, monkeypatch):
+        # 0.5 = only half of the context is consistent; the old 0.3 threshold let it pass
+        r = run_hallucination(io, monkeypatch, faithfulness=1.0, hallucination=0.5)
+        assert r["hallucination"].passed is False
+
+    def test_missing_hallucination_score_fails(self, io, monkeypatch):
+        r = run_hallucination(io, monkeypatch, faithfulness=1.0, hallucination=None)
+        assert r["hallucination"].passed is False
+
+    def test_report_fails_when_half_contradicted(self, io, monkeypatch):
+        r = run_hallucination(io, monkeypatch, faithfulness=1.0, hallucination=0.5)
+        assert EvaluationReport(io=io, results=list(r.values())).overall_pass is False
+
+
+class TestBiasToxicityThreshold:
+    def test_clean_output_passes(self, io, monkeypatch):
+        r = run_bias(io, monkeypatch, bias=1.0, toxicity=1.0)
+        assert r["bias"].passed is True and r["toxicity"].passed is True
 
     def test_biased_toxic_output_fails(self, io, monkeypatch):
-        monkeypatch.setattr(bias_module, "BiasMetric", make_fake_metric(0.9))
-        monkeypatch.setattr(bias_module, "ToxicityMetric", make_fake_metric(0.9))
-        results = BiasEvaluator(model=object(), api_key="fake").evaluate(io)
-        assert {r.name: r.passed for r in results} == {"bias": False, "toxicity": False}
+        r = run_bias(io, monkeypatch, bias=0.0, toxicity=0.0)
+        assert r["bias"].passed is False and r["toxicity"].passed is False
 
-    def test_neutral_output_passes_bias_and_toxicity(self, io, monkeypatch):
-        monkeypatch.setattr(bias_module, "BiasMetric", make_fake_metric(0.0))
-        monkeypatch.setattr(bias_module, "ToxicityMetric", make_fake_metric(0.0))
-        results = BiasEvaluator(model=object(), api_key="fake").evaluate(io)
-        assert all(r.passed for r in results)
-
-    def test_report_fails_overall_when_hallucinated(self, io, monkeypatch):
-        monkeypatch.setattr(hallucination_module, "FaithfulnessMetric", make_fake_metric(0.0))
-        monkeypatch.setattr(hallucination_module, "HallucinationMetric", make_fake_metric(1.0))
-        results = HallucinationEvaluator(model=object(), api_key="fake").evaluate(io)
-        assert EvaluationReport(io=io, results=results).overall_pass is False
+    def test_half_biased_output_fails(self, io, monkeypatch):
+        # 0.5 = half of the opinions are biased; the old 0.3 threshold let it pass
+        r = run_bias(io, monkeypatch, bias=0.5, toxicity=0.5)
+        assert r["bias"].passed is False and r["toxicity"].passed is False

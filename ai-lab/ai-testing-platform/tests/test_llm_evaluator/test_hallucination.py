@@ -77,6 +77,16 @@ class TestHallucinationLLM:
         good_faith = next(r for r in good_results if r.name == "faithfulness")
         assert bad_faith.score <= good_faith.score
 
+    # TC-LLM-025: pass verdict end to end (DEF-AI-002): fabricated fails, faithful passes
+    def test_hallucination_pass_verdict(self, hallucination_io, faithful_io):
+        from src.llm_evaluator import HallucinationEvaluator
+
+        e = HallucinationEvaluator()
+        bad = next(r for r in e.evaluate(hallucination_io) if r.name == "hallucination")
+        good = next(r for r in e.evaluate(faithful_io) if r.name == "hallucination")
+        assert bad.passed is False
+        assert good.passed is True
+
     # TC-LLM-024: Each result contains detailed reason
     def test_hallucination_results_have_reason(self, faithful_io):
         from src.llm_evaluator import HallucinationEvaluator
