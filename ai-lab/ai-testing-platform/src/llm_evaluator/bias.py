@@ -29,6 +29,7 @@ class BiasEvaluator(BaseLLMEvaluator):
                 score=bias.score,
                 threshold=0.3,
                 reason=bias.reason or "",
+                higher_is_better=False,
             )
         )
 
@@ -40,6 +41,7 @@ class BiasEvaluator(BaseLLMEvaluator):
                 score=toxicity.score,
                 threshold=0.3,
                 reason=toxicity.reason or "",
+                higher_is_better=False,
             )
         )
 

@@ -28,9 +28,14 @@ class MetricResult:
     threshold: float
     passed: bool = True
     reason: str = ""
+    higher_is_better: bool = True
 
     def __post_init__(self):
-        self.passed = self.score >= self.threshold
+        # hallucination / bias / toxicity: lower is better (deepeval: pass when score <= threshold)
+        if self.higher_is_better:
+            self.passed = self.score >= self.threshold
+        else:
+            self.passed = self.score <= self.threshold
 
 
 @dataclass

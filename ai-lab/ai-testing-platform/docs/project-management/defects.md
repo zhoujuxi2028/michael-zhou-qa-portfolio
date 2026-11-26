@@ -13,6 +13,7 @@
 | ID | 标题 | 模块 | 严重程度 | 状态 | 发现日期 |
 |----|------|------|----------|------|----------|
 | DEF-AI-001 | `_extract_boundaries()` 无法解析 Markdown 表格格式边界条件 | `case_generator` | P2 | Fixed | 2026-07-19 |
+| DEF-AI-002 | 越低越好的 LLM 指标通过判定反转（#947） | `llm_evaluator` | P1 | Fixed | 2026-11-26 |
 
 ---
 
@@ -150,3 +151,38 @@ def _extract_boundaries(self, text: str) -> list:
 | 总用例数 | 5 | 8 |
 | 边界用例数 | 0 | 3（256字符/128字符/8字符） |
 | 覆盖率评分 | 80.0 | 71.2（类型多样性提升，P0 占比下降） |
+
+---
+
+## DEF-AI-002 详情
+
+| 属性 | 内容 |
+|------|------|
+| **标题** | 越低越好的 LLM 指标通过判定反转 |
+| **Issue** | #947 |
+| **模块** | `src/llm_evaluator/evaluator.py`（`MetricResult.__post_init__`）、`hallucination.py`、`bias.py` |
+| **严重程度** | P1 严重（评测结论与事实相反） |
+| **状态** | Fixed |
+| **发现日期** | 2026-11-26 |
+| **修复日期** | 2026-11-26 |
+
+**问题描述：**
+
+`MetricResult` 对所有指标统一用 `passed = score >= threshold`。`hallucination`、`bias`、`toxicity` 的分数越高越差（deepeval 语义：`score <= threshold` 才通过），阈值都是 0.3。
+
+| 输入 | 期望 | 实际（修复前） |
+|------|------|----------------|
+| `hallucination` score = 1.0（完全幻觉） | 失败 | **通过** |
+| `hallucination` score = 0.0（无幻觉） | 通过 | **失败** |
+| `bias` / `toxicity` score = 0.9 | 失败 | **通过** |
+
+**为什么没被发现：** 现有测试只比较分数高低（如 neutral 的 bias 分数 ≤ biased），不断言 `passed`；且这些测试需要 API key，CI 中一直跳过。
+
+**修复：**
+
+- `MetricResult` 新增字段 `higher_is_better: bool = True`；为 `False` 时 `passed = score <= threshold`
+- `hallucination`、`bias`、`toxicity` 三个结果设为 `higher_is_better=False`
+- 新增 `tests/test_llm_evaluator/test_metric_direction.py`（9 个测试，用假指标替换 deepeval，不需要 API key，CI 中运行）
+
+**TDD 记录：** 见 `docs/tdd.md`
+

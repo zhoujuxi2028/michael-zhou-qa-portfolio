@@ -41,6 +41,7 @@ class HallucinationEvaluator(BaseLLMEvaluator):
                 score=score,
                 threshold=0.3,
                 reason=hallucination.reason or "",
+                higher_is_better=False,
             )
         )
 
