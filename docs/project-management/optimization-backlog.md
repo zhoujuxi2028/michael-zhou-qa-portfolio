@@ -71,7 +71,7 @@
 | OPT | 问题 | 位置 |
 |-----|------|------|
 | OPT-035 | Newman 报告 / 日志已提交（约 5 MB） | `api-testing-demo/{reports,logs,newman}/` |
-| OPT-036 | Obsidian 个人文件误提交 | `.obsidian/*.json`、`未命名.canvas`、`2026-11-19.md`（commit `8a9fac73`） |
+| OPT-036 | Obsidian 个人文件误提交 — **Done** | `.obsidian/*.json`、`未命名.canvas`、`2026-11-19.md`（commit `8a9fac73`）；已移除并加入 `.gitignore` |
 | OPT-037 | 运行产物已提交 | k8s `reports/hpa-stress/`、security `reports/zap_*.html`、`docs/qa/reports/logs-stage4/*.log` |
 | OPT-038 | `.gitignore` 缺口 + 过期路径 | 缺 `.obsidian/`、`*.canvas`、`.env`、`htmlcov/`、`allure-results/` 等；`security-testing-demo/.claude/` 旧路径 |
 | OPT-039 | `pytest.ini` 与 `[tool.pytest.ini_options]` 并存，后者被忽略 | k8s、sid-iam、selenium |
