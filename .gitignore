@@ -14,3 +14,6 @@ node_modules/
 **/__pycache__/
 **/*.pyc
 **/.pytest_cache/
+# Obsidian personal workspace (OPT-036)
+.obsidian/
+*.canvas
