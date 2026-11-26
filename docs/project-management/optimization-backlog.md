@@ -41,7 +41,7 @@
 |-----|------|------|------|
 | OPT-014 | Node 18/20 → 22 LTS | 13 处 Node 18（perf / soak / microservice / composite 默认值）；cicd-demo `.nvmrc` 20；需先核对 `engines` | Planned |
 | OPT-015 | Python 工具链统一 | 统一 ruff + ruff format；拆 requirements-dev；`>=` 改 `==`（security / sql / robot）；4 个项目补 pyproject | Planned |
-| OPT-016 | Actions SHA pin | 第三方 action（trivy / sbom / EnricoMi / kind / zap / bats）固定 SHA；Dependabot github-actions 已存在 | Planned |
+| OPT-016 | Actions SHA pin | 第三方 action（trivy / sbom / EnricoMi / kind / zap / bats）固定 SHA；Dependabot github-actions 已存在；#935 已 pin trivy / zap / buildx，余 EnricoMi / sbom / helm / bats / build-push / terraform / kind | In progress |
 | OPT-017 | 硬编码等待改条件等待 | iwsva Page Objects `cy.wait(ms)`；selenium / k8s chaos / sid-iam `time.sleep`；cicd-demo `commands.js` | Planned |
 | OPT-018 | Batch B 汇总 Issue | 子项 OPT-020 ~ OPT-034 | Planned |
 | OPT-019 | Batch C 汇总 Issue | 子项 OPT-035 ~ OPT-052 | Planned |
@@ -50,18 +50,18 @@
 
 | OPT | 问题 | 位置 |
 |-----|------|------|
-| OPT-020 | 5 个 job 无 `timeout-minutes` | `security-tests.yml` |
+| OPT-020 | 5 个 job 无 `timeout-minutes` — **Done**（#935） | `security-tests.yml` |
 | OPT-021 | 无 `timeout-minutes` | `api-testing-ci.yml`、`k8s-ci.yml` build-status、`setup-labels.yml` |
 | OPT-022 | `paths:` 未含 `.github/actions/**`，composite 变更不触发 | api / k8s / microservice / playwright / perf / soak |
-| OPT-023 | PR `paths:` 未含 workflow 自身 | `k8s-ci.yml`、`security-scan.yml` |
+| OPT-023 | PR `paths:` 未含 workflow 自身 — **Done**（#929 k8s-ci、#935 security-scan） | `k8s-ci.yml`、`security-scan.yml` |
 | OPT-024 | 过期分支触发 `feature/performance-testing` | `performance-ci.yml` |
 | OPT-025 | Playwright 浏览器无缓存 | `playwright-ci.yml` |
 | OPT-026 | Docker 构建无层缓存 | `security-scan.yml`、`docker-tests.yml` |
 | OPT-027 | setup 三步重复 5 次，未用 composite（需先加 `node-version-file` 输入） | `cicd-demo-pr.yml`、`cicd-demo-deploy.yml` |
 | OPT-028 | setup-python 块重复约 12 次，未用 composite | sql / ai / diag / av / ivi / robot |
 | OPT-029 | `rebot ... \|\| true` 掩盖合并失败 | `robot-framework-ci.yml` |
-| OPT-030 | summary 下载 `continue-on-error` 静默空表 | `security-tests.yml` |
-| OPT-031 | `npm audit` 重复执行且二次掩盖 | `security-scan.yml` |
+| OPT-030 | summary 下载 `continue-on-error` 静默空表 — **Done**（#935，缺报告改为 warning 行） | `security-tests.yml` |
+| OPT-031 | `npm audit` 重复执行且二次掩盖 — **Done**（#935，单次 JSON 运行并记录退出码） | `security-scan.yml` |
 | OPT-032 | 权限过宽 | `docker-tests.yml`（`pull-requests: write`）、`setup-labels.yml` |
 | OPT-033 | 22/35 个 `upload-artifact` 无 `retention-days` | 多个 workflow |
 | OPT-034 | composite 用 `setup-node@v6`，workflow 用 `@v7`；selenium-demo 无 CI | `setup-node-project/action.yml`、`.github/workflows/` |
@@ -70,21 +70,21 @@
 
 | OPT | 问题 | 位置 |
 |-----|------|------|
-| OPT-035 | Newman 报告 / 日志已提交（约 5 MB） | `api-testing-demo/{reports,logs,newman}/` |
+| OPT-035 | Newman 报告 / 日志已提交（约 5 MB） — **Done**（本 PR，删除 15 个文件约 6.7 MB，补 `.gitignore`） | `api-testing-demo/{reports,logs,newman}/` |
 | OPT-036 | Obsidian 个人文件误提交 — **Done** | `.obsidian/*.json`、`未命名.canvas`、`2026-11-19.md`（commit `8a9fac73`）；已移除并加入 `.gitignore` |
-| OPT-037 | 运行产物已提交 | k8s `reports/hpa-stress/`、security `reports/zap_*.html`、`docs/qa/reports/logs-stage4/*.log` |
-| OPT-038 | `.gitignore` 缺口 + 过期路径 | 缺 `.obsidian/`、`*.canvas`、`.env`、`htmlcov/`、`allure-results/` 等；`security-testing-demo/.claude/` 旧路径 |
+| OPT-037 | 运行产物已提交 — **Done**（本 PR 删除根目录 `logs-stage4/*.log`；security `zap_*.html` 已于 #934 删除；k8s `hpa-stress/` 24 KB 为 README/WBS 引用的样例数据，保留，Won't fix） | k8s `reports/hpa-stress/`、security `reports/zap_*.html`、`docs/qa/reports/logs-stage4/*.log` |
+| OPT-038 | `.gitignore` 缺口 + 过期路径 — **Done**（本 PR 补 `.env`/`.coverage`/`htmlcov/`/`allure-*`；`.obsidian/`/`*.canvas` 已于 #944 加入；旧 `.claude/` 路径改为 `**/.claude/settings.local.json`） | 缺 `.obsidian/`、`*.canvas`、`.env`、`htmlcov/`、`allure-results/` 等；`security-testing-demo/.claude/` 旧路径 |
 | OPT-039 | `pytest.ini` 与 `[tool.pytest.ini_options]` 并存，后者被忽略 | k8s、sid-iam、selenium |
 | OPT-040 | 18 个废弃 Cypress 文件 | `iwsva-cypress-e2e/archive/` |
 | OPT-041 | 双 `conftest.py` | `av-testing-demo/` 根 + `tests/` |
 | OPT-042 | dev 草稿测试已提交 | `selenium-demo/tests/dev/` |
-| OPT-043 | 空 `.worktrees/` 残留 | 仓库根 |
+| OPT-043 | 空 `.worktrees/` 残留 — **Done**（本地空目录，未入库，已删除；`.gitignore` 已含 `.worktrees/`） | 仓库根 |
 | OPT-044 | `mapfile` 不兼容 macOS bash 3.2 | `scripts/check-markdown-links.sh` |
 | OPT-045 | `proj:` labels 11 个 vs 17 个项目 | `setup-labels.yml` |
 | OPT-046 | 标准 `docs/` 模板未对齐 | api / playwright / selenium / sid-iam / iwsva / cicd / k8s / robot / ai / llm-agent |
 | OPT-047 | 缺 CLAUDE.md 与 `docs/` | `av-testing-demo` |
 | OPT-048 | 运行时 `pytest.skip` 过多，可能空跑绿灯 | `k8s-auto-testing-platform/tests/` |
-| OPT-049 | 永不执行的 skip 测试 + 非 strict xfail | `security-testing-demo/tests/test_auth.py` |
+| OPT-049 | 永不执行的 skip 测试 + 非 strict xfail — **Done**（#937 `xfail_strict = true`；#943 删除不可执行的 SEC-AUTH-002/004 并移入文档） | `security-testing-demo/tests/test_auth.py` |
 | OPT-050 | 无测试 | `llm-agent-tutorial` |
 | OPT-051 | iwsva "77 tests" 为文档用例数，非自动化数（随 OPT-009 一并处理） | `iwsva-cypress-e2e/README.md` |
 | OPT-052 | ruff 已配置但未声明依赖 | `security-testing-demo` |
@@ -94,3 +94,4 @@
 | 日期 | 变更 |
 |------|------|
 | 2026-11-24 | 创建；登记 AUDIT-2026-11-24 共 52 项（OPT-001 ~ OPT-052）；Batch A 开工 |
+| 2026-11-26 | 状态同步：OPT-020/023/030/031/049 Done（#929/#934/#935/#937/#943）、OPT-016 In progress；Batch C 清理 OPT-035/037/038/043 Done |

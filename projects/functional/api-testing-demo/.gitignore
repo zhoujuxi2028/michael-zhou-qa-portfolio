@@ -1,4 +1,9 @@
-# Newman reports
+# Newman reports / logs (OPT-035)
+reports/*
+!reports/.gitkeep
+newman/
+logs/*
+!logs/.gitkeep
 
 # Keep package files
 !package.json
