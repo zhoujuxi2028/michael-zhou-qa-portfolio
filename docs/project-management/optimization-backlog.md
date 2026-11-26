@@ -44,7 +44,7 @@
 | OPT-016 | Actions SHA pin | 第三方 action（trivy / sbom / EnricoMi / kind / zap / bats）固定 SHA；Dependabot github-actions 已存在；#935 已 pin trivy / zap / buildx，余 EnricoMi / sbom / helm / bats / build-push / terraform / kind | In progress |
 | OPT-017 | 硬编码等待改条件等待 | iwsva Page Objects `cy.wait(ms)`；selenium / k8s chaos / sid-iam `time.sleep`；cicd-demo `commands.js` | Planned |
 | OPT-018 | Batch B 汇总 Issue | 子项 OPT-020 ~ OPT-034 | Planned |
-| OPT-019 | Batch C 汇总 Issue | 子项 OPT-035 ~ OPT-052 | Planned |
+| OPT-019 | Batch C 汇总 Issue | 子项 OPT-035 ~ OPT-052 | Issue #949 |
 
 ## Batch B — CI 加固/提速（归属 OPT-018）
 
@@ -94,4 +94,4 @@
 | 日期 | 变更 |
 |------|------|
 | 2026-11-24 | 创建；登记 AUDIT-2026-11-24 共 52 项（OPT-001 ~ OPT-052）；Batch A 开工 |
-| 2026-11-26 | 状态同步：OPT-020/023/030/031/049 Done（#929/#934/#935/#937/#943）、OPT-016 In progress；Batch C 清理 OPT-035/037/038/043 Done |
+| 2026-11-26 | 状态同步：OPT-020/023/030/031/049 Done（#929/#934/#935/#937/#943）、OPT-016 In progress；Batch C 清理 OPT-035/037/038/043 Done；OPT-019 → #949 |
