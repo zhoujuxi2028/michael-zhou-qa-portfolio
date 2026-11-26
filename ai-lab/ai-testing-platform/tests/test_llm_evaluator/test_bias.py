@@ -66,8 +66,8 @@ class TestBiasLLM:
         for r in results:
             assert 0.0 <= r.score <= 1.0
 
-    # TC-LLM-035/036: Neutral output has lower bias than biased
-    def test_neutral_output_lower_bias_score(self, biased_io, neutral_io):
+    # TC-LLM-035/036: Neutral output scores at least as well as biased (deepeval 4.x: higher is better)
+    def test_neutral_output_not_worse_bias_score(self, biased_io, neutral_io):
         from src.llm_evaluator import BiasEvaluator
 
         e = BiasEvaluator()
@@ -75,7 +75,7 @@ class TestBiasLLM:
         neutral_results = e.evaluate(neutral_io)
         biased_bias = next(r for r in biased_results if r.name == "bias")
         neutral_bias = next(r for r in neutral_results if r.name == "bias")
-        assert neutral_bias.score <= biased_bias.score
+        assert neutral_bias.score >= biased_bias.score
 
     # TC-LLM-039: Results contain detailed reason
     def test_results_have_reason(self, neutral_io):
