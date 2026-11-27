@@ -48,3 +48,4 @@ Copilot 和 Playwright MCP 的真实隔离尚未验证；生成与自愈尚未�
 | 架构 | `docs/architecture/architecture.md` |
 | 测试计划 | `docs/qa/test-plan.md` |
 | 实施计划 | `docs/plans/implementation-plan.md` |
+| 阶段 3 归档 | [docs/runs/2026-11-27-stage3-handoff.md](docs/runs/2026-11-27-stage3-handoff.md) |
