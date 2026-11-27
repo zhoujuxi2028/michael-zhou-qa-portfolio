@@ -29,13 +29,34 @@
 | TC-AG-02 | 删除一个 `expect` | 退出码 1 |
 | TC-AG-03 | `toHaveText('Account locked')` 改为 `toBeVisible()` | 退出码 1 |
 | TC-AG-04 | 期望值改动（`'Account locked'` → `''`） | 退出码 1 |
+| TC-AG-05 | 多行或异步断言只改选择器 | 通过 |
+| TC-AG-06 | 同文件多个测试中交换不同断言，或删除、新增断言 | 退出码 1 |
+| TC-AG-07 | matcher 的 `.not` 等修饰符改变 | 退出码 1 |
+| TC-AG-08 | 解析错误、动态或重复测试名、未识别断言、缺失文件 | 退出码非零并输出错误 |
+| TC-AG-09 | matcher 参数引用变量、导入值、函数调用、插值、展开或计算属性 | 退出码非零，即使参数文本未变也拒绝 |
+
+守卫按文件及完整测试名称（含 `describe` 路径）比较 matcher、修饰符和期望参数；不检查 locator 表达式是否等价。测试禁用、条件绕过、helper 内断言和页面状态篡改仍须人工复核，不能由守卫通过推断安全。
+
+matcher 参数仅支持无参数或静态字面量、无插值模板、嵌套数组和静态属性对象；不支持间接值及动态表达式。v1 和 mutant 执行 `tests/generated/v1/`，v2 执行自愈后的 `tests/generated/v2/`；v2 不改被断言文案。
+
+## 集成与失败路径
+
+| 用例 | 场景 | 预期 |
+|------|------|------|
+| TC-INT-01 | 本地服务收到未知版本、路径穿越或不存在资源 | 明确返回错误，不回退到 v1 |
+| TC-INT-02 | 生成/自愈输入缺失、Copilot 或 MCP 执行失败 | 非零退出，保留诊断信息 |
+| TC-INT-03 | 自愈导致断言守卫失败 | 非零退出，保留修复前快照，不提交结果 |
+| TC-INT-04 | mutant 执行七个用例 | 仅 TC-VT-03 因预期锁定断言失败，其余六个通过 |
+| TC-INT-05 | v2 改版后自愈 | 记录失败、修复 diff 和复核，守卫通过后 7 / 7 通过 |
 
 ## 验收阈值
 
 | 指标 | 阈值 |
 |------|------|
 | v1 上生成用例通过率 | 7 / 7 |
-| mutant 上 TC-VT-03 | 必须失败 |
+| mutant | 仅 TC-VT-03 因预期锁定断言失败，其余六个通过；不将任意非零退出视作通过 |
 | v2 自愈 | 至少 1 次"失败 → 修复 → 通过"完整记录 |
-| 断言守卫 | TC-AG-01 ~ 04 全部符合预期；自愈 diff 中被削弱的断言数 = 0 |
+| 断言守卫 | TC-AG-01 ~ 09 全部符合预期；自愈 diff 中被削弱的断言数 = 0 |
 | CI | 不调用 AI，全程 < 5 分钟 |
+
+覆盖率范围为 `scripts/check-assertions.mjs` 与 `scripts/serve.mjs`，由项目本地 `c8` 执行 Node 单元及集成测试收集：statements ≥ 80%、branches ≥ 70%、functions ≥ 75%。命令为 `npx c8 --all --include=scripts/check-assertions.mjs --include=scripts/serve.mjs --check-coverage --statements=80 --branches=70 --functions=75 node --test tests/unit/*.test.mjs tests/integration/*.test.mjs`；核对报告包含两个目标文件。Shell 包装脚本及浏览器应用不在此覆盖率统计内，分别以失败路径集成测试和浏览器行为测试验证。

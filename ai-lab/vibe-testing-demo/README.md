@@ -2,7 +2,7 @@
 
 ## 项目说明
 
-用自然语言描述测试意图，由 AI Agent（Claude Code + Playwright MCP）生成、执行、维护 Playwright E2E 用例；人负责复核。个人演示项目（#946）。
+用自然语言描述测试意图，由 AI Agent（GitHub Copilot CLI + Playwright MCP）生成、执行、维护 Playwright E2E 用例；人负责复核。个人演示项目（#946）。
 
 ## Phase 规划
 

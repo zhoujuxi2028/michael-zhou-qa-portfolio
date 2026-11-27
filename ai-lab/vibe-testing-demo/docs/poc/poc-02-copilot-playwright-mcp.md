@@ -42,3 +42,16 @@ BASE_URL='http://127.0.0.1:18765/index.html?mutant=1' ./node_modules/.bin/playwr
 ## 后续
 
 本 PoC 仅支持继续评估 Copilot 方案。若决定替换 Claude Code，应先更新并评审需求、架构、风险和实施计划，再进入开发。
+
+## 补充：本地 MCP 子进程隔离探针
+
+使用 Copilot CLI 1.0.116 和 macOS 的 sandbox，启动一个仅操作会话临时标记文件的自定义 stdio MCP 服务。临时工作区尝试配置 `sandboxMcpServers: true`、`allowBypass: false`、`allowDevToolAccess: false` 和 `deniedPaths`；以下为实际观测结果，不假设这些本地配置生效。
+
+| 场景 | 工作区内写入 | 工作区内受限目录读取 | 工作区外标记读取 | 工作区外标记写入 |
+|------|--------------|----------------------|------------------|------------------|
+| Copilot `--sandbox` 启动 MCP | 成功 | **成功**，尽管本地 `deniedPaths` 指定了该目录 | `EPERM` | `EPERM` |
+| 同一探针直接运行，不使用 sandbox | 成功 | 未执行此对照 | 成功 | 成功 |
+
+后续改用会话内独立 `COPILOT_HOME` 的用户级 sandbox 配置后，同一自定义 MCP 探针对工作区内受限文件也返回 `EPERM`。这验证了该临时配置下的文件限制，但不代表项目本地配置生效。
+
+实际 Playwright MCP 探针在 sandbox 内未能启动浏览器：系统 Chrome 先因动态库和用户目录 Crashpad 被拒绝访问而失败，改用独立 Chromium headless 后仍未启动。因浏览器未就绪，不能将其报错当成 Playwright MCP 文件隔离通过。网络、凭据和正式环境的完整隔离仍未验证。探针及配置位于会话临时目录，未纳入仓库。
