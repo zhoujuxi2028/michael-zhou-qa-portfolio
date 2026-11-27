@@ -10,7 +10,7 @@
     "test:smoke": "playwright test tests/smoke --project=chromium",
     "test:unit": "node --test tests/unit/*.test.mjs",
     "test:integration": "node --test tests/integration/*.test.mjs",
-    "test:coverage": "c8 --all --include=scripts/check-assertions.mjs --include=scripts/serve.mjs --check-coverage --statements=80 --branches=70 --functions=75 node --test tests/unit/*.test.mjs tests/integration/*.test.mjs",
+    "test:coverage": "c8 --all --include=scripts/check-assertions.mjs --include=scripts/serve.mjs --check-coverage --lines=80 --statements=80 --branches=70 --functions=75 node --test tests/unit/*.test.mjs tests/integration/*.test.mjs",
     "lint": "eslint scripts tests --ext .mjs",
     "typecheck": "tsc --noEmit"
   },
@@ -21,6 +21,6 @@
     "c8": "9.1.0",
     "eslint": "10.15.0",
     "globals": "16.5.0",
-    "typescript": "7.0.2"
+    "typescript": "5.9.3"
   }
 }
