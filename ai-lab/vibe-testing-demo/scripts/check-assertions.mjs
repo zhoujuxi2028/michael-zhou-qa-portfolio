@@ -85,6 +85,10 @@ function analyze(file, contents) {
           properties.some(name => ['skip', 'only', 'fixme', 'fail'].includes(name))) {
         throw new Error('Unsupported test modifier');
       }
+      if (ts.isIdentifier(root) && root.text === 'test' && properties.length &&
+          (properties.length !== 1 || !['describe', 'beforeEach', 'afterEach', 'beforeAll', 'afterAll'].includes(properties[0]))) {
+        throw new Error('Unsupported test syntax');
+      }
       const isTest = ts.isIdentifier(target) && target.text === 'test';
       const isDescribe = ts.isPropertyAccessExpression(target) &&
         ts.isIdentifier(target.expression) && target.expression.text === 'test' &&

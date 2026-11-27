@@ -89,6 +89,7 @@ test('静态嵌套参数可以比较，测试禁用或外部断言则拒绝', as
   for (const invalid of [
     "test.skip('login', () => { expect(1).toBe(1); });",
     "test.describe.only('login', () => { test('a', () => { expect(1).toBe(1); }); });",
+    "test('a', () => { expect(1).toBe(1); }); test.each([1])('dynamic', () => {});",
     "import { test, expect as check } from '@playwright/test'; test('a', () => { check(1).toBe(1); });",
     "expect(1).toBe(1); test('login', () => { expect(1).toBe(1); });",
   ]) {
