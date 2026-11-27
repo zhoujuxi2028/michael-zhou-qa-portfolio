@@ -21,4 +21,3 @@
 | RSK-VT-007 | **`npx -y` 冷启动超时**：首次下载超过 MCP 30 s 启动时限 | 🟡 MEDIUM | 环境 | 本地安装，`.mcp.json` 指向 `node_modules/.bin/playwright-mcp`（PoC-01） | ✅ 已缓解 |
 | RSK-VT-008 | **MCP 依赖 Playwright alpha**（1.66.0-alpha），与测试运行器版本不同 | 🟡 MEDIUM | 依赖 | 锁定版本；MCP 只用于生成 / 修复，执行用稳定版 `@playwright/test`；两者浏览器版本差异记录在 README | 监控 |
 | RSK-VT-009 | **Agent 越权**：生成时改动 `tests/generated/` 以外的文件 | 🟡 MEDIUM | 安全 | `--allowedTools` 只放行 Playwright MCP 和 `Write(tests/generated/**)`；生成后 `git status` 检查 | 已设计 |
-
