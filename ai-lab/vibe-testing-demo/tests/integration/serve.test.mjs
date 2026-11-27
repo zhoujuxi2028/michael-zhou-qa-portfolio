@@ -66,3 +66,12 @@ test('未知版本启动失败', async () => {
   assert.notEqual(code, 0);
   assert.match(errors, /Unsupported APP_VERSION/);
 });
+
+test('SIGTERM 时服务正常关闭', async () => {
+  const child = spawn(process.execPath, ['scripts/serve.mjs', 'v1', '0']);
+  await once(child.stdout, 'data');
+  child.kill('SIGTERM');
+  const [code, signal] = await once(child, 'exit');
+  assert.equal(code, 0);
+  assert.equal(signal, null);
+});

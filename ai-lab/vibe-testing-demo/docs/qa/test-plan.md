@@ -59,4 +59,4 @@ matcher 参数仅支持无参数或静态字面量、无插值模板、嵌套数
 | 断言守卫 | TC-AG-01 ~ 09 全部符合预期；自愈 diff 中被削弱的断言数 = 0 |
 | CI | 不调用 AI，全程 < 5 分钟 |
 
-覆盖率范围为 `scripts/check-assertions.mjs` 与 `scripts/serve.mjs`，由项目本地 `c8` 执行 Node 单元及集成测试收集：statements ≥ 80%、branches ≥ 70%、functions ≥ 75%。命令为 `npx c8 --all --include=scripts/check-assertions.mjs --include=scripts/serve.mjs --check-coverage --statements=80 --branches=70 --functions=75 node --test tests/unit/*.test.mjs tests/integration/*.test.mjs`；核对报告包含两个目标文件。Shell 包装脚本及浏览器应用不在此覆盖率统计内，分别以失败路径集成测试和浏览器行为测试验证。
+覆盖率范围为 `scripts/check-assertions.mjs` 与 `scripts/serve.mjs`，由项目本地 `c8` 执行 Node 单元及集成测试收集：statements、lines ≥ 80%、branches ≥ 70%、functions ≥ 75%。命令为 `npm run test:coverage`；核对报告包含两个目标文件。Shell 包装脚本及浏览器应用不在此覆盖率统计内，分别以失败路径集成测试和浏览器行为测试验证。
