@@ -35,6 +35,8 @@ Node.js 依赖只安装在本项目的 `node_modules`；Python `venv` 不隔离 
 
 Copilot 和 Playwright MCP 的真实隔离尚未验证；生成与自愈尚未实现或执行。上述测试均为手写基线，不代表生成用例或 MCP 隔离通过。`APP_VERSION=mutant npm run test:smoke` 的锁定测试预期失败，不能替代后续生成用例的精确变异验证。不要在验证及人工批准前运行 MCP 自动生成或自愈。
 
+当前 CI 仅运行手写基线及应用版本测试，不调用 AI；生成用例和精确 mutant 门禁仍待补齐，不能视为完整项目验收。
+
 ## 文档
 
 | 文档 | 路径 |
