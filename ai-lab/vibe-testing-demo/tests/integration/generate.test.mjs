@@ -27,7 +27,7 @@ function fixture() {
   writeFileSync(path.join(root, 'node_modules/.bin/playwright-mcp'), '#!/bin/sh\necho "Version 0.0.0"\n');
   chmodSync(path.join(root, 'node_modules/.bin/playwright-mcp'), 0o755);
   writeFileSync(path.join(root, 'bin/copilot'), `#!/bin/sh
-if [ "$1" = "--version" ]; then echo "Fake Copilot 0.0.0"; exit 0; fi
+if [ "$1" = "--version" ]; then echo "Fake Copilot 0.0.0."; exit 0; fi
 case "$FAKE_RESULT" in
   fail) exit 7 ;;
   empty) exit 0 ;;

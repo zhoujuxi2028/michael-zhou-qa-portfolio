@@ -71,6 +71,7 @@ if [[ "$ready" -ne 1 ]]; then
 fi
 
 copilot_version=$(copilot --version | head -n 1)
+copilot_version=${copilot_version%.}
 mcp_version=$(node_modules/.bin/playwright-mcp --version | head -n 1)
 mcp_version=${mcp_version#Version }
 generated_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
