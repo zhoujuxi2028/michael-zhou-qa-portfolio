@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "type": "local",
+      "command": "./node_modules/.bin/playwright-mcp",
+      "args": ["--headless"]
+    }
+  }
+}
