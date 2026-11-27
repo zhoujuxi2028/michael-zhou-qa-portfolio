@@ -20,7 +20,8 @@
 |------|------|
 | 需求 | `docs/project-management/requirements.md` |
 | 风险 | `docs/project-management/risks.md` |
-| PoC | `docs/poc/poc-01-playwright-mcp.md` |
+| Claude Code PoC | `docs/poc/poc-01-playwright-mcp.md` |
+| Copilot CLI PoC | [docs/poc/poc-02-copilot-playwright-mcp.md](docs/poc/poc-02-copilot-playwright-mcp.md) |
 | 架构 | `docs/architecture/architecture.md` |
 | 测试计划 | `docs/qa/test-plan.md` |
 | 实施计划 | `docs/plans/implementation-plan.md` |
