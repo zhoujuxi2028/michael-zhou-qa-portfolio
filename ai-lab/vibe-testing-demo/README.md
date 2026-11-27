@@ -9,10 +9,29 @@
 | 阶段 | 内容 | 状态 |
 |------|------|------|
 | 1 需求 | 需求、可行性、风险 | ✅ Done |
-| 2 设计 | 架构、测试计划、PoC | 评审中 |
-| 3 开发 | 被测应用、意图、生成用例、自愈 | Planned |
+| 2 设计 | 架构、测试计划、PoC | 基础开发已获批准；MCP 隔离待验证 |
+| 3 开发 | 被测应用、意图、生成用例、自愈 | 进行中 |
 | 4 测试 | 执行、变异验证、CI | Planned |
 | 5 收尾 | 规范文档、复盘 | Planned |
+
+## 本地验证
+
+在本项目目录使用 Node.js `^20.19.0 || ^22.13.0 || >=24`：
+
+```bash
+npm ci
+npx playwright install chromium
+npm run lint
+npm run typecheck
+npm run test:unit
+npm run test:integration
+npm run test:coverage
+npm run test:smoke
+```
+
+Node.js 依赖只安装在本项目的 `node_modules`；Python `venv` 不隔离 Node.js 或 MCP 进程。`npm test` 面向未来经复核的 v1 生成用例，当前尚无生成用例，不能作为已完成验收的证据。
+
+Copilot 和 Playwright MCP 的真实隔离尚未验证；生成与自愈尚未实现或执行。现有 `npm run test:smoke` 仅验证手写基线，不代表 MCP 隔离通过。不要在验证及人工批准前运行 MCP 自动生成或自愈。
 
 ## 文档
 
