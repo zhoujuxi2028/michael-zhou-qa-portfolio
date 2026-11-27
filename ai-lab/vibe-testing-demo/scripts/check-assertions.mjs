@@ -17,13 +17,13 @@ function staticValue(node) {
   if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
     return ['string', node.text];
   }
-  if (ts.isNumericLiteral(node)) return ['number', Number(node.text)];
+  if (ts.isNumericLiteral(node)) return numericValue(Number(node.text));
   if (node.kind === ts.SyntaxKind.TrueKeyword) return ['boolean', true];
   if (node.kind === ts.SyntaxKind.FalseKeyword) return ['boolean', false];
   if (node.kind === ts.SyntaxKind.NullKeyword) return ['null'];
   if (ts.isRegularExpressionLiteral(node)) return ['regex', node.text];
   if (ts.isPrefixUnaryExpression(node) && node.operator === ts.SyntaxKind.MinusToken &&
-      ts.isNumericLiteral(node.operand)) return ['number', -Number(node.operand.text)];
+      ts.isNumericLiteral(node.operand)) return numericValue(-Number(node.operand.text));
   if (ts.isArrayLiteralExpression(node)) return ['array', node.elements.map(staticValue)];
   if (ts.isObjectLiteralExpression(node)) {
     return ['object', node.properties.map(property => {
@@ -35,6 +35,10 @@ function staticValue(node) {
     })];
   }
   throw new Error(`Unsupported dynamic assertion argument: ${node.getText()}`);
+}
+
+function numericValue(value) {
+  return ['number', Object.is(value, -0) ? '-0' : String(value)];
 }
 
 function assertion(node) {

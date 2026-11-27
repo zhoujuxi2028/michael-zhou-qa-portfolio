@@ -43,6 +43,13 @@ test('更改期望值时拒绝', async context => {
   assert.notEqual(result.status, 0);
 });
 
+test('区分负零、正零以及正负无穷的期望值', async context => {
+  for (const [before, after] of [['-0', '0'], ['1e309', '-1e309']]) {
+    const result = await check(context, spec(`expect(0).toBe(${before});`), spec(`expect(0).toBe(${after});`));
+    assert.notEqual(result.status, 0);
+  }
+});
+
 test('支持嵌套 describe、多行和异步修饰符', async context => {
   const before = "test.describe('login', () => { test('lock', async ({page}) => { await expect(\npage.locator('#a')\n).resolves.not.toHaveText('unlocked'); }); });";
   const result = await check(context, before, before.replace('#a', '#b'));
