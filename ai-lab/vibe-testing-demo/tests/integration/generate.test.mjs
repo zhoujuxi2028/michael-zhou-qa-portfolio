@@ -24,9 +24,10 @@ function fixture() {
     server.listen(4173, '127.0.0.1', () => console.log('http://127.0.0.1:4173'));
     process.on('SIGTERM', () => server.close());
   `);
-  writeFileSync(path.join(root, 'node_modules/.bin/playwright-mcp'), '#!/bin/sh\nexit 0\n');
+  writeFileSync(path.join(root, 'node_modules/.bin/playwright-mcp'), '#!/bin/sh\necho "Version 0.0.0"\n');
   chmodSync(path.join(root, 'node_modules/.bin/playwright-mcp'), 0o755);
   writeFileSync(path.join(root, 'bin/copilot'), `#!/bin/sh
+if [ "$1" = "--version" ]; then echo "Fake Copilot 0.0.0"; exit 0; fi
 case "$FAKE_RESULT" in
   fail) exit 7 ;;
   empty) exit 0 ;;
@@ -91,5 +92,8 @@ test('成功时只生成指定文件并记录运行摘要', () => {
   assert.equal(result.status, 0, result.stderr);
   assert.equal(readFileSync(path.join(root, 'tests/generated/v1/VT-INT-01.spec.ts'), 'utf8'), 'generated\n');
   assert.match(result.stdout, /VT-INT-01/);
-  assert.match(readFileSync(path.join(root, 'docs/runs/generate-VT-INT-01.md'), 'utf8'), /意图一/);
+  const record = readFileSync(path.join(root, 'docs/runs/generate-VT-INT-01.md'), 'utf8');
+  assert.match(record, /意图一/);
+  assert.match(record, /generated-by：Fake Copilot 0\.0\.0 \+ @playwright\/mcp 0\.0\.0/);
+  assert.match(record, /generated-at：\d{4}-\d{2}-\d{2}T/);
 });

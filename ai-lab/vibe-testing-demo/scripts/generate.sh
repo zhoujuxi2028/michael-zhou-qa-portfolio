@@ -70,7 +70,15 @@ if [[ "$ready" -ne 1 ]]; then
   exit 1
 fi
 
+copilot_version=$(copilot --version | head -n 1)
+mcp_version=$(node_modules/.bin/playwright-mcp --version | head -n 1)
+mcp_version=${mcp_version#Version }
+generated_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
 prompt="$(cat prompts/generate.md)
+
+generated-by：$copilot_version + @playwright/mcp $mcp_version
+generated-at：$generated_at
 
 目标意图：$intent
 $(cat "$intent_file")

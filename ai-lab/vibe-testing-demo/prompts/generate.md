@@ -6,5 +6,5 @@
 - 禁止通过 `page.evaluate` 或其他方式修改页面、业务状态或断言元素。
 - 使用隔离的浏览器上下文；断言必须验证意图中每项可观察结果。
 - matcher 参数使用静态字面量，避免守卫无法验证的间接值。
-- 文件头注明 `intent`、`generated-by`（Copilot CLI 和 MCP 版本）、`generated-at`、`reviewed-by`；复核人由实际复核者填写。
-- 仅使用本地演示应用和演示账号；限制必要工具权限并检查执行前后的 Git 状态及 diff，详见 `docs/project-management/risks.md`。
+- 文件头注明 `intent`、`generated-by`、`generated-at`、`reviewed-by`；前三项使用下方提供的值，`reviewed-by` 写 `pending`，由实际复核者填写。
+- 仅使用本地演示应用和演示账号。工具权限、执行前后的 Git 检查和人工复核由调用脚本及复核者完成，你无需读取其他文件或运行 shell。
