@@ -54,4 +54,4 @@
 | 项 | 结论 |
 |----|------|
 | 本机工具 | PoC 时 `copilot`、`node`、`npm` 已安装；项目依赖安装到项目自己的 `node_modules` |
-| 主要不确定性 | Copilot PoC 仅验证一个意图；自愈、完整用例和 MCP 进程隔离尚未验证（见 `risks.md`） |
+| 主要不确定性 | Copilot PoC 仅验证一个意图；自愈和完整用例尚未验证。MCP 进程隔离不属于本 demo 范围，残余风险已接受（见 `risks.md`） |
