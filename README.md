@@ -136,6 +136,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 | `ivi-integration-ci.yml` | ivi-integration-lab | Push/PR | IVI Integration Lab CI: lint → unit tests → smoke → integration → regression (65 tests, Python 3.11/3.12 matrix) |
 | `diag-log-triage-ci.yml` | diagnostics-log-triage-lab | Push/PR | Diagnostics Log Triage CI: code quality ∥ unit tests → integration → demo (158 tests, Python 3.11/3.12 matrix) |
 | `av-testing-ci.yml` | av-testing-demo | Push/PR | AV Testing Demo CI: unit tests (19, bundled ffmpeg) |
+| `vibe-testing-ci.yml` | vibe-testing-demo | Push/PR | Vibe Testing CI：手写基线、覆盖率及应用版本验证 |
 | `playwright-ci.yml` | playwright-demo | Push/PR | Playwright Demo CI: Chromium E2E/API/visual/a11y (38 tests) |
 | `api-testing-ci.yml` | api-testing-demo | Push/PR | Validate Postman collections → Newman tests (316 assertions) |
 | `microservice-ci.yml` | microservice-testing-platform | Push/PR, manual | Microservice Testing CI: code quality + unit/contract/integration/e2e/observability tests (138 tests) |

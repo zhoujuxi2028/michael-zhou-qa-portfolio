@@ -1,0 +1,61 @@
+name: Vibe Testing CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'ai-lab/vibe-testing-demo/**'
+      - '.github/workflows/vibe-testing-ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ai-lab/vibe-testing-demo/**'
+      - '.github/workflows/vibe-testing-ci.yml'
+
+concurrency:
+  group: vibe-testing-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: ai-lab/vibe-testing-demo
+
+jobs:
+  unit-tests:
+    name: Vibe Testing / Baseline
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-node-project
+        with:
+          node-version: '22'
+          working-directory: ai-lab/vibe-testing-demo
+          cache-dependency-path: ai-lab/vibe-testing-demo/package-lock.json
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test:coverage
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:smoke
+      - name: 验证 v2
+        run: npx playwright test tests/variants/v2.spec.ts --project=chromium
+        env:
+          APP_VERSION: v2
+      - name: 验证 mutant
+        run: npx playwright test tests/variants/mutant.spec.ts --project=chromium
+        env:
+          APP_VERSION: mutant
+      - name: 保存测试报告
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: vibe-testing-report
+          path: |
+            ai-lab/vibe-testing-demo/playwright-report/
+            ai-lab/vibe-testing-demo/test-results/
+            ai-lab/vibe-testing-demo/coverage/
+          retention-days: 7
