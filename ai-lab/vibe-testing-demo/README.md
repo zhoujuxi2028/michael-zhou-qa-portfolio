@@ -27,11 +27,13 @@ npm run test:unit
 npm run test:integration
 npm run test:coverage
 npm run test:smoke
+APP_VERSION=v2 npx playwright test tests/variants/v2.spec.ts --project=chromium
+APP_VERSION=mutant npx playwright test tests/variants/mutant.spec.ts --project=chromium
 ```
 
 Node.js 依赖只安装在本项目的 `node_modules`；Python `venv` 不隔离 Node.js 或 MCP 进程。`npm test` 面向未来经复核的 v1 生成用例，当前尚无生成用例，不能作为已完成验收的证据。
 
-Copilot 和 Playwright MCP 的真实隔离尚未验证；生成与自愈尚未实现或执行。现有 `npm run test:smoke` 仅验证手写基线，不代表 MCP 隔离通过。不要在验证及人工批准前运行 MCP 自动生成或自愈。
+Copilot 和 Playwright MCP 的真实隔离尚未验证；生成与自愈尚未实现或执行。上述测试均为手写基线，不代表生成用例或 MCP 隔离通过。`APP_VERSION=mutant npm run test:smoke` 的锁定测试预期失败，不能替代后续生成用例的精确变异验证。不要在验证及人工批准前运行 MCP 自动生成或自愈。
 
 ## 文档
 

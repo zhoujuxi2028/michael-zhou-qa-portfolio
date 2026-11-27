@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vibe Testing Demo</title>
+</head>
+<body>
+  <main>
+    <h1>Vibe Testing Demo</h1>
+    <section>
+      <h2>Login</h2>
+      <form id="signin-form">
+        <label for="account">Username</label>
+        <input id="account" autocomplete="username">
+        <label for="passcode">Password</label>
+        <input id="passcode" type="password" autocomplete="current-password">
+        <button type="submit">Sign in</button>
+      </form>
+      <p role="status" id="signin-status"></p>
+    </section>
+    <section>
+      <h2>Todos</h2>
+      <form id="task-form">
+        <label for="new-task">New todo</label>
+        <input id="new-task">
+        <button type="submit">Add task</button>
+      </form>
+      <p role="alert" id="task-error"></p>
+      <ul id="task-list"></ul>
+    </section>
+  </main>
+  <script>
+    let failedAttempts = 0;
+    const loginStatus = document.querySelector('#signin-status');
+    document.querySelector('#signin-form').addEventListener('submit', event => {
+      event.preventDefault();
+      if (failedAttempts >= 3) {
+        loginStatus.textContent = 'Account locked';
+        return;
+      }
+      const username = document.querySelector('#account').value;
+      const password = document.querySelector('#passcode').value;
+      if (username === 'demo' && password === 'password') {
+        failedAttempts = 0;
+        loginStatus.textContent = 'Welcome, demo';
+      } else {
+        failedAttempts++;
+        loginStatus.textContent = failedAttempts >= 3 ? 'Account locked' : 'Invalid credentials';
+      }
+    });
+
+    document.querySelector('#task-form').addEventListener('submit', event => {
+      event.preventDefault();
+      const input = document.querySelector('#new-task');
+      const error = document.querySelector('#task-error');
+      const text = input.value.trim();
+      if (!text) {
+        error.textContent = 'Todo cannot be empty';
+        return;
+      }
+      error.textContent = '';
+      const item = document.createElement('li');
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.setAttribute('aria-label', text);
+      const label = document.createElement('span');
+      label.textContent = text;
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.textContent = 'Delete';
+      remove.addEventListener('click', () => item.remove());
+      item.append(checkbox, label, remove);
+      document.querySelector('#task-list').append(item);
+      input.value = '';
+    });
+  </script>
+</body>
+</html>

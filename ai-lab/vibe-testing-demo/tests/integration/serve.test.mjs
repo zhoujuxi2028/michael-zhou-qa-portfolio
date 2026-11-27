@@ -31,9 +31,9 @@ after(async () => {
   }
 });
 
-function request(path) {
+function request(path, requestPort = port) {
   return new Promise((resolve, reject) => {
-    http.get({ host: '127.0.0.1', port, path }, response => {
+    http.get({ host: '127.0.0.1', port: requestPort, path }, response => {
       let body = '';
       response.setEncoding('utf8');
       response.on('data', chunk => { body += chunk; });
@@ -47,6 +47,23 @@ test('合法版本返回登录页面', async () => {
   assert.equal(response.status, 200);
   assert.match(response.body, /Log in/);
 });
+
+for (const version of ['v2', 'mutant']) {
+  test(`合法版本 ${version} 返回页面`, async () => {
+    const child = spawn(process.execPath, ['scripts/serve.mjs', version, '0']);
+    try {
+      const [chunk] = await once(child.stdout, 'data');
+      const address = String(chunk).match(/127\.0\.0\.1:(\d+)/);
+      assert.ok(address, '服务应输出监听地址');
+      const response = await request('/', Number(address[1]));
+      assert.equal(response.status, 200);
+      assert.match(response.body, /Vibe Testing Demo/);
+    } finally {
+      child.kill('SIGTERM');
+      await once(child, 'exit');
+    }
+  });
+}
 
 test('不存在的资源返回 404', async () => {
   const response = await request('/missing.html');
