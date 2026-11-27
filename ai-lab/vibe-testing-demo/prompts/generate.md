@@ -7,4 +7,4 @@
 - 使用隔离的浏览器上下文；断言必须验证意图中每项可观察结果。
 - matcher 参数使用静态字面量，避免守卫无法验证的间接值。
 - 文件头注明 `intent`、`generated-by`（Copilot CLI 和 MCP 版本）、`generated-at`、`reviewed-by`；复核人由实际复核者填写。
-- 未获得隔离验证及用户批准前，不运行此提示词或 MCP 自动生成。
+- 仅使用本地演示应用和演示账号；限制必要工具权限并检查执行前后的 Git 状态及 diff，详见 `docs/project-management/risks.md`。

@@ -33,7 +33,7 @@
 | `docs/project-management/requirements.md` | Claude Code 执行意图 | Copilot CLI 执行意图；保留七个意图和人工复核 |
 | `docs/architecture/architecture.md` | `claude -p` 与断言文本比对 | `copilot -p`、项目 MCP 配置与 TypeScript AST 比对 |
 | `docs/qa/test-plan.md` | 基础断言守卫用例 | 增加不支持语法、集成失败路径和精确变异验证 |
-| `docs/project-management/risks.md` | 将工具白名单作为越权缓解措施 | 单独评估 MCP 进程隔离及数据进入模型上下文的风险 |
+| `docs/project-management/risks.md` | 将工具白名单作为越权缓解措施 | 记录用户接受的 MCP 残余风险及数据进入模型上下文的风险 |
 | `CLAUDE.md`、`README.md` | Claude Code 为项目 Agent | Copilot CLI 为项目 Agent；保留历史 Claude PoC |
 
 PoC-02 验证了一个意图，并补充了自定义 MCP 子进程的文件隔离探针：项目本地 `deniedPaths` 未按预期生效，独立用户级配置可阻止访问测试标记。尚未验证 Playwright MCP 的隔离、自愈或完整七个用例，不能作为这些项目的验收证据。
@@ -55,10 +55,10 @@ export default defineConfig({
 ```
 
 - 生成和自愈使用 `copilot -p` 与项目 MCP 配置；在项目目录安装 Node.js 依赖，不在仓库根目录安装子项目依赖。
-- Copilot 工具权限只放行必要操作；权限规则不限制 MCP 进程本身。验证进程隔离、检查文件差异并使用演示数据；隔离不足时暂停有风险的自动执行。
+- Copilot 工具权限只放行必要操作；正常环境运行前后检查 Git 状态和 diff，使用本地演示应用及演示账号。这些措施不限制 MCP 进程或仓库外访问；组织要求 sandbox 时必须遵守。
 - 断言守卫输入为修复前快照目录和修复后目录；无法解析或不支持的断言返回非零，人工检查禁用测试、控制流和页面状态。
 - `npm test` 只运行 `tests/generated/v1/`；v2、冒烟、Node 单测各用独立命令，Playwright `testMatch` 只匹配 `*.spec.ts`。v1/mutant 使用 v1 目录，v2 使用副本；用 `--list` 核对发现数量。
-- 独立设计评审提出 v1/v2 兼容、静态断言参数、测试发现、隔离放行及覆盖率五项问题；本设计分别给出约束，待人工复核。实际 MCP 隔离验证未完成，仍阻塞自动生成及自愈，不阻塞评审通过后的基础开发。
+- 独立设计评审提出 v1/v2 兼容、静态断言参数、测试发现、隔离放行及覆盖率五项问题。用户后续决定接受隔离残余风险，进程级隔离不再作为本 demo 的生成或自愈门禁；历史探针结果不变。
 - T2、T5、T6、T7 的集成用例在阶段 3 完成；阶段 4 只运行并评估已有测试。
 - 每阶段完成后按 `docs/dev-process-checklist.md` 报告状态并等待人工确认。
 

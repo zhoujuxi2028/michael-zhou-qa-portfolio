@@ -9,7 +9,7 @@
 | 阶段 | 内容 | 状态 |
 |------|------|------|
 | 1 需求 | 需求、可行性、风险 | ✅ Done |
-| 2 设计 | 架构、测试计划、PoC | 基础开发已获批准；MCP 隔离待验证 |
+| 2 设计 | 架构、测试计划、PoC | 已评审；MCP 进程隔离不属于本 demo 范围 |
 | 3 开发 | 被测应用、意图、生成用例、自愈 | 进行中 |
 | 4 测试 | 执行、变异验证、CI | Planned |
 | 5 收尾 | 规范文档、复盘 | Planned |
@@ -33,7 +33,9 @@ APP_VERSION=mutant npx playwright test tests/variants/mutant.spec.ts --project=c
 
 Node.js 依赖只安装在本项目的 `node_modules`；Python `venv` 不隔离 Node.js 或 MCP 进程。`npm test` 面向未来经复核的 v1 生成用例，当前尚无生成用例，不能作为已完成验收的证据。
 
-Copilot 和 Playwright MCP 的真实隔离尚未验证；生成与自愈尚未实现或执行。上述测试均为手写基线，不代表生成用例或 MCP 隔离通过。`APP_VERSION=mutant npm run test:smoke` 的锁定测试预期失败，不能替代后续生成用例的精确变异验证。不要在验证及人工批准前运行 MCP 自动生成或自愈。
+生成与自愈尚未实现或执行。上述测试均为手写基线，不代表生成用例或 MCP 隔离通过。`APP_VERSION=mutant npm run test:smoke` 的锁定测试预期失败，不能替代后续生成用例的精确变异验证。
+
+用户已接受 [RSK-VT-009](docs/project-management/risks.md) 残余风险：正常环境只使用本地演示应用和演示账号；限制必要工具权限，执行前后检查 Git 状态并人工复核 diff。这些措施无法限制 MCP 进程或检查仓库外访问。组织若要求 sandbox，必须遵守其策略。
 
 当前 CI 仅运行手写基线及应用版本测试，不调用 AI；生成用例和精确 mutant 门禁仍待补齐，不能视为完整项目验收。
 
