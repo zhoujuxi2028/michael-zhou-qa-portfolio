@@ -62,6 +62,7 @@ Test automation, performance testing, and DevOps demonstration projects.
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
 | [ai-testing-platform](./ai-lab/ai-testing-platform/) | AI-Powered Testing Platform — 智能测试用例生成 + 缺陷预测 + 脚本生成 + 代码扫描 + RAG 全链路 + 图像识别/知识图谱测试 (220 tests) | Python, Pytest, Rule Engine |
+| [vibe-testing-demo](./ai-lab/vibe-testing-demo/) | Vibe Testing — natural-language intents → Copilot CLI + Playwright MCP generate and self-heal E2E cases, guarded by AST assertion check + exact mutation gate (7 generated + 7 healed) | Playwright, TypeScript, Copilot CLI, MCP |
 | [llm-agent-tutorial](./ai-lab/llm-agent-tutorial/) | LLM Agent Engineering Tutorial — Prompt/Context/Harness/Loop 四件套 + function-calling + Reflexion (single-file, zero-dependency) | Python, Anthropic API |
 
 ### 多媒体测试 (Multimedia Testing)

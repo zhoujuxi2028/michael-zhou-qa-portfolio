@@ -10,9 +10,9 @@
 |------|------|------|
 | 1 需求 | 需求、可行性、风险 | ✅ Done |
 | 2 设计 | 架构、测试计划、PoC | 已评审；MCP 进程隔离不属于本 demo 范围 |
-| 3 开发 | 被测应用、意图、生成用例、自愈 | 开发完成，待人工复核及评审 |
-| 4 测试 | 执行、变异验证、CI | Planned |
-| 5 收尾 | 规范文档、复盘 | Planned |
+| 3 开发 | 被测应用、意图、生成用例、自愈 | ✅ Done（#955） |
+| 4 测试 | 执行、变异验证、CI、报红验证 | ✅ Done |
+| 5 收尾 | 落地规范、root 注册、Wiki | ✅ Done |
 
 ## 本地验证
 
@@ -39,11 +39,11 @@ APP_VERSION=v2 npx playwright test tests/generated/v2 --project=chromium
 
 Node.js 依赖只安装在本项目的 `node_modules`；Python `venv` 不隔离 Node.js 或 MCP 进程。
 
-`tests/generated/` 中的 14 个用例由 Copilot 生成或自愈，`reviewed-by` 为 `pending`，待人工复核；结果见 [阶段 3 结果](docs/runs/2026-11-28-stage3-results.md)。
+`tests/generated/` 中的 14 个用例由 Copilot 生成或自愈，经 AI 复核（用户授权代签，见 [复核记录](docs/runs/2026-11-28-review.md)）；结果见 [阶段 3 结果](docs/runs/2026-11-28-stage3-results.md)。
 
 用户已接受 [RSK-VT-009](docs/project-management/risks.md) 残余风险：正常环境只使用本地演示应用和演示账号；限制必要工具权限，执行前后检查 Git 状态并人工复核 diff。这些措施无法限制 MCP 进程或检查仓库外访问。组织若要求 sandbox，必须遵守其策略。
 
-CI 运行手写基线、生成用例 v1、精确 mutant 门禁、断言守卫和 v2 自愈用例，不调用 AI；远端 CI 尚未运行（分支未推送）。
+CI 运行手写基线、生成用例 v1、精确 mutant 门禁、断言守卫和 v2 自愈用例，不调用 AI；报红验证见 [CI 报红记录](docs/runs/2026-11-28-ci-red-check.md)。
 
 ## 文档
 
@@ -58,3 +58,7 @@ CI 运行手写基线、生成用例 v1、精确 mutant 门禁、断言守卫和
 | 实施计划 | `docs/plans/implementation-plan.md` |
 | 阶段 3 归档 | [docs/runs/2026-11-27-stage3-handoff.md](docs/runs/2026-11-27-stage3-handoff.md) |
 | 阶段 3 结果 | [docs/runs/2026-11-28-stage3-results.md](docs/runs/2026-11-28-stage3-results.md) |
+| 用例复核 | [docs/runs/2026-11-28-review.md](docs/runs/2026-11-28-review.md) |
+| CI 报红验证 | [docs/runs/2026-11-28-ci-red-check.md](docs/runs/2026-11-28-ci-red-check.md) |
+| 落地规范 | [docs/guides/vibe-testing-playbook.md](docs/guides/vibe-testing-playbook.md) |
+| 复核清单 | [docs/qa/ai-code-review-checklist.md](docs/qa/ai-code-review-checklist.md) |

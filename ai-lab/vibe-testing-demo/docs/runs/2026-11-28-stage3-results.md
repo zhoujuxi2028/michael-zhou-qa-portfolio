@@ -41,6 +41,8 @@
 
 ## 未完成 / 待评审
 
+> 后续：三项均已在阶段 4 / 5 完成，见 [复核记录](2026-11-28-review.md)、[CI 报红验证](2026-11-28-ci-red-check.md)。
+
 - 14 个生成用例 `reviewed-by: pending`，需人工按 [复核清单](../qa/ai-code-review-checklist.md) 复核后填写。
 - 复核提示：测试命名不统一（部分缺 `VT-INT-NN:` 前缀）。
 - 远端 CI、Linux 浏览器依赖安装及故意失败报红尚未验证（阶段 4）。
