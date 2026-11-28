@@ -1,0 +1,165 @@
+
+Running 7 tests using 4 workers
+
+[1/7] [chromium] › tests/generated/v2/VT-INT-01.spec.ts:8:1 › VT-INT-01: successful login
+[2/7] [chromium] › tests/generated/v2/VT-INT-04.spec.ts:8:1 › VT-INT-04: add a todo
+[3/7] [chromium] › tests/generated/v2/VT-INT-02.spec.ts:8:1 › VT-INT-02: rejects an incorrect password
+[4/7] [chromium] › tests/generated/v2/VT-INT-03.spec.ts:8:1 › locks the account after three failed attempts and rejects the correct password
+  1) [chromium] › tests/generated/v2/VT-INT-04.spec.ts:8:1 › VT-INT-04: add a todo ─────────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Add todo' })
+
+
+      11 |   await expect(page.getByRole('listitem')).toHaveCount(0);
+      12 |   await page.getByRole('textbox', { name: 'New todo' }).fill('Write tests');
+    > 13 |   await page.getByRole('button', { name: 'Add todo' }).click();
+         |                                                        ^
+      14 |
+      15 |   await expect(
+      16 |     page.getByRole('listitem').filter({ hasText: 'Write tests' })
+        at tests/generated/v2/VT-INT-04.spec.ts:13:56
+
+    Error Context: test-results/generated-v2-VT-INT-04-VT-INT-04-add-a-todo-chromium/error-context.md
+
+
+  2) [chromium] › tests/generated/v2/VT-INT-01.spec.ts:8:1 › VT-INT-01: successful login ───────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Log in' })
+
+
+      10 |   await page.getByRole('textbox', { name: 'Username' }).fill('demo');
+      11 |   await page.getByRole('textbox', { name: 'Password' }).fill('password');
+    > 12 |   await page.getByRole('button', { name: 'Log in' }).click();
+         |                                                      ^
+      13 |
+      14 |   await expect(page.getByRole('status')).toBeVisible();
+      15 |   await expect(page.getByRole('status')).toHaveText('Welcome, demo');
+        at tests/generated/v2/VT-INT-01.spec.ts:12:54
+
+    Error Context: test-results/generated-v2-VT-INT-01-VT-INT-01-successful-login-chromium/error-context.md
+
+
+  3) [chromium] › tests/generated/v2/VT-INT-02.spec.ts:8:1 › VT-INT-02: rejects an incorrect password 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Log in' })
+
+
+      10 |   await page.getByLabel('Username').fill('demo');
+      11 |   await page.getByLabel('Password').fill('wrong-password');
+    > 12 |   await page.getByRole('button', { name: 'Log in' }).click();
+         |                                                      ^
+      13 |
+      14 |   await expect(page.getByRole('status')).toBeVisible();
+      15 |   await expect(page.getByRole('status')).toHaveText('Invalid credentials');
+        at tests/generated/v2/VT-INT-02.spec.ts:12:54
+
+    Error Context: test-results/generated-v2-VT-INT-02-VT--205cc-jects-an-incorrect-password-chromium/error-context.md
+
+
+  4) [chromium] › tests/generated/v2/VT-INT-03.spec.ts:8:1 › locks the account after three failed attempts and rejects the correct password 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Log in' })
+
+
+      11 |   await page.getByRole('textbox', { name: 'Username' }).fill('demo');
+      12 |   await page.getByRole('textbox', { name: 'Password' }).fill('wrong');
+    > 13 |   await page.getByRole('button', { name: 'Log in' }).click();
+         |                                                      ^
+      14 |   await page.getByRole('button', { name: 'Log in' }).click();
+      15 |   await page.getByRole('button', { name: 'Log in' }).click();
+      16 |
+        at tests/generated/v2/VT-INT-03.spec.ts:13:54
+
+    Error Context: test-results/generated-v2-VT-INT-03-loc-c163a-ejects-the-correct-password-chromium/error-context.md
+
+
+[5/7] [chromium] › tests/generated/v2/VT-INT-07.spec.ts:8:1 › rejects a whitespace-only todo
+[6/7] [chromium] › tests/generated/v2/VT-INT-05.spec.ts:8:1 › VT-INT-05: complete a todo
+[7/7] [chromium] › tests/generated/v2/VT-INT-06.spec.ts:8:1 › deletes a todo
+  5) [chromium] › tests/generated/v2/VT-INT-07.spec.ts:8:1 › rejects a whitespace-only todo ────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Add todo' })
+
+
+      11 |   await expect(page.getByRole('list').getByRole('listitem')).toHaveCount(0);
+      12 |   await page.getByRole('textbox', { name: 'New todo' }).fill('   ');
+    > 13 |   await page.getByRole('button', { name: 'Add todo' }).click();
+         |                                                        ^
+      14 |
+      15 |   await expect(page.getByRole('list').getByRole('listitem')).toHaveCount(0);
+      16 |   await expect(page.getByRole('alert')).toHaveText('Todo cannot be empty');
+        at tests/generated/v2/VT-INT-07.spec.ts:13:56
+
+    Error Context: test-results/generated-v2-VT-INT-07-rejects-a-whitespace-only-todo-chromium/error-context.md
+
+
+  6) [chromium] › tests/generated/v2/VT-INT-05.spec.ts:8:1 › VT-INT-05: complete a todo ────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Add todo' })
+
+
+       9 |   await page.goto('/');
+      10 |   await page.getByRole('textbox', { name: 'New todo' }).fill('Write tests');
+    > 11 |   await page.getByRole('button', { name: 'Add todo' }).click();
+         |                                                        ^
+      12 |
+      13 |   const checkbox = page.getByRole('checkbox', { name: 'Write tests' });
+      14 |   await checkbox.check();
+        at tests/generated/v2/VT-INT-05.spec.ts:11:56
+
+    Error Context: test-results/generated-v2-VT-INT-05-VT-INT-05-complete-a-todo-chromium/error-context.md
+
+
+  7) [chromium] › tests/generated/v2/VT-INT-06.spec.ts:8:1 › deletes a todo ────────────────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Add todo' })
+
+
+      10 |
+      11 |   await page.getByRole('textbox', { name: 'New todo' }).fill('Write tests');
+    > 12 |   await page.getByRole('button', { name: 'Add todo' }).click();
+         |                                                        ^
+      13 |
+      14 |   const todo = page.getByRole('listitem').filter({ hasText: 'Write tests' });
+      15 |   await expect(todo).toBeVisible();
+        at tests/generated/v2/VT-INT-06.spec.ts:12:56
+
+    Error Context: test-results/generated-v2-VT-INT-06-deletes-a-todo-chromium/error-context.md
+
+
+  7 failed
+    [chromium] › tests/generated/v2/VT-INT-01.spec.ts:8:1 › VT-INT-01: successful login ────────────
+    [chromium] › tests/generated/v2/VT-INT-02.spec.ts:8:1 › VT-INT-02: rejects an incorrect password 
+    [chromium] › tests/generated/v2/VT-INT-03.spec.ts:8:1 › locks the account after three failed attempts and rejects the correct password 
+    [chromium] › tests/generated/v2/VT-INT-04.spec.ts:8:1 › VT-INT-04: add a todo ──────────────────
+    [chromium] › tests/generated/v2/VT-INT-05.spec.ts:8:1 › VT-INT-05: complete a todo ─────────────
+    [chromium] › tests/generated/v2/VT-INT-06.spec.ts:8:1 › deletes a todo ─────────────────────────
+    [chromium] › tests/generated/v2/VT-INT-07.spec.ts:8:1 › rejects a whitespace-only todo ─────────
