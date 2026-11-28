@@ -10,7 +10,7 @@
 |------|------|------|
 | 1 需求 | 需求、可行性、风险 | ✅ Done |
 | 2 设计 | 架构、测试计划、PoC | 已评审；MCP 进程隔离不属于本 demo 范围 |
-| 3 开发 | 被测应用、意图、生成用例、自愈 | 进行中 |
+| 3 开发 | 被测应用、意图、生成用例、自愈 | 开发完成，待人工复核及评审 |
 | 4 测试 | 执行、变异验证、CI | Planned |
 | 5 收尾 | 规范文档、复盘 | Planned |
 
@@ -29,15 +29,21 @@ npm run test:coverage
 npm run test:smoke
 APP_VERSION=v2 npx playwright test tests/variants/v2.spec.ts --project=chromium
 APP_VERSION=mutant npx playwright test tests/variants/mutant.spec.ts --project=chromium
+npm test                                   # 生成用例 v1（7）
+npm run test:mutant                        # 精确变异门禁：仅 VT-INT-03 失败
+node scripts/check-assertions.mjs tests/generated/v1 tests/generated/v2
+APP_VERSION=v2 npx playwright test tests/generated/v2 --project=chromium
 ```
 
-Node.js 依赖只安装在本项目的 `node_modules`；Python `venv` 不隔离 Node.js 或 MCP 进程。`npm test` 面向未来经复核的 v1 生成用例，当前尚无生成用例，不能作为已完成验收的证据。
+复现生成或自愈需要 Copilot 账号（RSK-VT-004）：`bash scripts/generate.sh VT-INT-NN`、`bash scripts/heal.sh docs/runs/<日期>-heal-before.txt`；两者都要求工作区干净，不覆盖已有文件。
 
-生成与自愈尚未实现或执行。上述测试均为手写基线，不代表生成用例或 MCP 隔离通过。`APP_VERSION=mutant npm run test:smoke` 的锁定测试预期失败，不能替代后续生成用例的精确变异验证。
+Node.js 依赖只安装在本项目的 `node_modules`；Python `venv` 不隔离 Node.js 或 MCP 进程。
+
+`tests/generated/` 中的 14 个用例由 Copilot 生成或自愈，`reviewed-by` 为 `pending`，待人工复核；结果见 [阶段 3 结果](docs/runs/2026-11-28-stage3-results.md)。
 
 用户已接受 [RSK-VT-009](docs/project-management/risks.md) 残余风险：正常环境只使用本地演示应用和演示账号；限制必要工具权限，执行前后检查 Git 状态并人工复核 diff。这些措施无法限制 MCP 进程或检查仓库外访问。组织若要求 sandbox，必须遵守其策略。
 
-当前 CI 仅运行手写基线及应用版本测试，不调用 AI；生成用例和精确 mutant 门禁仍待补齐，不能视为完整项目验收。
+CI 运行手写基线、生成用例 v1、精确 mutant 门禁、断言守卫和 v2 自愈用例，不调用 AI；远端 CI 尚未运行（分支未推送）。
 
 ## 文档
 
@@ -51,3 +57,4 @@ Node.js 依赖只安装在本项目的 `node_modules`；Python `venv` 不隔离 
 | 测试计划 | `docs/qa/test-plan.md` |
 | 实施计划 | `docs/plans/implementation-plan.md` |
 | 阶段 3 归档 | [docs/runs/2026-11-27-stage3-handoff.md](docs/runs/2026-11-27-stage3-handoff.md) |
+| 阶段 3 结果 | [docs/runs/2026-11-28-stage3-results.md](docs/runs/2026-11-28-stage3-results.md) |
