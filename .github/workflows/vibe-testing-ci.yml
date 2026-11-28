@@ -26,7 +26,7 @@ defaults:
 
 jobs:
   unit-tests:
-    name: Vibe Testing / Baseline
+    name: Vibe Testing / Unit Tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -49,6 +49,16 @@ jobs:
         run: npx playwright test tests/variants/mutant.spec.ts --project=chromium
         env:
           APP_VERSION: mutant
+      - name: 生成用例（v1）
+        run: npm test
+      - name: 精确变异门禁（仅 VT-INT-03 失败）
+        run: npm run test:mutant
+      - name: 断言守卫（v1 对比 v2 自愈副本）
+        run: node scripts/check-assertions.mjs tests/generated/v1 tests/generated/v2
+      - name: 自愈用例（v2）
+        run: npx playwright test tests/generated/v2 --project=chromium
+        env:
+          APP_VERSION: v2
       - name: 保存测试报告
         if: always()
         uses: actions/upload-artifact@v7
