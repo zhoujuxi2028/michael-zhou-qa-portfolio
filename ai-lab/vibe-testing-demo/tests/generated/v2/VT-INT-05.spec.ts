@@ -8,7 +8,7 @@ import { expect, test } from '@playwright/test';
 test('VT-INT-05: complete a todo', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('textbox', { name: 'New todo' }).fill('Write tests');
-  await page.getByRole('button', { name: 'Add todo' }).click();
+  await page.getByRole('button', { name: 'Add task' }).click();
 
   const checkbox = page.getByRole('checkbox', { name: 'Write tests' });
   await checkbox.check();

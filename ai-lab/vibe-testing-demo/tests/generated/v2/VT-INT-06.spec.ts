@@ -9,7 +9,7 @@ test('deletes a todo', async ({ page }) => {
   await page.goto('/');
 
   await page.getByRole('textbox', { name: 'New todo' }).fill('Write tests');
-  await page.getByRole('button', { name: 'Add todo' }).click();
+  await page.getByRole('button', { name: 'Add task' }).click();
 
   const todo = page.getByRole('listitem').filter({ hasText: 'Write tests' });
   await expect(todo).toBeVisible();

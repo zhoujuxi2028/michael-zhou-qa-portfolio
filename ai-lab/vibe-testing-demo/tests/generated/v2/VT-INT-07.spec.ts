@@ -10,7 +10,7 @@ test('rejects a whitespace-only todo', async ({ page }) => {
 
   await expect(page.getByRole('list').getByRole('listitem')).toHaveCount(0);
   await page.getByRole('textbox', { name: 'New todo' }).fill('   ');
-  await page.getByRole('button', { name: 'Add todo' }).click();
+  await page.getByRole('button', { name: 'Add task' }).click();
 
   await expect(page.getByRole('list').getByRole('listitem')).toHaveCount(0);
   await expect(page.getByRole('alert')).toHaveText('Todo cannot be empty');

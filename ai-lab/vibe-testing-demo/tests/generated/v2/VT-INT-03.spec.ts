@@ -10,14 +10,14 @@ test('locks the account after three failed attempts and rejects the correct pass
 
   await page.getByRole('textbox', { name: 'Username' }).fill('demo');
   await page.getByRole('textbox', { name: 'Password' }).fill('wrong');
-  await page.getByRole('button', { name: 'Log in' }).click();
-  await page.getByRole('button', { name: 'Log in' }).click();
-  await page.getByRole('button', { name: 'Log in' }).click();
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  await page.getByRole('button', { name: 'Sign in' }).click();
 
   await expect(page.getByRole('status')).toHaveText('Account locked');
 
   await page.getByRole('textbox', { name: 'Password' }).fill('password');
-  await page.getByRole('button', { name: 'Log in' }).click();
+  await page.getByRole('button', { name: 'Sign in' }).click();
 
   await expect(page.getByRole('status')).toHaveText('Account locked');
 });
