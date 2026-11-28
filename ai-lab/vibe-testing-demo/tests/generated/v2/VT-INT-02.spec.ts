@@ -1,7 +1,7 @@
 // intent: VT-INT-02
 // generated-by: GitHub Copilot CLI 1.0.116 + @playwright/mcp 0.0.86
 // generated-at: 2026-11-27T23:30:12Z
-// reviewed-by: pending
+// reviewed-by: Claude Code (AI review, authorized by Michael Zhou) 2026-11-28
 
 import { expect, test } from '@playwright/test';
 
