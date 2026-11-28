@@ -12,3 +12,15 @@
 - 工具授权和 Git 检查不限制 MCP 进程或仓库外访问；组织若要求 sandbox，必须遵守其策略
 - CI 只运行已提交的用例，不调用 AI
 - 5 阶段流程，每阶段结束暂停评审（见根目录 `docs/dev-process-checklist.md`）
+
+## 快速命令
+
+```bash
+npm ci && npx playwright install chromium
+npm run lint && npm run typecheck && npm run test:coverage
+npm test                     # 生成用例 v1（7）
+npm run test:mutant          # 精确变异门禁
+node scripts/check-assertions.mjs tests/generated/v1 tests/generated/v2
+APP_VERSION=v2 npx playwright test tests/generated/v2 --project=chromium
+bash scripts/generate.sh VT-INT-NN   # 需 Copilot 账号，工作区须干净
+```
